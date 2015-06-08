@@ -1,0 +1,76 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/footer.css')
+    block socketscript
+  body
+  .container
+    link(href="http://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css", rel="stylesheet")
+  
+    nav.menu
+      h1.name
+        img.logo(src="/images/beaker-invert.png", alt="Logo Image" width="30")
+        | ResearchTopia
+      ul.inline-list
+        li
+          a(href="#") Home
+        li.active
+          a(href="#") About
+      ul.inline-list.hide-for-small-only.account-action
+        li
+          a(href="#", data-reveal-id="myModal") Login
+        li
+          a.signup(href="#", data-reveal-id="myModal") Signup
+      a.account.hide-for-medium-up(href="#", data-reveal-id="myModal")
+        i.fi-unlock
+    
+    // modal content
+    #myModal.reveal-modal(data-reveal="", aria-labelledby="login or sign up", aria-hidden="true", role="dialog")
+      .row
+        .large-6.columns.auth-plain
+          .signup-panel.left-solid
+            p.welcome Registered Users
+            form
+              .row.collapse
+                .small-2.columns
+                  span.prefix
+                    i.fi-torso-female
+                .small-10.columns
+                  input(type="text", placeholder="username")
+              .row.collapse
+                .small-2.columns
+                  span.prefix
+                    i.fi-lock
+                .small-10.columns
+                  input(type="text", placeholder="password")
+            a.button(href="#") Log In 
+        .large-6.columns.auth-plain
+          .signup-panel.newusers
+            p.welcome  New User?
+            p
+              | By creating an account with us, you will be able to move through the checkout process faster, view and track your orders, and more.
+            br
+            a.button(href="#") Sign Up
+            br
+      a.close-reveal-modal(aria-label="Close") &#215;
+    
+    block content
+    
+    footer#foot.row
+      .large-12.columns
+        hr
+        .row
+          .large-3.columns
+            p.center-text
+              | &copy; UBC FOM Lab
+          .large-3.small-offset-6.columns
+            ul.inline-list.center
+              li
+                a(href="#") Section 1
+              li
+                a(href="#") Section 1
+
+
+  script(src="/javascripts/browserjs.js")
