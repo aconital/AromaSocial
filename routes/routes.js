@@ -29,7 +29,7 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/profile', function (req, res, next) {
-       res.render('profile', {title: 'Website', username: 'User'});
+       res.render('profile', {title: 'Profile', username: 'Profile'});
 });
 
   /*******************************************
@@ -49,7 +49,7 @@ module.exports=function(app,Parse) {
 
   user.signUp(null, {
     success: function (user) {
-      res.send(200);
+        res.render('guest', {title: 'Verify Email!'});
     },
     error: function (user, error) {
       // Show the error message somewhere and let the user try again.
@@ -89,6 +89,7 @@ module.exports=function(app,Parse) {
 
 app.post('/signout', function (req, res, next) {
     Parse.User.logOut();
+    res.render('guest', {title: 'Come back again!'});
 });
 
 };
