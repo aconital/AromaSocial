@@ -29,30 +29,22 @@ html
     // modal content
     #myModal.reveal-modal(data-reveal="", aria-labelledby="login or sign up", aria-hidden="true", role="dialog")
       .row
-        .large-6.columns.auth-plain
-          .signup-panel.left-solid
-            p.welcome Registered Users
-            form
-              .row.collapse
-                .small-2.columns
-                  span.prefix
-                    i.fi-torso-female
-                .small-10.columns
-                  input(type="text", placeholder="username")
-              .row.collapse
-                .small-2.columns
-                  span.prefix
-                    i.fi-lock
-                .small-10.columns
-                  input(type="text", placeholder="password")
-            a.button(href="#") Log In 
+        form(name="form", method="post", action="/signin", novalidate)
+          div.form-group
+            label.control-label(for="username") Username
+            input.form-control(type="text", name="username", id="username", placeholder="Username", unique-username, required, ng-model="username", autofocus)
+          div.form-group
+            label.control-label(for="password") Password
+            input.form-control(type="password", name="password", id="password", ng-model="password", required, match="verification")
+
+          input.btn.btn-primary(type="submit", value="Sign in", ng-disabled="form.$invalid")
         .large-6.columns.auth-plain
           .signup-panel.newusers
             p.welcome  New User?
             p
               | By creating an account with us, you will be able to move through the checkout process faster, view and track your orders, and more.
             br
-            a.button(href="#") Sign Up
+            a.button(href="/signup") Sign Up
             br
       a.close-reveal-modal(aria-label="Close") &#215;
     

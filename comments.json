@@ -1,30 +1,14 @@
 [
     {
         "author": "Erin",
-        "postid": "3",
-        "text": "Hi"
-    },
-    {
-        "author": "Guest",
-        "postid": "4",
-        "text": "This is cool..."
-    },
-    {
-        "author": "Erin",
-        "postid": "5",
-        "text": "Yes, it is!"
-    },
-    {
-        "author": "Guest",
-        "postid": "10",
-        "text": "wow\nsuch comment\nmuch code"
-    },
-    {
-        "author": "Erin",
         "text": "test"
     },
     {
         "author": "Sean",
         "text": "dinggggg alinggggg"
+    },
+    {
+        "author": "Hirad",
+        "text": "test"
     }
 ]
