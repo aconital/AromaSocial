@@ -6,11 +6,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
-
-var routes = require('./routes/index');
-var users = require('./routes/users');
+var Parse = require('parse').Parse;
 
 var app = express();
+
+
+Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -24,8 +27,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
+require('./routes/routes')(app,Parse);
+
+
 
 
 app.get('/comments.json', function(req, res) {
