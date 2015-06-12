@@ -7,122 +7,37 @@ block socketscript
   script(src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js")
 
 block content
-  h1 Welcome #{username}
-  hr
   div.row
-    div.large-12.columns
-      img(src="http://placehold.it/1600x600&text=Header")
-      br
-      br
-      
-      
-    
-       
-      <div class="row">
-        <div class="large-12 columns">
-          <img src="http://placehold.it/1600x600&text=Header"><br><br>
-        </div>
-      </div>
-     
-       
-     
-     
-      <div class="row">
-     
-        <div class="large-3 panel columns">
-          <img src="http://placehold.it/500x500&text=Image">
-     
-          <h4>Header</h4>
-     
-          <p>Fusce ullamcorper mauris in eros dignissim molestie posuere felis blandit. Aliquam erat volutpat. Mauris ultricies posuere vehicula. Sed sit amet posuere erat. Quisque in ipsum non augue euismod dapibus non et eros.</p><hr>
-     
-          <div class="row">
-            <div class="large-4 columns">
-            <a href="#" class="small button">Link</a>
-            </div>
-     
-            <div class="large-4 columns">
-            <a href="#" class="small button">Link</a>
-            </div>
-     
-            <div class="large-4 columns">
-            <a href="#" class="small button">Link</a>
-            </div>
-          </div>
-        </div>
-     
-        <div class="large-9 columns">
-          <div class="panel">
-            <div class="row">
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-     
-              <div class="large-3 columns end">
-                <img src="http://placehold.it/600x500&text=Thumbnail">
-              </div>
-            </div>
-          </div>
-     
-          <div class="row">
-            <div class="large-6 columns">
-              <div class="panel">
-                <h5>Subheader</h5>
-                <p>Sed sit amet posuere erat. Quisque in ipsum non augue euismod dapibus non et eros.</p>
-                <a href="#" class="small button">Link</a>
-              </div>
-            </div>
-     
-            <div class="large-6 columns">
-              <div class="panel">
-                <h5>Subheader</h5>
-                <p>Sed sit amet posuere erat. Quisque in ipsum non augue euismod dapibus non et eros.</p>
-                <a href="#" class="small button">Link</a>
-              </div>
-            </div>
-          </div>
-        </div>
-     
-      </div>
-     
+    div.large-9.large-centered.columns  
+      div.row
+        div.large-3.panel.columns
+          img(src="http://placehold.it/500x500&text=Image")
+          h4 Header
+          p Fusce ullamcorper mauris in eros dignissim molestie posuere felis blandit.
+          .row
+            .large-4.columns
+              a.small.button(href="#") Link
+            .large-4.columns
+              a.small.button(href="#") Link
+            .large-4.columns
+              a.small.button(href="#") Link   
+        div.large-9.columns
+          .panel
+            .row
+              .large-3.columns
+                img(src="http://placehold.it/600x500&text=Thumbnail")
+              .large-3.columns
+                img(src="http://placehold.it/600x500&text=Thumbnail")
+              .large-3.columns.end
+                img(src="http://placehold.it/600x500&text=Thumbnail")
+          .row
+            .large-6.columns
+              .panel
+                h5 Subheader
+                p This is some text!
+                a.small.button(href="#") Link
+            .large-5.columns
+              .panel
+                h5 Subheader
+                p This is more text!
+                a.small.button(href="#") Link
