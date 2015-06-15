@@ -1,5 +1,7 @@
 var express = require('express');
-
+var formidable = require('formidable');
+var util = require('util');
+ var fs  = require('fs-extra');
 
 module.exports=function(app,Parse) {
   /*******************************************
@@ -62,8 +64,44 @@ module.exports=function(app,Parse) {
   app.get('/profile', function (req, res, next) {
        res.render('profile', {title: 'Profile', username: 'Profile'});
 });
+  app.post('/profile',function(req,res,next){
 
-  /*******************************************
+  });
+  app.post('/profile/:username/publications',function(req,res,next){
+      var currentUser = Parse.User.current();
+      if (currentUser && currentUser.attributes.username == req.params.username) {
+          console.log("asdas");
+            //upload publication
+          var form = new formidable.IncomingForm();
+          form.parse(req, function(err, fields, files) {
+              res.writeHead(200, {'content-type': 'text/plain'});
+              res.write('received upload:\n\n');
+              res.end(util.inspect({fields: fields, files: files}));
+          });
+
+          form.on('end', function(fields, files) {
+              /* Temporary location of our uploaded file */
+              var temp_path = this.openedFiles[0].path;
+              /* The file name of the uploaded file */
+              var file_name = this.openedFiles[0].name;
+              /* Location where we want to copy the uploaded file */
+              var new_location = 'uploads/'+req.params.username+'/publications';
+
+              fs.copy(temp_path, new_location + file_name, function(err) {
+                  if (err) {
+                      console.error(err);
+                  } else {
+                      res.render('profile');
+                  }
+              });
+          });
+      } else {
+          res.render('profile', {Error: 'Submit Publication Failed!'});
+      }
+
+  });
+
+    /*******************************************
    *
    * SIGN UP
    *
@@ -80,11 +118,11 @@ module.exports=function(app,Parse) {
 
   user.signUp(null, {
     success: function (user) {
-        res.render('guest', {title: 'Verify Email!'});
+        res.render('/newsfeed');
     },
     error: function (user, error) {
       // Show the error message somewhere and let the user try again.
-      alert("Error: " + error.code + " " + error.message);
+      res.render('/signup',{Error: error.message});
     }
   });
 
