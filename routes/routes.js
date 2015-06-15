@@ -78,7 +78,6 @@ module.exports=function(app,Parse) {
               res.write('received upload:\n\n');
               res.end(util.inspect({fields: fields, files: files}));
           });
-
           form.on('end', function(fields, files) {
               /* Temporary location of our uploaded file */
               var temp_path = this.openedFiles[0].path;
@@ -91,6 +90,27 @@ module.exports=function(app,Parse) {
                   if (err) {
                       console.error(err);
                   } else {
+                      var tags=fields.tags;
+                      var hashtags = tags.match(/#.+?\b/g);
+                      var Publication = Parse.Object.extend("Publication");
+                      var pub= new Publication();
+                      pub.set('user',currentUser);
+                      pub.set('title',fields.title);
+                      pub.set('hashtags',hashtags);
+                      pub.set('filename',files.upload.name);
+                      pub .save(null, {
+                          success: function(pub) {
+                              // Execute any logic that should take place after the object is saved.
+                              res.render('profile', {title: 'Profile',msg: 'Publication uploaded successfully!', username: currentUser.attributes.username});
+                          },
+                          error: function(pub, error) {
+                              // Execute any logic that should take place if the save fails.
+                              // error is a Parse.Error with an error code and message.
+                              alert('Failed to create new object, with error code: ' + error.message);
+                              res.render('profile', {title: 'Profile', msg: 'Uploading publication failed!'});
+                          }
+                      });
+
                       res.render('profile');
                   }
               });
