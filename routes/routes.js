@@ -62,7 +62,13 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/profile', function (req, res, next) {
-       res.render('profile', {title: 'Profile', username: 'Profile'});
+      var currentUser = Parse.User.current();
+      if (currentUser) {
+          res.render('profile', {title: 'Profile', username: 'Profile'});
+      }else{
+          res.render('guest', {title: 'Please Login'});
+      }
+
 });
   app.post('/profile',function(req,res,next){
 
