@@ -51,7 +51,7 @@ module.exports=function(app,Parse) {
 
 
         } else {
-            res.render('guest', {title: 'Please Login'});
+            res.render('guest', {title: 'Login failed'});
         }
 
     });
@@ -66,7 +66,7 @@ module.exports=function(app,Parse) {
       if (currentUser) {
           res.render('profile', {title: 'Profile', username: 'Profile'});
       }else{
-          res.render('guest', {title: 'Login failed'});
+          res.render('guest', {title: 'Please Login'});
       }
 
 });
