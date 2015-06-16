@@ -67,6 +67,40 @@ module.exports=function(app,Parse) {
   app.post('/profile',function(req,res,next){
 
   });
+
+  app.get('/profile/:username/publications',function(req,res,next){
+
+      var User = Parse.Object.extend("User")
+      var innerQuery = new Parse.Query(User);
+      innerQuery.equalTo("username", req.params.username);
+
+      var Publication = Parse.Object.extend("Publication");
+      var query = new Parse.Query(Publication);
+      query.matchesQuery("user", innerQuery);
+      query.find({
+          success: function(results) {
+              console.log("Successfully retrieved " + results.length + " publications.");
+              // Do something with the returned Parse.Object values
+              var pubs=[];
+              for (var i = 0; i < results.length; i++) {
+                  var object = results[i];
+
+                  pubs.push({
+                      filename: object.attributes.filename,
+                      title:object.attributes.title,
+                      hashtags:object.attributes.hashtags
+                  });
+
+
+              }
+              res.send(pubs);
+          },
+          error: function(error) {
+              console.log("Error: " + error.code + " " + error.message);
+          }
+      });
+
+  });
   app.post('/profile/:username/publications',function(req,res,next){
       var currentUser = Parse.User.current();
       if (currentUser && currentUser.attributes.username == req.params.username) {
@@ -123,7 +157,7 @@ module.exports=function(app,Parse) {
 
   });
 
-  
+
     /*******************************************
    *
    * SIGN UP
