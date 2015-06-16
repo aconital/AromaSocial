@@ -156,7 +156,42 @@ module.exports=function(app,Parse) {
       }
 
   });
+    /*******************************************
+     *
+     * Search
+     *
+     ********************************************/
+    app.post('/search', function (req, res, next) {
 
+        var tags=req.body.tags;
+
+        var Publication = Parse.Object.extend("Publication");
+        var query = new Parse.Query(Publication);
+        query.containedIn("hashtags", tags.match(/#.+?\b/g));
+        query.find({
+            success: function(results) {
+                console.log("Successfully retrieved " + results.length + " publications.");
+                // Do something with the returned Parse.Object values
+                var pubs=[];
+                for (var i = 0; i < results.length; i++) {
+                    var object = results[i];
+
+                    pubs.push({
+                        filename: object.attributes.filename,
+                        title:object.attributes.title,
+                        hashtags:object.attributes.hashtags
+                    });
+
+
+                }
+                res.send(pubs);
+            },
+            error: function(error) {
+                console.log("Error: " + error.code + " " + error.message);
+            }
+        });
+
+    });
 
     /*******************************************
    *
