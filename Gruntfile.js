@@ -3,20 +3,23 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     sass: {
-      options: {
-        includePaths: ['bower_components/foundation/scss']
-      },
       dist: {
-        options: {
-        	outputStyle: 'compressed',
-          loadPath: require('node-neat').includePaths,
-          loadPath: require('node-bourbon').includePaths,
-          sourceMap: true,
+        options:{
+          loadPath: ['bower_components/foundation/scss','bower_components/bootstrap-sass-official/assets/stylesheets']
         },
-        files: {
+        files: [
+  		  {
+    		  expand: true,
+          cwd: 'styles',
+          src: ['bower_components/foundation/scss/*.scss','bower_components/bootstrap-sass-official/assets/stylesheets/*.scss'],
+          dest: '../public/stylesheets',
+          ext: '.css'
+        },
+        {
 	        'public/stylesheets/style.css' : 'public/scss/style.scss',
+	        'public/stylesheets/stylebootstrap.css' : 'public/scss/stylebootstrap.scss',
           'public/stylesheets/footer.css' : 'public/scss/footer.scss'
-		    }
+		    }]
       }
     },
     copy: {
@@ -42,7 +45,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-sass');
+  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-copy');
   

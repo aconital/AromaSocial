@@ -63,6 +63,11 @@ module.exports=function(app,Parse) {
        res.render('profile', {title: 'Profile', username: 'Profile'});
 });
 
+
+  app.get('/profilebootstrap', function (req, res, next) {
+       res.render('profilebootstrap', {title: 'Profile', username: 'Profile'});
+});
+
   /*******************************************
    *
    * SIGN UP
@@ -114,7 +119,7 @@ module.exports=function(app,Parse) {
 
 /*******************************************
  *
- * SING OUT
+ * SIGN OUT
  *
  ********************************************/
 
