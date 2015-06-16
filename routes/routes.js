@@ -70,13 +70,15 @@ module.exports=function(app,Parse) {
   app.post('/profile/:username/publications',function(req,res,next){
       var currentUser = Parse.User.current();
       if (currentUser && currentUser.attributes.username == req.params.username) {
-          console.log("asdas");
+          var tags;
+          var title;
+          var filename;
             //upload publication
           var form = new formidable.IncomingForm();
           form.parse(req, function(err, fields, files) {
-              res.writeHead(200, {'content-type': 'text/plain'});
-              res.write('received upload:\n\n');
-              res.end(util.inspect({fields: fields, files: files}));
+              tags=fields.tags;
+              title=fields.title;
+              filename=files.upload.name;
           });
           form.on('end', function(fields, files) {
               /* Temporary location of our uploaded file */
@@ -90,14 +92,14 @@ module.exports=function(app,Parse) {
                   if (err) {
                       console.error(err);
                   } else {
-                      var tags=fields.tags;
+
                       var hashtags = tags.match(/#.+?\b/g);
                       var Publication = Parse.Object.extend("Publication");
                       var pub= new Publication();
                       pub.set('user',currentUser);
-                      pub.set('title',fields.title);
+                      pub.set('title',title);
                       pub.set('hashtags',hashtags);
-                      pub.set('filename',files.upload.name);
+                      pub.set('filename',filename);
                       pub .save(null, {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
@@ -111,7 +113,7 @@ module.exports=function(app,Parse) {
                           }
                       });
 
-                      res.render('profile');
+
                   }
               });
           });
@@ -121,6 +123,7 @@ module.exports=function(app,Parse) {
 
   });
 
+  
     /*******************************************
    *
    * SIGN UP
