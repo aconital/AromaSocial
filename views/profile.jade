@@ -1,4 +1,4 @@
-extends layout
+extends layoutbootstrap
 
 block socketscript
   script(src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/react.js")
@@ -11,14 +11,14 @@ block socketscript
 
 block content
   div.row
-    div.large-9.large-centered.columns  
+    div.col-sm-10.col-md-offset-2
       div.row
-        div.large-3.panel.columns
+        div.col-sm-2.panel.panel-default
           img#profile-picture(src="http://placehold.it/500x500&text=Image")
           h5 #{username}
           h6 Add your degree
           h6 Add your contact information 
-        div.large-9.columns
+        div.col-sm-8.small-padding
           #content
   script.
     var user = "#{username}";
@@ -26,5 +26,5 @@ block content
     var sampleTags = ['c++', 'java', 'php', 'coldfusion', 'javascript', 'asp', 'ruby', 'python', 'c', 'scala', 'groovy', 'haskell', 'perl', 'erlang', 'apl', 'cobol', 'go', 'lua'];
 
   script(type="text/jsx", src="/javascripts/tags.js")
-  script(type="text/jsx", src="/javascripts/profile.js")
+  script(type="text/jsx", src="/javascripts/profilebootstrap.js")
 

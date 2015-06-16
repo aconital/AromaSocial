@@ -68,8 +68,8 @@ module.exports=function(app,Parse) {
 
   });
   
-  app.get('/profilebootstrap', function (req, res, next) {
-       res.render('profilebootstrap', {title: 'Profile', username: currentUser.attributes.username});
+app.get('/profilebootstrap', function (req, res, next) {
+  res.render('profilebootstrap', {title: 'Profile', username: "erinbush"});
 });
 
 
