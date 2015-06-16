@@ -177,11 +177,11 @@ var PublicationTab = React.createClass({
   render:function(){
     var url = "/profile/"+this.props.username+"/publications";
     return(
-      <form action={url} enctype="multipart/form-data" method="post" className="upload-form form-horizontal" >
+      <form action={url} encType="multipart/form-data" method="post" className="upload-form form-horizontal" >
         <div className="form-group ">
           <label className="col-sm-2 control-label" for="inputTitle">Title</label>
           <div className="col-sm-10">
-                <input type="text" className="form-control" id="inputTitle" placeholder=""/>
+                <input type="text" className="form-control" id="inputTitle" name="title" placeholder=""/>
           </div>
         </div>
 
@@ -195,7 +195,7 @@ var PublicationTab = React.createClass({
         <div className="form-group">
           <label className="col-sm-2 control-label" for="files">Upload Files</label>
           <div className="col-sm-8">
-            <div className="fileUpload">
+            <div className="">
               <input multiple="multiple" name="upload" type="file" className="upload" id="files"/>
             </div>
           </div>
@@ -209,6 +209,7 @@ var PublicationTab = React.createClass({
     );
   }
 });
+
 
 
 var tabList = [
@@ -322,9 +323,11 @@ var FormTabs = React.createClass({
   
 
 React.render(
-  <PublicationBox url="/publications.json" username={user} pollInterval={2000} />,
+  <PublicationBox url="/publications.json" username={user} />,
   document.getElementById('content')
 );
+
+$(".react-tagsinput-input").attr("name", "tags");
 
 function switchToDataTab(){
   console.log("switch");

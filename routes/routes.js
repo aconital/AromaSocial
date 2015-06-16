@@ -64,7 +64,7 @@ module.exports=function(app,Parse) {
   app.get('/profile', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
-          res.render('profile', {title: 'Profile', username: 'Profile'});
+          res.render('profile', {title: 'Profile', username: currentUser.attributes.username});
       }else{
           res.render('guest', {title: 'Please Login'});
       }
@@ -73,11 +73,6 @@ module.exports=function(app,Parse) {
   app.post('/profile',function(req,res,next){
 
   });
-  
-app.get('/profilebootstrap', function (req, res, next) {
-  res.render('profilebootstrap', {title: 'Profile', username: "erinbush"});
-});
-
 
 
   app.get('/profile/:username/publications',function(req,res,next){
