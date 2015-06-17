@@ -96,7 +96,8 @@ module.exports=function(app,Parse) {
                   pubs.push({
                       filename: object.attributes.filename,
                       title:object.attributes.title,
-                      hashtags:object.attributes.hashtags
+                      hashtags:object.attributes.hashtags,
+                      date:object.attributes.createdAt
                   });
 
 
