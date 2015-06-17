@@ -75,6 +75,7 @@ module.exports=function(app,Parse) {
   });
 
 
+
   app.get('/profile/:username/publications',function(req,res,next){
 
       var User = Parse.Object.extend("User")
@@ -109,6 +110,7 @@ module.exports=function(app,Parse) {
 
   });
   app.post('/profile/:username/publications',function(req,res,next){
+      console.log("POST");
       var currentUser = Parse.User.current();
       if (currentUser && currentUser.attributes.username == req.params.username) {
           var tags;
@@ -116,17 +118,19 @@ module.exports=function(app,Parse) {
           var filename;
             //upload publication
           var form = new formidable.IncomingForm();
+          console.log(form);
           form.parse(req, function(err, fields, files) {
               tags=fields.tags;
+              console.log(tags);
               title=fields.title;
               filename=files.upload.name;
           });
           form.on('end', function(fields, files) {
-              /* Temporary location of our uploaded file */
+              // Temporary location of our uploaded file 
               var temp_path = this.openedFiles[0].path;
-              /* The file name of the uploaded file */
+              // The file name of the uploaded file 
               var file_name = this.openedFiles[0].name;
-              /* Location where we want to copy the uploaded file */
+              // Location where we want to copy the uploaded file 
               var new_location = 'uploads/'+req.params.username+'/publications';
 
               fs.copy(temp_path, new_location + file_name, function(err) {
@@ -144,7 +148,7 @@ module.exports=function(app,Parse) {
                       pub .save(null, {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
-                              res.render('profile', {title: 'Profile',msg: 'Publication uploaded successfully!', username: currentUser.attributes.username});
+                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username});
                           },
                           error: function(pub, error) {
                               // Execute any logic that should take place if the save fails.
@@ -163,6 +167,7 @@ module.exports=function(app,Parse) {
       }
 
   });
+
     /*******************************************
      *
      * Search

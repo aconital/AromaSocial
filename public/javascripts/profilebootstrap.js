@@ -1,23 +1,32 @@
 
 var Publication = React.createClass({
   render: function() {
-	var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+	//var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+	console.log(this.props.tags);
     return (
-      <div className="publication">
+      <tr>
+        <td>{this.props.title}</td>
+        <td>{this.props.filename}</td>
+        <td>{this.props.tags}</td>
+        <td>{this.props.title}</td>
+        <td><div className="deletePublication"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div></td>
+      </tr>
+      
+      /*<div className="publication">
       	<div className="row">
-	      	<div className="authorDiv small-10 columns">
-		        <h6 className="publicationAuthor">
-		          {this.props.author}
+	      	<div className="authorDiv col-sm-10">
+		        <h6 className="publicationFilename">
+		          {this.props.filename}
 		        </h6>
 	        </div>
-	        <div className="deletePublication small-2 columns"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div>
+	        <div className="deletePublication col-sm-2"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div>
         </div>
         <div className="row">
         <div className="publicationText">
         	<span dangerouslySetInnerHTML={{__html: rawMarkup}} />
         </div>
         </div>
-      </div>
+      </div>*/
     );
   },
   removePublication: function(){
@@ -93,56 +102,77 @@ var PublicationBox = React.createClass({
         <div className="panel panel-default">
           <div className="panel-body">
             <div className="row">
-              <p>{this.props.username}</p>
               <PublicationForm onPublicationSubmit={this.handlePublicationSubmit} username={this.props.username}/>
             </div>
           </div>
         </div>
         <div className="panel panel-default">
-        <ul className="list-group">
-          <li className="list-group-item">
-            <div className="row">
-              <div className ="large-3 columns">
-                <a href="">Publications </a>
-              </div>
-              <div className ="large-3 columns">
-                <a href="">Data </a>
-              </div>
-              <div className ="large-3 columns">
-                <a href="">Images </a>
-              </div>
-            </div>
-          </li>
-          <li className="list-group-item">
-            <div className="row">
-              <h5>Publications</h5>
-              <PublicationList data={this.state.data} />
-            </div>
-          </li>
-        </ul>
+          <PublicationList data={this.state.data} />
         </div>
       </div>
     );
   }
 });
 
+var DisplayTab = React.createClass({
+  render: function(){
+    return(
+      <div>
+      <div className="blog-masthead">
+        <div className="container">
+          <nav className="blog-nav">
+            <a className="blog-nav-item active" href="">Publications</a>
+            <a className="blog-nav-item" href="">Data</a>
+            <a className="blog-nav-item" href="">Images</a>
+            <a className="blog-nav-item" href="">Tables</a>
+          </nav>
+        </div>
+      </div>
+
+      <ul className="list-group">
+        <li className="list-group-item">
+          <div className="row">
+            <h5>Publications</h5>
+            <PublicationList data={this.props.data}  />
+          </div>
+        </li>
+      </ul>
+      </div>
+    )
+  }
+});
+
+
 var PublicationList = React.createClass({
   render: function() {
 	  var PublicationNodes = this.props.data.map(function (publication) {
+  	  var jsonString = JSON.stringify(publication.hashtags);
       return (
-        <Publication author={publication.author} postid={publication.postid} url="/removePublication">
-          {publication.text}
+        <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} url="/removePublication">
+
         </Publication>
       );
     });
     return (
       <div className="publicationList">
-        {PublicationNodes}
+        <table className="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>File Name</th>
+            <th>Tags</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {PublicationNodes}
+        </tbody>
+        </table>
       </div>
     );
   }
 });
-
 
 var PublicationForm = React.createClass({
   handleSubmit: function(e) {
@@ -159,13 +189,6 @@ var PublicationForm = React.createClass({
   },
   render: function() {
     return (
-        /*<form className="publicationForm chat" onSubmit={this.handleSubmit}>
-	        <input id="author-form" type="text" placeholder="Your name" ref="author"/>
-	        <textarea placeholder="Say something..." ref="text"/>
-	        <button id="send" type="submit" value="Post">Post </button>
-        </form>              
-        <PublicationTab></PublicationTab>
-*/
       <FormTabs username={this.props.username}/>
     );
   }
@@ -188,7 +211,7 @@ var PublicationTab = React.createClass({
         <div className="form-group top-margin">
           <label className="col-sm-2 control-label" for="tags">Tags</label>
           <div id="tagsinput" className="col-sm-10 tags-input-class ">
-            <TagsComponent/>
+            <TagsComponent valueString=""/>
           </div>
         </div>
 
@@ -323,11 +346,9 @@ var FormTabs = React.createClass({
   
 
 React.render(
-  <PublicationBox url="/publications.json" username={user} />,
+  <PublicationBox url={getPublicationUrl} username={user} />,
   document.getElementById('content')
 );
-
-$(".react-tagsinput-input").attr("name", "tags");
 
 function switchToDataTab(){
   console.log("switch");
