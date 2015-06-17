@@ -1,23 +1,32 @@
 
 var Publication = React.createClass({
   render: function() {
-	var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+	//var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+	console.log(this.props.tags);
     return (
-      <div className="publication">
+      <tr>
+        <td>{this.props.title}</td>
+        <td>{this.props.filename}</td>
+        <td>{this.props.tags}</td>
+        <td>{this.props.title}</td>
+        <td><div className="deletePublication"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div></td>
+      </tr>
+      
+      /*<div className="publication">
       	<div className="row">
-	      	<div className="authorDiv small-10 columns">
-		        <h6 className="publicationAuthor">
-		          {this.props.author}
+	      	<div className="authorDiv col-sm-10">
+		        <h6 className="publicationFilename">
+		          {this.props.filename}
 		        </h6>
 	        </div>
-	        <div className="deletePublication small-2 columns"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div>
+	        <div className="deletePublication col-sm-2"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div>
         </div>
         <div className="row">
         <div className="publicationText">
         	<span dangerouslySetInnerHTML={{__html: rawMarkup}} />
         </div>
         </div>
-      </div>
+      </div>*/
     );
   },
   removePublication: function(){
@@ -90,54 +99,80 @@ var PublicationBox = React.createClass({
   render: function() {
     return (
       <div className="PublicationBox" id="publications">
-
-        <div className="panel">
-          <div className="row">
-            <p>{this.props.username}</p>
-            <PublicationForm onPublicationSubmit={this.handlePublicationSubmit} username={this.props.username}/>
-          </div>
-        </div>
-        <div className="panel">
-          <div className="row">
-            <div className ="large-3 columns">
-              <a href="">Publications </a>
-            </div>
-            <div className ="large-3 columns">
-              <a href="">Data </a>
-            </div>
-            <div className ="large-3 columns">
-              <a href="">Images </a>
+        <div className="panel panel-default">
+          <div className="panel-body">
+            <div className="row">
+              <PublicationForm onPublicationSubmit={this.handlePublicationSubmit} username={this.props.username}/>
             </div>
           </div>
         </div>
-        <div className="panel">
-          <div className="row">
-            <h5>Publications</h5>
-            <PublicationList data={this.state.data} />
-          </div>
+        <div className="panel panel-default">
+          <PublicationList data={this.state.data} />
         </div>
       </div>
     );
   }
 });
 
+var DisplayTab = React.createClass({
+  render: function(){
+    return(
+      <div>
+      <div className="blog-masthead">
+        <div className="container">
+          <nav className="blog-nav">
+            <a className="blog-nav-item active" href="">Publications</a>
+            <a className="blog-nav-item" href="">Data</a>
+            <a className="blog-nav-item" href="">Images</a>
+            <a className="blog-nav-item" href="">Tables</a>
+          </nav>
+        </div>
+      </div>
+
+      <ul className="list-group">
+        <li className="list-group-item">
+          <div className="row">
+            <h5>Publications</h5>
+            <PublicationList data={this.props.data}  />
+          </div>
+        </li>
+      </ul>
+      </div>
+    )
+  }
+});
+
+
 var PublicationList = React.createClass({
   render: function() {
 	  var PublicationNodes = this.props.data.map(function (publication) {
+  	  var jsonString = JSON.stringify(publication.hashtags);
       return (
-        <Publication author={publication.author} postid={publication.postid} url="/removePublication">
-          {publication.text}
+        <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} url="/removePublication">
+
         </Publication>
       );
     });
     return (
       <div className="publicationList">
-        {PublicationNodes}
+        <table className="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>File Name</th>
+            <th>Tags</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {PublicationNodes}
+        </tbody>
+        </table>
       </div>
     );
   }
 });
-
 
 var PublicationForm = React.createClass({
   handleSubmit: function(e) {
@@ -154,14 +189,7 @@ var PublicationForm = React.createClass({
   },
   render: function() {
     return (
-        /*<form className="publicationForm chat" onSubmit={this.handleSubmit}>
-	        <input id="author-form" type="text" placeholder="Your name" ref="author"/>
-	        <textarea placeholder="Say something..." ref="text"/>
-	        <button id="send" type="submit" value="Post">Post </button>
-        </form>              
-        <PublicationTab></PublicationTab>
-*/
-      <FormTabs/>
+      <FormTabs username={this.props.username}/>
     );
   }
 });
@@ -170,29 +198,33 @@ var PublicationForm = React.createClass({
 
 var PublicationTab = React.createClass({
   render:function(){
+    var url = "/profile/"+this.props.username+"/publications";
     return(
-      <form action="/profile/{this.props.username}/publications" enctype="multipart/form-data" method="post">
-        <div className="small-3 large-2 columns form-label">
-          <span className="prefix">Title</span>
-        </div>
-        <div className="small-9 large-10 columns form-label">
-          <input type="text" name="title" placeholder=""/>
-        </div>
-        <div className="row">
-          <div className="large-12 columns">
-            <div id="tags">
-              <TagsComponent/>
-            </div>
+      <form action={url} encType="multipart/form-data" method="post" className="upload-form form-horizontal" >
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="inputTitle">Title</label>
+          <div className="col-sm-10">
+                <input type="text" className="form-control" id="inputTitle" name="title" placeholder=""/>
           </div>
         </div>
-        <div className="row">
-          <div className="small-3 large-2 columns left-margin">
-            <div className="fileUpload">
-                <input multiple="multiple" name="upload" type="file" className="upload" />
+
+        <div className="form-group top-margin">
+          <label className="col-sm-2 control-label" for="tags">Tags</label>
+          <div id="tagsinput" className="col-sm-10 tags-input-class ">
+            <TagsComponent valueString=""/>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="col-sm-2 control-label" for="files">Upload Files</label>
+          <div className="col-sm-8">
+            <div className="">
+              <input multiple="multiple" name="upload" type="file" className="upload" id="files"/>
             </div>
           </div>
-          <div className="large-4 columns">
-            <input className="button" type="submit" value="Upload" />
+
+          <div className="col-sm-2">
+            <input className="btn btn-primary" type="submit" value="Upload" />
           </div>
         </div>
       </form>
@@ -200,6 +232,7 @@ var PublicationTab = React.createClass({
     );
   }
 });
+
 
 
 var tabList = [
@@ -217,8 +250,8 @@ var Tab = React.createClass({
     
     render: function(){
         return (
-            <li className={this.props.isCurrent ? 'tab-title active' : 'tab-title'}>
-                <a onClick={this.handleClick} href={this.props.url}>
+            <li className={this.props.isCurrent ? 'active' : ''} role="presentation">
+                <a onClick={this.handleClick} href={this.props.url} role="tab" data-toggle="tab">
                     {this.props.name}
                 </a>
             </li>
@@ -233,8 +266,8 @@ var Tabs = React.createClass({
     
     render: function(){
         return (
-            <nav>
-                <ul className="tabs" data-tab>
+            <div>
+                <ul className="nav nav-tabs" role="tablist">
                 {this.props.tabList.map(function(tab) {
                     return (
                         <Tab
@@ -247,7 +280,7 @@ var Tabs = React.createClass({
                     );
                 }.bind(this))}
                 </ul>
-            </nav>
+            </div>
         );
     }
 });
@@ -255,28 +288,28 @@ var Tabs = React.createClass({
 var Content = React.createClass({
     render: function(){
         return(
-            <div className="tabs-content">
+            <div className="tab-content">
                 {this.props.currentTab === 1 ?
-                <div className="content active">
-                    <PublicationTab></PublicationTab>
+                <div className="tab-pane fade in active" role="tabpanel">
+                  <PublicationTab username={this.props.username}></PublicationTab>
                 </div>
                 :null}
 
                 {this.props.currentTab === 2 ?
-                <div className="content active">
-                    <img src="http://s.mlkshk.com/r/103AG" />
+                <div className="tab-pane fade in active">
+                  <PublicationTab></PublicationTab>
                 </div>
                 :null}
 
                 {this.props.currentTab === 3 ?
-                <div className="content active">
-                    <img src="http://s.mlkshk.com/r/JAUD" />
+                <div className="tab-pane fade in active">
+                  <PublicationTab></PublicationTab>
                 </div>
                 :null}
             
                 {this.props.currentTab === 4 ?
-                <div className="content active">
-                    <img src="http://s.mlkshk.com/r/ZJPL" />
+                <div className="tab-pane fade in active">
+                  <PublicationTab></PublicationTab>
                 </div>
                 :null}
             </div>
@@ -304,7 +337,7 @@ var FormTabs = React.createClass({
                     tabList={this.state.tabList}
                     changeTab={this.changeTab}
                 />
-                <Content currentTab={this.state.currentTab} />
+                <Content currentTab={this.state.currentTab} username={this.props.username} />
             </div>
         );
     }
@@ -313,7 +346,7 @@ var FormTabs = React.createClass({
   
 
 React.render(
-  <PublicationBox url="/publications.json" username={user} pollInterval={2000} />,
+  <PublicationBox url={getPublicationUrl} username={user} />,
   document.getElementById('content')
 );
 

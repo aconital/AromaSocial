@@ -4,12 +4,12 @@ var Comment = React.createClass({
     return (
       <div className="comment">
       	<div className="row">
-	      	<div className="authorDiv small-10 columns">
+	      	<div className="authorDiv col-sm-10">
 		        <h2 className="commentAuthor">
 		          {this.props.author}
 		        </h2>
 	        </div>
-	        <div className="deleteComment small-2 columns"><RemoveCommentButton clickHandler={this.removeComment} postid={this.props.postid}/></div>
+	        <div className="deleteComment col-sm-2"><RemoveCommentButton clickHandler={this.removeComment} postid={this.props.postid}/></div>
         </div>
         <div className="row">
         <div className="commentText">

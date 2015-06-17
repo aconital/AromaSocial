@@ -3,7 +3,7 @@
 @import '_bootstrap';
 
 
-$font-stack:    Helvetica, sans-serif;
+$font-stack: Helvetica, sans-serif;
 $primary-color: #4A4A4A;
 $title-alignment: center;
 $large-screen: em(860) !default;
@@ -21,6 +21,8 @@ $background-color: $light-gray;
 $green: #87D37C;
 $primary-color: darken($green, 20);
 $nav-height: auto;
+
+$purple: #472E74;
  
 html, body {
   min-height: 100% !important;
@@ -313,10 +315,6 @@ div.fileUpload input {
 
 }
 
-.container-fluid{
-  width: 70%;
-}
-
 .leave-space{
   width:95%;
 }
@@ -389,5 +387,64 @@ div.fileUpload input {
   border-right: 5px solid transparent;
   border-bottom: 5px solid;
   border-left: 5px solid transparent;
+}
+
+.navbar{
+  height: 60px;
+  font: 90% $font-stack;
+}
+
+.navbar-brand{
+  padding-top:15px !important;
+  background-color: $purple;
+}
+
+.navbar-brand,
+.navbar-nav li a{
+    line-height: 60px;
+    height: 59px;
+    padding-top: 0;
+}
+
+.navbar-form {
+    padding-top: 5px;
+}
+
+.square{
+  border-radius: 0px;
+  background-color: none;
+}
+
+.nav-search{
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  border-right: none !important;
+}
+
+input[type="text"]:focus{
+  border-color: $purple;
+}
+
+.search-img{
+  padding: 0px;
+  border-radius: 0px;
+  background-color: white;
+}
+
+.search-btn{
+  border-left: none !important;
+  border: none !important;
+  color: #CCC;
+}
+
+.search-btn:hover {
+  background-color: white !important;
+  color: $purple;
+}
+
+.search-btn:focus{
+  background-color: none !important;
+  outline: none !important;
 }
 
