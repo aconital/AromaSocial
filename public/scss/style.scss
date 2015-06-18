@@ -25,7 +25,7 @@ $nav-height: auto;
 
 //$purple: #472E74;
 $purple: #70ab8f; //actually green
-$primary-color:$purple;
+$primary-color:$purple; 
 
  
 html, body {
@@ -438,6 +438,11 @@ div.fileUpload input {
   background-color: $purple;
 }
 
+.navbar-default .navbar-brand:hover, 
+.navbar-default .navbar-brand:focus{
+  background-color: $purple;
+}
+
 .navbar-brand,
 .navbar-nav li a{
     line-height: 60px;
@@ -524,13 +529,24 @@ input[type="text"]:focus{
   height: 600px !important;
 }
 
-.jumbo-index{
-  border-radius: 0px !important;
-  background-image: url("/images/background.jpg");
-  background-height: 100%;
-  background-repeat: no-repeat;
-  height: 300px;
+@media (max-width: 992px) {
+  .jumbo-index{
+    border-radius: 0px !important;
+    background-image: url("/images/background.jpg");
+    background-size: Auto 600px;
+    background-repeat: no-repeat;
+  }
 }
+
+@media(min-width: 993px){
+  .jumbo-index{
+    border-radius: 0px !important;
+    background-image: url("/images/background.jpg");
+    background-size: 100%;
+    background-repeat: no-repeat;
+  }
+}
+
 
 .jumbo-index .container{
   padding-top:200px;

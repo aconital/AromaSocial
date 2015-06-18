@@ -94,7 +94,7 @@ var PublicationBox = React.createClass({
   },
   componentDidMount: function() {
     this.loadPublicationsFromServer();
-    setInterval(this.loadPublicationsFromServer, this.props.pollInterval);
+    //setInterval(this.loadPublicationsFromServer, this.props.pollInterval);
   },
   render: function() {
     return (

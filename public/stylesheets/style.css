@@ -6135,6 +6135,10 @@ div.fileUpload input {
   padding-top: 15px !important;
   background-color: #70ab8f; }
 
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  background-color: #70ab8f; }
+
 .navbar-brand,
 .navbar-nav li a {
   line-height: 60px;
@@ -6204,13 +6208,18 @@ input[type="text"]:focus {
 .jumbotron {
   height: 600px !important; }
 
-.jumbo-index {
-  border-radius: 0px !important;
-  background-image: url("/images/background.jpg");
-  background-height: 100%;
-  background-repeat: no-repeat;
-  height: 300px; }
-
+@media (max-width: 992px) {
+  .jumbo-index {
+    border-radius: 0px !important;
+    background-image: url("/images/background.jpg");
+    background-size: Auto 600px;
+    background-repeat: no-repeat; } }
+@media (min-width: 993px) {
+  .jumbo-index {
+    border-radius: 0px !important;
+    background-image: url("/images/background.jpg");
+    background-size: 100%;
+    background-repeat: no-repeat; } }
 .jumbo-index .container {
   padding-top: 200px;
   text-align: center; }

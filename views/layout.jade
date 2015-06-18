@@ -47,10 +47,10 @@ html
                   a(href="#") Action
                 li
                   a(href="#") Action
-          form.navbar-form.navbar-right(role="search")
+          form.navbar-form.navbar-right(role="search" method="post" action="/search")
             .form-group.form-inline
               .input-group.purple
-                input.form-control.square.nav-search(type="text" placeholder="Search")
+                input.form-control.square.nav-search(type="text" placeholder="Search" name="tags")
                 .input-group-addon.search-img
                   button.btn.btn-default.square.search-btn(type="submit")
                     span.glyphicon.glyphicon-search(aria-hidden="true")
@@ -72,5 +72,3 @@ html
                 li
                   a(href="#") Section 1
                 
-  script(src="/javascripts/browserjs.js")
-
