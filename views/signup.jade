@@ -3,25 +3,25 @@
 
 extends guest
 block content
-   div.col-lg-offset-4.col-lg-4
-      div.panel
-         div.panel-heading Sign up
-         form(name="form", method="post", action="/signup", novalidate)
-            div.form-group
-               label.control-label(for="username") Username
-               input.form-control(type="text", name="username", id="username", placeholder="Username", unique-username, required, ng-model="username", autofocus)
-               i.halflings-icon.refresh.rotating(ng-show="busy")
-               div.form-group
-               label.control-label(for="email") Email
-               input.form-control(type="email", ng-model="email", name="email", id="email", placeholder="Email", required)
+  div.col-md-offset-4.col-md-4
+    div.panel.panel-default.panel-signup
+       div.panel-heading Sign Up
+       form(name="form", method="post", action="/signup", novalidate)
+          div.form-group
+             label.control-label(for="username") Username
+             input.form-control(type="text", name="username", id="username", placeholder="Username", unique-username, required, ng-model="username", autofocus)
+             i.halflings-icon.refresh.rotating(ng-show="busy")
+             div.form-group
+             label.control-label(for="email") Email
+             input.form-control(type="email", ng-model="email", name="email", id="email", placeholder="Email", required)
 
-            div.form-group
-               label.control-label(for="password") Password
-               input.form-control(type="password", name="password", id="password", ng-model="password", required, match="verification")
+          div.form-group
+             label.control-label(for="password") Password
+             input.form-control(type="password", name="password", id="password", ng-model="password", required, match="verification")
 
-            div.form-group
-               label.control-label(for="verification") Repeat password
-               input.form-control(type="password", name="verification", id="verification", ng-model="verification", required, match="password")
-              if error
-               div.alert #{error}
-            input.btn.btn-primary(type="submit", value="Sign up", ng-disabled="form.$invalid")
+          div.form-group
+             label.control-label(for="verification") Repeat password
+             input.form-control(type="password", name="verification", id="verification", ng-model="verification", required, match="password")
+            if error
+             div.alert #{error}
+          input.btn.btn-primary(type="submit", value="Sign Up", ng-disabled="form.$invalid")

@@ -10,7 +10,7 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/', function (req, res) {
-      res.render('index', {title: 'The index page!'})
+      res.render('index', {title: 'The index page!', path: req.path})
     });
 
 
@@ -25,7 +25,7 @@ module.exports=function(app,Parse) {
           console.log(currentUser);
           res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username});
       } else {
-          res.render('index', {title: 'Login failed'});
+          res.render('index', {title: 'Login failed', path: req.path});
       }
 
 });
@@ -51,7 +51,7 @@ module.exports=function(app,Parse) {
 
 
         } else {
-            res.render('index', {title: 'Login failed'});
+            res.render('index', {title: 'Login failed', path: req.path});
         }
 
     });
@@ -66,7 +66,7 @@ module.exports=function(app,Parse) {
       if (currentUser) {
           res.render('profile', {title: 'Profile', username: currentUser.attributes.username});
       }else{
-          res.render('index', {title: 'Please Login'});
+          res.render('index', {title: 'Please Login', path: req.path});
       }
 
 });
@@ -213,7 +213,7 @@ module.exports=function(app,Parse) {
    ********************************************/
   app.get('/signup', function (req, res, next) {
 
-    res.render('signup', {title: 'Sign Up'});
+    res.render('signup', {title: 'Sign Up', path: req.path});
 });
   app.post('/signup', function (req, res, next) {
   var user = new Parse.User();
@@ -227,7 +227,7 @@ module.exports=function(app,Parse) {
     },
     error: function (user, error) {
       // Show the error message somewhere and let the user try again.
-      res.render('/signup',{Error: error.message});
+      res.render('/signup', {Error: error.message, path: req.path});
     }
   });
 
@@ -239,7 +239,7 @@ module.exports=function(app,Parse) {
    ********************************************/
   app.get('/signin', function (req, res, next) {
 
-    res.render('signin', {title: 'Login'});
+    res.render('signin', {title: 'Login', path: req.path});
   });
 
   app.post('/signin', function (req, res, next) {
@@ -248,7 +248,7 @@ module.exports=function(app,Parse) {
           res.redirect('/newsfeed');
       },
       error: function(user, error) {
-          res.render('guest', {title: 'Login failed'});
+          res.render('index', {title: 'Login failed', path: req.path});
       }
     });
 
@@ -263,7 +263,7 @@ module.exports=function(app,Parse) {
 
 app.post('/signout', function (req, res, next) {
     Parse.User.logOut();
-    res.render('guest', {title: 'Come back again!'});
+    res.render('index', {title: 'Come back again!', path: req.path});
 });
 
 };

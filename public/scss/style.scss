@@ -123,6 +123,9 @@ p.title{
   margin-left: auto;
   margin-right: auto;
 }
+.text-center{
+  text-align: center;
+}
 
 .row {
   max-width: 100%;
@@ -348,6 +351,15 @@ div.fileUpload input {
 
 .panel-default{
   padding: 5px;
+}
+
+.panel-signup{
+  margin-top: 30px;
+  padding: 10px;
+}
+
+.panel-signup .panel-heading{
+  margin-bottom: 10px;
 }
 
 .title-input{
