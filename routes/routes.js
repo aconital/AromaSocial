@@ -25,7 +25,7 @@ module.exports=function(app,Parse) {
           console.log(currentUser);
           res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username});
       } else {
-          res.render('guest', {title: 'Login failed'});
+          res.render('index', {title: 'Login failed'});
       }
 
 });
@@ -51,7 +51,7 @@ module.exports=function(app,Parse) {
 
 
         } else {
-            res.render('guest', {title: 'Login failed'});
+            res.render('index', {title: 'Login failed'});
         }
 
     });
@@ -66,7 +66,7 @@ module.exports=function(app,Parse) {
       if (currentUser) {
           res.render('profile', {title: 'Profile', username: currentUser.attributes.username});
       }else{
-          res.render('guest', {title: 'Please Login'});
+          res.render('index', {title: 'Please Login'});
       }
 
 });

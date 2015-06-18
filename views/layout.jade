@@ -2,8 +2,7 @@ doctype html
 html
   head
     title= title
-    link(rel='stylesheet', href='/stylesheets/stylebootstrap.css')
-    link(rel='stylesheet', href='/stylesheets/footer.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css')
     link(rel='stylesheet', href='javascripts/react-tagsinput/react-tagsinput.css')
     script(src="/javascripts/jquery/dist/jquery.min.js")
@@ -11,7 +10,6 @@ html
     script(src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js")
     script(src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js")  
-    script(src="/javascripts/foundation/js/foundation.js")
     block socketscript
   
   body 
@@ -59,21 +57,20 @@ html
     
     .wrapper-for-content-outside-of-footer
       block content
-      
-    footer#foot.row
-      .large-12.columns
-        hr
-        .row
-          .large-3.columns
-            p.center-text
-              | &copy; UBC FOM Lab
-          .large-3.small-offset-6.columns
-            ul.inline-list.center
-              li
-                a(href="#") Section 1
-              li
-                a(href="#") Section 1
-
-
+    
+    footer.footer
+      .container
+        .nav.navbar.navbar-default.footer-nav
+          .row
+            .col-sm-3.footer-header
+              p
+                | &copy; UBC FOM Lab
+            .col-sm-3.col-sm-offset-3
+              ul.nav.navbar-nav
+                li
+                  a(href="#") Section 1
+                li
+                  a(href="#") Section 1
+                
   script(src="/javascripts/browserjs.js")
 

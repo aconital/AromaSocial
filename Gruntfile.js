@@ -16,9 +16,7 @@ module.exports = function(grunt) {
           ext: '.css'
         },
         {
-	        'public/stylesheets/style.css' : 'public/scss/style.scss',
-	        'public/stylesheets/stylebootstrap.css' : 'public/scss/stylebootstrap.scss',
-          'public/stylesheets/footer.css' : 'public/scss/footer.scss'
+	        'public/stylesheets/style.css' : 'public/scss/style.scss'
 		    }]
       }
     },
