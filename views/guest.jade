@@ -26,15 +26,15 @@ html
               a.title(href="/") WebsiteTitle
             
           ul.nav.navbar-nav.navbar-right
-            -if (path === "/")
-              li
-                a.login-link(href="#" data-toggle="modal" data-target="#myModal") LOGIN
-              li
-                a.login-link(href="/signup") SIGN UP
             -if (path === "/signup")
               li
                 a.login-link(href="#" data-toggle="modal" data-target="#myModal") LOGIN
             -if(path === "/signin")
+              li
+                a.login-link(href="/signup") SIGN UP
+            -if(!(path === "/signup") && !(path === "/signin"))
+              li
+                a.login-link(href="#" data-toggle="modal" data-target="#myModal") LOGIN
               li
                 a.login-link(href="/signup") SIGN UP
   
