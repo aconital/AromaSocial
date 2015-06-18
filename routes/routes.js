@@ -223,11 +223,11 @@ module.exports=function(app,Parse) {
 
   user.signUp(null, {
     success: function (user) {
-        res.render('/newsfeed');
+        res.render('newsfeed');
     },
     error: function (user, error) {
       // Show the error message somewhere and let the user try again.
-      res.render('/signup', {Error: error.message, path: req.path});
+      res.render('signup', {Error: error.message, path: req.path});
     }
   });
 
