@@ -8,7 +8,7 @@ var Publication = React.createClass({
         <td>{this.props.title}</td>
         <td>{this.props.filename}</td>
         <td>{this.props.tags}</td>
-        <td>{this.props.title}</td>
+        <td>{this.props.date}</td>
         <td><div className="deletePublication"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div></td>
       </tr>
       
@@ -146,9 +146,10 @@ var DisplayTab = React.createClass({
 var PublicationList = React.createClass({
   render: function() {
 	  var PublicationNodes = this.props.data.map(function (publication) {
+  	  console.log(publication);
   	  var jsonString = JSON.stringify(publication.hashtags);
       return (
-        <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} url="/removePublication">
+        <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} url="/removePublication">
 
         </Publication>
       );
