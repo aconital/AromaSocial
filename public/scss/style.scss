@@ -576,3 +576,39 @@ input[type="text"]:focus{
   background-color: #dedede;
 }
 
+.search-title{
+  padding-top: 60px;
+}
+
+.search-input, .search-button{
+  border-radius: 0px;
+}
+
+.search-separator{
+  margin-bottom: 0px;
+}
+
+.search-panel{
+  border-radius: 0px;
+}
+
+.search-text{
+  font-size: 90%;
+}
+
+.grey{
+  color: $light-gray;
+}
+
+h5, .inline-text {
+  display: inline;
+}
+
+.preview-image{
+  width: 100%;
+  padding: 15px;
+}
+
+.result-text{
+  padding-top: 20px;
+}

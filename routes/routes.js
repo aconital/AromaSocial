@@ -76,7 +76,7 @@ module.exports=function(app,Parse) {
   });
   
   
-  app.get('/search', function (req, res, next) {
+  app.get('/searchpage', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           res.render('search', {title: 'Search', username: currentUser.attributes.username});
@@ -84,6 +84,18 @@ module.exports=function(app,Parse) {
           res.render('index', {title: 'Please Login', path: req.path});
       }
 
+});
+
+app.post('/searchpage', function(req,res,next){
+  
+  var currentUser = Parse.User.current();
+  if (currentUser) {
+    var tagString=req.body.tags;
+    console.log("TAGS:" + tagString);
+    res.render("search", {title:'Search', tags: tagString}); 
+  }else{
+    res.render('index', {title: 'Please Login', path: req.path});
+  }
 });
 
 
@@ -188,7 +200,7 @@ module.exports=function(app,Parse) {
     app.post('/search', function (req, res, next) {
 
         var tags=req.body.tags;
-
+        console.log(tags);
         var Publication = Parse.Object.extend("Publication");
         var query = new Parse.Query(Publication);
         query.containedIn("hashtags", tags.match(/#.+?\b/g));
@@ -208,8 +220,10 @@ module.exports=function(app,Parse) {
 
 
                 }
-                //res.send(JSON.stringify(pubs));
-                res.render("search", {title:'Search', results: JSON.stringify(pubs)});
+                res.setHeader('Content-Type', 'application/json');
+                console.log(JSON.stringify(pubs))
+                res.send(JSON.stringify(pubs));
+                //res.render("search", {title:'Search', results: JSON.stringify(pubs)});
             },
             error: function(error) {
                 console.log("Error: " + error.code + " " + error.message);
