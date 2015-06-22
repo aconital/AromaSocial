@@ -64,7 +64,7 @@ module.exports=function(app,Parse) {
   app.get('/profile', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
-          res.render('profile', {title: 'Profile', username: currentUser.attributes.username});
+          res.render('profile', {title: 'Profile', username: currentUser.attributes.username, userid: true, profilepicurl:"http://placehold.it/500x500&text=Image"});
       }else{
           res.render('index', {title: 'Please Login', path: req.path});
       }
@@ -74,7 +74,7 @@ module.exports=function(app,Parse) {
   app.get('/:username/:userid', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
-          res.render('profile', {title: 'Profile', username: req.params.username, userid: req.params.userid});
+          res.render('profile', {title: 'Profile', username: req.params.username, userid: false});
       }else{
           res.render('index', {title: 'Please Login', path: req.path});
       }

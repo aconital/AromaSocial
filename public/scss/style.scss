@@ -252,7 +252,6 @@ p.title{
 }
 
 #profile-picture{
-  margin-bottom: 10px !important;
   width:100%;
 }
 
@@ -611,4 +610,24 @@ h5, .inline-text {
 
 .result-text{
   padding-top: 20px;
+}
+
+.imageWrapper{
+  float: left;
+  position: relative; 
+  z-index: 1;
+  height:215px;
+}
+
+.add-photo{
+  position: relative; 
+  top: -70px; 
+  z-index: 2;
+  padding-left: 10px;
+  font-size: 200%;
+  display: none;
+}
+
+#preview{
+  width: 150px;
 }

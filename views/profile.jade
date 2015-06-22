@@ -12,26 +12,52 @@ block content
     div.col-sm-10.col-md-offset-2
       div.row
         div.col-sm-2.panel.panel-default
-          img#profile-picture(src="http://placehold.it/500x500&text=Image")
+          div.imageWrapper(onmouseover="document.getElementById('add-photo').style.display = 'block';" onmouseout="document.getElementById('add-photo').style.display = 'none';")
+            img#profile-picture(src="#{profilepicurl}")
+            p #{userid}
+            -if(userid)
+              div.add-photo#add-photo
+                a(href="" data-toggle="modal" data-target="#upload-image")
+                  span.glyphicon.glyphicon-camera(aria-hidden="true")
           h5 #{username}
           h6 Add your degree
           h6 Add your contact information 
         div.col-sm-8.small-padding
           #content
+  
+  .modal.fade#upload-image(tabindex="-1" role="dialog" aria-labelledby="upload")
+    .modal-dialog(role="document")
+      .modal-content
+        .modal-header
+          button.close(type="button" data-dismiss="modal" aria-label="Close")
+            span(aria-hidden="true") &times;
+          h4.modal-title#upload Upload Profile Picture
+        .modal-body
+          form#upload-profile-pic(action="/uploadimage" method="POST")
+            div.row
+              div.col-xs-4
+                img#preview(src="#{profilepicurl}" alt="profile picture")
+              div.col-xs-8
+                input#imginput(type="file")  
+        .modal-footer
+          button.btn.btn-default(type="button" data-dismiss="modal") Close
+          button.btn.btn-primary#submit-photo(type="button") Save Changes
+  
   script.
     var user = "#{username}";
     var userid = "#{userid}";
+    console.log(userid);
     var differentUser = false;
     if (userid != ''){
       //this is not the user who is logged in
-      differentUser = true;
+      differentUser = userid;
       console.log(differentUser);
       console.log(userid);
     }
     var getPublicationUrl = "/profile/"+user+"/publications";
     console.log(user);
     var sampleTags = ['c++', 'java', 'php', 'coldfusion', 'javascript', 'asp', 'ruby', 'python', 'c', 'scala', 'groovy', 'haskell', 'perl', 'erlang', 'apl', 'cobol', 'go', 'lua'];
-
+    
   script(type="text/jsx", src="/javascripts/tags.js")
   script(type="text/jsx", src="/javascripts/profile.js")
 

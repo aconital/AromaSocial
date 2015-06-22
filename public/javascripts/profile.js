@@ -346,3 +346,23 @@ function switchToDataTab(){
   console.log("switch");
   React.unmountComponentAtNode(document.getElementById("publications"));
 }
+
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    
+    reader.onload = function (e) {
+        $('#preview').attr('src', e.target.result);
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+$("#imginput").change(function(){
+  readURL(this);
+}); 
+
+$( "#submit-photo" ).click(function() {
+  $( "#upload-profile-pic" ).submit();
+});
