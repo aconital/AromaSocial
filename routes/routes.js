@@ -84,29 +84,7 @@ module.exports=function(app,Parse) {
   app.post('/profile',function(req,res,next){
 
   });
-  
-  
-  app.get('/searchpage', function (req, res, next) {
-      var currentUser = Parse.User.current();
-      if (currentUser) {
-          res.render('search', {title: 'Search', username: currentUser.attributes.username});
-      }else{
-          res.render('index', {title: 'Please Login', path: req.path});
-      }
 
-});
-
-app.post('/searchpage', function(req,res,next){
-  
-  var currentUser = Parse.User.current();
-  if (currentUser) {
-    var tagString=req.body.tags;
-    console.log("TAGS:" + tagString);
-    res.render("search", {title:'Search', tags: tagString}); 
-  }else{
-    res.render('index', {title: 'Please Login', path: req.path});
-  }
-});
 
 
   app.get('/profile/:username/publications',function(req,res,next){
@@ -250,7 +228,27 @@ app.post('/searchpage', function(req,res,next){
         });
 
     });
+    app.get('/searchpage', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            res.render('search', {title: 'Search', username: currentUser.attributes.username});
+        }else{
+            res.render('index', {title: 'Please Login', path: req.path});
+        }
 
+    });
+
+    app.post('/searchpage', function(req,res,next){
+
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            var tagString=req.body.tags;
+            console.log("TAGS:" + tagString);
+            res.render("search", {title:'Search', tags: tagString});
+        }else{
+            res.render('index', {title: 'Please Login', path: req.path});
+        }
+    });
     /*******************************************
    *
    * SIGN UP
