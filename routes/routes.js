@@ -71,6 +71,16 @@ module.exports=function(app,Parse) {
 
 });
 
+  app.get('/:username/:userid', function (req, res, next) {
+      var currentUser = Parse.User.current();
+      if (currentUser) {
+          res.render('profile', {title: 'Profile', username: req.params.username, userid: req.params.userid});
+      }else{
+          res.render('index', {title: 'Please Login', path: req.path});
+      }
+
+});
+
   app.post('/profile',function(req,res,next){
 
   });
@@ -294,7 +304,7 @@ module.exports=function(app,Parse) {
  *
  ********************************************/
 
-app.post('/signout', function (req, res, next) {
+app.get('/signout', function (req, res, next) {
     Parse.User.logOut();
     res.render('index', {title: 'Come back again!', path: req.path});
 });

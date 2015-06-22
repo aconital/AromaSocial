@@ -1,32 +1,21 @@
+var Alert = ReactBootstrap.Alert;
 
 var Publication = React.createClass({
   render: function() {
-	//var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
-	console.log(this.props.tags);
+	  //var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+  	console.log(this.props.tags);
+    var date = moment(this.props.date).format("MMM D, YYYY");
+    var tagString = this.props.tags.replace(/\[\"/g, "");
+    tagString = tagString.replace(/\",\"/g, " ");
+    tagString = tagString.replace(/\"\]/g,"");
     return (
       <tr>
         <td>{this.props.title}</td>
         <td>{this.props.filename}</td>
-        <td>{this.props.tags}</td>
-        <td>{this.props.date}</td>
+        <td>{tagString}</td>
+        <td>{date}</td>
         <td><div className="deletePublication"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div></td>
       </tr>
-      
-      /*<div className="publication">
-      	<div className="row">
-	      	<div className="authorDiv col-sm-10">
-		        <h6 className="publicationFilename">
-		          {this.props.filename}
-		        </h6>
-	        </div>
-	        <div className="deletePublication col-sm-2"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div>
-        </div>
-        <div className="row">
-        <div className="publicationText">
-        	<span dangerouslySetInnerHTML={{__html: rawMarkup}} />
-        </div>
-        </div>
-      </div>*/
     );
   },
   removePublication: function(){
@@ -51,7 +40,7 @@ var Publication = React.createClass({
 var RemovePublicationButton = React.createClass({
 	render: function(){
 		return(
-			<a className="deletePublication" href="javascript:void(0)" onClick={this.props.clickHandler} id={this.props.postid}><img className="close" src="images/close.png"/></a>
+			<a className="deletePublication" href="javascript:void(0)" onClick={this.props.clickHandler} id={this.props.postid}><img className="close" src="/images/close.png"/></a>
 		);
 	}
 });
@@ -97,15 +86,19 @@ var PublicationBox = React.createClass({
     //setInterval(this.loadPublicationsFromServer, this.props.pollInterval);
   },
   render: function() {
-    return (
-      <div className="PublicationBox" id="publications">
-        <div className="panel panel-default">
+    var pubForm;
+    if(!this.props.otheruser){
+      pubForm = <div className="panel panel-default">
           <div className="panel-body">
             <div className="row">
               <PublicationForm onPublicationSubmit={this.handlePublicationSubmit} username={this.props.username}/>
             </div>
           </div>
-        </div>
+        </div>;
+    }
+    return (
+      <div className="PublicationBox" id="publications">
+        {pubForm}
         <div className="panel panel-default">
           <PublicationList data={this.state.data} />
         </div>
@@ -344,10 +337,34 @@ var FormTabs = React.createClass({
     }
 });
 
+const MyModal = React.createClass({
+  render() {
+    return (
+      <Modal {...this.props} title='Modal heading' animation={false}>
+        <div className='modal-body'>
+          <h4>Text in a modal</h4>
+          <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+
+        </div>
+        <div className='modal-footer'>
+          <Button onClick={this.props.onRequestHide}>Close</Button>
+        </div>
+      </Modal>
+    );
+  }
+});
+
+const overlayTriggerInstance = (
+  <ModalTrigger modal={<MyModal />}>
+    <Button bsStyle='primary' bsSize='large'>Launch demo modal</Button>
+  </ModalTrigger>
+);
+
+React.render(overlayTriggerInstance, mountNode);
   
 
 React.render(
-  <PublicationBox url={getPublicationUrl} username={user} />,
+  <PublicationBox url={getPublicationUrl} username={user} otheruser={differentUser}/>,
   document.getElementById('content')
 );
 
