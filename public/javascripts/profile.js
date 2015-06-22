@@ -1,4 +1,3 @@
-var Alert = ReactBootstrap.Alert;
 
 var Publication = React.createClass({
   render: function() {
@@ -336,31 +335,6 @@ var FormTabs = React.createClass({
         );
     }
 });
-
-const MyModal = React.createClass({
-  render() {
-    return (
-      <Modal {...this.props} title='Modal heading' animation={false}>
-        <div className='modal-body'>
-          <h4>Text in a modal</h4>
-          <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-
-        </div>
-        <div className='modal-footer'>
-          <Button onClick={this.props.onRequestHide}>Close</Button>
-        </div>
-      </Modal>
-    );
-  }
-});
-
-const overlayTriggerInstance = (
-  <ModalTrigger modal={<MyModal />}>
-    <Button bsStyle='primary' bsSize='large'>Launch demo modal</Button>
-  </ModalTrigger>
-);
-
-React.render(overlayTriggerInstance, mountNode);
   
 
 React.render(
