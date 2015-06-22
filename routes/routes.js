@@ -61,30 +61,22 @@ module.exports=function(app,Parse) {
    * PROFILE
    *
    ********************************************/
-  app.get('/profile', function (req, res, next) {
+  app.get('/profile/:username', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
-          res.render('profile', {title: 'Profile', username: currentUser.attributes.username});
-      }else{
+            if( currentUser.attributes.username == req.params.username)
+            {
+                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true});
+            }
+            else{
+                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false});
+            }
+
+     }else{
           res.render('index', {title: 'Please Login', path: req.path});
       }
 
 });
-
-  app.get('/:username/:userid', function (req, res, next) {
-      var currentUser = Parse.User.current();
-      if (currentUser) {
-          res.render('profile', {title: 'Profile', username: req.params.username, userid: req.params.userid});
-      }else{
-          res.render('index', {title: 'Please Login', path: req.path});
-      }
-
-});
-
-  app.post('/profile',function(req,res,next){
-
-  });
-
 
 
   app.get('/profile/:username/publications',function(req,res,next){
