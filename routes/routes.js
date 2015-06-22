@@ -130,7 +130,10 @@ app.post('/searchpage', function(req,res,next){
                       filename: object.attributes.filename,
                       title:object.attributes.title,
                       hashtags:object.attributes.hashtags,
-                      date:object.createdAt
+                      date:object.createdAt,
+                      year: object.year,
+                      author: object.author,
+                      description: object.description
                   });
 
 
@@ -158,6 +161,9 @@ app.post('/searchpage', function(req,res,next){
               console.log(tags);
               title=fields.title;
               filename=files.upload.name;
+              author= files.upload.author;
+              description= files.upload.description;
+              year= files.upload.year;
           });
           form.on('end', function(fields, files) {
               // Temporary location of our uploaded file 
@@ -179,6 +185,9 @@ app.post('/searchpage', function(req,res,next){
                       pub.set('title',title);
                       pub.set('hashtags',hashtags);
                       pub.set('filename',filename);
+                      pub.set('year',year);
+                      pub.set('description',description);
+                      pub.set('author',author);
                       pub .save(null, {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
