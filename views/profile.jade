@@ -20,6 +20,14 @@ block content
           #content
   script.
     var user = "#{username}";
+    var userid = "#{userid}";
+    var differentUser = false;
+    if (userid != ''){
+      //this is not the user who is logged in
+      differentUser = true;
+      console.log(differentUser);
+      console.log(userid);
+    }
     var getPublicationUrl = "/profile/"+user+"/publications";
     console.log(user);
     var sampleTags = ['c++', 'java', 'php', 'coldfusion', 'javascript', 'asp', 'ruby', 'python', 'c', 'scala', 'groovy', 'haskell', 'perl', 'erlang', 'apl', 'cobol', 'go', 'lua'];

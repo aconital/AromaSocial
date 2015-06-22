@@ -10,6 +10,7 @@ html
     script(src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js")
     script(src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js")  
+    script(src="/javascripts/moment/moment.js")
     block socketscript
 
 
@@ -44,11 +45,7 @@ html
                   span.caret
                 ul.dropdown-menu
                   li
-                    a(href="#") Action
-                  li
-                    a(href="#") Action
-                  li
-                    a(href="#") Action
+                    a(href="/signout") Logout
             form.navbar-form.navbar-right(role="search" method="post" action="/searchpage")
               .form-group.form-inline
                 .input-group.purple
