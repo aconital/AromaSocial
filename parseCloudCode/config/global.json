@@ -1,0 +1,14 @@
+{
+  "global": {
+    "parseVersion": "1.4.2"
+  },
+  "applications": {
+    "AromaSocial": {
+      "applicationId": "3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def",
+      "masterKey": "TlNU9u9xaEuQkuQMyN3UlCXX5SP87vA7sjwTNOne"
+    },
+    "_default": {
+      "link": "AromaSocial"
+    }
+  }
+}
