@@ -4,7 +4,7 @@ block socketscript
   script(src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/react.js")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js")
-  script(src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.1/react-with-addons.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.1/react-with-addons.js")
   script(src="/javascripts/react-tagsinput/react-tagsinput.js")
 
 block content
@@ -41,8 +41,6 @@ block content
             h5 #{otheruser}
         div.col-sm-8.small-padding
           #content
-      .row
-        #content-2
   
   .modal.fade#upload-image(tabindex="-1" role="dialog" aria-labelledby="upload")
     .modal-dialog(role="document")
@@ -71,6 +69,8 @@ block content
     var sampleTags = ['c++', 'java', 'php', 'coldfusion', 'javascript', 'asp', 'ruby', 'python', 'c', 'scala', 'groovy', 'haskell', 'perl', 'erlang', 'apl', 'cobol', 'go', 'lua'];
   
   script(src="/javascripts/react-bootstrap/react-bootstrap.js")
+  script(type="text/jsx", src="/javascripts/showpublication.js")
   script(type="text/jsx", src="/javascripts/tags.js")
   script(type="text/jsx", src="/javascripts/profile.js")
+  
 

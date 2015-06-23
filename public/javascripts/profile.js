@@ -11,6 +11,7 @@ var Publication = React.createClass({
     var tagString = this.props.tags.replace(/\[\"/g, "");
     tagString = tagString.replace(/\",\"/g, " ");
     tagString = tagString.replace(/\"\]/g,"");
+    this.props.tagString = tagString;
     return (
 
       <div className="result">
@@ -27,12 +28,20 @@ var Publication = React.createClass({
                 <h5 className="grey inline-text">Year Published: {this.props.year}</h5>
               </div>
               <div className="col-sm-2">
-                <div className="deletePublication"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} title={this.props.title}/></div>
+                <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} title={this.props.title}/></div>
               </div>
             </div>
-            <p className="search-text">{this.props.author}</p>
+            <div className="row">
+              <div className="col-sm-6">
+                <p className="search-text">{this.props.author}</p>
+              </div>
+              <div className="col-sm-4">
+                <p className="search-text">Date Uploaded: {this.props.date}</p>
+              </div>
+            </div>
+            
             <p className="search-text">Description: {this.props.description}</p>
-            <p className="search-text">{this.props.filename}</p>
+            <a href="javascript:void(0)" className="search-text" onClick={this.showPublication}>{this.props.filename} - {this.props.pubid}</a>
             <p>{tagString}</p>
           </div>
         </div>
@@ -56,7 +65,16 @@ var Publication = React.createClass({
 	        console.error(this.props.url, status, err.toString());
 	      }.bind(this)
 	  });
+  },
+  showPublication: function(){
+    showPublication(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author);
+  },
+  componentWillUnmount: function() {
+    $(this.getDOMNode()).children().get().forEach(function(node) {
+      React.unmountComponentAtNode(node);
+    });
   }
+
 });
 
 var RemovePublicationButton = React.createClass({
@@ -79,9 +97,8 @@ var RemovePublicationButton = React.createClass({
 
 		);
 	},
-	//			<a className="deletePublication" href="javascript:void(0)" onClick={this.props.clickHandler} id={this.props.postid}><img className="close" src="/images/close.png"/></a>
 
-	  // This is called by the `OverlayMixin` when this component
+  // This is called by the `OverlayMixin` when this component
   // is mounted or updated and the return value is appended to the body.
   renderOverlay() {
     if (!this.state.isModalOpen) {
@@ -153,41 +170,13 @@ var PublicationBox = React.createClass({
         </div>;
     }
     return (
-      <div className="PublicationBox" id="publications">
+      <div className="PublicationBox">
         {pubForm}
         <div className="panel panel-default">
-          <PublicationList data={this.state.data} />
+          <PublicationList data={this.state.data}/>
         </div>
       </div>
     );
-  }
-});
-
-var DisplayTab = React.createClass({
-  render: function(){
-    return(
-      <div>
-      <div className="blog-masthead">
-        <div className="container">
-          <nav className="blog-nav">
-            <a className="blog-nav-item active" href="">Publications</a>
-            <a className="blog-nav-item" href="">Data</a>
-            <a className="blog-nav-item" href="">Images</a>
-            <a className="blog-nav-item" href="">Tables</a>
-          </nav>
-        </div>
-      </div>
-
-      <ul className="list-group">
-        <li className="list-group-item">
-          <div className="row">
-            <h5>Publications</h5>
-            <PublicationList data={this.props.data}  />
-          </div>
-        </li>
-      </ul>
-      </div>
-    )
   }
 });
 
@@ -199,19 +188,19 @@ var PublicationList = React.createClass({
   	  var jsonString = JSON.stringify(publication.hashtags);
       return (
         <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} 
-          description={publication.description} author={publication.author} year={publication.year} datatype="Publication" url="/removePublication">
-
+          description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url="/removePublication" >
         </Publication>
       );
     });
     return (
-      <div className="publicationList">
+      <div className="publicationList" id="container">
 
           {PublicationNodes}
 
       </div>
     );
   }
+
 });
 
 var PublicationForm = React.createClass({
@@ -444,6 +433,10 @@ $("#edit-email").click(function(){
   $("#save-changes").show();
 });
 
+function showPublication(pubid, datatype, title, year, postid, filename, tags, date, description, author){
+  var works = document.getElementById("content");
+  console.log(React.unmountComponentAtNode(works));
+  React.render(<ZoomPublication url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+    description={description} author={author} year={year} pubid={pubid}/>, document.getElementById("content"));
+}
 
-
-React.render(overlayTrigger, document.getElementById("content-2"));

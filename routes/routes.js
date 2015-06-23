@@ -1,7 +1,9 @@
 var express = require('express');
 var formidable = require('formidable');
 var util = require('util');
- var fs  = require('fs-extra');
+var fs  = require('fs-extra');
+var moment = require('moment');
+var path = require('path');
 
 module.exports=function(app,Parse) {
   /*******************************************
@@ -95,7 +97,6 @@ app.get('/profile/:username', function (req, res, next) {
               var pubs=[];
               for (var i = 0; i < results.length; i++) {
                   var object = results[i];
-
                   pubs.push({
                       filename: object.attributes.filename,
                       title:object.attributes.title,
@@ -103,7 +104,8 @@ app.get('/profile/:username', function (req, res, next) {
                       date:object.attributes.createdAt,
                       year: object.attributes.year,
                       author: object.attributes.author,
-                      description: object.attributes.description
+                      description: object.attributes.description,
+                      id: object.id
                   });
 
 
@@ -126,11 +128,19 @@ app.get('/profile/:username', function (req, res, next) {
             //upload publication
           var form = new formidable.IncomingForm();
           console.log(form);
+          
+          var now = moment();
+          var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
+          console.log(formatted);
+
           form.parse(req, function(err, fields, files) {
               tags=fields.tags;
               console.log(tags);
               title=fields.title;
-              filename=files.upload.name;
+              //filename=files.upload.name;
+              var start = files.upload.name.indexOf(path.extname(files.upload.name));
+              filename = files.upload.name.substring(0, start) + formatted + path.extname(files.upload.name);
+              //console.log(path.extname(files.upload.name));
               author= fields.author;
               description= fields.description;
               year= fields.year;
@@ -139,9 +149,11 @@ app.get('/profile/:username', function (req, res, next) {
               // Temporary location of our uploaded file 
               var temp_path = this.openedFiles[0].path;
               // The file name of the uploaded file 
-              var file_name = this.openedFiles[0].name;
+              //var file_name = this.openedFiles[0].name;
+              var start = this.openedFiles[0].name.indexOf(path.extname(this.openedFiles[0].name));
+              var file_name = this.openedFiles[0].name.substring(0, start) + formatted + path.extname(this.openedFiles[0].name);
               // Location where we want to copy the uploaded file 
-              var new_location = 'uploads/'+req.params.username+'/publications';
+              var new_location = 'uploads/'+req.params.username+'/publications/';
 
               fs.copy(temp_path, new_location + file_name, function(err) {
                   if (err) {
