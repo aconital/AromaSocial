@@ -149,7 +149,30 @@ app.get('/profile/:username', function (req, res, next) {
   }
 
 });
+    app.post('/profile/:username',function(req,res,next){
+        var currentUser = Parse.User.current();
+        if (currentUser && currentUser.attributes.username == req.params.username) {
+            var name;
+            var email;
 
+            //upload publication
+            var form = new formidable.IncomingForm();
+            form.parse(req, function(err, fields, files) {
+                name=fields.inputname;
+                email=fields.inputemail;
+            });
+            form.on('end', function(fields, files) {
+                if(name !=null)
+                currentUser.set("fullname",name);
+                if(email !=null)
+                currentUser.set("email",email);
+                currentUser.save();
+                res.render('profile');
+            });
+        }else {
+            res.render('profile', {Error: 'Profile Update Failed!'});
+        }
+    });
 
   app.get('/profile/:username/publications',function(req,res,next){
 
