@@ -27,7 +27,7 @@ var SearchPage = React.createClass({
         //json = JSON.stringify(resultString);
         //console.log(json);
         console.log(data);
-        this.setState({data: data, searchphrase: tags});
+        this.setState({data: data, searchphrase: tags.tags});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
