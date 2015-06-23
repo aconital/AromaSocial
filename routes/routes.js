@@ -131,7 +131,7 @@ app.get('/profile/:username', function (req, res, next) {
           
           var now = moment();
           var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
-          console.log(formatted);
+          console.log(formatted); 
 
           form.parse(req, function(err, fields, files) {
               tags=fields.tags;

@@ -9,7 +9,7 @@ var SearchPage = React.createClass({
         json = JSON.stringify(resultString);
         console.log(json);*/
         console.log(data);
-        this.setState({data: data});
+        this.setState({data: data, searchphrase: tagString});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -27,7 +27,7 @@ var SearchPage = React.createClass({
         //json = JSON.stringify(resultString);
         //console.log(json);
         console.log(data);
-        this.setState({data: data});
+        this.setState({data: data, searchphrase: tags});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -36,7 +36,7 @@ var SearchPage = React.createClass({
     return false;
   },
   getInitialState: function() {
-    return {data: []};
+    return {data: [], searchphrase: ""};
   },
   componentDidMount: function() {
     if(this.isMounted()){
@@ -51,14 +51,14 @@ var SearchPage = React.createClass({
         <div className="row search-title">
           <div className="col-xs-6 col-xs-offset-3">
             <h3>Search</h3>
-            <SearchForm onSearchSubmit={this.handleSearchSubmit}/>
+            <SearchForm onSearchSubmit={this.handleSearchSubmit} placeholder={this.state.searchphrase}/>
           </div>
         </div>
         <hr className="search-separator"/>
         <div className="row">
           <div className="col-xs-6 col-xs-offset-3">
             <div className="panel panel-default search-panel">
-              <ResultList data={this.state.data} />
+              <ResultList data={this.state.data} searchphrase={this.state.searchphrase} />
             </div>
           </div>
         </div>
@@ -81,11 +81,15 @@ var SearchForm = React.createClass({
         e.preventDefault();
         return false;
     }
+    var placeholder = "#research";
+    if(this.props.placeholder != ''){
+      placeholder = this.props.placeholder;
+    }
     return(
       <form className="searchForm form-horizontal" onsubmit={doSomething}>
         <div className="form-group">
           <div className="col-sm-10">
-            <input className="form-control search-input" id="tagsInput" type="text" placeholder="#research" ref="searchInput"/>
+            <input className="form-control search-input" id="tagsInput" type="text" placeholder={placeholder} ref="searchInput"/>
           </div>
           <div className="col-sm-2">
             <button className="btn btn-default search-button" id="sendSearch" type="button" onClick={this.handleSubmit}>Search</button>
@@ -99,10 +103,11 @@ var SearchForm = React.createClass({
 
 var ResultList = React.createClass({
   render: function(){
+    var phrase = this.props.searchphrase;
     var resultNodes = this.props.data.map(function(result){
       return(
         <Result filename={result.filename} postid={result.postid} title={result.title} tags={result.hashtags} author={result.author} description={result.description} 
-          year={result.year} datatype="Publication">
+          year={result.year} searchphrase={phrase} datatype="Publication">
         </Result>
       );
     });
@@ -122,6 +127,7 @@ var Result = React.createClass({
     for (var i = 0; i < tags.length; i++){
       tagString = tagString + " " + tags[i];
     }
+    this.props.tagString = tagString;
     return(
       <div className="result">
         <div className="row">
@@ -131,7 +137,9 @@ var Result = React.createClass({
           <div className="col-sm-9 result-text">
             <div className="row">
               <div className="col-sm-6">
-                <h5 className="grey inline-text">{this.props.datatype}:</h5> <h5>{this.props.title}</h5>
+                <a href="javascript:void(0)" onClick={this.showPublication}>
+                  <h5 className="grey inline-text">{this.props.datatype}:</h5> <h5>{this.props.title}</h5>
+                </a>
               </div>
               <div className="col-sm-6">
                 <h5 className="grey inline-text">Year Published: {this.props.year}</h5>
@@ -145,6 +153,9 @@ var Result = React.createClass({
         </div>
       </div>
     );
+  },
+  showPublication: function(){
+    showPublicationSearch(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.searchphrase);
   }
 });
 
@@ -170,19 +181,9 @@ String.prototype.splice = function( idx, rem, s ) {
 };
 
 
-/*$.ajax({
-  url: "http://localhost:3000/search",
-  type: "POST",
-  dataType: "json",
-  data: {'tags': "#nature"},
-  success: function(data) {
-    ///resultString = JSON.parse(data.replace(/&quot;/g,'"'));
-    //json = JSON.stringify(resultString);
-    //console.log(json);
-    console.log(data);
-    //this.setState({data: data});
-  },
-  error: function(xhr, status, err) {
-    console.error(this.props.url, status, err.toString());
-  }
-});*/
+function showPublicationSearch(pubid, datatype, title, year, postid, filename, tags, date, description, author, searchphrase){
+  var works = document.getElementById("content");
+  React.unmountComponentAtNode(works);
+  React.render(<SearchZoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+    description={description} author={author} year={year} pubid={pubid} searchphrase={searchphrase}/>, document.getElementById("content"));
+}

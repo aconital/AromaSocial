@@ -41,7 +41,7 @@ var Publication = React.createClass({
             </div>
             
             <p className="search-text">Description: {this.props.description}</p>
-            <a href="javascript:void(0)" className="search-text" onClick={this.showPublication}>{this.props.filename} - {this.props.pubid}</a>
+            <a href="javascript:void(0)" className="search-text" onClick={this.showPublication}>{this.props.filename}</a>
             <p>{tagString}</p>
           </div>
         </div>
@@ -286,7 +286,7 @@ var tabList = [
     { 'id': 1, 'name': 'Publications', 'url': '/publications' },
     { 'id': 2, 'name': 'Data', 'url': '/data' },
     { 'id': 3, 'name': 'Images', 'url': '/images' },
-    { 'id': 4, 'name': 'Tables', 'url': '/tables' }
+    { 'id': 4, 'name': 'Models', 'url': '/tables' }
 ];
 
 var Tab = React.createClass({
@@ -435,8 +435,8 @@ $("#edit-email").click(function(){
 
 function showPublication(pubid, datatype, title, year, postid, filename, tags, date, description, author){
   var works = document.getElementById("content");
-  console.log(React.unmountComponentAtNode(works));
-  React.render(<ZoomPublication url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+  React.unmountComponentAtNode(works);
+  React.render(<ProfileZoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
     description={description} author={author} year={year} pubid={pubid}/>, document.getElementById("content"));
 }
 
