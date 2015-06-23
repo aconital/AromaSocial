@@ -24,8 +24,78 @@ module.exports=function(app,Parse) {
   app.get('/newsfeed', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
-          console.log(currentUser);
-          res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username});
+          var NewsFeed = Parse.Object.extend("NewsFeed");
+          var query = new Parse.Query(NewsFeed);
+          query.include('pubId');
+          query.include('from');
+          query.find({
+              success: function(results) {
+                  console.log("Successfully retrieved " + results.length + " feed.");
+                  // Do something with the returned Parse.Object values
+                  var feeds=[];
+                  for (var i = 0; i < results.length; i++) {
+                      var object = results[i];
+
+                      var  username= object.attributes.from.attributes.username;
+                      var  type=object.attributes.type;
+                      var  date=object.createdAt;
+
+                      if(type == "pub") {
+                            if(object.attributes.pubId!=null){
+                          if (object.attributes.pubId._serverData != null) {
+                              var pubItem = object.attributes.pubId._serverData;
+
+                              var filename;
+                              var title;
+                              var hashtags;
+                              var year;
+                              var author;
+                              var description;
+                              if (pubItem.filename != null) {
+                                  filename = pubItem.filename;
+                              }
+                              if (pubItem.title != null) {
+                                  title = pubItem.title;
+                              }
+                              if (pubItem.hashtags != null) {
+                                  hashtags = pubItem.hashtags;
+                              }
+                              if (pubItem.year != null) {
+                                  year = pubItem.year;
+                              }
+                              if (pubItem.author != null) {
+                                  author = pubItem.author;
+                              }
+                              if (pubItem.description != null) {
+                                  description = pubItem.description;
+                              }
+                              feeds.push({
+                                  username: username,
+                                  type:type,
+                                  date:date,
+                                  filename: filename,
+                                  description: description,
+                                  author: author,
+                                  year: year,
+                                  hashtags: hashtags,
+                                  title: title,
+                              });
+                          }
+                      }
+                      }
+
+                    if(type =="model")
+                    {
+                        //do stuff
+                    }
+
+                  }
+                  res.send(feeds);
+              },
+              error: function(error) {
+                  console.log("Error: " + error.code + " " + error.message);
+              }
+          });
       } else {
           res.render('index', {title: 'Login failed', path: req.path});
       }
