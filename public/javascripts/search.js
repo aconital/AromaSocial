@@ -101,7 +101,8 @@ var ResultList = React.createClass({
   render: function(){
     var resultNodes = this.props.data.map(function(result){
       return(
-        <Result filename={result.filename} postid={result.postid} title={result.title} tags={result.hashtags} datatype="Publication">
+        <Result filename={result.filename} postid={result.postid} title={result.title} tags={result.hashtags} author={result.author} description={result.description} 
+          year={result.year} datatype="Publication">
         </Result>
       );
     });
@@ -128,7 +129,16 @@ var Result = React.createClass({
             <img src="/images/greypaper.png" className="preview-image"/>
           </div>
           <div className="col-sm-9 result-text">
-            <h5 className="grey inline-text">{this.props.datatype}:</h5> <h5>{this.props.title}</h5>
+            <div className="row">
+              <div className="col-sm-6">
+                <h5 className="grey inline-text">{this.props.datatype}:</h5> <h5>{this.props.title}</h5>
+              </div>
+              <div className="col-sm-6">
+                <h5 className="grey inline-text">Year Published: {this.props.year}</h5>
+              </div>
+            </div>
+            <p className="search-text">{this.props.author}</p>
+            <p className="search-text">Description: {this.props.description}</p>
             <p className="search-text">{this.props.filename}</p>
             <p>{tagString}</p>
           </div>

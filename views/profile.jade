@@ -14,16 +14,35 @@ block content
         div.col-sm-2.panel.panel-default
           div.imageWrapper(onmouseover="document.getElementById('add-photo').style.display = 'block';" onmouseout="document.getElementById('add-photo').style.display = 'none';")
             img#profile-picture(src="#{profilepicurl}")
-            p #{userid}
-            -if(userid)
+            -if(isMe)
               div.add-photo#add-photo
                 a(href="" data-toggle="modal" data-target="#upload-image")
                   span.glyphicon.glyphicon-camera(aria-hidden="true")
-          h5 #{username}
-          h6 Add your degree
-          h6 Add your contact information 
+          -if(isMe)
+            h5#username #{username}
+            form#update-profile(method="POST" action="/saveprofilechanges")
+              .row(onmouseover="document.getElementById('edit-name').style.display = 'inline';" onmouseout="document.getElementById('edit-name').style.display ='none';")
+                .col-xs-10
+                  h6.usersname#add-your-name Add your name 
+                .col-xs-2
+                  a.btn.btn-default#edit-name
+                    span.glyphicon.glyphicon-pencil(aria-hidden="true")
+              .row(onmouseover="document.getElementById('edit-email').style.display = 'inline';" onmouseout="document.getElementById('edit-email').style.display ='none';")
+                .col-xs-10
+                  h6.usersname#add-your-email Add your email
+                .col-xs-2
+                  a.btn.btn-default#edit-email
+                    span.glyphicon.glyphicon-pencil(aria-hidden="true")
+              .row.save
+                .col-xs-8.col-xs-offset-4.save-col
+                  .text-right
+                    button.btn.btn-default#save-changes(type="submit") Save Changes
+          -else
+            h5 #{otheruser}
         div.col-sm-8.small-padding
           #content
+      .row
+        #content-2
   
   .modal.fade#upload-image(tabindex="-1" role="dialog" aria-labelledby="upload")
     .modal-dialog(role="document")
@@ -45,19 +64,13 @@ block content
   
   script.
     var user = "#{username}";
-    var userid = "#{userid}";
-    console.log(userid);
-    var differentUser = false;
-    if (userid != ''){
-      //this is not the user who is logged in
-      differentUser = userid;
-      console.log(differentUser);
-      console.log(userid);
-    }
+    var isMe = "#{isMe}";
+    console.log(isMe);
     var getPublicationUrl = "/profile/"+user+"/publications";
     console.log(user);
     var sampleTags = ['c++', 'java', 'php', 'coldfusion', 'javascript', 'asp', 'ruby', 'python', 'c', 'scala', 'groovy', 'haskell', 'perl', 'erlang', 'apl', 'cobol', 'go', 'lua'];
-    
+  
+  script(src="/javascripts/react-bootstrap/react-bootstrap.js")
   script(type="text/jsx", src="/javascripts/tags.js")
   script(type="text/jsx", src="/javascripts/profile.js")
 

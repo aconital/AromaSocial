@@ -61,30 +61,22 @@ module.exports=function(app,Parse) {
    * PROFILE
    *
    ********************************************/
-  app.get('/profile', function (req, res, next) {
-      var currentUser = Parse.User.current();
-      if (currentUser) {
-          res.render('profile', {title: 'Profile', username: currentUser.attributes.username, userid: true, profilepicurl:"http://placehold.it/500x500&text=Image"});
-      }else{
-          res.render('index', {title: 'Please Login', path: req.path});
-      }
+app.get('/profile/:username', function (req, res, next) {
+  var currentUser = Parse.User.current();
+  if (currentUser) {
+    if( currentUser.attributes.username == req.params.username)
+    {
+      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:"http://placehold.it/500x500&text=Image"});
+    }
+    else{
+      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, profilepicurl:"http://placehold.it/500x500&text=Image"});
+    }
+
+  }else{
+    res.render('index', {title: 'Please Login', path: req.path});
+  }
 
 });
-
-  app.get('/:username/:userid', function (req, res, next) {
-      var currentUser = Parse.User.current();
-      if (currentUser) {
-          res.render('profile', {title: 'Profile', username: req.params.username, userid: false});
-      }else{
-          res.render('index', {title: 'Please Login', path: req.path});
-      }
-
-});
-
-  app.post('/profile',function(req,res,next){
-
-  });
-
 
 
   app.get('/profile/:username/publications',function(req,res,next){
@@ -108,10 +100,10 @@ module.exports=function(app,Parse) {
                       filename: object.attributes.filename,
                       title:object.attributes.title,
                       hashtags:object.attributes.hashtags,
-                      date:object.createdAt,
-                      year: object.year,
-                      author: object.author,
-                      description: object.description
+                      date:object.attributes.createdAt,
+                      year: object.attributes.year,
+                      author: object.attributes.author,
+                      description: object.attributes.description
                   });
 
 
@@ -139,9 +131,9 @@ module.exports=function(app,Parse) {
               console.log(tags);
               title=fields.title;
               filename=files.upload.name;
-              author= files.upload.author;
-              description= files.upload.description;
-              year= files.upload.year;
+              author= fields.author;
+              description= fields.description;
+              year= fields.year;
           });
           form.on('end', function(fields, files) {
               // Temporary location of our uploaded file 
@@ -169,7 +161,8 @@ module.exports=function(app,Parse) {
                       pub .save(null, {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
-                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username});
+                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username, 
+                                'isMe': true, profilepicurl:"http://placehold.it/500x500&text=Image"});
                           },
                           error: function(pub, error) {
                               // Execute any logic that should take place if the save fails.
@@ -178,8 +171,6 @@ module.exports=function(app,Parse) {
                               res.render('profile', {title: 'Profile', msg: 'Uploading publication failed!'});
                           }
                       });
-
-
                   }
               });
           });
@@ -212,7 +203,10 @@ module.exports=function(app,Parse) {
                     pubs.push({
                         filename: object.attributes.filename,
                         title:object.attributes.title,
-                        hashtags:object.attributes.hashtags
+                        hashtags:object.attributes.hashtags,
+                        author:object.attributes.author,
+                        description:object.attributes.description,
+                        year:object.attributes.year
                     });
 
 
@@ -244,7 +238,7 @@ module.exports=function(app,Parse) {
         if (currentUser) {
             var tagString=req.body.tags;
             console.log("TAGS:" + tagString);
-            res.render("search", {title:'Search', tags: tagString});
+            res.render("search", {title:'Search', tags: tagString,username: currentUser.attributes.username });
         }else{
             res.render('index', {title: 'Please Login', path: req.path});
         }

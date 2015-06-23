@@ -1,3 +1,7 @@
+var Modal = ReactBootstrap.Modal;
+var ModalTrigger = ReactBootstrap.ModalTrigger;
+var Button = ReactBootstrap.Button;
+var OverlayMixin = ReactBootstrap.OverlayMixin;
 
 var Publication = React.createClass({
   render: function() {
@@ -8,17 +12,36 @@ var Publication = React.createClass({
     tagString = tagString.replace(/\",\"/g, " ");
     tagString = tagString.replace(/\"\]/g,"");
     return (
-      <tr>
-        <td>{this.props.title}</td>
-        <td>{this.props.filename}</td>
-        <td>{tagString}</td>
-        <td>{date}</td>
-        <td><div className="deletePublication"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid}/></div></td>
-      </tr>
+
+      <div className="result">
+        <div className="row">
+          <div className="col-sm-3">
+            <img src="/images/greypaper.png" className="preview-image"/>
+          </div>
+          <div className="col-sm-9 result-text">
+            <div className="row">
+              <div className="col-sm-6">
+                <h5 className="grey inline-text">{this.props.datatype}:</h5> <h5>{this.props.title}</h5>
+              </div>
+              <div className="col-sm-4">
+                <h5 className="grey inline-text">Year Published: {this.props.year}</h5>
+              </div>
+              <div className="col-sm-2">
+                <div className="deletePublication"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} title={this.props.title}/></div>
+              </div>
+            </div>
+            <p className="search-text">{this.props.author}</p>
+            <p className="search-text">Description: {this.props.description}</p>
+            <p className="search-text">{this.props.filename}</p>
+            <p>{tagString}</p>
+          </div>
+        </div>
+      </div>
     );
   },
   removePublication: function(){
 	  console.log("remove publication - " + this.props.postid);
+	  
 	  $.ajax({
 	      url: this.props.url,
 	      dataType: 'json',
@@ -37,13 +60,47 @@ var Publication = React.createClass({
 });
 
 var RemovePublicationButton = React.createClass({
+  mixins: [OverlayMixin],
+  getInitialState() {
+    return {
+      isModalOpen: false
+    };
+  },
+
+  handleToggle() {
+    this.setState({
+      isModalOpen: !this.state.isModalOpen
+    });
+  },
+
 	render: function(){
 		return(
-			<a className="deletePublication" href="javascript:void(0)" onClick={this.props.clickHandler} id={this.props.postid}><img className="close" src="/images/close.png"/></a>
-		);
-	}
-});
+  		<a className="deletePublication" href="javascript:void(0)" onClick={this.handleToggle}><img className="close" src="/images/close.png"/></a>
 
+		);
+	},
+	//			<a className="deletePublication" href="javascript:void(0)" onClick={this.props.clickHandler} id={this.props.postid}><img className="close" src="/images/close.png"/></a>
+
+	  // This is called by the `OverlayMixin` when this component
+  // is mounted or updated and the return value is appended to the body.
+  renderOverlay() {
+    if (!this.state.isModalOpen) {
+      return <span/>;
+    }
+
+    return (
+      <Modal title={this.props.title} onRequestHide={this.handleToggle}>
+        <div className='modal-body'>
+          Are you sure you want to delete this publication?
+        </div>
+        <div className='modal-footer'>
+          <Button onClick={this.handleToggle}>Close</Button>
+          <Button onClick={this.props.clickHandler} id={this.props.postid}>Yes, Delete!</Button>
+        </div>
+      </Modal>
+    );
+  }
+});
 
 var PublicationBox = React.createClass({
   loadPublicationsFromServer: function() {
@@ -86,7 +143,7 @@ var PublicationBox = React.createClass({
   },
   render: function() {
     var pubForm;
-    if(!this.props.otheruser){
+    if(this.props.myself == "true"){
       pubForm = <div className="panel panel-default">
           <div className="panel-body">
             <div className="row">
@@ -141,27 +198,17 @@ var PublicationList = React.createClass({
   	  console.log(publication);
   	  var jsonString = JSON.stringify(publication.hashtags);
       return (
-        <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} url="/removePublication">
+        <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} 
+          description={publication.description} author={publication.author} year={publication.year} datatype="Publication" url="/removePublication">
 
         </Publication>
       );
     });
     return (
       <div className="publicationList">
-        <table className="table">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>File Name</th>
-            <th>Tags</th>
-            <th>Date</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
+
           {PublicationNodes}
-        </tbody>
-        </table>
+
       </div>
     );
   }
@@ -198,6 +245,24 @@ var PublicationTab = React.createClass({
           <label className="col-sm-2 control-label" for="inputTitle">Title</label>
           <div className="col-sm-10">
                 <input type="text" className="form-control" id="inputTitle" name="title" placeholder=""/>
+          </div>
+        </div>
+        
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="author">Author</label>
+          <div className="col-sm-4">
+                <input type="text" className="form-control" id="author" name="author" placeholder=""/>
+          </div>
+          <label className="col-sm-2 control-label" for="year">Year</label>
+          <div className="col-sm-4">
+                <input type="text" className="form-control" id="year" name="year" placeholder=""/>
+          </div>
+        </div>
+        
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="description">Description</label>
+          <div className="col-sm-10">
+                <textarea className="form-control" id="description" name="description" placeholder=""/>
           </div>
         </div>
 
@@ -338,7 +403,7 @@ var FormTabs = React.createClass({
   
 
 React.render(
-  <PublicationBox url={getPublicationUrl} username={user} otheruser={differentUser}/>,
+  <PublicationBox url={getPublicationUrl} username={user} myself={isMe}/>,
   document.getElementById('content')
 );
 
@@ -366,3 +431,19 @@ $("#imginput").change(function(){
 $( "#submit-photo" ).click(function() {
   $( "#upload-profile-pic" ).submit();
 });
+
+$("#edit-name").click(function(){
+  var text = $("#add-your-name").text();
+  $("#add-your-name").replaceWith("<input class=\"form-control edit-profile\" type=\"text\" name=\"inputname\" placeholder=\""+text+"\"></input>");
+  $("#save-changes").show();
+});
+
+$("#edit-email").click(function(){
+  var text = $("#add-your-email").text();
+  $("#add-your-email").replaceWith("<input class=\"form-control edit-profile\" type=\"text\" name=\"inputemail\" placeholder=\""+text+"\"></input>");
+  $("#save-changes").show();
+});
+
+
+
+React.render(overlayTrigger, document.getElementById("content-2"));

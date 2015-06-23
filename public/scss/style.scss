@@ -621,7 +621,7 @@ h5, .inline-text {
 
 .add-photo{
   position: relative; 
-  top: -70px; 
+  top: -40px; 
   z-index: 2;
   padding-left: 10px;
   font-size: 200%;
@@ -630,4 +630,44 @@ h5, .inline-text {
 
 #preview{
   width: 150px;
+}
+
+#edit-name, #edit-email{
+  display:none;
+  z-index: 2;
+  left: -10px;
+  padding: 2px;
+  margin-bottom: 0px;
+}
+
+.usersname{
+  display: inline;
+  z-index:1;
+  padding-right: 15px;
+}
+
+#username{
+  display: block;
+}
+
+.edit-profile{
+  padding: 1px 5px;
+  font-size: 90%;
+  height: 25px;
+  margin-top: 5px;
+}
+
+#save-changes{
+  display: none;
+  margin-top:20px;
+  padding: 1px 5px;    
+}
+
+.save{
+  width: 110%;
+  max-width: 110%;
+}
+
+.save-col{
+  padding-right: 5px;
 }
