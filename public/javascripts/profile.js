@@ -192,6 +192,13 @@ var PublicationList = React.createClass({
         </Publication>
       );
     });
+    
+    if (this.props.data.length == 0){
+      PublicationNodes = 
+          <div className="no-results">
+            <h5>This user has not uploaded any publications</h5>
+          </div>;
+    }
     return (
       <div className="publicationList" id="container">
 

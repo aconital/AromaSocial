@@ -150,10 +150,35 @@ app.get('/profile/:username', function (req, res, next) {
   if (currentUser) {
     if( currentUser.attributes.username == req.params.username)
     {
-      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:currentUser.attributes.imgUrl});
+      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
+        email: currentUser.attributes.email
+      });
     }
     else{
-      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, profilepicurl:"http://placehold.it/500x500&text=Image"});
+      var User = Parse.Object.extend("User");
+      var picture = new Parse.Query(User);
+      picture.equalTo("username", req.params.username);
+      picture.find({
+        success: function(results){
+          console.log("Successfully retrieved " + results.length + " users.");
+          // Do something with the returned Parse.Object values
+          for (var i = 0; i < results.length; i++) {
+            var object = results[i];
+            var url = object.get("imgUrl");
+            var fullname = object.get("fullname");
+            var email = object.get("email")
+            console.log("URL: " +url);
+            
+            res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, profilepicurl:url, fullname:fullname, email: email});
+
+          }
+        },
+        error: function(error){
+          console.log("Error: " + error.code + " " + error.message);
+          res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, profilepicurl:"http://placehold.it/500x500&text=Image"});
+        }
+      });
+      
     }
 
   }else{
@@ -179,7 +204,7 @@ app.get('/profile/:username', function (req, res, next) {
                 if(email !=null)
                 currentUser.set("email",email);
                 currentUser.save();
-                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:"http://placehold.it/500x500&text=Image"});
+                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:currentUser.attributes.imgUrl});
             });
         }else {
             res.render('profile', {Error: 'Profile Update Failed!'});
