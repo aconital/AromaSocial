@@ -6324,4 +6324,70 @@ h5, .inline-text {
 iframe {
   border: 0px !important; }
 
+.newsfeed-profile-pic {
+  max-width: 100%; }
+
+.black {
+  color: #555; }
+
+h5.non-inline, h3.non-inline {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-weight: 400; }
+
+.newsfeed-date {
+  font-size: 11px !important; }
+
+.no-right-padding {
+  padding-right: 0px; }
+
+.bs-callout {
+  margin: 20px 0;
+  padding: 15px 30px 15px 15px;
+  border-left: 5px solid #eee;
+  border-top: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+  border-right: 1px solid #CCC; }
+
+.bs-callout h3 {
+  margin-top: 0; }
+
+.bs-callout p:last-child {
+  margin-bottom: 0; }
+
+.bs-callout code,
+.bs-callout .highlight {
+  background-color: #fff; }
+
+.bs-callout-warning {
+  background-color: #ffffff;
+  border-left: 5px solid #CCC; }
+
+.smaller {
+  font-size: 12px; }
+
+.newsfeed-link {
+  font-size: 10px; }
+
+a.newsfeed-link:hover {
+  text-decoration: none; }
+
+.your-groups {
+  background-color: #70ab8f;
+  border-color: none !important;
+  padding: 5px 15px;
+  margin-top: 20px; }
+
+.white {
+  color: white;
+  font-weight: 300; }
+
+.groups-list {
+  background: none; }
+
+a.list-group-item.groups-list:hover, a.list-group-item.groups-list:focus,
+button.list-group-item.groups-list:hover, button.list-group-item.groups-list:focus {
+  background: none; }
+
 /*# sourceMappingURL=style.css.map */

@@ -5,9 +5,6 @@ var SearchPage = React.createClass({
       type: "POST",
       data: {'tags': tagString},
       success: function(data) {
-        /*resultString = JSON.parse(data.replace(/&quot;/g,'"'));
-        json = JSON.stringify(resultString);
-        console.log(json);*/
         console.log(data);
         this.setState({data: data, searchphrase: tagString});
       }.bind(this),
@@ -23,9 +20,6 @@ var SearchPage = React.createClass({
       type: "POST",
       data: tags,
       success: function(data) {
-        //resultString = JSON.parse(data.replace(/&quot;/g,'"'));
-        //json = JSON.stringify(resultString);
-        //console.log(json);
         console.log(data);
         this.setState({data: data, searchphrase: tags.tags});
       }.bind(this),

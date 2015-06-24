@@ -146,3 +146,6 @@ function revertToListSearch(searchphrase){
   );
   
 }
+
+var NewsFeedZoom = React.createClass({});
+

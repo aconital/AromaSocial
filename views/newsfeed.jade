@@ -7,11 +7,10 @@ block socketscript
   script(src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js")
 
 block content
-  h1= title
-  p.title Hi #{username},
-  p.title Welcome to #{title} Chat
-  hr
-  .col-sm-6.col-sm-offset-3
-    #content
-    //script(type="text/jsx", src="/javascripts/comment.js")
+  #content
+    
+  script.
+    var getNewsFeedUrl="/newsfeeddata";
+    var user = "#{username}";
+  script(type="text/jsx", src="/javascripts/newsfeed.js")
 

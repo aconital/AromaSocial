@@ -21,7 +21,7 @@ module.exports=function(app,Parse) {
      * NEWS FEED
      *
      ********************************************/
-  app.get('/newsfeed', function (req, res, next) {
+  app.get('/newsfeeddata', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           var NewsFeed = Parse.Object.extend("NewsFeed");
@@ -101,6 +101,18 @@ module.exports=function(app,Parse) {
       }
 
 });
+
+ app.get('/newsfeed', function (req, res, next) {
+      var currentUser = Parse.User.current();
+      if (currentUser) {
+          console.log(currentUser);
+          res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username});
+      } else {
+          res.render('index', {title: 'Login failed', path: req.path});
+      }
+
+});
+
     app.post('/newsfeed', function (req, res, next) {
         var currentUser = Parse.User.current();
         if (currentUser) {
@@ -167,7 +179,7 @@ app.get('/profile/:username', function (req, res, next) {
                 if(email !=null)
                 currentUser.set("email",email);
                 currentUser.save();
-                res.render('profile');
+                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:"http://placehold.it/500x500&text=Image"});
             });
         }else {
             res.render('profile', {Error: 'Profile Update Failed!'});

@@ -28,7 +28,7 @@ var Publication = React.createClass({
                 <h5 className="grey inline-text">Year Published: {this.props.year}</h5>
               </div>
               <div className="col-sm-2">
-                <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} title={this.props.title}/></div>
+                <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} title={this.props.title} pubid={this.props.pubid}/></div>
               </div>
             </div>
             <div className="row">
@@ -55,7 +55,7 @@ var Publication = React.createClass({
 	      url: this.props.url,
 	      dataType: 'json',
 	      type: 'POST',
-	      data: {"postid": this.props.postid},
+	      data: {"id": this.props.pubid},
 	      cache: false,
 	      success: function(data) {
 	        this.setState({data: data});
@@ -188,7 +188,7 @@ var PublicationList = React.createClass({
   	  var jsonString = JSON.stringify(publication.hashtags);
       return (
         <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} 
-          description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url="/removePublication" >
+          description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url="/delete" >
         </Publication>
       );
     });
