@@ -54,7 +54,7 @@ var Publication = React.createClass({
 	  $.ajax({
 	      url: this.props.url,
 	      dataType: 'json',
-	      type: 'POST',
+	      type: 'DELETE',
 	      data: {"id": this.props.pubid},
 	      cache: false,
 	      success: function(data) {
@@ -173,7 +173,7 @@ var PublicationBox = React.createClass({
       <div className="PublicationBox">
         {pubForm}
         <div className="panel panel-default">
-          <PublicationList data={this.state.data}/>
+          <PublicationList data={this.state.data} username={this.props.username}/>
         </div>
       </div>
     );
@@ -183,12 +183,14 @@ var PublicationBox = React.createClass({
 
 var PublicationList = React.createClass({
   render: function() {
+    var username = this.props.username;
 	  var PublicationNodes = this.props.data.map(function (publication) {
   	  console.log(publication);
   	  var jsonString = JSON.stringify(publication.hashtags);
+  	  var deleteurl = "/profile/" +username+"/publications";
       return (
         <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} 
-          description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url="/delete" >
+          description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url={deleteurl} >
         </Publication>
       );
     });

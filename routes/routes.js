@@ -333,7 +333,9 @@ app.get('/profile/:username', function (req, res, next) {
             query.first({
                 success: function(object) {
                     object.destroy();
-                    res.render("profile");
+                    res.render("profile", {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username, 
+                      'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
+                      email: currentUser.attributes.email});
                 },
                 error: function(error) {
                     alert("Error: " + error.code + " " + error.message);

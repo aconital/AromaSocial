@@ -111,16 +111,18 @@ var Update = React.createClass({
       type="publication";
     }
     
+    var profileurl = "/profile/"+ this.props.username;
+    
     return (
 
       <div className="update">
         <hr/>
         <div className="row">
           <div className="col-xs-2">
-            <img src="/images/user.png" alt="" className="img-circle newsfeed-profile-pic"/>
+            <a href={profileurl}><img src="/images/user.png" alt="" className="img-circle newsfeed-profile-pic"/></a>
           </div>
           <div className="col-xs-8">
-            <h5 className="non-inline">{this.props.username}</h5>
+            <a href={profileurl} className="nostyle"><h5 className="non-inline">{this.props.username}</h5></a>
             <h5 className="black non-inline">added a {type}</h5>
           </div>
           <div className="col-xs-2 no-right-padding">
