@@ -12,3 +12,21 @@ Parse.Cloud.useMasterKey();
 	feed.set("pubId",pubId);
 	feed.save();
 });
+
+
+Parse.Cloud.afterDelete("Publication", function(request) {
+	Parse.Cloud.useMasterKey();
+	var pubId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("pubId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});

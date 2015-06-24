@@ -150,7 +150,7 @@ app.get('/profile/:username', function (req, res, next) {
   if (currentUser) {
     if( currentUser.attributes.username == req.params.username)
     {
-      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:"http://placehold.it/500x500&text=Image"});
+      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:currentUser.attributes.imgUrl});
     }
     else{
       res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, profilepicurl:"http://placehold.it/500x500&text=Image"});
@@ -296,7 +296,29 @@ app.get('/profile/:username', function (req, res, next) {
       }
 
   });
+    app.delete('/profile/:username/publications',function(req,res,next){
+        var currentUser = Parse.User.current();
+        if (currentUser && currentUser.attributes.username == req.params.username) {
+            var pubId=req.params.id;
+            var Publication = Parse.Object.extend("Publication");
+            var query = new Parse.Query(Publication);
+            query.equalTo("objectId", pubId);
+            query.first({
+                success: function(object) {
+                    object.destroy();
+                    res.render("profile");
+                },
+                error: function(error) {
+                    alert("Error: " + error.code + " " + error.message);
+                    res.render("profile", {Error: 'No publication found!'});
+                }
+            });
+        }
+        else {
+            res.render('profile', {Error: 'Deleting Publication Failed!'});
+        }
 
+    });
     /*******************************************
      *
      * Search
