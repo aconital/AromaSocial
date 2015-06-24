@@ -25,13 +25,19 @@ block content
             form#update-profile(method="POST" enctype="multipart/form-data" action="/profile/#{username}")
               .row(onmouseover="document.getElementById('edit-name').style.display = 'inline';" onmouseout="document.getElementById('edit-name').style.display ='none';")
                 .col-xs-10
-                  h6.usersname#add-your-name Add your name 
+                  -if(fullname!="")
+                    h6.usersname#add-your-name #{fullname}
+                  -else
+                    h6.usersname#add-your-name Add your name 
                 .col-xs-2
                   a.btn.btn-default#edit-name
                     span.glyphicon.glyphicon-pencil(aria-hidden="true")
               .row(onmouseover="document.getElementById('edit-email').style.display = 'inline';" onmouseout="document.getElementById('edit-email').style.display ='none';")
                 .col-xs-10
-                  h6.usersname#add-your-email Add your email
+                  -if(email!="")
+                    h6.usersname#add-your-email #{email}
+                  -else
+                    h6.usersname#add-your-email Add your email
                 .col-xs-2
                   a.btn.btn-default#edit-email
                     span.glyphicon.glyphicon-pencil(aria-hidden="true")
@@ -45,6 +51,11 @@ block content
                 .col-xs-10
                   -if(fullname!="")
                     h6.usersname#add-your-name #{fullname}
+              .row
+                .col-xs-10
+                  -if(email!="")
+                    h6.usersname#add-your-email #{email}      
+                               
         div.col-sm-8.small-padding
           #content
   

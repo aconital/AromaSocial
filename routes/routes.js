@@ -204,7 +204,8 @@ app.get('/profile/:username', function (req, res, next) {
                 if(email !=null)
                 currentUser.set("email",email);
                 currentUser.save();
-                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:currentUser.attributes.imgUrl});
+                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:currentUser.attributes.imgUrl, 
+                  profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, email: currentUser.attributes.email});
             });
         }else {
             res.render('profile', {Error: 'Profile Update Failed!'});
@@ -304,7 +305,8 @@ app.get('/profile/:username', function (req, res, next) {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
                               res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username, 
-                                'isMe': true, profilepicurl:"http://placehold.it/500x500&text=Image"});
+                                'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
+                                email: currentUser.attributes.email});
                           },
                           error: function(pub, error) {
                               // Execute any logic that should take place if the save fails.
