@@ -338,7 +338,7 @@ app.get('/profile/:username', function (req, res, next) {
             query.first({
                 success: function(object) {
                     object.destroy().then(function() {
-                       res.render("profile");
+                       res.send(200);
                     });
 
                 },
@@ -374,7 +374,7 @@ app.get('/profile/:username', function (req, res, next) {
                 var pubs=[];
                 for (var i = 0; i < results.length; i++) {
                     var object = results[i];
-                 
+
                     var  username= object.attributes.user.attributes.username;
                     var  userImg=  object.attributes.user.attributes.imgUrl;
                     pubs.push({
