@@ -143,7 +143,8 @@ var Update = React.createClass({
     );
   },
   showPublication: function(){
-    showPublication(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author);
+    console.log("SHOW: " + this.props.username);
+    showPublicationNewsFeed(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username);
   }
 
 });
@@ -153,3 +154,12 @@ React.render(
   <NewsFeed url={getNewsFeedUrl} username={user}/>,
   document.getElementById('content')
 );
+
+function showPublicationNewsFeed(pubid, datatype, title, year, postid, filename, tags, date, description, author, user){
+  var works = document.getElementById("content");
+  React.unmountComponentAtNode(works);
+  console.log("USER: "+ user);
+  var search = false;
+  React.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+    description={description} author={author} year={year} pubid={pubid} search={search} user={user}/>, document.getElementById("content"));
+}

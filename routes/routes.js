@@ -28,6 +28,7 @@ module.exports=function(app,Parse) {
           var query = new Parse.Query(NewsFeed);
           query.include('pubId');
           query.include('from');
+          query.descending("createdAt");
           query.find({
               success: function(results) {
                   console.log("Successfully retrieved " + results.length + " feed.");
@@ -221,6 +222,7 @@ app.get('/profile/:username', function (req, res, next) {
       var Publication = Parse.Object.extend("Publication");
       var query = new Parse.Query(Publication);
       query.matchesQuery("user", innerQuery);
+      query.ascending("createdAt");
       query.find({
           success: function(results) {
               console.log("Successfully retrieved " + results.length + " publications.");

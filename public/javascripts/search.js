@@ -115,6 +115,12 @@ var ResultList = React.createClass({
 
 
 var Result = React.createClass({
+  getInitialState: function() {
+    return {show: false};
+  },
+  showDescription: function(event) {
+    this.setState({show: !this.state.show});
+  },
   render: function(){
     var tags = this.props.tags;
     var tagString = "";
@@ -122,29 +128,25 @@ var Result = React.createClass({
       tagString = tagString + " " + tags[i];
     }
     this.props.tagString = tagString;
+    var text = this.state.show ? this.props.description : '';
     return(
       <div className="result">
+        
         <div className="row">
-          <div className="col-sm-3">
-            <img src="/images/greypaper.png" className="preview-image"/>
+          <div className="col-xs-11 no-right-padding">
+              <h3 className="black non-inline">{this.props.datatype}: {this.props.title}</h3>
+              <p className="black smaller">{tagString}</p>
+              <p className="newsfeed-date grey non-inline">{this.props.year}</p>
+              <p className="black smaller">{this.props.author}</p>
+              <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showDescription}>SEE DESCRIPTION </a><span> - </span>
+              <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showPublication}>SEE FULL TEXT</a>
+              <p>{text}</p>
           </div>
-          <div className="col-sm-9 result-text">
-            <div className="row">
-              <div className="col-sm-6">
-                <a href="javascript:void(0)" onClick={this.showPublication}>
-                  <h5 className="grey inline-text">{this.props.datatype}:</h5> <h5>{this.props.title}</h5>
-                </a>
-              </div>
-              <div className="col-sm-6">
-                <h5 className="grey inline-text">Year Published: {this.props.year}</h5>
-              </div>
-            </div>
-            <p className="search-text">{this.props.author}</p>
-            <p className="search-text">Description: {this.props.description}</p>
-            <p className="search-text">{this.props.filename}</p>
-            <p>{tagString}</p>
+          <div className="col-xs-1 center-vertical">
+            <a href=""><img src="/images/user.png" alt="" className="img-circle search-profile-pic"/></a>
           </div>
         </div>
+        <hr/>
       </div>
     );
   },
@@ -152,6 +154,7 @@ var Result = React.createClass({
     showPublicationSearch(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.searchphrase);
   }
 });
+
 
 var loaded = false;
 
@@ -178,6 +181,7 @@ String.prototype.splice = function( idx, rem, s ) {
 function showPublicationSearch(pubid, datatype, title, year, postid, filename, tags, date, description, author, searchphrase){
   var works = document.getElementById("content");
   React.unmountComponentAtNode(works);
-  React.render(<SearchZoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
-    description={description} author={author} year={year} pubid={pubid} searchphrase={searchphrase}/>, document.getElementById("content"));
+  var search = true;
+  React.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+    description={description} author={author} year={year} pubid={pubid} searchphrase={searchphrase} search={search}/>, document.getElementById("content"));
 }

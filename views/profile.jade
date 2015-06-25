@@ -80,15 +80,16 @@ block content
   script.
     var user = "#{username}";
     var isMe = "#{isMe}";
-    var otheruser = "";
+    var other = "";
     console.log(isMe);
-    if (isMe){
-      otheruser=user;
+    if (isMe=="true"){
+      other=user;
     }else{
-      otheruser = "#{otheruser}";
+      other="#{otheruser}";
     }
-    var getPublicationUrl = "/profile/"+otheruser+"/publications";
-    console.log(user);
+    var getPublicationUrl = "/profile/"+other+"/publications";
+    console.log("#{otheruser}");
+    console.log(getPublicationUrl);
     var sampleTags = ['c++', 'java', 'php', 'coldfusion', 'javascript', 'asp', 'ruby', 'python', 'c', 'scala', 'groovy', 'haskell', 'perl', 'erlang', 'apl', 'cobol', 'go', 'lua'];
   
   script(src="/javascripts/react-bootstrap/react-bootstrap.js")
