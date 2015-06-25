@@ -304,8 +304,8 @@ app.get('/profile/:username', function (req, res, next) {
                       pub .save(null, {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
-                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username, 
-                                'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
+                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username,
+                                'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname,
                                 email: currentUser.attributes.email});
                           },
                           error: function(pub, error) {
@@ -326,16 +326,17 @@ app.get('/profile/:username', function (req, res, next) {
     app.delete('/profile/:username/publications',function(req,res,next){
         var currentUser = Parse.User.current();
         if (currentUser && currentUser.attributes.username == req.params.username) {
-            var pubId=req.params.id;
+            var pubId=req.body.id;
+            console.log("ID is: "+pubId);
             var Publication = Parse.Object.extend("Publication");
             var query = new Parse.Query(Publication);
             query.equalTo("objectId", pubId);
             query.first({
                 success: function(object) {
-                    object.destroy();
-                    res.render("profile", {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username, 
-                      'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
-                      email: currentUser.attributes.email});
+                    object.destroy().then(function() {
+                       res.render("profile");
+                    });
+
                 },
                 error: function(error) {
                     alert("Error: " + error.code + " " + error.message);
