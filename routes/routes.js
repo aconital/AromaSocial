@@ -37,6 +37,7 @@ module.exports=function(app,Parse) {
                       var object = results[i];
 
                       var  username= object.attributes.from.attributes.username;
+                      var  userImg=  object.attributes.from.attributes.imgUrl;
                       var  type=object.attributes.type;
                       var  date=object.createdAt;
 
@@ -71,6 +72,7 @@ module.exports=function(app,Parse) {
                               }
                               feeds.push({
                                   username: username,
+                                  userImg: userImg,
                                   type:type,
                                   date:date,
                                   filename: filename,
@@ -360,16 +362,21 @@ app.get('/profile/:username', function (req, res, next) {
         console.log(tags);
         var Publication = Parse.Object.extend("Publication");
         var query = new Parse.Query(Publication);
+        query.include('from');
         query.containedIn("hashtags", tags.match(/#.+?\b/g));
         query.find({
             success: function(results) {
                 console.log("Successfully retrieved " + results.length + " publications.");
                 // Do something with the returned Parse.Object values
+
                 var pubs=[];
                 for (var i = 0; i < results.length; i++) {
                     var object = results[i];
-
+                    var  username= object.attributes.from.attributes.username;
+                    var  userImg=  object.attributes.from.attributes.imgUrl;
                     pubs.push({
+                        username: username,
+                        userImg: userImg,
                         filename: object.attributes.filename,
                         title:object.attributes.title,
                         hashtags:object.attributes.hashtags,
