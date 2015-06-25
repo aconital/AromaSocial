@@ -47,12 +47,12 @@ module.exports=function(app,Parse) {
                           if (object.attributes.pubId._serverData != null) {
                               var pubItem = object.attributes.pubId._serverData;
 
-                              var filename;
-                              var title;
-                              var hashtags;
-                              var year;
-                              var author;
-                              var description;
+                              var filename ="";
+                              var title ="";
+                              var hashtags ="";
+                              var year ="";
+                              var author ="";
+                              var description ="";
                               if (pubItem.filename != null) {
                                   filename = pubItem.filename;
                               }
@@ -109,7 +109,7 @@ module.exports=function(app,Parse) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           console.log(currentUser);
-          res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username, userImg: currentUser.attributes.imgUrl});
+          res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
       } else {
           res.render('index', {title: 'Login failed', path: req.path});
       }
@@ -126,7 +126,7 @@ module.exports=function(app,Parse) {
             newsFeed .save(null, {
                 success: function(newsfeed) {
                     // Execute any logic that should take place after the object is saved.
-                    res.render('newsfeed', {title: 'NewsFeed', username: currentUser.attributes.username, userImg: currentUser.attributes.imgUrl});
+                    res.render('newsfeed', {title: 'NewsFeed', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
                 },
                 error: function(newsfeed, error) {
                     // Execute any logic that should take place if the save fails.
@@ -153,7 +153,7 @@ app.get('/profile/:username', function (req, res, next) {
   if (currentUser) {
     if( currentUser.attributes.username == req.params.username)
     {
-      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, userImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
+      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, currentUserImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
         email: currentUser.attributes.email
       });
     }
@@ -172,13 +172,13 @@ app.get('/profile/:username', function (req, res, next) {
             var email = object.get("email")
             console.log("URL: " +url);
             
-            res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, userImg:url, fullname:fullname, email: email});
+            res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, userImg:url, currentUserImg:currentUser.attributes.imgUrl, fullname:fullname, email: email});
 
           }
         },
         error: function(error){
           console.log("Error: " + error.code + " " + error.message);
-          res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, profilepicurl:"http://placehold.it/500x500&text=Image"});
+          res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username,currentUserImg:currentUser.attributes.imgUrl, profilepicurl:"http://placehold.it/500x500&text=Image"});
         }
       });
       
@@ -207,7 +207,7 @@ app.get('/profile/:username', function (req, res, next) {
                 if(email !=null)
                 currentUser.set("email",email);
                 currentUser.save();
-                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, profilepicurl:currentUser.attributes.imgUrl, 
+                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, currentUserImg:currentUser.attributes.imgUrl, 
                   userImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, email: currentUser.attributes.email});
             });
         }else {
@@ -310,7 +310,7 @@ app.get('/profile/:username', function (req, res, next) {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
                               res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username,
-                                'isMe': true, userImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname,
+                                'isMe': true, currentUserImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname,
                                 email: currentUser.attributes.email});
                           },
                           error: function(pub, error) {
@@ -379,8 +379,8 @@ app.get('/profile/:username', function (req, res, next) {
                     var  username= object.attributes.user.attributes.username;
                     var  userImg=  object.attributes.user.attributes.imgUrl;
                     pubs.push({
-                        //username: username,
-                        //userImg: userImg,
+                        username: username,
+                        userImg: userImg,
                         filename: object.attributes.filename,
                         title:object.attributes.title,
                         hashtags:object.attributes.hashtags,
@@ -405,7 +405,7 @@ app.get('/profile/:username', function (req, res, next) {
     app.get('/searchpage', function (req, res, next) {
         var currentUser = Parse.User.current();
         if (currentUser) {
-            res.render('search', {title: 'Search', username: currentUser.attributes.username, userImg: currentUser.attributes.imgUrl});
+            res.render('search', {title: 'Search', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
         }else{
             res.render('index', {title: 'Please Login', path: req.path});
         }
@@ -418,7 +418,7 @@ app.get('/profile/:username', function (req, res, next) {
         if (currentUser) {
             var tagString=req.body.tags;
             console.log("TAGS:" + tagString);
-            res.render("search", {title:'Search', tags: tagString,username: currentUser.attributes.username, userImg: currentUser.attributes.imgUrl});
+            res.render("search", {title:'Search', tags: tagString,username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
         }else{
             res.render('index', {title: 'Please Login', path: req.path});
         }
@@ -441,7 +441,7 @@ app.get('/profile/:username', function (req, res, next) {
 
   user.signUp(null, {
     success: function (user) {
-        res.render('newsfeed', {title: 'Website', username: user.attributes.username, userImg: user.attributes.imgUrl});
+        res.render('newsfeed', {title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
     },
     error: function (user, error) {
       // Show the error message somewhere and let the user try again.

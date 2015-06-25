@@ -23,10 +23,15 @@ var Publication = React.createClass({
     
     var description = this.props.description ? this.props.description : 'No description provided.';
     var text = this.state.show ? description : '';
-
+    
+    var deletePub;
+    if(this.props.myself == "true"){
+      deletePub = <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} 
+              title={this.props.title} pubid={this.props.pubid}/>
+            </div> ;
+    }
+    
     return (
-
-      
       <div className="result">  
         <div className="row">
           <div className="col-xs-10 no-right-padding">
@@ -36,9 +41,7 @@ var Publication = React.createClass({
               <p className="black smaller">{this.props.author}</p>
           </div>
           <div className="col-xs-2">
-            <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} 
-              title={this.props.title} pubid={this.props.pubid}/>
-            </div>          
+            {deletePub}  
           </div>
         </div>
         <div className="row">
@@ -55,9 +58,7 @@ var Publication = React.createClass({
       </div>
     );
   },
-  removePublication: function(){
-	  console.log("remove publication - " + this.props.postid);
-	  
+  removePublication: function(){	  
 	  $.ajax({
 	      url: this.props.url,
 	      dataType: 'json',
@@ -72,6 +73,7 @@ var Publication = React.createClass({
 	        console.error(this.props.url, status, err.toString());
 	      }.bind(this)
 	  });
+	  this.props.refresh();
   },
   showPublication: function(){
     showPublication(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author);
@@ -98,11 +100,17 @@ var RemovePublicationButton = React.createClass({
       isModalOpen: !this.state.isModalOpen
     });
   },
+  
+  handleDelete(){
+    this.setState({
+      isModalOpen: !this.state.isModalOpen
+    });
+    this.props.clickHandler();
+  },
 
 	render: function(){
 		return(
   		<a className="deletePublication" href="javascript:void(0)" onClick={this.handleToggle}><img className="close" src="/images/close.png"/></a>
-
 		);
 	},
 
@@ -120,7 +128,7 @@ var RemovePublicationButton = React.createClass({
         </div>
         <div className='modal-footer'>
           <Button onClick={this.handleToggle}>Close</Button>
-          <Button onClick={this.props.clickHandler} id={this.props.postid}>Yes, Delete!</Button>
+          <Button onClick={this.handleDelete} id={this.props.postid}>Yes, Delete!</Button>
         </div>
       </Modal>
     );
@@ -181,7 +189,7 @@ var PublicationBox = React.createClass({
       <div className="PublicationBox">
         {pubForm}
         <div className="panel panel-default profile-panel">
-          <PublicationList data={this.state.data} username={this.props.username}/>
+          <PublicationList data={this.state.data} username={this.props.username} myself={this.props.myself} refresh={this.loadPublicationsFromServer}/>
         </div>
       </div>
     );
@@ -192,12 +200,17 @@ var PublicationBox = React.createClass({
 var PublicationList = React.createClass({
   render: function() {
     var username = this.props.username;
+    var myself = this.props.myself;
+    var refresh = this.props.refresh;
+	  
 	  var PublicationNodes = this.props.data.map(function (publication) {
   	  var jsonString = JSON.stringify(publication.hashtags);
   	  var deleteurl = "/profile/" +username+"/publications";
+
       return (
         <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} 
-          description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url={deleteurl} >
+          description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url={deleteurl} 
+          myself={myself} refresh={refresh}>
         </Publication>
       );
     });

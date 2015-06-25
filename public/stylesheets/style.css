@@ -6334,7 +6334,7 @@ iframe {
 .black {
   color: #555; }
 
-h5.non-inline, h3.non-inline {
+h5.non-inline, h3.non-inline, a.non-inline {
   display: block;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -6424,5 +6424,17 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 
 .profile-panel {
   padding: 20px; }
+
+.marg-bottom {
+  margin-bottom: 30px; }
+
+.marg-left {
+  margin-left: 20px; }
+
+.no-pad {
+  padding: 0px; }
+
+.no-pad:hover {
+  background-color: white !important; }
 
 /*# sourceMappingURL=style.css.map */

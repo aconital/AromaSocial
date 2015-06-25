@@ -29,11 +29,77 @@ var ZoomPublication = React.createClass({
   render: function() {
     return (
       <div id="zoom">
-        <Publication filename={this.props.filename} postid={this.props.postid} tags={this.props.tagString} title={this.props.title} date={this.props.date} 
+        <LargerPublication filename={this.props.filename} postid={this.props.postid} tags={this.props.tagString} title={this.props.title} date={this.props.date} 
           description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} datatype="Publication" url="/removePublication"/>
         <File data={this.state.data}/>
       </div>
     );
+  }
+});
+
+var LargerPublication = React.createClass({
+  render: function() {
+	  //var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+  	console.log(this.props.tags);
+    var date = moment(this.props.date).format("MMM D, YYYY");
+    var tagString = this.props.tags.replace(/\[\"/g, "");
+    tagString = tagString.replace(/\",\"/g, " ");
+    tagString = tagString.replace(/\"\]/g,"");
+    this.props.tagString = tagString;
+    
+    var date = moment(this.props.date).format("MMM D, YYYY");
+    
+    var description = this.props.description ? this.props.description : 'No description provided.';
+    
+    var deletePub;
+    if(isMe == "true"){
+      deletePub = <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} 
+              title={this.props.title} pubid={this.props.pubid}/>
+            </div> ;
+    }
+
+    return ( 
+      <div className="result">  
+        <div className="row">
+          <div className="col-xs-10 no-right-padding">
+              <h3 className="black non-inline">{this.props.datatype}: {this.props.title}</h3>
+              <p className="black smaller">{tagString}</p>
+              <p className="newsfeed-date grey non-inline">{this.props.year}</p>
+              <p className="black smaller">{this.props.author}</p>
+          </div>
+          <div className="col-xs-2">
+            {deletePub}         
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-xs-9 no-right-padding">
+            <h4 className="black non-inline">DESCRIPTION</h4>
+            <p>{description}</p>
+          </div>
+          <div className="col-xs-3">
+            <p className="grey smaller">Uploaded: {date}</p>
+          </div>
+        </div>
+      </div>
+    );
+  },
+  removePublication: function(){
+	  console.log("remove publication - " + this.props.postid);
+	  
+	  $.ajax({
+	      url: this.props.url,
+	      dataType: 'json',
+	      type: 'DELETE',
+	      data: {"id": this.props.pubid},
+	      cache: false,
+	      success: function(data) {
+	        this.setState({data: data});
+	      }.bind(this),
+	      error: function(xhr, status, err) {
+		    console.log()
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	  });
   }
 });
 
@@ -75,7 +141,8 @@ var ZoomSearchResult = React.createClass({
      
 var LargerResult = React.createClass({
   render: function(){
-    var text = this.props.description;
+    var text = this.props.description ? this.props.description : 'No description provided.';
+
     var profileurl = "/profile/"+this.props.user;
     return(
       <div className="result">
@@ -121,10 +188,10 @@ var File = React.createClass({
 var ProfileZoom = React.createClass({
   render: function(){
     return (
-    <div className = "panel panel-default">
+    <div className = "panel panel-default profile-panel">
       <div className="row">
-        <div className="col-sm-6">
-          <button className="btn btn-default" onClick={this.showList}><span className="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Back To Publications</button>
+        <div className="col-sm-6 marg-bottom">
+          <button className="btn btn-default btn-back no-pad" onClick={this.showList}><span className="glyphicon glyphicon-chevron-left"></span>BACK</button>
         </div>
       </div>
       <ZoomPublication url={this.props.url} filename={this.props.filename} postid={this.props.postid} tagString={this.props.tagString} title={this.props.title} date={this.props.date} 
@@ -151,7 +218,7 @@ var Zoom = React.createClass({
     return (
     <div className="row">
       <div className="col-sm-3">
-        <button className="btn btn-default btn-back" onClick={this.showList}><span className="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+        <button className="btn btn-default btn-back marg-left" onClick={this.showList}><span className="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
       </div>
       <div className="col-sm-6">
         <div className = "panel panel-default panel-zoom">
@@ -182,29 +249,6 @@ function revertToListSearch(searchphrase){
   );
   
 }
-
-var NewsFeedZoom = React.createClass({
-  render: function(){
-    return(
-      <div className="row">
-        <div className="col-sm-6 col-sm-offset-3">
-          <div className = "panel panel-default">
-            <div className="row">
-              <div className="col-sm-6">
-                <button className="btn btn-default" onClick={this.showNewsFeed}><span className="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>Back To Newsfeed</button>
-              </div>
-            </div>
-            <ZoomSearchResult url={this.props.url} filename={this.props.filename} postid={this.props.postid} tagString={this.props.tagString} title={this.props.title} date={this.props.date} 
-            description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid}/>
-          </div>
-        </div>
-      </div>
-    );
-  },
-  showNewsFeed: function(){
-    revertToNewsFeed(this.props.searchphrase);
-  }
-});
 
 function revertToNewsFeed(){
   var works = document.getElementById("content");

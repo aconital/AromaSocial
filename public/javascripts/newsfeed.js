@@ -80,9 +80,13 @@ var NewsFeedList = React.createClass({
 	  var NewsFeedNodes = this.props.data.map(function (item) {
   	  console.log(item);
   	  var jsonString = JSON.stringify(item.hashtags);
+  	  var author = item.author;
+  	  if(author==""){
+    	  author = item.username;
+  	  }
       return (
         <Update filename={item.filename} type={item.type} tags={jsonString} title={item.title} date={item.date} 
-          description={item.description} author={item.author} username={item.username} year={item.year} img={item.userImg}>
+          description={item.description} author={author} username={item.username} year={item.year} img={item.userImg}>
         </Update>
       );
     });
@@ -143,6 +147,10 @@ var Update = React.createClass({
     );
   },
   showPublication: function(){
+    var author = this.props.author;
+    if (author ==""){
+      author = this.props.username;
+    }
     showPublicationNewsFeed(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username, this.props.img);
   }
 
