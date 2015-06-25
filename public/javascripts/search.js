@@ -128,7 +128,8 @@ var Result = React.createClass({
       tagString = tagString + " " + tags[i];
     }
     this.props.tagString = tagString;
-    var text = this.state.show ? this.props.description : '';
+    var description = this.props.description ? this.props.description : 'No description provided.';
+    var text = this.state.show ? description : '';
     return(
       <div className="result">
         

@@ -15,7 +15,7 @@ block content
       div.row
         div.col-sm-2.panel.panel-default
           div.imageWrapper(onmouseover="document.getElementById('add-photo').style.display = 'block';" onmouseout="document.getElementById('add-photo').style.display = 'none';")
-            img#profile-picture(src="#{profilepicurl}")
+            img#profile-picture(src="#{userImg}")
             -if(isMe)
               div.add-photo#add-photo
                 a(href="" data-toggle="modal" data-target="#upload-image")

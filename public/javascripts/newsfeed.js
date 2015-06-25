@@ -82,7 +82,7 @@ var NewsFeedList = React.createClass({
   	  var jsonString = JSON.stringify(item.hashtags);
       return (
         <Update filename={item.filename} type={item.type} tags={jsonString} title={item.title} date={item.date} 
-          description={item.description} author={item.author} username={item.username} year={item.year}>
+          description={item.description} author={item.author} username={item.username} year={item.year} img={item.userImg}>
         </Update>
       );
     });
@@ -119,7 +119,7 @@ var Update = React.createClass({
         <hr/>
         <div className="row">
           <div className="col-xs-2">
-            <a href={profileurl}><img src="/images/user.png" alt="" className="img-circle newsfeed-profile-pic"/></a>
+            <a href={profileurl}><img src={this.props.img} alt="" className="img-circle newsfeed-profile-pic"/></a>
           </div>
           <div className="col-xs-8">
             <a href={profileurl} className="nostyle"><h5 className="non-inline">{this.props.username}</h5></a>
@@ -143,8 +143,7 @@ var Update = React.createClass({
     );
   },
   showPublication: function(){
-    console.log("SHOW: " + this.props.username);
-    showPublicationNewsFeed(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username);
+    showPublicationNewsFeed(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username, this.props.img);
   }
 
 });
@@ -155,11 +154,10 @@ React.render(
   document.getElementById('content')
 );
 
-function showPublicationNewsFeed(pubid, datatype, title, year, postid, filename, tags, date, description, author, user){
+function showPublicationNewsFeed(pubid, datatype, title, year, postid, filename, tags, date, description, author, user, profilepic){
   var works = document.getElementById("content");
   React.unmountComponentAtNode(works);
-  console.log("USER: "+ user);
   var search = false;
   React.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
-    description={description} author={author} year={year} pubid={pubid} search={search} user={user}/>, document.getElementById("content"));
+    description={description} author={author} year={year} pubid={pubid} search={search} user={user} profilepic={profilepic}/>, document.getElementById("content"));
 }

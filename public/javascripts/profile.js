@@ -4,6 +4,12 @@ var Button = ReactBootstrap.Button;
 var OverlayMixin = ReactBootstrap.OverlayMixin;
 
 var Publication = React.createClass({
+  getInitialState: function() {
+    return {show: false};
+  },
+  showDescription: function(event) {
+    this.setState({show: !this.state.show});
+  },
   render: function() {
 	  //var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
   	console.log(this.props.tags);
@@ -12,39 +18,40 @@ var Publication = React.createClass({
     tagString = tagString.replace(/\",\"/g, " ");
     tagString = tagString.replace(/\"\]/g,"");
     this.props.tagString = tagString;
+    
+    var date = moment(this.props.date).format("MMM D, YYYY");
+    
+    var description = this.props.description ? this.props.description : 'No description provided.';
+    var text = this.state.show ? description : '';
+
     return (
 
-      <div className="result">
+      
+      <div className="result">  
         <div className="row">
-          <div className="col-sm-3">
-            <img src="/images/greypaper.png" className="preview-image"/>
+          <div className="col-xs-10 no-right-padding">
+              <h3 className="black non-inline">{this.props.datatype}: {this.props.title}</h3>
+              <p className="black smaller">{tagString}</p>
+              <p className="newsfeed-date grey non-inline">{this.props.year}</p>
+              <p className="black smaller">{this.props.author}</p>
           </div>
-          <div className="col-sm-9 result-text">
-            <div className="row">
-              <div className="col-sm-6">
-                <h5 className="grey inline-text">{this.props.datatype}:</h5> <h5>{this.props.title}</h5>
-              </div>
-              <div className="col-sm-4">
-                <h5 className="grey inline-text">Year Published: {this.props.year}</h5>
-              </div>
-              <div className="col-sm-2">
-                <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} title={this.props.title} pubid={this.props.pubid}/></div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-sm-6">
-                <p className="search-text">{this.props.author}</p>
-              </div>
-              <div className="col-sm-4">
-                <p className="search-text">Date Uploaded: {this.props.date}</p>
-              </div>
-            </div>
-            
-            <p className="search-text">Description: {this.props.description}</p>
-            <a href="javascript:void(0)" className="search-text" onClick={this.showPublication}>{this.props.filename}</a>
-            <p>{tagString}</p>
+          <div className="col-xs-2">
+            <div className="deletePublication" id="deletepub"><RemovePublicationButton clickHandler={this.removePublication} postid={this.props.postid} 
+              title={this.props.title} pubid={this.props.pubid}/>
+            </div>          
           </div>
         </div>
+        <div className="row">
+          <div className="col-xs-9 no-right-padding">
+            <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showDescription}>SEE DESCRIPTION </a><span> - </span>
+            <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showPublication}>SEE FULL TEXT</a>
+            <p>{text}</p>
+          </div>
+          <div className="col-xs-3">
+            <p className="grey smaller">Uploaded: {date}</p>
+          </div>
+        </div>
+        <hr/>
       </div>
     );
   },
@@ -76,6 +83,7 @@ var Publication = React.createClass({
   }
 
 });
+
 
 var RemovePublicationButton = React.createClass({
   mixins: [OverlayMixin],
@@ -172,7 +180,7 @@ var PublicationBox = React.createClass({
     return (
       <div className="PublicationBox">
         {pubForm}
-        <div className="panel panel-default">
+        <div className="panel panel-default profile-panel">
           <PublicationList data={this.state.data} username={this.props.username}/>
         </div>
       </div>
@@ -185,7 +193,6 @@ var PublicationList = React.createClass({
   render: function() {
     var username = this.props.username;
 	  var PublicationNodes = this.props.data.map(function (publication) {
-  	  console.log(publication);
   	  var jsonString = JSON.stringify(publication.hashtags);
   	  var deleteurl = "/profile/" +username+"/publications";
       return (
