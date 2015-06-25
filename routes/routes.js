@@ -339,7 +339,7 @@ app.get('/profile/:username', function (req, res, next) {
             query.first({
                 success: function(object) {
                     object.destroy().then(function() {
-                       res.render("profile");
+                       res.send(200);
                     });
 
                 },
