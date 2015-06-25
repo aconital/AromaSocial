@@ -89,18 +89,20 @@ var LargerPublication = React.createClass({
 	  
 	  $.ajax({
 	      url: this.props.url,
-	      dataType: 'json',
 	      type: 'DELETE',
 	      data: {"id": this.props.pubid},
 	      cache: false,
 	      success: function(data) {
 	        this.setState({data: data});
+	        revertToList();
 	      }.bind(this),
 	      error: function(xhr, status, err) {
 		    console.log()
 	        console.error(this.props.url, status, err.toString());
 	      }.bind(this)
 	  });
+	  
+
   }
 });
 

@@ -150,29 +150,11 @@ var PublicationBox = React.createClass({
       }.bind(this)
     });
   },
-  handlePublicationSubmit: function(publication) {
-    var publications = this.state.data;
-    var newPublications = publications.concat([publication]);
-    this.setState({data: newPublications});
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      type: 'POST',
-      data: publication,
-      success: function(data) {
-        this.setState({data: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
   getInitialState: function() {
     return {data: []};
   },
   componentDidMount: function() {
     this.loadPublicationsFromServer();
-    //setInterval(this.loadPublicationsFromServer, this.props.pollInterval);
   },
   render: function() {
     var pubForm;
@@ -180,7 +162,7 @@ var PublicationBox = React.createClass({
       pubForm = <div className="panel panel-default">
           <div className="panel-body">
             <div className="row">
-              <PublicationForm onPublicationSubmit={this.handlePublicationSubmit} username={this.props.username}/>
+              <PublicationForm username={this.props.username}/>
             </div>
           </div>
         </div>;
@@ -233,18 +215,6 @@ var PublicationList = React.createClass({
 });
 
 var PublicationForm = React.createClass({
-  handleSubmit: function(e) {
-    e.preventDefault();
-    var author = React.findDOMNode(this.refs.author).value.trim();
-    var text = React.findDOMNode(this.refs.text).value.trim();
-    if (!text || !author) {
-      return;
-    }
-	this.props.onPublicationSubmit({author: author, text: text});
-    React.findDOMNode(this.refs.author).value = '';
-    React.findDOMNode(this.refs.text).value = '';
-    return;
-  },
   render: function() {
     return (
       <FormTabs username={this.props.username}/>
@@ -258,7 +228,7 @@ var PublicationTab = React.createClass({
   render:function(){
     var url = "/profile/"+this.props.username+"/publications";
     return(
-      <form action={url} encType="multipart/form-data" method="post" className="upload-form form-horizontal" >
+      <form action={url} encType="multipart/form-data" method="post" className="upload-form form-horizontal" id="upload-publication" >
         <div className="form-group ">
           <label className="col-sm-2 control-label" for="inputTitle">Title</label>
           <div className="col-sm-10">
@@ -425,11 +395,6 @@ React.render(
   document.getElementById('content')
 );
 
-function switchToDataTab(){
-  console.log("switch");
-  React.unmountComponentAtNode(document.getElementById("publications"));
-}
-
 function readURL(input) {
   if (input.files && input.files[0]) {
     var reader = new FileReader();
@@ -460,6 +425,24 @@ $("#edit-email").click(function(){
   var text = $("#add-your-email").text();
   $("#add-your-email").replaceWith("<input class=\"form-control edit-profile\" type=\"text\" name=\"inputemail\" placeholder=\""+text+"\"></input>");
   $("#save-changes").show();
+});
+
+$('#upload-publication').submit( function(e){
+    $.ajax({
+      url: "/profile/"+user+"/publications",
+      type: 'POST',
+      data: new FormData( this ),
+      processData: false,
+      contentType: false,
+      success: function(data){
+        revertToList();
+      },
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }
+    });
+    e.preventDefault();
+
 });
 
 function showPublication(pubid, datatype, title, year, postid, filename, tags, date, description, author, username){
