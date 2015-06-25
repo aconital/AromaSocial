@@ -38,6 +38,7 @@ module.exports=function(app,Parse) {
                       var object = results[i];
 
                       var  username= object.attributes.from.attributes.username;
+                      var  userImg=  object.attributes.from.attributes.imgUrl;
                       var  type=object.attributes.type;
                       var  date=object.createdAt;
 
@@ -72,6 +73,7 @@ module.exports=function(app,Parse) {
                               }
                               feeds.push({
                                   username: username,
+                                  userImg: userImg,
                                   type:type,
                                   date:date,
                                   filename: filename,
@@ -306,8 +308,8 @@ app.get('/profile/:username', function (req, res, next) {
                       pub .save(null, {
                           success: function(pub) {
                               // Execute any logic that should take place after the object is saved.
-                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username, 
-                                'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
+                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username,
+                                'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname,
                                 email: currentUser.attributes.email});
                           },
                           error: function(pub, error) {
@@ -328,16 +330,17 @@ app.get('/profile/:username', function (req, res, next) {
     app.delete('/profile/:username/publications',function(req,res,next){
         var currentUser = Parse.User.current();
         if (currentUser && currentUser.attributes.username == req.params.username) {
-            var pubId=req.params.id;
+            var pubId=req.body.id;
+            console.log("ID is: "+pubId);
             var Publication = Parse.Object.extend("Publication");
             var query = new Parse.Query(Publication);
             query.equalTo("objectId", pubId);
             query.first({
                 success: function(object) {
-                    object.destroy();
-                    res.render("profile", {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username, 
-                      'isMe': true, profilepicurl:currentUser.attributes.imgUrl, profilepicurl:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
-                      email: currentUser.attributes.email});
+                    object.destroy().then(function() {
+                       res.render("profile");
+                    });
+
                 },
                 error: function(error) {
                     alert("Error: " + error.code + " " + error.message);
@@ -361,16 +364,21 @@ app.get('/profile/:username', function (req, res, next) {
         console.log(tags);
         var Publication = Parse.Object.extend("Publication");
         var query = new Parse.Query(Publication);
+        query.include('from');
         query.containedIn("hashtags", tags.match(/#.+?\b/g));
         query.find({
             success: function(results) {
                 console.log("Successfully retrieved " + results.length + " publications.");
                 // Do something with the returned Parse.Object values
+
                 var pubs=[];
                 for (var i = 0; i < results.length; i++) {
                     var object = results[i];
-
+                    var  username= object.attributes.from.attributes.username;
+                    var  userImg=  object.attributes.from.attributes.imgUrl;
                     pubs.push({
+                        username: username,
+                        userImg: userImg,
                         filename: object.attributes.filename,
                         title:object.attributes.title,
                         hashtags:object.attributes.hashtags,
