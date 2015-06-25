@@ -1,3 +1,5 @@
+
+
 var ZoomPublication = React.createClass({
   loadPublicationFromServer: function() {
     $.ajax({
@@ -63,7 +65,8 @@ var ZoomSearchResult = React.createClass({
     return (
       <div id="zoom">
         <LargerResult filename={this.props.filename} postid={this.props.postid} tags={this.props.tagString} title={this.props.title} date={this.props.date} 
-          description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} datatype="Publication" user={this.props.user}/>
+          description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} datatype="Publication" user={this.props.user}
+          profilepic={this.props.profilepic}/>
         <File/>
       </div>
     );
@@ -71,14 +74,8 @@ var ZoomSearchResult = React.createClass({
 });
      
 var LargerResult = React.createClass({
-  getInitialState: function() {
-    return {show: false};
-  },
-  showDescription: function(event) {
-    this.setState({show: !this.state.show});
-  },
   render: function(){
-    var text = this.state.show ? this.props.description : '';
+    var text = this.props.description;
     var profileurl = "/profile/"+this.props.user;
     return(
       <div className="result">
@@ -93,29 +90,27 @@ var LargerResult = React.createClass({
         </div>
         <div className="row author-click">
           <div className="col-xs-1 center-vertical">
-            <a href={profileurl}><img src="/images/user.png" alt="" className="img-circle search-profile-pic"/></a>
+            <a href={profileurl}><img src={this.props.profilepic} alt="" className="img-circle search-profile-pic"/></a>
           </div>
           <div className="col-xs-10 center-vertical-author">
             <a href={profileurl} className="black smaller nostyle">{this.props.author}</a>
           </div>   
         </div>
-                      
-              <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showDescription}>SEE DESCRIPTION </a><span> - </span>
-              <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showPublication}>SEE FULL TEXT</a>
-              <p>{text}</p>
-        <hr/>
+        <div className="row">   
+          <div className="col-xs-12">      
+            <h4 className="black non-inline">DESCRIPTION</h4>
+            <p className="black lighter">{text}</p>
+          </div>
+        </div>
       </div>
     );
-  },
-  showPublication: function(){
-    showPublicationSearch(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.searchphrase);
   }
 });   
 
 var File = React.createClass({
   render: function(){
     return(
-      <div className="file">
+      <div className="file" id="file">
         <hr/>
         <a className="media" href="/Untitled2015_06_23-13_27_10.pdf"></a> 
       </div>
@@ -161,7 +156,7 @@ var Zoom = React.createClass({
       <div className="col-sm-6">
         <div className = "panel panel-default panel-zoom">
           <ZoomSearchResult url={this.props.url} filename={this.props.filename} postid={this.props.postid} tagString={this.props.tagString} title={this.props.title} date={this.props.date} 
-          description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} user={this.props.user}/>
+          description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} user={this.props.user} profilepic={this.props.profilepic}/>
         </div>
       </div>
     </div>
