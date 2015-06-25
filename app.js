@@ -29,66 +29,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 require('./routes/routes')(app,Parse);
 
-
-
-
-app.get('/comments.json', function(req, res) {
-  fs.readFile('comments.json', function(err, data) {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(data);
-  });
-});
-
-app.get('/publications.json', function(req, res) {
-  fs.readFile('publications.json', function(err, data) {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(data);
-  });
-});
-
-app.post('/publications.json', function(req, res) {
-  fs.readFile('publications.json', function(err, data) {
-    var publications = JSON.parse(data);
-    publications.push(req.body);
-    fs.writeFile('publications.json', JSON.stringify(publications, null, 4), function(err) {
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.send(JSON.stringify(publications));
-    });
-  });
-});
-
-app.post('/comments.json', function(req, res) {
-  fs.readFile('comments.json', function(err, data) {
-    var comments = JSON.parse(data);
-    comments.push(req.body);
-    fs.writeFile('comments.json', JSON.stringify(comments, null, 4), function(err) {
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.send(JSON.stringify(comments));
-    });
-  });
-});
-
-app.post('/removeComment',function (req,res){
-  fs.readFile('comments.json', function(err, data) {
-    var comments = JSON.parse(data);
-    console.log(comments);
-    var i = 0;
-    comments.forEach(function(item){
-	    if(Number(item['postid'])==Number(req.body.postid)){
-		    delete comments.splice(i,1);
-	    }
-	    i++;
-    });
-    fs.writeFile('comments.json', JSON.stringify(comments, null, 4), function(err) {
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.send(JSON.stringify(comments));
-    });
-  });
-});
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
