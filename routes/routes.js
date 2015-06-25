@@ -362,10 +362,10 @@ app.get('/profile/:username', function (req, res, next) {
     app.post('/search', function (req, res, next) {
 
         var tags=req.body.tags;
-        console.log(tags);
+     //   console.log(tags);
         var Publication = Parse.Object.extend("Publication");
         var query = new Parse.Query(Publication);
-        query.include('from');
+        query.include('user');
         query.containedIn("hashtags", tags.match(/#.+?\b/g));
         query.find({
             success: function(results) {
@@ -375,8 +375,9 @@ app.get('/profile/:username', function (req, res, next) {
                 var pubs=[];
                 for (var i = 0; i < results.length; i++) {
                     var object = results[i];
-                    //var  username= object.attributes.from.attributes.username;
-                    //var  userImg=  object.attributes.from.attributes.imgUrl;
+
+                    var  username= object.attributes.user.attributes.username;
+                    var  userImg=  object.attributes.user.attributes.imgUrl;
                     pubs.push({
                         //username: username,
                         //userImg: userImg,
