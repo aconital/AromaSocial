@@ -76,7 +76,7 @@ var Publication = React.createClass({
 	  this.props.refresh();
   },
   showPublication: function(){
-    showPublication(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author);
+    showPublication(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username);
   },
   componentWillUnmount: function() {
     $(this.getDOMNode()).children().get().forEach(function(node) {
@@ -210,7 +210,7 @@ var PublicationList = React.createClass({
       return (
         <Publication filename={publication.filename} postid={publication.postid} tags={jsonString} title={publication.title} date={publication.date} 
           description={publication.description} author={publication.author} year={publication.year} pubid={publication.id} datatype="Publication" url={deleteurl} 
-          myself={myself} refresh={refresh}>
+          myself={myself} refresh={refresh} username={username}>
         </Publication>
       );
     });
@@ -462,10 +462,10 @@ $("#edit-email").click(function(){
   $("#save-changes").show();
 });
 
-function showPublication(pubid, datatype, title, year, postid, filename, tags, date, description, author){
+function showPublication(pubid, datatype, title, year, postid, filename, tags, date, description, author, username){
   var works = document.getElementById("content");
   React.unmountComponentAtNode(works);
   React.render(<ProfileZoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
-    description={description} author={author} year={year} pubid={pubid}/>, document.getElementById("content"));
+    description={description} author={author} year={year} pubid={pubid} username={username}/>, document.getElementById("content"));
 }
 

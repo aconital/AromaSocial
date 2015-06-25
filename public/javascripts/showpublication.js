@@ -27,10 +27,11 @@ var ZoomPublication = React.createClass({
     $('a.media').media({width:wid, height: hei});
   },
   render: function() {
+    var deletepublicationurl = "/profile/"+ this.props.username+"/publications";
     return (
       <div id="zoom">
         <LargerPublication filename={this.props.filename} postid={this.props.postid} tags={this.props.tagString} title={this.props.title} date={this.props.date} 
-          description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} datatype="Publication" url="/removePublication"/>
+          description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} datatype="Publication" url={deletepublicationurl}/>
         <File data={this.state.data}/>
       </div>
     );
@@ -195,7 +196,7 @@ var ProfileZoom = React.createClass({
         </div>
       </div>
       <ZoomPublication url={this.props.url} filename={this.props.filename} postid={this.props.postid} tagString={this.props.tagString} title={this.props.title} date={this.props.date} 
-      description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid}/>
+      description={this.props.description} author={this.props.author} year={this.props.year} pubid={this.props.pubid} username={this.props.username}/>
     </div>);
   },
   showList: function(){
