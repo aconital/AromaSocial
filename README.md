@@ -47,5 +47,17 @@ Each page (search, profile and newsfeed) has a div element that has the id `#con
     * a Result object is created for each publication returned from the server
     * when the state of the SearchPage object changes, the list of the results is updated - this is an inherent trait in React
     
+  * Profile Page:
+    * Parts of this page are only displayed if the user is viewing their own profile page - which will allow them to edit their information and post publications. This is determined using the isMe flag sent from the server.  
+    * Part of this page is created using pure Jade - this is the section containing the profile picture + upload picture modal as well as the form to update the user's full name and email located below the profile picture.  The fullname and email and profile picture are only editable if the user viewing their own profile.
+    * The rest of the profile page is rendered using React components
+    * The profile page's parent component is PublicationBox which contains two components - PublicationForm and PublicationList.  The PublicationForm is only displayed if the isMe flag is set
+    * PublicationForm renders a bunch of form tabs - the current tab is stored as a state variable and based on which state it is in, the content is loaded accordingly
+    * PublicationBox loads the user's own publications from the server and saves it as a state variable which is passed to PublicationList 
+    * PublicationList maps this json array to individual Publication objects which displays the information as HTML elements
+    * When the user clicks "SEE FULL TEXT" the PublicationBox component is unmounted - using the showPublication function in the Publication class which calls showPublication()
+    * showPublication() renders the ProfileZoom React class located in showpublication.js
+    * ProfileZoom renders the LargerPublication class which only displays the option to delete the publication if the user is viewing their own profile
+    
 Keep in mind that most of the forms are handled using JQuery and Ajax to prevent some weird loading issues we were having when the form was submitted on its own.  Look for the .submit() handlers for the id's of the form if you need to change anything about the forms or the ways they are submitted. 
 
