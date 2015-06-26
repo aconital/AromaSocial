@@ -429,7 +429,7 @@ app.get('/profile/:username', function (req, res, next) {
    ********************************************/
   app.get('/signup', function (req, res, next) {
 
-    res.render('signup', {title: 'Sign Up', path: req.path});
+    res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
 });
   app.post('/signup', function (req, res, next) {
   var user = new Parse.User();
