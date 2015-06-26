@@ -255,7 +255,6 @@ app.get('/profile/:username', function (req, res, next) {
 
   });
   app.post('/profile/:username/publications',function(req,res,next){
-      console.log("POST");
       var currentUser = Parse.User.current();
       if (currentUser && currentUser.attributes.username == req.params.username) {
           var tags;
@@ -436,15 +435,18 @@ app.get('/profile/:username', function (req, res, next) {
   var user = new Parse.User();
   user.set("username", req.body.username);
   user.set("password", req.body.password);
+  user.set("fullname", req.body.fullname);
   user.set("email", req.body.email);
-  user.set("imgUrl", "/image/user.png");
-
+  user.set("imgUrl", "/images/user.png");
+  console.log(req.body.username);
   user.signUp(null, {
     success: function (user) {
+        console.log("sucessful signup");
         res.render('newsfeed', {title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
     },
     error: function (user, error) {
       // Show the error message somewhere and let the user try again.
+      console.log("unsucessful signup: " + error.message);
       res.render('signup', {Error: error.message, path: req.path});
     }
   });
@@ -470,6 +472,39 @@ app.get('/profile/:username', function (req, res, next) {
       }
     });
 
+  });
+  
+  app.post("/uploadimage/:username", function (req, res, next){
+    var currentUser = Parse.User.current();
+    if (currentUser && currentUser.attributes.username == req.params.username) {
+      var form = new formidable.IncomingForm();
+      form.parse(req, function(err, fields, files) {
+        filename=files.upload.name;
+      });
+      
+      form.on('end', function(fields, files) {
+        // Temporary location of our uploaded file 
+        var temp_path = this.openedFiles[0].path;
+        // The file name of the uploaded file 
+        var file_name = this.openedFiles[0].name;
+        // Location where we want to copy the uploaded file 
+        var new_location = 'public/profilepictures/'+req.params.username+'/';
+
+        fs.copy(temp_path, new_location + file_name, function(err) {
+          if (err) {
+            console.error(err);
+          }else{
+            currentUser.set("imgUrl",'/profilepictures/'+req.params.username+'/'+file_name);
+          
+            currentUser.save();
+            res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, currentUserImg:currentUser.attributes.imgUrl, 
+              userImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, email: currentUser.attributes.email});
+          }
+        });
+      });
+    } else {
+      res.render('profile', {Error: 'Submit Publication Failed!'});
+    }
   });
 
 

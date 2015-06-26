@@ -279,7 +279,141 @@ var PublicationTab = React.createClass({
   }
 });
 
+var DataTab = React.createClass({
+  render:function(){
+    return(
+      <form encType="multipart/form-data" method="post" className="upload-form form-horizontal" >
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="inputTitle">Title</label>
+          <div className="col-sm-10">
+                <input type="text" className="form-control" id="inputTitle" name="title" placeholder=""/>
+          </div>
+        </div>
+        
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="inputReference">Reference</label>
+          <div className="col-sm-10">
+                <input type="text" className="form-control" id="inputReference" name="title" placeholder=""/>
+          </div>
+        </div>
+        
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="description">Description</label>
+          <div className="col-sm-10">
+                <textarea className="form-control" id="description" name="description" placeholder=""/>
+          </div>
+        </div>
 
+        <div className="form-group top-margin">
+          <label className="col-sm-2 control-label" for="tags">Tags</label>
+          <div id="tagsinput" className="col-sm-10 tags-input-class ">
+            <TagsComponent valueString=""/>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="col-sm-2 control-label" for="files">Upload Files</label>
+          <div className="col-sm-8">
+            <div className="">
+              <input multiple="multiple" name="upload" type="file" className="upload" id="files"/>
+            </div>
+          </div>
+
+          <div className="col-sm-2">
+            <button className="btn btn-primary">Upload</button>
+          </div>
+        </div>
+      </form>
+      
+    );
+  }
+});
+
+var ImageTab = React.createClass({
+  render:function(){
+    return(
+      <form encType="multipart/form-data" method="post" className="upload-form form-horizontal" >
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="inputTitle">Title</label>
+          <div className="col-sm-10">
+                <input type="text" className="form-control" id="inputTitle" name="title" placeholder=""/>
+          </div>
+        </div>
+        
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="description">Description</label>
+          <div className="col-sm-10">
+                <textarea className="form-control" id="description" name="description" placeholder=""/>
+          </div>
+        </div>
+
+        <div className="form-group top-margin">
+          <label className="col-sm-2 control-label" for="tags">Tags</label>
+          <div id="tagsinput" className="col-sm-10 tags-input-class ">
+            <TagsComponent valueString=""/>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="col-sm-2 control-label" for="files">Upload Files</label>
+          <div className="col-sm-8">
+            <div className="">
+              <input multiple="multiple" name="upload" type="file" className="upload" id="files"/>
+            </div>
+          </div>
+
+          <div className="col-sm-2">
+            <button className="btn btn-primary">Upload</button>
+          </div>
+        </div>
+      </form>
+      
+    );
+  }
+});
+
+var ModelTab = React.createClass({
+  render:function(){
+    return(
+      <form encType="multipart/form-data" method="post" className="upload-form form-horizontal" >
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="inputTitle">Title</label>
+          <div className="col-sm-10">
+                <input type="text" className="form-control" id="inputTitle" name="title" placeholder=""/>
+          </div>
+        </div>
+        
+        <div className="form-group ">
+          <label className="col-sm-2 control-label" for="description">Description</label>
+          <div className="col-sm-10">
+                <textarea className="form-control" id="description" name="description" placeholder=""/>
+          </div>
+        </div>
+
+        <div className="form-group top-margin">
+          <label className="col-sm-2 control-label" for="tags">Tags</label>
+          <div id="tagsinput" className="col-sm-10 tags-input-class ">
+            <TagsComponent valueString=""/>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="col-sm-2 control-label" for="files">Upload Files</label>
+          <div className="col-sm-8">
+            <div className="">
+              <input multiple="multiple" name="upload" type="file" className="upload" id="files"/>
+            </div>
+          </div>
+
+          <div className="col-sm-2">
+            <button className="btn btn-primary">Upload</button>
+          </div>
+        </div>
+      </form>
+      
+    );
+  }
+});
 
 var tabList = [
     { 'id': 1, 'name': 'Publications', 'url': '/publications' },
@@ -343,19 +477,19 @@ var Content = React.createClass({
 
                 {this.props.currentTab === 2 ?
                 <div className="tab-pane fade in active">
-                  <PublicationTab></PublicationTab>
+                  <DataTab></DataTab>
                 </div>
                 :null}
 
                 {this.props.currentTab === 3 ?
                 <div className="tab-pane fade in active">
-                  <PublicationTab></PublicationTab>
+                  <ImageTab></ImageTab>
                 </div>
                 :null}
             
                 {this.props.currentTab === 4 ?
                 <div className="tab-pane fade in active">
-                  <PublicationTab></PublicationTab>
+                  <ModelTab></ModelTab>
                 </div>
                 :null}
             </div>
@@ -444,6 +578,26 @@ $('#upload-publication').submit( function(e){
     e.preventDefault();
 
 });
+
+$('#upload-profile-pic').submit( function(e){
+    $.ajax({
+      url: "/uploadimage/"+user,
+      type: 'POST',
+      data: new FormData( this ),
+      processData: false,
+      contentType: false,
+      success: function(data){
+        window.location.href = "/profile/"+user;     
+      },
+      error: function(xhr, status, err) {
+        console.error(status, err.toString());
+      }
+    });
+    e.preventDefault();
+
+});
+
+
 
 function showPublication(pubid, datatype, title, year, postid, filename, tags, date, description, author, username){
   var works = document.getElementById("content");

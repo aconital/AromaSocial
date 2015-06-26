@@ -70,18 +70,19 @@ block content
             span(aria-hidden="true") &times;
           h4.modal-title#upload Upload Profile Picture
         .modal-body
-          form#upload-profile-pic(action="/uploadimage" method="POST")
+          form#upload-profile-pic(action="/uploadimage" method="POST" enctype="multipart/form-data")
             div.row
               div.col-xs-4
-                img#preview(src="#{profilepicurl}" alt="profile picture")
+                img#preview(src="#{currentUserImg}" alt="profile picture")
               div.col-xs-8
-                input#imginput(type="file")  
+                input#imginput(type="file" name="upload")  
         .modal-footer
           button.btn.btn-default(type="button" data-dismiss="modal") Close
           button.btn.btn-primary#submit-photo(type="button") Save Changes
   
   script.
     var user = "#{username}";
+    console.log("FULLNAME: "+ "#{fullname}");
     var isMe = "#{isMe}";
     var other = "";
     console.log(isMe);
