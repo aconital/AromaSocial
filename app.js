@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
 var Parse = require('parse').Parse;
-
+var exphbs = require('express-handlebars');
 var app = express();
 
 
@@ -16,8 +16,12 @@ Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQ
 
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+// Configure express to use handlebars templates
+var hbs = exphbs.create({
+  defaultLayout: 'main', //we will be creating this layout shortly
+});
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));

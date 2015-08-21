@@ -11,9 +11,9 @@ module.exports=function(app,Parse) {
    * HOME PAGE
    *
    ********************************************/
-  app.get('/', function (req, res) {
-      res.render('index', {title: 'The index page!', path: req.path})
-    });
+  app.get('/', function(req, res, next) {
+      res.render('home', {user: req.user});
+  });
 
 
     /*******************************************
@@ -506,6 +506,22 @@ app.get('/profile/:username', function (req, res, next) {
       res.render('profile', {Error: 'Submit Publication Failed!'});
     }
   });
+/*******************************************
+*
+* GROUP
+*
+********************************************/
+    app.get("/groups/:id", function (req, res, next) {
+        var Group = Parse.Object.extend("Group");
+        var query = new Parse.Query(Group);
+        query.find({
+            success: function (results) {
+                console.log("Successfully retrieved " + results.length + " groups.");
+
+                res.render('group');
+            }
+        });
+    });
 
 
 /*******************************************
