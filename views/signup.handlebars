@@ -1,0 +1,33 @@
+<div class="col-md-offset-4 col-md-4">
+    <div class="panel panel-default panel-signup">
+        <div class="panel-heading">Sign Up</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="alert alert-warning" id="error" style="visibility: hidden"></div></p>
+            </div>
+            <form name="form" method="post" action="/signup" novalidate="novalidate">
+                <div class="form-group">
+                    <label for="username" class="control-label">Username</label>
+                    <input type="text" name="username" id="username" placeholder="Username" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="fullname" class="control-label">Full Name</label>
+                    <input type="text" name="fullname" id="fullname" placeholder="John Smith" unique-username="unique-username" required="required" ng-model="fullname" autofocus="autofocus" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="control-label">Email</label>
+                    <input type="email" ng-model="email" name="email" id="email" placeholder="Email" required="required" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="control-label">Password</label>
+                    <input type="password" name="password" id="password" ng-model="password" required="required" match="verification" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="verification" class="control-label">Repeat password</label>
+                    <input type="password" name="verification" id="verification" ng-model="verification" required="required" match="password" class="form-control"/>
+                </div>
+                <input type="submit" value="Sign Up" ng-disabled="form.$invalid" class="btn btn-primary"/>
+            </form>
+        </div>
+    </div>
+</div>

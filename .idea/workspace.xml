@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5c13dd04-f05f-4ade-a46f-a0ee1241dfc0" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/npm-debug.log" afterPath="$PROJECT_DIR$/npm-debug.log" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/routes.js" afterPath="$PROJECT_DIR$/routes/routes.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/views/index.handlebars" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/views/newsfeed.handlebars" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/views/signup.handlebars" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/signin.handlebars" afterPath="$PROJECT_DIR$/views/signin.handlebars" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="AromaSocial.iws" />
@@ -25,31 +27,103 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app.js">
+      <file leaf-file-name="signin.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/signin.jade">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="54" column="23" selection-start-line="54" selection-start-column="23" selection-end-line="54" selection-end-column="23" />
+            <state vertical-scroll-proportion="-1.2592592">
+              <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="24" selection-end-column="36" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="routes.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/routes/routes.js">
+      <file leaf-file-name="signin.handlebars" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/signin.handlebars">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.8081495">
-              <caret line="195" column="36" selection-start-line="195" selection-start-column="36" selection-end-line="195" selection-end-column="36" />
+            <state vertical-scroll-proportion="-15.038462">
+              <caret line="23" column="6" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/parseCloudCode/cloud/main.js">
+      <file leaf-file-name="signup.handlebars" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/signup.handlebars">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
+            <state vertical-scroll-proportion="-3.2692308">
+              <caret line="5" column="85" selection-start-line="5" selection-start-column="85" selection-end-line="5" selection-end-column="85" />
+              <folding>
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/index.jade">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-13.851851">
+              <caret line="22" column="75" selection-start-line="22" selection-start-column="75" selection-end-line="22" selection-end-column="75" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="newsfeed.jade" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/views/newsfeed.jade">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.6296296">
+              <caret line="20" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="newsfeed.handlebars" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/newsfeed.handlebars">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.8461537">
+              <caret line="12" column="64" selection-start-line="12" selection-start-column="64" selection-end-line="12" selection-end-column="64" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="layout.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/layout.jade">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="17.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.handlebars" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/index.handlebars">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-19.5">
+              <caret line="32" column="6" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="signup.jade" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/signup.jade">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.62963">
+              <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="home.handlebars" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/home.handlebars">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="2.7307692">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -82,6 +156,10 @@
         <option value="$PROJECT_DIR$/bin/www" />
         <option value="$PROJECT_DIR$/parseCloudCode/cloud/main.js" />
         <option value="$PROJECT_DIR$/routes/routes.js" />
+        <option value="$PROJECT_DIR$/views/signin.handlebars" />
+        <option value="$PROJECT_DIR$/views/signup.handlebars" />
+        <option value="$PROJECT_DIR$/views/index.handlebars" />
+        <option value="$PROJECT_DIR$/views/newsfeed.handlebars" />
       </list>
     </option>
   </component>
@@ -123,6 +201,8 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -152,6 +232,24 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AromaSocial" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AromaSocial" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="layouts" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -231,8 +329,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -300,10 +396,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="1" width="1364" height="726" extended-state="1" />
+    <frame x="1" y="1" width="1364" height="726" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24925816" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24886878" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Grunt " active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -339,52 +435,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/views/profile.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="24" column="28" selection-start-line="24" selection-start-column="28" selection-end-line="24" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/routes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="241" column="18" selection-start-line="241" selection-start-column="18" selection-end-line="241" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/profile.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="24" column="28" selection-start-line="24" selection-start-column="28" selection-end-line="24" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/routes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="99" column="54" selection-start-line="99" selection-start-column="54" selection-end-line="99" selection-end-column="54" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -643,34 +693,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/index.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/layout.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/signup.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.762069">
-          <caret line="26" column="12" selection-start-line="26" selection-start-column="12" selection-end-line="26" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/newsfeed.jade">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2800659">
-          <caret line="10" column="25" selection-start-line="10" selection-start-column="25" selection-end-line="10" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/javascripts/profile.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.18149467">
@@ -702,7 +724,7 @@
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="54" column="23" selection-start-line="54" selection-start-column="23" selection-end-line="54" selection-end-column="23" />
+          <caret line="54" column="1" selection-start-line="54" selection-start-column="1" selection-end-line="54" selection-end-column="1" />
           <folding />
         </state>
       </provider>
@@ -717,8 +739,90 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/routes.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.8081495">
-          <caret line="195" column="36" selection-start-line="195" selection-start-column="36" selection-end-line="195" selection-end-column="36" />
+        <state vertical-scroll-proportion="-6.172414">
+          <caret line="14" column="22" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/home.handlebars">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.7307692">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/signin.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.2592592">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="24" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/signin.handlebars">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-15.038462">
+          <caret line="23" column="6" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/signup.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.62963">
+          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/signup.handlebars">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.2692308">
+          <caret line="5" column="85" selection-start-line="5" selection-start-column="85" selection-end-line="5" selection-end-column="85" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/index.handlebars">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-19.5">
+          <caret line="32" column="6" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/index.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.851851">
+          <caret line="22" column="75" selection-start-line="22" selection-start-column="75" selection-end-line="22" selection-end-column="75" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/newsfeed.handlebars">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.8461537">
+          <caret line="12" column="64" selection-start-line="12" selection-start-column="64" selection-end-line="12" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/layout.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="17.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/newsfeed.jade">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6296296">
+          <caret line="20" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
           <folding />
         </state>
       </provider>
