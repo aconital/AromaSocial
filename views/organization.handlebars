@@ -1,6 +1,14 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/react.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/javascript">
+$(function () {
+    $('#content-nav li a').on('click', function (e) {
+        e.preventDefault();
+        var page = $(this).attr('href');
+        $('#content-main').load(page);
+    });
+});
+</script>
+
 <div class="organization-top organization-top-container">
     <div class="cover-photo">
         <img src="{{cover_imgURL}}"
@@ -29,25 +37,19 @@
     </div>
     <div class="organization-bottom-2">
         <div id="tabs">
-            <ul>
-                <li><a href="#connections">Connections</a></li>
-                <li><a href="#people">People</a></li>
-                <li id="selected"><a href="#about">About</a></li>
-                <li><a href="#news-and-events">News And Events</a></li>
-                <li><a href="#knowledge">Knowledge</a></li>
+            <ul id="content-nav">
+                <li id="connections"><a href="#connections">Connections</a></li>
+                <li id="people"><a href="#people">People</a></li>
+                <li id="about"><a href="about">About</a></li>
+                <li id="news-and-events"><a href="#news-and-events">News And Events</a></li>
+                <li id="knowledge"><a href="#knowledge">Knowledge</a></li>
             </ul>
         </div>
-        <div id="content" class="organization-content" contenteditable="true">
+        <div id="content-main" class="organization-content">
             {{about}}
         </div>
     </div>
 </div>
-
-<script>
-React.render(
-    <OrganizationName/>,document.getElementById('organization-name')
-);
-</script>
 
 <style type="text/css">
     .contain-image {
@@ -210,5 +212,4 @@ React.render(
     -webkit-flex-direction: row;
     flex-direction: row;
     }
-
 </style>

@@ -38,7 +38,7 @@
             </ul>
         </div>
         <div id="content" class="person-content" contenteditable="false">
-            {{about}}
+
         </div>
         <div id="bottom-tabs" class="bottom-tab">
             <ul>
@@ -247,14 +247,3 @@
     flex-direction: row;
     }
 </style>
-
-<script type="text/javascript">
-function makeEditable() {
-    document.getElementById("content").contentEditable = true;
-} function saveEditable() {
-    document.getElementById("content").contentEditable = false;
-}
-
-var source   = $("#entry-template").html();
-var template = Handlebars.compile(source);
-</script>
