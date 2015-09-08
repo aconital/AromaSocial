@@ -1,0 +1,260 @@
+<div class="person-top person-top-container">
+    <div class="cover-photo">
+        <img src="{{cover_imgURL}}"
+             class="cover-photo" />
+    </div>
+    <div class="person-top-1 col">
+        <img src="{{profile_imgURL}}" class="contain-image">
+    </div>
+    <div class="person-top-2 col">
+        <form>
+            <input type="text" placeholder="Search..." class="search-bar"/>
+            <input type="button" value="Search" class="btn btn-primary btn-search"/>
+        </form>
+    </div>
+    <div class="person-top-3 col">
+        <div class="btn-wrap">
+            <input type="button" value="Login" class="btn btn-primary" />
+            <input type="button" value="Sign Up" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+<div class="person-bottom">
+    <div class="person-bottom-1">
+        <div class="person-panel contain-panel"><h4>{{firstname}} {{lastname}}</h4></div>
+        <div class="person-panel contain-panel"><h4>{{position}}</h4></div>
+        <div class="person-panel contain-panel"><h4>{{place}}</h4></div>
+    </div>
+    <div class="person-bottom-2">
+        <div id="tabs">
+            <ul>
+                <li><a href="#connections">Connections</a></li>
+                <li><a href="#resume">Resume</a></li>
+                <li><a href="#friends">Friends</a></li>
+                <li id="selected"><a href="#about">About</a></li>
+                <li><a href="#publications">Publications</a></li>
+                <li><a href="#models">Models</a></li>
+                <li><a href="#data">Data</a></li>
+            </ul>
+        </div>
+        <div id="content" class="person-content" contenteditable="false">
+            {{about}}
+        </div>
+        <div id="bottom-tabs" class="bottom-tab">
+            <ul>
+                <li id="editable"><a href="#edit" onclick="makeEditable()">Edit</a></li>
+                <li><a href="#save" onclick="saveEditable()">Save</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<style type="text/css">
+    .contain-image {
+        width: 80%;
+        border: solid;
+        border-color: #569978;
+        margin: 10%;
+        margin-bottom: 25px;
+        background-color:white;
+    }
+    .contain-panel {
+        width: 80%;
+        border: solid;
+        border-color: #569978;
+        margin: 10%;
+        margin-top: 0;
+        margin-bottom: 25px;
+        padding:20px;
+        text-align:center;
+    }
+    div.cover-photo {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 40%;
+    z-index: -5;
+    overflow: hidden;
+    }
+    img.cover-photo {
+    top: 0px;
+    width: 100%;
+    z-index: -5;
+    }
+    .person-top {
+    float:left;
+    width: 100%;
+    display: table;
+    }
+    .person-bottom {
+    float:left;
+    width: 100%;
+    }
+    .person-top-1 {
+    float:left;
+    width: 20%;
+    }
+    .person-top-2 {
+    float:left;
+    width: 60%;
+    position:relative;
+    }
+    .person-top-3 {
+    float:left;
+    text-align: center;
+    width: 20%;
+    }
+    .person-bottom-1 {
+    float:left;
+    width:20%;
+    }
+    .person-bottom-2 {
+    margin-top:6px;
+    float:left;
+    width:60%;
+    }
+    .search-bar {
+    width: 100%;
+    bottom:0px;
+    margin: 0px;
+    margin-bottom:25px;
+    padding: 5px 10px;
+    position:absolute;
+    border: solid 2px;
+    border-top-right-radius:4px;
+    border-bottom-right-radius:4px;
+    }
+
+    .btn-wrap {
+    margin-top:10%;
+    }
+    .btn-primary {
+    background-color: #569978;
+    border-color: #569978;
+    }
+    .btn-primary:hover {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    }
+    .btn-primary:active {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    }
+    .btn-search {
+    border-top-left-radius:0;
+    border-bottom-left-radius:0;
+    bottom:0px;
+    right:0px;
+    margin: 0px;
+    margin-bottom:25px;
+    position:absolute;
+    }
+
+    #tabs ul {
+    list-style: none;
+    padding:0;
+    margin:0;
+    }
+    #tabs li {
+    color: #fff;
+    background-color: #569978;
+    display: inline;
+    border: solid;
+    border-color: #569978;
+    border-width: 1px 1px 0 1px;
+    padding: 6px 12px;
+    margin: 0 0.05em 0 0;
+    font-size: 14px;
+    border-top-right-radius:4px;
+    border-top-left-radius:4px;
+    }
+    #tabs li:hover {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    }
+    #tabs #selected {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    }
+    #tabs li a {
+    color: #fff;
+    text-decoration: none;
+    }
+
+    #bottom-tabs {
+        float:right;
+        margin-top:3px;
+    }
+    #bottom-tabs ul {
+    list-style: none;
+    padding:0;
+    margin:0;
+    }
+    #bottom-tabs li {
+    color: #fff;
+    background-color: #569978;
+    display: inline;
+    border: solid;
+    border-color: #569978;
+    border-width: 1px 1px 0 1px;
+    padding: 6px 12px;
+    margin: 0 0.05em 0 0;
+    font-size: 14px;
+    border-bottom-right-radius:4px;
+    border-bottom-left-radius:4px;
+    }
+    #bottom-tabs li:hover {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    }
+    .selected {
+    background-color: #FFF;
+    border-color: #70ab8f;
+    }
+    #bottom-tabs li a {
+    color: #fff;
+    text-decoration: none;
+    }
+
+    .person-panel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: solid;
+    border-color: 7fb59b;
+    padding-top:5px;
+    padding-bottom:5px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+    .person-content {
+    margin-top: 3px;
+    padding: 10px;
+    background-color: #fff;
+    border: solid;
+    border-color: 7fb59b;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    border-top-left-radius:0;
+    }
+
+    .person-top-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    }
+</style>
+
+<script type="text/javascript">
+function makeEditable() {
+    document.getElementById("content").contentEditable = true;
+} function saveEditable() {
+    document.getElementById("content").contentEditable = false;
+}
+
+var source   = $("#entry-template").html();
+var template = Handlebars.compile(source);
+</script>

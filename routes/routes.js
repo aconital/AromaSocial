@@ -452,6 +452,62 @@ app.get('/profile/:username', function (req, res, next) {
   });
 
 });
+
+/*******************************************
+ *
+ * ORGANIZATION
+ *
+********************************************/
+app.get('/organization', function (req, res, next) {
+    res.render('organization', {title: 'Organization', path: req.path});
+});
+
+app.get('/organization/:objectId', function (req, res, next) {
+  var query = new Parse.Query('Organization');
+  query.get(req.params.objectId,{
+    success: function(result) {
+      res.render('organization', {title: 'Organization', path: req.path,
+        name: result.get('name'),
+        about: result.get('about'),
+        location: result.get('location'),
+        profile_imgURL: result.get('profile_imgURL'),
+        cover_imgURL: result.get('cover_imgURL')});
+    },
+    error: function(error) {
+      res.render('index', {title: 'Login failed', path: req.path});
+    }
+  });
+});
+
+/*******************************************
+ *
+ * PERSON
+ *
+********************************************/
+  app.get('/person', function (req, res, next) {
+    res.render('person', {title: 'Person', path: req.path});
+});
+
+app.get('/person/:objectId', function (req, res, next) {
+  var query = new Parse.Query('Person');
+  query.get(req.params.objectId,{
+    success: function(result) {
+      res.render('person', {title: 'Person', path: req.path,
+        firstname: result.get('firstname'),
+        lastname: result.get('lastname'),
+        about: result.get('about'),
+        position: result.get('position'),
+        place: result.get('place'),
+        profile_imgURL: result.get('profile_imgURL'),
+        cover_imgURL: result.get('cover_imgURL')});
+    },
+    error: function(error) {
+      res.render('index', {title: 'Login failed', path: req.path});
+    }
+  });
+});
+
+
   /*******************************************
    *
    * SIGN IN
@@ -536,4 +592,3 @@ app.get('/signout', function (req, res, next) {
 });
 
 };
-
