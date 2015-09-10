@@ -94,13 +94,14 @@ module.exports=function(app,Parse) {
 
                   }
                   res.send(feeds);
+
               },
               error: function(error) {
                   console.log("Error: " + error.code + " " + error.message);
               }
           });
       } else {
-          res.render('index', {title: 'Login failed', path: req.path});
+          res.render('index', {title: 'Login failed', path: req.path} );
       }
 
 });
@@ -109,7 +110,7 @@ module.exports=function(app,Parse) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           console.log(currentUser);
-          res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
+          res.render('newsfeed', {layout:'home',title: 'Website', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
       } else {
           res.render('index', {title: 'Login failed', path: req.path});
       }
