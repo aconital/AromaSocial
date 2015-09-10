@@ -1,7 +1,5 @@
 var NewsFeed = React.createClass({
   loadFeedFromServer: function() {
-
-    console.log(this.props);
     $.ajax({
       url: this.props.url,
       dataType: 'json',
