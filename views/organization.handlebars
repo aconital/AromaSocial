@@ -4,7 +4,8 @@ $(function () {
     $('#content-nav li a').on('click', function (e) {
         e.preventDefault();
         var page = $(this).attr('href');
-        $('#content-main').load(page);
+        $('.content-main').fadeOut('slow');
+        $('#content-main-' + page).delay('slow').fadeIn('slow');
     });
 });
 </script>
@@ -19,7 +20,7 @@ $(function () {
     </div>
     <div class="organization-top-2 col">
         <form>
-            <input type="text" placeholder="Search..." class="search-bar"/>
+            <input type="text" placeholder="Search..." class="form-control search-bar"/>
             <input type="button" value="Search" class="btn btn-primary btn-search"/>
         </form>
     </div>
@@ -38,15 +39,19 @@ $(function () {
     <div class="organization-bottom-2">
         <div id="tabs">
             <ul id="content-nav">
-                <li id="connections"><a href="#connections">Connections</a></li>
-                <li id="people"><a href="#people">People</a></li>
+                <li id="connections"><a href="connections">Connections</a></li>
+                <li id="people"><a href="people">People</a></li>
                 <li id="about"><a href="about">About</a></li>
-                <li id="news-and-events"><a href="#news-and-events">News And Events</a></li>
-                <li id="knowledge"><a href="#knowledge">Knowledge</a></li>
+                <li id="news-and-events"><a href="news-and-events">News And Events</a></li>
+                <li id="knowledge"><a href="knowledge">Knowledge</a></li>
             </ul>
         </div>
-        <div id="content-main" class="organization-content">
-            {{about}}
+        <div class="organization-content">
+            <div id="content-main-connections" class="content-main">Connections</div>
+            <div id="content-main-people" class="content-main">People</div>
+            <div id="content-main-about" class="content-main">{{about}}</div>
+            <div id="content-main-news-and-events" class="content-main">News and Events</div>
+            <div id="content-main-knowledge" class="content-main">Knowledge</div>
         </div>
     </div>
 </div>
@@ -120,11 +125,7 @@ $(function () {
     bottom:0px;
     margin: 0px;
     margin-bottom:25px;
-    padding: 5px 10px;
     position:absolute;
-    border: solid 2px;
-    border-top-right-radius:4px;
-    border-bottom-right-radius:4px;
     }
 
     .btn-wrap {
@@ -135,6 +136,10 @@ $(function () {
     border-color: #569978;
     }
     .btn-primary:hover {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    }
+    .btn-primary:active {
     background-color: #70ab8f;
     border-color: #70ab8f;
     }
@@ -211,5 +216,9 @@ $(function () {
     display: flex;
     -webkit-flex-direction: row;
     flex-direction: row;
+    }
+
+    .content-main {
+    display:none;
     }
 </style>

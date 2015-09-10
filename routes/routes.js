@@ -143,18 +143,25 @@ module.exports=function(app,Parse) {
 
     });
 
-  /*******************************************
-   *
-   * PROFILE
-   *
-   ********************************************/
+/*******************************************
+ *
+ * PROFILE
+ *
+********************************************/
 app.get('/profile/:username', function (req, res, next) {
   var currentUser = Parse.User.current();
   if (currentUser) {
-    if( currentUser.attributes.username == req.params.username)
-    {
-      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, currentUserImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
-        email: currentUser.attributes.email
+    if(currentUser.attributes.username == req.params.username) {
+      res.render('profile', {title: 'Profile',
+        username: currentUser.attributes.username,
+        email: currentUser.attributes.email,
+        fullname: currentUser.attributes.fullname,
+        about: currentUser.attributes.about,
+        position: currentUser.attributes.position,
+        location: currentUser.attributes.location,
+        profile_imgURL: currentUser.attributes.profile_imgURL,
+        cover_imgURL: currentUser.attributes.cover_imgURL,
+        'isMe': true,
       });
     }
     else{
@@ -461,7 +468,10 @@ app.get('/profile/:username', function (req, res, next) {
 app.get('/organization', function (req, res, next) {
     res.render('organization', {title: 'Organization', path: req.path});
 });
-
+app.get('/organization/about', function (req, res, next) {
+    res.render('organization/about', {title: 'Organization', path: req.path,
+    field1: req.params.field1});
+});
 app.get('/organization/:objectId', function (req, res, next) {
   var query = new Parse.Query('Organization');
   query.get(req.params.objectId,{
@@ -470,34 +480,6 @@ app.get('/organization/:objectId', function (req, res, next) {
         name: result.get('name'),
         about: result.get('about'),
         location: result.get('location'),
-        profile_imgURL: result.get('profile_imgURL'),
-        cover_imgURL: result.get('cover_imgURL')});
-    },
-    error: function(error) {
-      res.render('index', {title: 'Login failed', path: req.path});
-    }
-  });
-});
-
-/*******************************************
- *
- * PERSON
- *
-********************************************/
-  app.get('/person', function (req, res, next) {
-    res.render('person', {title: 'Person', path: req.path});
-});
-
-app.get('/person/:objectId', function (req, res, next) {
-  var query = new Parse.Query('Person');
-  query.get(req.params.objectId,{
-    success: function(result) {
-      res.render('person', {title: 'Person', path: req.path,
-        firstname: result.get('firstname'),
-        lastname: result.get('lastname'),
-        about: result.get('about'),
-        position: result.get('position'),
-        place: result.get('place'),
         profile_imgURL: result.get('profile_imgURL'),
         cover_imgURL: result.get('cover_imgURL')});
     },

@@ -1,31 +1,31 @@
-<div class="person-top person-top-container">
+<div class="profile-top profile-top-container">
     <div class="cover-photo">
         <img src="{{cover_imgURL}}"
              class="cover-photo" />
     </div>
-    <div class="person-top-1 col">
+    <div class="profile-top-1 col">
         <img src="{{profile_imgURL}}" class="contain-image">
     </div>
-    <div class="person-top-2 col">
+    <div class="profile-top-2 col">
         <form>
             <input type="text" placeholder="Search..." class="search-bar"/>
             <input type="button" value="Search" class="btn btn-primary btn-search"/>
         </form>
     </div>
-    <div class="person-top-3 col">
+    <div class="profile-top-3 col">
         <div class="btn-wrap">
             <input type="button" value="Login" class="btn btn-primary" />
             <input type="button" value="Sign Up" class="btn btn-primary" />
         </div>
     </div>
 </div>
-<div class="person-bottom">
-    <div class="person-bottom-1">
-        <div class="person-panel contain-panel"><h4>{{firstname}} {{lastname}}</h4></div>
-        <div class="person-panel contain-panel"><h4>{{position}}</h4></div>
-        <div class="person-panel contain-panel"><h4>{{place}}</h4></div>
+<div class="profile-bottom">
+    <div class="profile-bottom-1">
+        <div class="profile-panel contain-panel"><h4>{{firstname}} {{lastname}}</h4></div>
+        <div class="profile-panel contain-panel"><h4>{{position}}</h4></div>
+        <div class="profile-panel contain-panel"><h4>{{place}}</h4></div>
     </div>
-    <div class="person-bottom-2">
+    <div class="profile-bottom-2">
         <div id="tabs">
             <ul>
                 <li><a href="#connections">Connections</a></li>
@@ -37,7 +37,7 @@
                 <li><a href="#data">Data</a></li>
             </ul>
         </div>
-        <div id="content" class="person-content" contenteditable="false">
+        <div id="content" class="profile-content" contenteditable="false">
 
         </div>
         <div id="bottom-tabs" class="bottom-tab">
@@ -82,34 +82,34 @@
     width: 100%;
     z-index: -5;
     }
-    .person-top {
+    .profile-top {
     float:left;
     width: 100%;
     display: table;
     }
-    .person-bottom {
+    .profile-bottom {
     float:left;
     width: 100%;
     }
-    .person-top-1 {
+    .profile-top-1 {
     float:left;
     width: 20%;
     }
-    .person-top-2 {
+    .profile-top-2 {
     float:left;
     width: 60%;
     position:relative;
     }
-    .person-top-3 {
+    .profile-top-3 {
     float:left;
     text-align: center;
     width: 20%;
     }
-    .person-bottom-1 {
+    .profile-bottom-1 {
     float:left;
     width:20%;
     }
-    .person-bottom-2 {
+    .profile-bottom-2 {
     margin-top:6px;
     float:left;
     width:60%;
@@ -217,7 +217,7 @@
     text-decoration: none;
     }
 
-    .person-panel {
+    .profile-panel {
     margin-bottom: 20px;
     background-color: #fff;
     border: solid;
@@ -228,7 +228,7 @@
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     }
-    .person-content {
+    .profile-content {
     margin-top: 3px;
     padding: 10px;
     background-color: #fff;
@@ -240,7 +240,7 @@
     border-top-left-radius:0;
     }
 
-    .person-top-container {
+    .profile-top-container {
     display: -webkit-flex;
     display: flex;
     -webkit-flex-direction: row;
