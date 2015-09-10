@@ -109,7 +109,7 @@ module.exports=function(app,Parse) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           console.log(currentUser);
-          res.render('newsfeed', {title: 'Website', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
+          res.render('newsfeed', {layout:'home',title: 'Website', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
       } else {
           res.render('index', {title: 'Login failed', path: req.path});
       }
@@ -449,7 +449,7 @@ app.get('/profile/:username', function (req, res, next) {
   user.signUp(null, {
     success: function (user) {
         console.log("sucessful signup");
-        res.render('newsfeed', {title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
+        res.render('newsfeed', {layout:'home',title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
     },
     error: function (user, error) {
       // Show the error message somewhere and let the user try again.
