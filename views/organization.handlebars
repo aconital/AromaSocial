@@ -1,224 +1,47 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script type="text/javascript">
-$(function () {
-    $('#content-nav li a').on('click', function (e) {
+$(function() {
+    $('#content-nav li a').on('click', function(e) {
+        var source;
+        var template;
         e.preventDefault();
-        var page = $(this).attr('href');
-        $('.content-main').fadeOut('slow');
-        $('#content-main-' + page).delay('slow').fadeIn('slow');
+        $.ajax({
+            url : 'about.handlebars',
+            dataType: "text/javascript",
+            success : function (data) {
+                console.log(data);
+                source = data;
+                template = Handlebars.compile(source);
+                $('#item-content').html(template);
+            },
+            async : false
+        });
     });
 });
 </script>
 
-<div class="organization-top organization-top-container">
-    <div class="cover-photo">
-        <img src="{{cover_imgURL}}"
-             class="cover-photo" />
-    </div>
-    <div class="organization-top-1 col">
-        <img src="{{profile_imgURL}}" class="contain-image">
-    </div>
-    <div class="organization-top-2 col">
-        <form>
-            <input type="text" placeholder="Search..." class="form-control search-bar"/>
-            <input type="button" value="Search" class="btn btn-primary btn-search"/>
-        </form>
-    </div>
-    <div class="organization-top-3 col">
-        <div class="btn-wrap">
-            <input type="button" value="Login" class="btn btn-primary" />
-            <input type="button" value="Sign Up" class="btn btn-primary" />
-        </div>
+<div class="item-top item-top-container">
+    <div class="item-top-1 col">
+        <img src="{{organization_imgURL}}" class="contain-image">
     </div>
 </div>
-<div class="organization-bottom">
-    <div class="organization-bottom-1">
-        <div class="organization-panel contain-panel" id="organization-name"><h4>{{name}}</h4></div>
-        <div class="organization-panel contain-panel" id="organization-location"><h4>{{location}}</h4></div>
+<div class="item-bottom">
+    <div class="item-bottom-1">
+        <div class="item-panel contain-panel" id="item-name"><h4>{{name}}</h4></div>
+        <div class="item-panel contain-panel" id="item-location"><h4>{{location}}</h4></div>
     </div>
-    <div class="organization-bottom-2">
+    <div class="item-bottom-2">
         <div id="tabs">
             <ul id="content-nav">
-                <li id="connections"><a href="connections">Connections</a></li>
-                <li id="people"><a href="people">People</a></li>
-                <li id="about"><a href="about">About</a></li>
-                <li id="news-and-events"><a href="news-and-events">News And Events</a></li>
-                <li id="knowledge"><a href="knowledge">Knowledge</a></li>
+                <li id="connections"><a href="#connections">Connections</a></li>
+                <li id="people"><a href="#people">People</a></li>
+                <li id="about"><a href="#about">About</a></li>
+                <li id="news-and-events"><a href="#news-and-events">News And Events</a></li>
+                <li id="knowledge"><a href="#knowledge">Knowledge</a></li>
             </ul>
         </div>
-        <div class="organization-content">
-            <div id="content-main-connections" class="content-main">Connections</div>
-            <div id="content-main-people" class="content-main">People</div>
-            <div id="content-main-about" class="content-main">{{about}}</div>
-            <div id="content-main-news-and-events" class="content-main">News and Events</div>
-            <div id="content-main-knowledge" class="content-main">Knowledge</div>
+        <div id="item-content" class="item-content">
+
         </div>
     </div>
 </div>
-
-<style type="text/css">
-    .contain-image {
-    width: 80%;
-    border: solid;
-    border-color: #569978;
-    margin: 10%;
-    margin-bottom: 25px;
-    background-color:white;
-    }
-    .contain-panel {
-    width: 80%;
-    border: solid;
-    border-color: #569978;
-    margin: 10%;
-    margin-top: 0;
-    margin-bottom: 25px;
-    padding:20px;
-    text-align:center;
-    }
-    div.cover-photo {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    height: 40%;
-    z-index: -5;
-    overflow: hidden;
-    }
-    img.cover-photo {
-    top: 0px;
-    width: 100%;
-    z-index: -5;
-    }
-    .organization-top {
-    float:left;
-    width: 100%;
-    display: table;
-    }
-    .organization-bottom {
-    float:left;
-    width: 100%;
-    }
-    .organization-top-1 {
-    float:left;
-    width: 20%;
-    }
-    .organization-top-2 {
-    float:left;
-    width: 60%;
-    position:relative;
-    }
-    .organization-top-3 {
-    float:left;
-    text-align: center;
-    width: 20%;
-    }
-    .organization-bottom-1 {
-    float:left;
-    width:20%;
-    }
-    .organization-bottom-2 {
-    margin-top:6px;
-    float:left;
-    width:60%;
-    }
-    .search-bar {
-    width: 100%;
-    bottom:0px;
-    margin: 0px;
-    margin-bottom:25px;
-    position:absolute;
-    }
-
-    .btn-wrap {
-    margin-top:10%;
-    }
-    .btn-primary {
-    background-color: #569978;
-    border-color: #569978;
-    }
-    .btn-primary:hover {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
-    }
-    .btn-primary:active {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
-    }
-    .btn-primary:active {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
-    }
-    .btn-search {
-    border-top-left-radius:0;
-    border-bottom-left-radius:0;
-    bottom:0px;
-    right:0px;
-    margin: 0px;
-    margin-bottom:25px;
-    position:absolute;
-    }
-
-    #tabs ul {
-    list-style: none;
-    padding:0;
-    margin:0;
-    }
-    #tabs li {
-    color: #fff;
-    background-color: #569978;
-    display: inline;
-    border: solid;
-    border-color: #569978;
-    border-width: 1px 1px 0 1px;
-    padding: 6px 12px;
-    margin: 0 0.05em 0 0;
-    font-size: 14px;
-    border-top-right-radius:4px;
-    border-top-left-radius:4px;
-    }
-    #tabs li:hover {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
-    }
-    #tabs #selected {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
-    }
-    #tabs li a {
-    color: #fff;
-    text-decoration: none;
-    }
-
-    .organization-panel {
-    margin-bottom: 20px;
-    background-color: #fff;
-    border: solid;
-    border-color: 7fb59b;
-    padding-top:5px;
-    padding-bottom:5px;
-    border-radius: 4px;
-    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    }
-    .organization-content {
-    margin-top: 3px;
-    padding: 10px;
-    background-color: #fff;
-    border: solid;
-    border-color: 7fb59b;
-    border-radius: 4px;
-    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    border-top-left-radius:0;
-    }
-
-    .organization-top-container {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    }
-
-    .content-main {
-    display:none;
-    }
-</style>

@@ -16,7 +16,7 @@
 9 verbose stack     at maybeClose (child_process.js:1015:16)
 9 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:1087:5)
 10 verbose pkgid research-website@0.0.1
-11 verbose cwd /Users/Arcade/Documents/Science Files/CPSC 210/IntelliJ/AromaSocial
+11 verbose cwd /Users/Arcade/Documents/Project Files/FRESH/AromaSocial
 12 error Darwin 14.5.0
 13 error argv "node" "/usr/local/bin/npm" "start"
 14 error node v0.12.7

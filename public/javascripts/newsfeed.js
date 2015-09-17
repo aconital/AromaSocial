@@ -70,7 +70,7 @@ var GroupsList = React.createClass({
 var Group = React.createClass({
   render: function(){
     return(
-      <a href="#" className="list-group-item groups-list">{this.props.groupname} <span aria-hidden="true">{String.fromCharCode(215)}</span></a>
+      <a href="organization/AJgSwufvvO" className="list-group-item groups-list">{this.props.groupname} <span aria-hidden="true">{String.fromCharCode(215)}</span></a>
     );
   }
 });
