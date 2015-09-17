@@ -19,6 +19,9 @@ Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQ
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
   defaultLayout: 'main', //we will be creating this layout shortly
+  partialsDir: [
+        'views/'
+    ]
 });
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');

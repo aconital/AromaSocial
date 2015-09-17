@@ -1,47 +1,38 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <div class="item-top item-top-container">
+        <div class="item-top-1 col">
+            <img src="{{organization_imgURL}}" class="contain-image">
+        </div>
+    </div>
+    <div class="item-bottom">
+        <div class="item-bottom-1">
+            <div class="item-panel contain-panel" id="item-name"><h4>{{name}}</h4></div>
+            <div class="item-panel contain-panel" id="item-location"><h4>{{location}}</h4></div>
+        </div>
+        <div class="item-bottom-2">
+            <div id="tabs">
+                <ul id="content-nav">
+                    <li id="connections"><a href="#connections">Connections</a></li>
+                    <li id="people"><a href="#people">People</a></li>
+                    <li id="about"><a href="#about">About</a></li>
+                    <li id="news-and-events"><a href="#news-and-events">News And Events</a></li>
+                    <li id="knowledge"><a href="#knowledge">Knowledge</a></li>
+                </ul>
+            </div>
+            <div id="item-content" class="item-content">
+
+            </div>
+        </div>
+    </div>
+
 <script type="text/javascript">
-$(function() {
-    $('#content-nav li a').on('click', function(e) {
-        var source;
-        var template;
-        e.preventDefault();
-        $.ajax({
-            url : 'about.handlebars',
-            dataType: "text/javascript",
-            success : function (data) {
-                console.log(data);
-                source = data;
-                template = Handlebars.compile(source);
-                $('#item-content').html(template);
-            },
-            async : false
+  $(document).ready(function() {
+    $(function() {
+        $('#content-nav li a[href="#about"]').on('click', function(e) {
+            e.preventDefault();
+            $('#item-content').html('{{> organization/about}}');
         });
     });
-});
+  });
 </script>
-
-<div class="item-top item-top-container">
-    <div class="item-top-1 col">
-        <img src="{{organization_imgURL}}" class="contain-image">
-    </div>
-</div>
-<div class="item-bottom">
-    <div class="item-bottom-1">
-        <div class="item-panel contain-panel" id="item-name"><h4>{{name}}</h4></div>
-        <div class="item-panel contain-panel" id="item-location"><h4>{{location}}</h4></div>
-    </div>
-    <div class="item-bottom-2">
-        <div id="tabs">
-            <ul id="content-nav">
-                <li id="connections"><a href="#connections">Connections</a></li>
-                <li id="people"><a href="#people">People</a></li>
-                <li id="about"><a href="#about">About</a></li>
-                <li id="news-and-events"><a href="#news-and-events">News And Events</a></li>
-                <li id="knowledge"><a href="#knowledge">Knowledge</a></li>
-            </ul>
-        </div>
-        <div id="item-content" class="item-content">
-
-        </div>
-    </div>
-</div>
