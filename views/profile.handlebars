@@ -8,6 +8,26 @@ $(function () {
     });
 });
 </script>
+<script type="text/javascript">
+$(function() {
+    $('#content-nav li a').on('click', function(e) {
+        var source;
+        var template;
+        e.preventDefault();
+        $.ajax({
+            url : 'about.handlebars',
+            dataType: "text/javascript",
+            success : function (data) {
+                console.log(data);
+                source = data;
+                template = Handlebars.compile(source);
+                $('#item-content').html(template);
+            },
+            async : false
+        });
+    });
+});
+</script>
 
 <div class="item-top item-top-container">
     <div class="item-top-1 col">
@@ -33,7 +53,77 @@ $(function () {
             </ul>
         </div>
         <div id="item-content" class="item-content" contenteditable="false">
-
+            <form action="" method="" novalidate="" enctype="multipart/form-data">
+                <div id="field1-container" class="form-group">
+                    <label for="field1">
+                        Title:
+                    </label>
+                    <input class="form-control" type="text" name="title" id="field1" required="required">
+                </div>
+                <div id="field2-container" class="form-group">
+                    <label for="field2">
+                        Publication/Publisher:
+                    </label>
+                    <input class="form-control" type="text" name="publication-publisher" id="field2" required="required">
+                </div>
+                <div id="field3-container" class="form-group">
+                    <label for="field3">
+                        Publication Date:
+                    </label>
+                    <input class="form-control" type="date" id="field3" maxlength="524288" name="publication-date"
+                           required="" size="20" tabindex="0" title="">
+                </div>
+                <div id="field5-container" class="radio-group required form-group">
+                    <label for="field5-1">
+                        Publication
+                    </label>
+                    <div class="option clearfix">
+                        <input type="radio" name="publication" id="field5-1" value="Upload">
+                    <span class="option-title">
+                         Upload
+                    </span>
+                        <input type="radio" name="publication" id="field5-2" value="URL" style="margin-left:1.5em;">
+                    <span class="option-title">
+                         URL
+                    </span>
+                    </div>
+                </div>
+                <div id="field4-container" class="form-group">
+                    <label for="field4">
+                        Upload:
+                    </label>
+                    <input class="form-control" type="file" name="publication-upload" id="field4" required="required">
+                </div>
+                <div id="field6-container" class="form-group">
+                    <label for="field6">
+                        URL:
+                    </label>
+                    <input class="form-control" type="url" name="publication-url" id="field6" required="required">
+                </div>
+                <div id="field8-container" class="form-group">
+                    <label for="field8">
+                        Authors:
+                    </label>
+                    <input class="form-control" type="text" name="authors" id="field8" required="required">
+                </div>
+                <div id="field9-container" class="form-group">
+                    <label for="field9">
+                        Description:
+                    </label>
+                    <input class="form-control" type="text" name="description" id="field9" required="required">
+                </div>
+                <div id="field10-container" class="form-group">
+                    <label for="field10">
+                        Tags:
+                    </label>
+                    <input class="form-control" type="text" name="tags" id="field10" required="required">
+                </div>
+                <table id="form-submit" width="100%"><tr>
+                    <td style="padding-right:5px;"><input class="publication-button" type="submit" value="Submit"></td>
+                    <td style="padding-left:5px;"><input class="publication-button" type="submit" value="Cancel"></td>
+                </tr>
+                </table>
+            </form>
         </div>
         <div id="bottom-tabs" class="bottom-tab">
             <ul>
@@ -41,5 +131,7 @@ $(function () {
                 <li><a href="#save" onclick="saveEditable()">Save</a></li>
             </ul>
         </div>
+    </div>
+    <div style="float:left;height:100px;width:100%;">
     </div>
 </div>
