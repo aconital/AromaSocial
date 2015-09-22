@@ -150,9 +150,6 @@ module.exports=function(app,Parse) {
 app.get('/organization', function (req, res, next) {
     res.render('organization', {layout: 'home', title: 'Organization', path: req.path});
 });
-app.get('/organization/about', function (req, res, next) {
-    res.render('organization/about', {title: 'Organization - About', path: req.path});
-});
 app.get('/organization/:objectId', function (req, res, next) {
   var currentUser = Parse.User.current();
   var query = new Parse.Query('Organization');
@@ -223,11 +220,6 @@ app.get('/profile/:username', function (req, res, next) {
   } else {
     res.render('index', {title: 'Please Login!', path: req.path});
   }
-});
-app.get('/profile/about/:username', function (req, res, next) {
-    res.render('organization/about', {title: 'Organization - About', path: req.path,
-      username: req.params.username
-    });
 });
 
 

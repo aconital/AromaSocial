@@ -1,4 +1,5 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script type="text/jsx" src="/javascripts/tabs.js"></script>
 
     <div class="item-top item-top-container">
         <div class="item-top-1 col">
@@ -10,33 +11,6 @@
             <div class="item-panel contain-panel" id="item-name"><h4>{{name}}</h4></div>
             <div class="item-panel contain-panel" id="item-location"><h4>{{location}}</h4></div>
         </div>
-        <div class="item-bottom-2">
-            <div id="tabs">
-                <ul id="content-nav">
-                    <li id="connections"><a href="connections">Connections</a></li>
-                    <li id="people"><a href="people">People</a></li>
-                    <li id="about"><a href="about">About</a></li>
-                    <li id="news-and-events"><a href="news-and-events">News And Events</a></li>
-                    <li id="knowledge"><a href="knowledge">Knowledge</a></li>
-                </ul>
-            </div>
-            <div id="item-content" class="item-content">
-
-            </div>
+        <div id="item-bottom-2-organization" class="item-bottom-2">
         </div>
     </div>
-
-{{> organization/about}}
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $(function() {
-        $('#content-nav li a').on('click', function(e) {
-            e.preventDefault();
-            var page = $(this).attr('href');
-            $('#item-content').html('{{> organization/about}}');
-        });
-    });
-});
-</script>
-
