@@ -222,8 +222,6 @@ app.get('/profile/:username', function (req, res, next) {
   }
 });
 
-
-
     app.post('/profile/:username',function(req,res,next){
         var currentUser = Parse.User.current();
         if (currentUser && currentUser.attributes.username == req.params.username) {

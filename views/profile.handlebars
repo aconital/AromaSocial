@@ -1,34 +1,3 @@
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script type="text/javascript">
-$(function () {
-    $('#content-nav li a').on('click', function (e) {
-        e.preventDefault();
-        var page = $(this).attr('href');
-        $('#item-content').load(page);
-    });
-});
-</script>
-<script type="text/javascript">
-$(function() {
-    $('#content-nav li a').on('click', function(e) {
-        var source;
-        var template;
-        e.preventDefault();
-        $.ajax({
-            url : 'about.handlebars',
-            dataType: "text/javascript",
-            success : function (data) {
-                console.log(data);
-                source = data;
-                template = Handlebars.compile(source);
-                $('#item-content').html(template);
-            },
-            async : false
-        });
-    });
-});
-</script>
-
 <div class="item-top item-top-container">
     <div class="item-top-1 col">
         <img src="{{profile_imgURL}}" class="contain-image">
@@ -46,14 +15,14 @@ $(function() {
                 <li><a href="#connections">Connections</a></li>
                 <li><a href="#resume">Resume</a></li>
                 <li><a href="#friends">Friends</a></li>
-                <li><a href="about/{{username}}">About</a></li>
+                <li><a href="#about">About</a></li>
                 <li><a href="#publications">Publications</a></li>
                 <li><a href="#models">Models</a></li>
                 <li><a href="#data">Data</a></li>
             </ul>
         </div>
-        <div id="item-content" class="item-content" contenteditable="false">
-            <form action="" method="" novalidate="" enctype="multipart/form-data">
+        <div id="content" class="content" contenteditable="false">
+            <form id="publication-form" action="" method="" novalidate="" enctype="multipart/form-data" style="display:none;">
                 <div id="field1-container" class="form-group">
                     <label for="field1">
                         Title:
@@ -124,6 +93,65 @@ $(function() {
                 </tr>
                 </table>
             </form>
+            <div id="connections-list" style="display:none;">
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/organization.png" class="contain-icons"/><h4 style="margin-top:0px;">Organization's Name</h4></a><span>Organization's Title</span> @ <span>Organization's Location</span></div>
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/organization.png" class="contain-icons"/><h4 style="margin-top:0px;">Organization's Name</h4></a><span>Organization's Title</span> @ <span>Organization's Location</span></div>
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/organization.png" class="contain-icons"/><h4 style="margin-top:0px;">Organization's Name</h4></a><span>Organization's Title</span> @ <span>Organization's Location</span></div>
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/organization.png" class="contain-icons"/><h4 style="margin-top:0px;">Organization's Name</h4></a><span>Organization's Title</span> @ <span>Organization's Location</span></div>
+            </div>
+            <div id="friends-list" style="display:none;">
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/user.png" class="contain-icons"/><h4 style="margin-top:0px;">Person's Name</h4></a><span>Person's Title</span> @ <span>Person's Location</span></div>
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/user.png" class="contain-icons"/><h4 style="margin-top:0px;">Person's Name</h4></a><span>Person's Title</span> @ <span>Person's Location</span></div>
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/user.png" class="contain-icons"/><h4 style="margin-top:0px;">Person's Name</h4></a><span>Person's Title</span> @ <span>Person's Location</span></div>
+                <div class="list-item"><a href="#" class="nostyle"><img src="/images/user.png" class="contain-icons"/><h4 style="margin-top:0px;">Person's Name</h4></a><span>Person's Title</span> @ <span>Person's Location</span></div>
+            </div>
+            <div id="about" style="display:none;">
+               {{about}}
+            </div>
+            <div id="resume" style="display:none;">
+                <div id="resume-summary">
+                <div>
+                    <h3 style="margin-top:0px;"><span aria-hidden="true" class="glyphicon glyphicon-info-sign"></span> Summary</h3>
+                </div>
+                <div id="resume-summary-item">
+                    React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via this.props.
+                </div>
+                </div>
+                <hr>
+                <div id="resume-education">
+                    <div>
+                        <h3 style="margin-top:0px;"><span aria-hidden="true" class="glyphicon glyphicon-education"></span> Education</h3>
+                    </div>
+                    <div id="resume-education-item">
+                        <h4 style="margin:0px;font-weight:normal;">Hogwarts University (January 2001 - Present)</h4>
+                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via this.props.
+                    </div><br>
+                    <div id="resume-education-item">
+                        <h4 style="margin:0px;font-weight:normal;">Monsters University (January 1993 - January 2001)</h4>
+                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via this.props.
+                    </div>
+                </div>
+                <hr>
+                <div id="resume-experience">
+                    <div>
+                        <h3 style="margin-top:0px;" ><span aria-hidden="true" class="glyphicon glyphicon-paperclip"></span> Experience</h3>
+                    </div>
+                    <div id="resume-experience-item">
+                        <h4 style="margin:0px;font-weight:normal;">Cake Eater (January 2001 - Present)</h4>
+                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via this.props.
+                    </div>
+                </div>
+                <hr>
+                <div id="resume-projects">
+                    <div>
+                        <h3 style="margin-top:0px;"><span aria-hidden="true" class="glyphicon glyphicon-star"></span> Projects</h3>
+                    </div>
+                    <div id="resume-project-item">
+                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via this.props.
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div id="bottom-tabs" class="bottom-tab">
             <ul>

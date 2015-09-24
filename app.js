@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
+var React = require('react');
 var Parse = require('parse').Parse;
 var exphbs = require('express-handlebars');
 var app = express();
