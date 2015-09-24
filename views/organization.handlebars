@@ -1,16 +1,13 @@
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<div id="content"></div>
+<script type="text/javascript">
+    var title = '{{title}}',
+        path = '{{path}}',
+        currentUsername = '{{currentUsername}}',
+        currentUserImg = '{{currentUserImg}}',
+        objectId = '{{objectId}}',
+        name = '{{name}}',
+        about = '{{about}}',
+        orgLocation = '{{location}}',
+        organization_imgURL = '{{organization_imgURL}}';
+</script>
 <script type="text/jsx" src="/javascripts/tabs.js"></script>
-
-    <div class="item-top item-top-container">
-        <div class="item-top-1 col">
-            <img src="{{organization_imgURL}}" class="contain-image">
-        </div>
-    </div>
-    <div class="item-bottom">
-        <div class="item-bottom-1">
-            <div class="item-panel contain-panel" id="item-name"><h4>{{name}}</h4></div>
-            <div class="item-panel contain-panel" id="item-location"><h4>{{location}}</h4></div>
-        </div>
-        <div id="item-bottom-2-organization" class="item-bottom-2">
-        </div>
-    </div>
