@@ -11,7 +11,8 @@ html {
   -webkit-text-size-adjust: 100%; }
 
 body {
-  margin: 0; }
+  margin: 0;
+  overflow-y: scroll;}
 
 article,
 aside,
@@ -6795,3 +6796,11 @@ color: #fff;
      background-color: #70ab8f;
      border-color: #70ab8f;
      }
+
+     .no-margin{margin:0px;}
+      .no-margin-top{margin-top:0px;}
+      .padding-right{padding-right:5px;}
+            .padding-left{padding-left:5px;}
+      .h4-resume-item{margin:0px;font-weight:normal;}
+      .extend-bottom{display:block;height:60px;width:100%;}
+

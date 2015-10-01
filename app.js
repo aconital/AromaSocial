@@ -6,14 +6,16 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
+var Parse = require('parse/node');
 var React = require('react');
-var Parse = require('parse').Parse;
+var Mixin = require("mixin");
+var ParseReact = require('parse-react');
 var exphbs = require('express-handlebars');
 var app = express();
 
 
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
-
+Parse.User.enableUnsafeCurrentUser();
 
 
 // view engine setup
