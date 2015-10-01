@@ -88,7 +88,6 @@ var Publication = React.createClass({
 
 
 var RemovePublicationButton = React.createClass({
-  mixins: [OverlayMixin],
   getInitialState() {
     return {
       isModalOpen: false

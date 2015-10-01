@@ -1,3 +1,5 @@
+Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+
 var Profile = React.createClass ({
     render: function() {
         return (
@@ -149,8 +151,7 @@ var About = React.createClass({
   }
 });
 
-/*
-var Publications = React.createClass({
+var PublicationForm = React.createClass({
   render: function() {
     return (
       <div>
@@ -229,21 +230,25 @@ var Publications = React.createClass({
     )
   }
 });
-*/
 
 var Publications = React.createClass({
   mixins: [ParseReact.Mixin],
   getInitialState: function() {
       return {data: []};
     },
+  observe: function() {
+      return {
+        publications: (new Parse.Query('Publication'))
+      };
+    },
   render: function() {
     var rows = [];
-    var publications = [{"title":"blah","description":"dasf"},{"title":"blah2","description":"dasf2"}]
-    publications.forEach(function(publications) {
-        rows.push(<Publication name={publications.title} pissed={publications.description} />);
-    });
     return (
       <div>
+        <PublicationForm />
+        {this.data.publications.map(function(publication) {
+            rows.push(<Publication author={publication.author} title={publication.title} description={publication.description} />);
+        })}
         {rows}
       </div>
     );
@@ -251,12 +256,17 @@ var Publications = React.createClass({
 });
 
 var Publication = React.createClass({
-
     render: function() {
         return (
-            <div>
-                {this.props.name} & {this.props.pissed}
-            </div>
+                <div>
+                <hr/>
+                <div>
+                    <h3 className="no-margin-top">{this.props.title} by {this.props.author}</h3>
+                </div>
+                <div>
+                    {this.props.description}
+                </div>
+                </div>
         )
     }
 });

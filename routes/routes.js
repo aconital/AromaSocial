@@ -37,8 +37,8 @@ module.exports=function(app,Parse) {
                   for (var i = 0; i < results.length; i++) {
                       var object = results[i];
 
-                      var  username= object.attributes.from.attributes.username;
-                      var  userImg=  object.attributes.from.attributes.imgUrl;
+                      var  username= object.attributes.username;
+                      var  userImg=  object.attributes.imgUrl;
                       var  type=object.attributes.type;
                       var  date=object.createdAt;
 
@@ -183,6 +183,7 @@ app.get('/profile/:username', function (req, res, next) {
     if(currentUser.attributes.username == linkUser) {
       res.render('profile', {layout: 'home', title: 'Profile', path: req.path,
         currentUsername: currentUser.attributes.username,
+        objectId: currentUser.attributes.objectId,
         currentUserImg: currentUser.attributes.imgUrl,
         username: currentUser.attributes.username,
         email: currentUser.attributes.email,
@@ -203,6 +204,7 @@ app.get('/profile/:username', function (req, res, next) {
             currentUsername: currentUser.attributes.username,
             currentUserImg: currentUser.attributes.imgUrl,
             username: result[0].attributes.username,
+            objectId: result[0].attributes.objectId,
             email: result[0].attributes.email,
             fullname: result[0].attributes.fullname,
             about: result[0].attributes.about,
