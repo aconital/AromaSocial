@@ -232,6 +232,7 @@ var Publications = React.createClass({
 */
 
 var Publications = React.createClass({
+  mixins: [ParseReact.Mixin],
   getInitialState: function() {
       return {data: []};
     },

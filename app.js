@@ -8,7 +8,6 @@ var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
 var Parse = require('parse/node');
 var React = require('react');
-var Mixin = require("mixin");
 var ParseReact = require('parse-react');
 var exphbs = require('express-handlebars');
 var app = express();
