@@ -1,3 +1,7 @@
+node_modules/
+bower_components/
+.idea/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
@@ -46,3 +50,5 @@ Temporary Items
 .idea/workspace.xml
 
 .sass-cache/*
+.idea/copyright/profiles_settings.xml
+
