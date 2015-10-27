@@ -4,6 +4,7 @@ var util = require('util');
 var fs  = require('fs-extra');
 var moment = require('moment');
 var path = require('path');
+var react = require('react');
 
 module.exports=function(app,Parse) {
   /*******************************************
