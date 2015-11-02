@@ -36,12 +36,15 @@ module.exports=function(app,Parse) {
                   var feeds=[];
                   for (var i = 0; i < results.length; i++) {
                       var object = results[i];
+
                       var username = "N/A";
                       var userImg = "";
                       if(object.attributes.from!=null) {
                            username = object.attributes.from.attributes.username;
                            userImg = object.attributes.from.attributes.imgUrl;
                       }
+
+
                       var  type=object.attributes.type;
                       var  date=object.createdAt;
 
