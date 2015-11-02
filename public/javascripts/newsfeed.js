@@ -1,10 +1,12 @@
 var NewsFeed = React.createClass({
   loadFeedFromServer: function() {
+    console.log(this.props.url);
     $.ajax({
       url: this.props.url,
       dataType: 'json',
       cache: false,
       success: function(data) {
+        console.log(data);
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
@@ -70,7 +72,7 @@ var GroupsList = React.createClass({
 var Group = React.createClass({
   render: function(){
     return(
-      <a href="#" className="list-group-item groups-list">{this.props.groupname} <span aria-hidden="true">{String.fromCharCode(215)}</span></a>
+      <a href="organization/AJgSwufvvO" className="list-group-item groups-list">{this.props.groupname} <span aria-hidden="true">{String.fromCharCode(215)}</span></a>
     );
   }
 });

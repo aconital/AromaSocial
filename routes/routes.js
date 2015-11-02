@@ -12,7 +12,7 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/', function(req, res, next) {
-      res.render('home', {user: req.user});
+        res.render('home', {user: req.user});
   });
 
 
@@ -26,7 +26,7 @@ module.exports=function(app,Parse) {
       if (currentUser) {
           var NewsFeed = Parse.Object.extend("NewsFeed");
           var query = new Parse.Query(NewsFeed);
-          query.include('pubId');
+         query.include("pubId");
           query.include('from');
           query.descending("createdAt");
           query.find({
@@ -36,16 +36,23 @@ module.exports=function(app,Parse) {
                   var feeds=[];
                   for (var i = 0; i < results.length; i++) {
                       var object = results[i];
-
-                      var  username= object.attributes.from.attributes.username;
-                      var  userImg=  object.attributes.from.attributes.imgUrl;
+                      var username = "N/A";
+                      var userImg = "";
+                      if(object.attributes.from!=null) {
+                           username = object.attributes.from.attributes.username;
+                           userImg = object.attributes.from.attributes.imgUrl;
+                      }
                       var  type=object.attributes.type;
                       var  date=object.createdAt;
 
                       if(type == "pub") {
+
                             if(object.attributes.pubId!=null){
-                          if (object.attributes.pubId._serverData != null) {
-                              var pubItem = object.attributes.pubId._serverData;
+
+                          if (object.attributes.pubId.attributes != null) {
+
+
+                              var pubItem = object.attributes.pubId.attributes;
 
                               var filename ="";
                               var title ="";
@@ -83,6 +90,7 @@ module.exports=function(app,Parse) {
                                   hashtags: hashtags,
                                   title: title,
                               });
+                              console.log(feeds);
                           }
                       }
                       }
@@ -93,6 +101,7 @@ module.exports=function(app,Parse) {
                     }
 
                   }
+
                   res.send(feeds);
               },
               error: function(error) {
@@ -109,11 +118,10 @@ module.exports=function(app,Parse) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           console.log(currentUser);
-          res.render('newsfeed', {layout:'home',title: 'Website', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
+          res.render('newsfeed', {layout:'home',title: 'Website', currentUsername: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
       } else {
           res.render('index', {title: 'Login failed', path: req.path});
       }
-
 });
 
     app.post('/newsfeed', function (req, res, next) {
@@ -143,52 +151,88 @@ module.exports=function(app,Parse) {
 
     });
 
-  /*******************************************
-   *
-   * PROFILE
-   *
-   ********************************************/
+/*******************************************
+ *
+ * ORGANIZATION
+ *
+********************************************/
+app.get('/organization', function (req, res, next) {
+    res.render('organization', {layout: 'home', title: 'Organization', path: req.path});
+});
+app.get('/organization/:objectId', function (req, res, next) {
+  var currentUser = Parse.User.current();
+  var query = new Parse.Query('Organization');
+  query.get(req.params.objectId,{
+    success: function(result) {
+      res.render('organization', {layout: 'home', title: 'Organization', path: req.path,
+        currentUsername: currentUser.attributes.username,
+        currentUserImg: currentUser.attributes.imgUrl,
+        objectId: req.params.objectId,
+        name: result.get('name'),
+        about: result.get('about'),
+        location: result.get('location'),
+        organization_imgURL: result.get('profile_imgURL')
+      });
+    },
+    error: function(error) {
+      res.render('index', {title: 'Please Login!', path: req.path});
+    }
+  });
+});
+
+/*******************************************
+ *
+ * PROFILE
+ *
+********************************************/
 app.get('/profile/:username', function (req, res, next) {
   var currentUser = Parse.User.current();
+  var linkUser = req.params.username;
   if (currentUser) {
-    if( currentUser.attributes.username == req.params.username)
-    {
-      res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, currentUserImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, 
-        email: currentUser.attributes.email
+    if(currentUser.attributes.username == linkUser) {
+      res.render('profile', {layout: 'home', title: 'Profile', path: req.path,
+        currentUsername: currentUser.attributes.username,
+        objectId: currentUser.attributes.objectId,
+        currentUserImg: currentUser.attributes.imgUrl,
+        username: currentUser.attributes.username,
+        email: currentUser.attributes.email,
+        fullname: currentUser.attributes.fullname,
+        about: currentUser.attributes.about,
+        position: currentUser.attributes.position,
+        location: currentUser.attributes.location,
+        profile_imgURL: currentUser.attributes.imgUrl,
+        'isMe': true
       });
     }
-    else{
-      var User = Parse.Object.extend("User");
-      var picture = new Parse.Query(User);
-      picture.equalTo("username", req.params.username);
-      picture.find({
-        success: function(results){
-          console.log("Successfully retrieved " + results.length + " users.");
-          // Do something with the returned Parse.Object values
-          for (var i = 0; i < results.length; i++) {
-            var object = results[i];
-            var url = object.get("imgUrl");
-            var fullname = object.get("fullname");
-            var email = object.get("email")
-            console.log("URL: " +url);
-            
-            res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username, userImg:url, currentUserImg:currentUser.attributes.imgUrl, fullname:fullname, email: email});
-
-          }
+    else {
+      var query = new Parse.Query(Parse.User);
+      query.equalTo("username",linkUser); query.limit(1);
+      query.find({
+        success: function(result) {
+          res.render('profile', {layout: 'home', title: 'Profile', path: req.path,
+            currentUsername: currentUser.attributes.username,
+            currentUserImg: currentUser.attributes.imgUrl,
+            username: result[0].attributes.username,
+            objectId: result[0].attributes.objectId,
+            email: result[0].attributes.email,
+            fullname: result[0].attributes.fullname,
+            about: result[0].attributes.about,
+            position: result[0].attributes.position,
+            location: result[0].attributes.location,
+            profile_imgURL: result[0].attributes.imgUrl,
+            'isMe': false
+          });
         },
-        error: function(error){
-          console.log("Error: " + error.code + " " + error.message);
-          res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': false, otheruser: req.params.username,currentUserImg:currentUser.attributes.imgUrl, profilepicurl:"http://placehold.it/500x500&text=Image"});
+        error: function(error) {
+          res.redirect('/newsfeed');
         }
       });
-      
     }
-
-  }else{
-    res.render('index', {title: 'Please Login', path: req.path});
+  } else {
+    res.render('index', {title: 'Please Login!', path: req.path});
   }
-
 });
+
     app.post('/profile/:username',function(req,res,next){
         var currentUser = Parse.User.current();
         if (currentUser && currentUser.attributes.username == req.params.username) {
@@ -207,7 +251,7 @@ app.get('/profile/:username', function (req, res, next) {
                 if(email !=null)
                 currentUser.set("email",email);
                 currentUser.save();
-                res.render('profile', {title: 'Profile', username: currentUser.attributes.username, 'isMe': true, currentUserImg:currentUser.attributes.imgUrl, 
+                res.render('profile', {layout: 'home', title: 'Profile', username: currentUser.attributes.username, 'isMe': true, currentUserImg:currentUser.attributes.imgUrl,
                   userImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname, email: currentUser.attributes.email});
             });
         }else {
@@ -353,6 +397,7 @@ app.get('/profile/:username', function (req, res, next) {
         }
 
     });
+
     /*******************************************
      *
      * Search
@@ -452,61 +497,6 @@ app.get('/profile/:username', function (req, res, next) {
   });
 
 });
-
-/*******************************************
- *
- * ORGANIZATION
- *
-********************************************/
-app.get('/organization', function (req, res, next) {
-    res.render('organization', {title: 'Organization', path: req.path});
-});
-
-app.get('/organization/:objectId', function (req, res, next) {
-  var query = new Parse.Query('Organization');
-  query.get(req.params.objectId,{
-    success: function(result) {
-      res.render('organization', {title: 'Organization', path: req.path,
-        name: result.get('name'),
-        about: result.get('about'),
-        location: result.get('location'),
-        profile_imgURL: result.get('profile_imgURL'),
-        cover_imgURL: result.get('cover_imgURL')});
-    },
-    error: function(error) {
-      res.render('index', {title: 'Login failed', path: req.path});
-    }
-  });
-});
-
-/*******************************************
- *
- * PERSON
- *
-********************************************/
-  app.get('/person', function (req, res, next) {
-    res.render('person', {title: 'Person', path: req.path});
-});
-
-app.get('/person/:objectId', function (req, res, next) {
-  var query = new Parse.Query('Person');
-  query.get(req.params.objectId,{
-    success: function(result) {
-      res.render('person', {title: 'Person', path: req.path,
-        firstname: result.get('firstname'),
-        lastname: result.get('lastname'),
-        about: result.get('about'),
-        position: result.get('position'),
-        place: result.get('place'),
-        profile_imgURL: result.get('profile_imgURL'),
-        cover_imgURL: result.get('cover_imgURL')});
-    },
-    error: function(error) {
-      res.render('index', {title: 'Login failed', path: req.path});
-    }
-  });
-});
-
 
   /*******************************************
    *

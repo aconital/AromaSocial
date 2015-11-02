@@ -6,19 +6,22 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
-var Parse = require('parse').Parse;
+var Parse = require('parse/node');
+var react = require('react');
+var ParseReact = require('parse-react');
 var exphbs = require('express-handlebars');
 var app = express();
 
-
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
-
-
+Parse.User.enableUnsafeCurrentUser();
 
 // view engine setup
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
   defaultLayout: 'main', //we will be creating this layout shortly
+  partialsDir: [
+        'views/'
+    ]
 });
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
