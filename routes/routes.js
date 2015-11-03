@@ -195,7 +195,7 @@ app.get('/profile/:username', function (req, res, next) {
     if(currentUser.attributes.username == linkUser) {
       res.render('profile', {layout: 'home', title: 'Profile', path: req.path,
         currentUsername: currentUser.attributes.username,
-        objectId: currentUser.attributes.objectId,
+        objectId: currentUser.id,
         currentUserImg: currentUser.attributes.imgUrl,
         username: currentUser.attributes.username,
         email: currentUser.attributes.email,
@@ -216,7 +216,7 @@ app.get('/profile/:username', function (req, res, next) {
             currentUsername: currentUser.attributes.username,
             currentUserImg: currentUser.attributes.imgUrl,
             username: result[0].attributes.username,
-            objectId: result[0].attributes.objectId,
+            objectId: result[0].id,
             email: result[0].attributes.email,
             fullname: result[0].attributes.fullname,
             about: result[0].attributes.about,

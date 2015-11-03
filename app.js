@@ -8,7 +8,9 @@ var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
 var Parse = require('parse/node');
 var react = require('react');
+var ReactBootstrap = require('react-bootstrap');
 var ParseReact = require('parse-react');
+var TagsInput = require('react-tagsinput');
 var exphbs = require('express-handlebars');
 var app = express();
 
@@ -70,6 +72,7 @@ app.use(function(err, req, res, next) {
 
 
 module.exports = app;
+
 
 
 
