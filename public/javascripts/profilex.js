@@ -195,25 +195,30 @@ var About = React.createClass({
   }
 });
 
+var creator = ParseReact.Mutation.Create('Organization', {
+   name: 'DDD'
+});
+creator.dispatch({waitForServer: 'false'});
+
 var PublicationForm = React.createClass({
   getInitialState: function() {
     return { showModal: false,
              step : 1,
              type : 1,
              txtTitle : "",
-             txtAuthors : [fullname,"SDFSDF"],
-             txtEditors : "",
+             txtAuthors : [fullname],
+             txtEditors : [],
              txtPublishPartner : "",
              txtPublishDate : "",
              txtInput1 : "",
              txtInput2 : "",
              txtInput3 : "",
              txtAbstract : "",
-             txtKeywordsTags : "",
+             txtKeywordsTags : [],
              txtURL : "",
              txtDOI : "",
-             txtTags: "",
-             txtPrivacy: "" };
+             txtTags: [],
+             txtPrivacy: [] };
   },
   clickOpen() {
     this.setState({ showModal: true });
@@ -227,14 +232,23 @@ var PublicationForm = React.createClass({
   clickContinue: function(currentStep) {
     this.setState({ step: currentStep + 1 });
   },
+  clickSubmit: function() {
+     // Create a new Pizza object
+     var creator = ParseReact.Mutation.Create('Organization', {
+       name: 'DDD'
+     });
+
+     // ...and execute it
+     creator.dispatch();
+  },
   title: function(e) {
     this.setState({ txtTitle : e.target.value })
   },
   authors: function(e) {
-    this.setState({ txtAuthors : e.target.value })
+    this.setState({ txtAuthors : e })
  },
   editors: function(e) {
-    this.setState({ txtEditors : e.target.value })
+    this.setState({ txtEditors : e })
   },
   publishPartner: function(e) {
     this.setState({ txtPublishPartner : e.target.value })
@@ -255,7 +269,7 @@ var PublicationForm = React.createClass({
     this.setState({ txtAbstract : e.target.value })
   },
   keywordsTags: function(e) {
-    this.setState({ txtKeywordsTags : e.target.value })
+    this.setState({ txtKeywordsTags : e })
   },
   URL: function(e) {
     this.setState({ txtURL : e.target.value })
@@ -264,10 +278,10 @@ var PublicationForm = React.createClass({
     this.setState({ txtDOI : e.target.value })
   },
   tags: function(e) {
-    this.setState({ txtTags : e.target.value })
+    this.setState({ txtTags : e })
   },
   privacy: function(e) {
-    this.setState({ txtPrivacy : e.target.value })
+    this.setState({ txtPrivacy : e })
   },
   render: function() {
     var self = this;
@@ -324,7 +338,7 @@ var PublicationForm = React.createClass({
                       </td>
                       <td className="padding-left fifty-fifty">
                         {this.state.step == 3 || this.state.step == 4 ? <div></div> : <input className="publication-button" type="submit" value="Next" onClick={this.clickContinue.bind(self, this.state.step)} />}
-                        {this.state.step != 3 ? <div></div> : <input className="publication-button" type="submit" value="Submit" onClick={this.clickContinue.bind(self, this.state.step)} />}
+                        {this.state.step != 3 ? <div></div> : <input className="publication-button" type="submit" value="Submit" onClick={this.clickSubmit} />}
                         {this.state.step != 4 ? <div></div> : <input className="publication-button" type="submit" value="Close" onClick={this.clickClose} />}
                       </td>
                     </tr></table>
@@ -374,10 +388,10 @@ var Step2 = React.createClass({
             <a href="#">Completion!</a>
         </div>
         <div id="field1-container" className="form-group">
-          <input onChange={this.props.tags} defaultValue={this.props.txtTags} className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Please Provide Tags (Comma Separated) That Describes Your Entry" />
+         {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Please Provide Tags That Describe Your Publication", onChange : this.props.tags, defaultValue : this.props.txtTags}))}
         </div>
         <div id="field2-container" className="form-group">
-          <input onChange={this.props.privacy} defaultValue={this.props.txtPrivacy} className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Please Provide Who (Comma Separated) Can Access Your Entry"/>
+          {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Please Provide Who Can View Your Publication", onChange : this.props.privacy, defaultValue : this.props.txtPrivacy}))}
         </div>
       </div>
     )
@@ -401,8 +415,7 @@ var Step3 = React.createClass({
         <b>Publishing Date:</b> { this.props.publishDate } <br/>
           - { this.props.input1 } <br/>
           - { this.props.input2 } <br/>
-          - { this.props.input3 } </td>
-        <td>
+          - { this.props.input3 } <br/>
         <b>Abstract:</b> { this.props.abstract } <br/>
         <b>Keywords:</b> { this.props.keywordsTags } <br/>
         <b>URL:</b> { this.props.URL } <br/>
@@ -489,13 +502,13 @@ var PublicationBook = React.createClass ({
                     <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.clickClose}/>
                 </div>
                 <div id="field1-container" className="form-group">
-                    <input onChange={this.props.title} defaultValue={this.props.txtTitle} className="form-control" type="text" name="title" id="field1" required="required" placeholder="Book Title" />
+                    <input onChange={this.props.title} defaultValue={this.props.txtTitle} className="form-control" type="text" name="title" id="field1" required="required" placeholder="Title" />
                 </div>
                 <div id="field8-container" className="form-group">
-                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Book Authors", onChange : this.props.authors, defaultValue : this.props.txtAuthors}))}
+                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Authors (Enter Separated)", onChange : this.props.authors, defaultValue : this.props.txtAuthors}))}
                 </div>
                 <div id="field8-container" className="form-group">
-                    <input onChange={this.props.editors} defaultValue={this.props.txtEditors} className="form-control" type="text" name="editors" id="field8" required="required" placeholder="Book Editors (Comma Separated)"/>
+                   {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Editors (Enter Separated)", onChange : this.props.editors, defaultValue : this.props.txtEditors}))}
                 </div>
                 <div id="field8-container" className="form-group">
                     <input onChange={this.props.publishPartner} defaultValue={this.props.txtPublishPartner} className="form-control" type="text" name="publisher" id="field8" required="required" placeholder="Publisher"/>
@@ -512,7 +525,7 @@ var PublicationBook = React.createClass ({
                     <input onChange={this.props.abstract} defaultValue={this.props.txtAbstract} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
                 </div>
                 <div id="field10-container" className="form-group">
-                    <input onChange={this.props.keywordsTags} defaultValue={this.props.txtKeywordsTags} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Keywords (Comma Separated)"/>
+                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", onChange : this.props.keywordsTags, defaultValue : this.props.txtKeywordsTags}))}
                 </div>
                 <div id="field10-container" className="form-group">
                     <input onChange={this.props.URL} defaultValue={this.props.txtURL} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>

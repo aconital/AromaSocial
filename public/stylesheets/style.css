@@ -7021,6 +7021,7 @@ table.summary tr td {
     padding: 1.5px 5px !important;
 } .react-tagsinput-input {
     padding-top:1.5px !important;
+    width:320px !important;
 }
 
 div.react-tagsinput {
