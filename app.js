@@ -12,10 +12,23 @@ var ReactBootstrap = require('react-bootstrap');
 var ParseReact = require('parse-react');
 var TagsInput = require('react-tagsinput');
 var exphbs = require('express-handlebars');
+var aws = require('aws-sdk');
+var s3 = new aws.S3();
 var app = express();
 
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
 Parse.User.enableUnsafeCurrentUser();
+
+// just to check that s3 is connected. remove when deploying
+s3.listBuckets(function(err, data) {
+  if (err) { console.log("Error:", err); }
+  else {
+    for (var index in data.Buckets) {
+      var bucket = data.Buckets[index];
+      console.log("Bucket: ", bucket.Name, ' : ', bucket.CreationDate);
+    }
+  }
+});
 
 // view engine setup
 // Configure express to use handlebars templates
