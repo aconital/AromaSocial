@@ -66,9 +66,6 @@ var Data = React.createClass({
 			 <ResourceAddForm />
 
 		   </Modal.Body>
-		   <Modal.Footer>
-    		   <Button className="pull-right" onClick={this.close}>Continue</Button>
-		   </Modal.Footer>
 		 </Modal>
 		</div>
      );
@@ -81,49 +78,94 @@ var ResourceAddForm = React.createClass({
         fromModelTab: false,
         fileChosen: null,
         pictureChosen: null,
-        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'}
+        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+
+        // form
+        picture: null, file: null, title: '', description: '', collaborators: '', creationDate: '',
+        description: '', license: '', pubLink: '', keywords: '', url: ''
         };
     },
 
 	render: function() {
 		return (
 		<div>
-			<form className="form-horizontal">
+			<form className="form" onSubmit={this.handleSubmitData}>
 			    <div className="well" style={this.buttonStyles}>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
-                        style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
                         Add Picture <input type="file" onChange={this.handlePicture} />
                     </Button>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block>
                         Select Files... <input type="file" onChange={this.handleFile} />
                     </Button>
                   </div>
-                {/*
-                <div style={{display: this.showPictureUpload(this.props.fromModelTab)}} >
-                    <span className="btn btn-default btn-file" onClick={this.openFileUpload}>
-                        Add Picture <input type="file" onChange={this.handlePicture}/>
-                    </span>
-                </div>
-                <div className="testo">
-                    <Input type="text" placeholder="Title:" wrapperClassName="col-xs-6" />
-                    <span className="btn btn-default btn-file" onClick={this.openFileUpload}>
-                        Select files...<input type="file" onChange={this.handleFile}/>
-                    </span>
-                </div>
-                */}
-                <Input type="text" label="Title:" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
-                <Input type="text" label="Collaborators:" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
-                <Input type="date" label="Creation Date:" labelClassName="col-xs-2" wrapperClassName="col-xs-10"
-                    onChange={this.props.publishDate} defaultValue="" className="form-control" id="" maxlength="524288" name="publication-date"/>
-                <Input type="textarea" label="Description:" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
-                <Input type="text" label="License:" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
-                <Input type="text" label="Link to publication:" labelClassName="col-xs-2" wrapperClassName="col-xs-10" />
-                <Input type="text" label="Keywords:" labelClassName="col-xs-2" wrapperClassName="col-xs-10" placeholder="Type in comma separated tags"/>
-                <Input type="text" label="URL:" labelClassName="col-xs-2" wrapperClassName="col-xs-10" placeholder="Link to patent" />
+
+                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+                <Input type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleChange} value={this.state.collaborators} />
+                <Input type="date" placeholder="Creation Date:" name="creationDate"
+                   onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
+                <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
+                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+
+                {/*<Button className="pull-right" type="submit" onClick={this.close}>Continue</Button>*/}
+
+		   <Modal.Footer>
+    		   <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+		   </Modal.Footer>
               </form>
 		</div>
 		);
 	},
+	
+	handleChange: function(e) {
+	    var changedState = {};
+	    changedState[e.target.name] = e.target.value;
+	    this.setState( changedState );
+	},
+
+	handleSubmitData: function(e) {
+        e.preventDefault();
+        var dataForm = {title: "mytitle", description: "my descrption!!!!!", file: this.state.fileChosen,
+            picture: this.state.pictureChosen, collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+            description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+            keywords: this.state.keywords, url: this.state.url};
+
+        $.ajax({
+            url: path + "/data",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Data upload done");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/data", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+
+    handleDataSubmit: function(dataForm) {
+        this.setState({data: dataForm});
+        $.ajax({
+            url: "localhost:3000" + path + "/data",
+            dataType: 'json',
+            type: 'POST',
+            data: dataForm,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
 
 	showPictureUpload(fromModel) {
 	    if (fromModel) {
@@ -153,7 +195,10 @@ var ResourceAddForm = React.createClass({
         reader.onload = function(upload) {
           self.setState({
             fileChosen: upload.target.result,
+            file: upload.target.result,
           });
+        var contentType = upload.target.result.match(/^data:(\w+\/\w+)/);
+        console.log(JSON.stringify(contentType));
         }
 
         reader.readAsDataURL(file);
@@ -168,6 +213,7 @@ var ResourceAddForm = React.createClass({
         reader.onload = function(upload) {
          self.setState({
            pictureChosen: upload.target.result,
+           picture: upload.target.result,
          });
         }
 
@@ -181,10 +227,15 @@ var DataItem = React.createClass({
         return (
             <div className="publication-box">
                 <div className="publication-box-left">
-                    <h3 className="no-margin-top">{this.props.title}</h3>
-                    Collaborators: <a href="#" className="body-link">{this.props.author}</a><br/>
-                    <p>PLACEHOLDER FOR ... FILE PREVIEW?</p>
-                    Keywords: {this.props.keywords}
+                    <h3 className="no-margin-top">
+                        <div className="pull-left">{this.props.title}</div>
+                        <div className="pull-right">2015</div>
+                    </h3>
+                    <div style={{clear: 'both'}}>
+                        Collaborators: <a href="#" className="body-link">{this.props.author}</a><br/>
+                        <p>PLACEHOLDER FOR ... FILE PREVIEW?</p>
+                        Keywords:  <a href="#" className="body-link">{this.props.keywords}</a>
+                    </div>
                 </div>
 
                 <ItemInfo />
@@ -200,8 +251,10 @@ var ModelItem = React.createClass({
                 <div className="publication-box-left">
                     <div className="model-preview-img pull-left"><img src="" />TODO</div>
                     <h3 className="no-margin-top">{this.props.title}</h3>
-                    Collaborators: <a href="#" className="body-link">{this.props.author}</a><br/>
-                    Keywords: {this.props.keywords}
+                    <div>
+                        Collaborators: <a href="#" className="body-link">{this.props.author}</a><br/>
+                        Keywords: <a href="#" className="body-link">{this.props.keywords}</a>
+                    </div>
                     <p>
                     I assume some text is supposed to be here I assume some text is supposed to be here
                     I assume some text is supposed to be here I assume some text is supposed to be here
