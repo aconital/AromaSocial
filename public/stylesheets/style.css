@@ -7048,6 +7048,37 @@ input[type="date"]:before {
     margin-bottom:10px;
  }
 
+.add-resource-btn {
+  margin-bottom: 1em;
+}
+
+.model-preview-img {
+  height: 10em;
+  width: 10em;
+  background-color: #eeeabc;
+  margin-right: 10px;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
 table.summary  {
     width:100%;
 }
