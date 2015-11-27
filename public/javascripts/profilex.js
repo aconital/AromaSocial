@@ -82,7 +82,7 @@ var ProfileMenu = React.createClass ({
                 2: <ProfileTab />,
                 3: <Publications objectId={objectId}/>,
                 4: <Data />,
-                5: <Models />,
+                5: <Models objectId={objectId}/>,
                 6: <More />};
         return (
             <div>
@@ -122,8 +122,53 @@ var Connections = React.createClass({
   }
 });
 
+var ContentEditable = React.createClass({
+    render: function(){
+        return <div
+            onInput={this.emitChange}
+            onBlur={this.emitChange}
+            contentEditable
+            dangerouslySetInnerHTML={{__html: this.props.html}}
+            className="editable"></div>;
+    },
+    shouldComponentUpdate: function(nextProps){
+        return nextProps.html !== this.getDOMNode().innerHTML;
+    },
+    emitChange: function(){
+        var html = this.getDOMNode().innerHTML;
+        if (this.props.onChange && html !== this.lastHtml) {
+
+            this.props.onChange({
+                target: {
+                    value: html
+                }
+            });
+        }
+        this.lastHtml = html;
+    }
+});
+
 var ProfileTab = React.createClass({
+  mixins: [ParseReact.Mixin],
+  observe: function() {
+     return {
+     user: (new Parse.Query('_User').equalTo("objectId", this.props.objectId))
+    };
+  },
+  getInitialState : function () {
+    return {
+      summary : [summary],
+      work_experience : [work_experience],
+      education : [education],
+      projects: [projects]
+    }
+  },
   render: function() {
+    var rows = [];
+    var handleChange = function(event){
+        this.setState({summary: event.target.value});
+    }.bind(this);
+    console.log(typeof[work_experience]);
     return (
             <div id="resume">
                 <div id="resume-summary">
@@ -131,44 +176,50 @@ var ProfileTab = React.createClass({
                     <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Summary</h3>
                 </div>
                 <div id="resume-summary-item">
-                    React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
+                    <ContentEditable html={this.state.summary} onChange={handleChange} />
                 </div>
                 </div>
                 <hr/>
+
                 <div id="resume-education">
                     <div>
                         <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-education"></span> Education</h3>
                     </div>
-                    <div id="resume-education-item">
-                        <h4 className="h4-resume-item">Hogwarts University (January  - Present)</h4>
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
-                    </div><br/>
-                    <div id="resume-education-item">
-                        <h4 className="h4-resume-item">Monsters University (January  - January )</h4>
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
-                    </div>
+                    {this.state.work_experience.map(function(result) {
+                        return <WorkExperience company={result.company} title={result.title}/>;
+                    })}
                 </div>
                 <hr/>
                 <div id="resume-experience">
                     <div>
                         <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-paperclip"></span> Experience</h3>
                     </div>
-                    <div id="resume-experience-item">
-                        <h4 className="h4-resume-item">Cake Eater (January  - Present)</h4>
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
-                    </div>
+                    {this.state.work_experience.map(function(result) {
+                        return <WorkExperience company={result.company} title={result.title}/>;
+                    })}
                 </div>
                 <hr/>
                 <div id="resume-projects">
                     <div>
                         <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-star"></span> Projects</h3>
                     </div>
-                    <div id="resume-project-item">
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via\
-                    </div>
+                    {this.state.work_experience.map(function(result) {
+                        return <WorkExperience company={result.company} title={result.title}/>;
+                    })}
                 </div>
             </div>
     )
+  }
+});
+
+var WorkExperience = React.createClass({
+  render: function() {
+    return (
+            <div id="resume-education-item">
+               <h4 className="h4-resume-item">{this.props.title} @ {this.props.company}</h4>
+               <h5>(January  - Present)</h5>
+            </div>
+         )
   }
 });
 
@@ -194,11 +245,6 @@ var About = React.createClass({
          )
   }
 });
-
-var creator = ParseReact.Mutation.Create('Organization', {
-   name: 'DDD'
-});
-creator.dispatch({waitForServer: 'false'});
 
 var PublicationForm = React.createClass({
   getInitialState: function() {
@@ -233,13 +279,11 @@ var PublicationForm = React.createClass({
     this.setState({ step: currentStep + 1 });
   },
   clickSubmit: function() {
-     // Create a new Pizza object
-     var creator = ParseReact.Mutation.Create('Organization', {
+     var batch = new ParseReact.Mutation.Batch();
+     ParseReact.Mutation.Create('Organization', {
        name: 'DDD'
-     });
-
-     // ...and execute it
-     creator.dispatch();
+     }).dispatch();
+     batch.dispatch();
   },
   title: function(e) {
     this.setState({ txtTitle : e.target.value })
@@ -875,7 +919,7 @@ var Publications = React.createClass({
       <div>
         <PublicationForm />
         {this.data.publications.map(function(publication) {
-            rows.push(<Publication author={publication.author} title={publication.title} description={publication.description} />);
+            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} />);
         })}
         {rows}
       </div>
@@ -888,7 +932,7 @@ var Publication = React.createClass({
         return (
                 <div className="publication-box">
                 <div className="publication-box-left">
-                    <h3 className="no-margin-top">{this.props.title}</h3>
+                    <a href={'/publication/' + this.props.objectId} className="title-link"><h3 className="no-margin-top" >{this.props.title}</h3></a>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
                     Abstract: {this.props.description}... <a href="#" className="body-link">Show Full Abstract</a><br/>
                     PUBLICATION CODE
@@ -906,12 +950,309 @@ var Publication = React.createClass({
 });
 
 var Models = React.createClass({
+  mixins: [ParseReact.Mixin],
+  getInitialState: function() {
+      return {data: []};
+    },
+  observe: function() {
+      return {
+        models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
+                                                          className: "_User",
+                                                          objectId: this.props.objectId}))
+      };
+    },
+  render: function() {
+    var rows = [];
+    return (
+      <div>
+        <ModelForm />
+        {this.data.models.map(function(model) {
+            rows.push(<Model collaborators={model.collaborators}
+                                   title={model.title}
+                                   image={model.image}
+                                   keywords={model.keywords}
+                                   number_cited={model.number_cited}
+                                   number_syncholar_factor={model.number_syncholar_factor}
+                                   license={model.license}
+                                   access={model.access}
+                                   abstract={model.abstract} />);
+        })}
+        {rows}
+      </div>
+    );
+  }
+});
+
+var Model = React.createClass({
+    render: function() {
+        return (
+                <div className="model-box">
+                <div className="model-box-image">
+                    <img src={this.props.image} className="contain-image-preview" />
+                </div>
+                <div className="model-box-left">
+                    <h3 className="no-margin-top">{this.props.title}</h3>
+                    <b>Authors: </b>
+                        {this.props.collaborators.map(function(item, i){
+                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
+                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
+                        })}
+                    <br/>
+                    <b>Abstract:</b> {this.props.abstract.substr(0,150)}... <a href="#" className="body-link">Show Full Abstract</a><br/>
+                </div>
+                <div className="model-box-right">
+                    <h5>Information</h5><br/>
+                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
+                    {this.props.number_cited} Times Cited<br/>
+                    {this.props.license}<br/>
+                    {this.props.access.map(function(item, i){
+                        if (i == 0) {return item;}
+                        else {return ", " + item;}
+                    })} <br/> Uses This
+                </div>
+                </div>
+        )
+    }
+});
+
+var ModelForm = React.createClass({
+  getInitialState: function() {
+    return { showModal: false,
+             step : 1,
+             txtTitle : "",
+             txtCollaborators : [fullname],
+             txtCreationDate : "",
+             txtAbstract : "",
+             txtLicense : "",
+             txtLinkToPublication : "",
+             txtLinkToPatent : "",
+             txtKeywordsTags : [],
+             txtURL : "",
+             txtTags: [],
+             txtPrivacy: [] };
+  },
+  clickOpen() {
+    this.setState({ showModal: true });
+  },
+  clickClose() {
+    this.setState({ showModal: false, step : 1 });
+  },
+  clickBack: function(currentStep) {
+    this.setState({ step: currentStep - 1 });
+  },
+  clickContinue: function(currentStep) {
+    this.setState({ step: currentStep + 1 });
+  },
+  clickSubmit: function() {
+     var batch = new ParseReact.Mutation.Batch();
+     ParseReact.Mutation.Create('Organization', {
+       name: 'DDD'
+     }).dispatch();
+     batch.dispatch();
+  },
+  title: function(e) {
+    this.setState({ txtTitle : e.target.value })
+  },
+  collaborators: function(e) {
+    this.setState({ txtCollaborators : e })
+  },
+  creationDate: function(e) {
+    this.setState({ txtCreationDate : e.target.value })
+  },
+  license: function(e) {
+    this.setState({ txtLicense : e.target.value })
+  },
+  linkToPublication: function(e) {
+    this.setState({ txtLinkToPublication : e.target.value })
+  },
+  linkToPatent: function(e) {
+    this.setState({ txtLinkToPatent : e.target.value })
+  },
+  abstract: function(e) {
+    this.setState({ txtAbstract : e.target.value })
+  },
+  keywordsTags: function(e) {
+    this.setState({ txtKeywordsTags : e })
+  },
+  URL: function(e) {
+    this.setState({ txtURL : e.target.value })
+  },
+  tags: function(e) {
+    this.setState({ txtTags : e })
+  },
+  privacy: function(e) {
+    this.setState({ txtPrivacy : e })
+  },
+  render: function() {
+    var self = this;
+    var stepMap = {1: <Step1Model title={this.title} txtTitle={this.state.txtTitle}
+                             collaborators={this.collaborators} txtCollaborators={this.state.txtCollaborators}
+                             creationDate={this.creationDate} txtCreationDate={this.state.txtCreationDate}
+                             license={this.license} license={this.state.license}
+                             linkToPublication={this.linkToPublication} txtLinkToPublication={this.state.txtLinkToPublication}
+                             linkToPatent={this.linkToPatent} txtLinkToPatent={this.state.txtLinkToPatent}
+                             abstract={this.abstract} txtAbstract={this.state.txtAbstract}
+                             keywordsTags={this.keywordsTags} txtKeywordsTags={this.state.txtKeywordsTags}
+                             URL={this.URL} txtURL={this.state.txtURL}/>,
+                   2: <Step2Model tags={this.tags} txtTags={this.state.txtTags}
+                             privacy={this.privacy} txtPrivacy={this.state.txtPrivacy}/>,
+                   3: <Step3Model txtTitle={this.state.txtTitle}
+                             txtCollaborators={this.state.txtCollaborators}
+                             txtCreationDate={this.state.txtCreationDate}
+                             license={this.state.license}
+                             txtLinkToPublication={this.state.txtLinkToPublication}
+                             txtLinkToPatent={this.state.txtLinkToPatent}
+                             txtAbstract={this.state.txtAbstract}
+                             txtKeywordsTags={this.state.txtKeywordsTags}
+                             txtURL={this.state.txtURL} />,
+                   4: <Step4Model />};
+    return (
+      <div className="">
+            <form id="publication-form" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
+                <table id="upload-field" width="100%"><tr>
+                    <td className="padding-right">
+                    <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                    </td>
+                    <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td>
+                </tr>
+                </table>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>New Model</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {stepMap[self.state.step]}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <table id="form-submit" width="100%"><tr>
+                      <td className="padding-right fifty-fifty">
+                        {this.state.step == 1 || this.state.step == 4 ? <div></div> : <input className="publication-button" type="submit" value="Back" onClick={this.clickBack.bind(self, this.state.step)}/>}
+                      </td>
+                      <td className="padding-left fifty-fifty">
+                        {this.state.step == 3 || this.state.step == 4 ? <div></div> : <input className="publication-button" type="submit" value="Next" onClick={this.clickContinue.bind(self, this.state.step)} />}
+                        {this.state.step != 3 ? <div></div> : <input className="publication-button" type="submit" value="Submit" onClick={this.clickSubmit} />}
+                        {this.state.step != 4 ? <div></div> : <input className="publication-button" type="submit" value="Close" onClick={this.clickClose} />}
+                      </td>
+                    </tr></table>
+                  </Modal.Footer>
+                </Modal>
+            </form>
+      </div>
+    )
+  }
+});
+
+var Step1Model = React.createClass({
+  imagePreview: function(e) {
+    this.setState({ txtCollaborators : e })
+  },
   render: function() {
     return (
-           <div>
-             Models
-           </div>
-         )
+            <div>
+                <div className="breadcrumb flat">
+                            <a href="#" className="active">General Info</a>
+                            <a href="#">Extra Info</a>
+                            <a href="#">Check Info</a>
+                            <a href="#">Completion!</a>
+                        </div>
+                <div id="field1-container" className="form-group">
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="Image" onChange={this.imagePreview}/>
+                </div>
+                <div id="field1-container" className="form-group">
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.clickClose}/>
+                </div>
+                <div id="field1-container" className="form-group">
+                    <input onChange={this.props.title} defaultValue={this.props.txtTitle} className="form-control" type="text" name="title" id="field1" required="required" placeholder="Title" />
+                </div>
+                <div id="field8-container" className="form-group">
+                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Collaborators (Enter Separated)", onChange : this.props.collaborators, defaultValue : this.props.txtCollaborators}))}
+                </div>
+                <div id="field3-container" className="form-group">
+                    <input onChange={this.props.creationDate} defaultValue={this.props.txtCreationDate} className="form-control" id="field3" maxlength="524288" name="creation-date" placeholder="Creation Date" type="date"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.abstract} defaultValue={this.props.txtAbstract} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.license} defaultValue={this.props.txtLicense} className="form-control" type="text" name="description" id="field9" required="required" placeholder="License"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.linkToPublication} defaultValue={this.props.txtLinkToPublication} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Link To Publication"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.linkToPatent} defaultValue={this.props.txtLinkToPatent} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Link To Patent"/>
+                </div>
+                <div id="field10-container" className="form-group">
+                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", onChange : this.props.keywordsTags, defaultValue : this.props.txtKeywordsTags}))}
+                </div>
+                <div id="field10-container" className="form-group">
+                    <input onChange={this.props.URL} defaultValue={this.props.txtURL} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
+                </div>
+            </div>
+    )
+  }
+});
+var Step2Model = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <div className="breadcrumb flat">
+            <a href="#">General Info</a>
+            <a href="#" className="active">Extra Info</a>
+            <a href="#">Check Info</a>
+            <a href="#">Completion!</a>
+        </div>
+        <div id="field1-container" className="form-group">
+         {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Please Provide Tags That Describe Your Model", onChange : this.props.tags, defaultValue : this.props.txtTags}))}
+        </div>
+        <div id="field2-container" className="form-group">
+          {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Please Provide Who Can View Your Model", onChange : this.props.privacy, defaultValue : this.props.txtPrivacy}))}
+        </div>
+      </div>
+    )
+  }
+});
+var Step3Model = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <div className="breadcrumb flat">
+            <a href="#">General Info</a>
+            <a href="#">Extra Info</a>
+            <a href="#" className="active">Check Info</a>
+            <a href="#">Completion!</a>
+        </div>
+        <table className="summary"><tr><td>
+        <b>Title:</b> { this.props.title } <br/>
+        <b>Collaborators:</b> { this.props.collaborators } <br/>
+        <b>Creation Date:</b> { this.props.creationDate } <br/>
+        <b>Abstract:</b> { this.props.abstract } <br/>
+        <b>License:</b> { this.props.license } <br/>
+        <b>Link To Publication:</b> { this.props.linkToPublication } <br/>
+        <b>Link To Patent:</b> { this.props.linkToPatent } <br/>
+        <b>Keywords:</b> { this.props.keywordsTags } <br/>
+        <b>URL:</b> { this.props.URL } <br/>
+        <b>Tags:</b> { this.props.tags } <br/>
+        <b>Privacy:</b> { this.props.privacy }
+        </td></tr></table>
+      </div>
+    )
+  }
+});
+var Step4Model = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <div className="breadcrumb flat">
+            <a href="#">General Info</a>
+            <a href="#">Extra Info</a>
+            <a href="#">Check Info</a>
+            <a href="#" className="active">Completion!</a>
+        </div>
+        <h3>Congrats! Completed!</h3>
+            <a href="#">Click here to view your publication!</a>
+      </div>
+    )
   }
 });
 

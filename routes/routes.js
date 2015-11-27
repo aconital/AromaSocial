@@ -203,6 +203,10 @@ app.get('/profile/:username', function (req, res, next) {
         about: currentUser.attributes.about,
         position: currentUser.attributes.position,
         location: currentUser.attributes.location,
+        summary: currentUser.attributes.summary,
+        work_experience: currentUser.attributes.work_experience,
+        education: currentUser.attributes.education,
+        projects: currentUser.attributes.projects,
         profile_imgURL: currentUser.attributes.imgUrl,
         'isMe': true
       });
@@ -222,6 +226,10 @@ app.get('/profile/:username', function (req, res, next) {
             about: result[0].attributes.about,
             position: result[0].attributes.position,
             location: result[0].attributes.location,
+             summary: result[0].attributes.summary,
+             work_experience: result[0].attributes.work_experience,
+             education: result[0].attributes.education,
+             projects: result[0].attributes.projects,
             profile_imgURL: result[0].attributes.imgUrl,
             'isMe': false
           });
@@ -235,6 +243,113 @@ app.get('/profile/:username', function (req, res, next) {
     res.render('index', {title: 'Please Login!', path: req.path});
   }
 });
+
+/*******************************************
+ *
+ * PUBLICATION
+ *
+********************************************/
+app.get('/publication', function (req, res, next) {
+    res.render('publication', {layout: 'home', title: 'Publication', path: req.path});
+});
+app.get('/publication/:objectId', function (req, res, next) {
+  var currentUser = Parse.User.current();
+  var query = new Parse.Query('Publication');
+  query.get(req.params.objectId,{
+    success: function(result) {
+      res.render('publication', {layout: 'home', title: 'Publication', path: req.path,
+        currentUsername: currentUser.attributes.username,
+        currentUserImg: currentUser.attributes.imgUrl,
+        objectId: req.params.objectId,
+        author: result.get('author'),
+        description: result.get('description'),
+        filename: result.get('filename'),
+        hashtags: result.get('hashtags'),
+        title: result.get('title'),
+        year: result.get('year'),
+        groups: result.get('groups'),
+        license: result.get('license'),
+        keywords: result.get('keywords'),
+        publication_link: result.get('publication_link')
+      });
+    },
+    error: function(error) {
+      res.render('index', {title: 'Please Login!', path: req.path});
+    }
+  });
+});
+
+/*******************************************
+ *
+ * DATA
+ *
+********************************************/
+app.get('/data', function (req, res, next) {
+    res.render('publication', {layout: 'home', title: 'Data', path: req.path});
+});
+app.get('/data/:objectId', function (req, res, next) {
+  var currentUser = Parse.User.current();
+  var query = new Parse.Query('Publication');
+  query.get(req.params.objectId,{
+    success: function(result) {
+      res.render('data', {layout: 'home', title: 'Data', path: req.path,
+        currentUsername: currentUser.attributes.username,
+        currentUserImg: currentUser.attributes.imgUrl,
+        objectId: req.params.objectId,
+        access: result.get('author'),
+        collaborators: result.get('collaborators'),
+        description: result.get('description'),
+        hashtags: result.get('hashtags'),
+        keywords: result.get('title'),
+        license: result.get('year'),
+        title: result.get('title'),
+        license: result.get('license'),
+        keywords: result.get('keywords'),
+        createdAt: result.get('createdAt'),
+        publication: result.get('publication'),
+        publication_link: result.get('publication_link')
+      });
+    },
+    error: function(error) {
+      res.render('index', {title: 'Please Login!', path: req.path});
+    }
+  });
+});
+
+/*******************************************
+ *
+ * MODEL
+ *
+********************************************/
+app.get('/model', function (req, res, next) {
+    res.render('model', {layout: 'home', title: 'Model', path: req.path});
+});
+app.get('/model/:objectId', function (req, res, next) {
+  var currentUser = Parse.User.current();
+  var query = new Parse.Query('Model');
+  query.get(req.params.objectId,{
+    success: function(result) {
+      res.render('model', {layout: 'home', title: 'Model', path: req.path,
+        currentUsername: currentUser.attributes.username,
+        currentUserImg: currentUser.attributes.imgUrl,
+        objectId: req.params.objectId,
+        access: result.get('access'),
+        description: result.get('abstract'),
+        hashtags: result.get('hashtags'),
+        title: result.get('title'),
+        image: result.get('image'),
+        collaborators: result.get('collaborators'),
+        license: result.get('license'),
+        keywords: result.get('keywords'),
+        publication_link: result.get('publication_link')
+      });
+    },
+    error: function(error) {
+      res.render('index', {title: 'Please Login!', path: req.path});
+    }
+  });
+});
+
 
     app.post('/profile/:username',function(req,res,next){
         var currentUser = Parse.User.current();
@@ -473,33 +588,33 @@ app.get('/profile/:username', function (req, res, next) {
     /*******************************************
    *
    * SIGN UP
-   *
+       *
    ********************************************/
   app.get('/signup', function (req, res, next) {
 
-    res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
-});
-  app.post('/signup', function (req, res, next) {
-  var user = new Parse.User();
-  user.set("username", req.body.username);
-  user.set("password", req.body.password);
-  user.set("fullname", req.body.fullname);
-  user.set("email", req.body.email);
-  user.set("imgUrl", "/images/user.png");
-  console.log(req.body.username);
-  user.signUp(null, {
-    success: function (user) {
-        console.log("sucessful signup");
-        res.render('newsfeed', {layout:'home',title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
-    },
-    error: function (user, error) {
-      // Show the error message somewhere and let the user try again.
-      console.log("unsucessful signup: " + error.message);
-      res.render('signup', {Error: error.message, path: req.path});
-    }
-  });
+       res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
+   });
+     app.post('/signup', function (req, res, next) {
+     var user = new Parse.User();
+     user.set("username", req.body.username);
+     user.set("password", req.body.password);
+     user.set("fullname", req.body.fullname);
+     user.set("email", req.body.email);
+     user.set("imgUrl", "/images/user.png");
+     console.log(req.body.username);
+     user.signUp(null, {
+       success: function (user) {
+           console.log("sucessful signup");
+           res.render('newsfeed', {layout:'home',title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
+       },
+       error: function (user, error) {
+         // Show the error message somewhere and let the user try again.
+         console.log("unsucessful signup: " + error.message);
+         res.render('signup', {Error: error.message, path: req.path});
+       }
+     });
 
-});
+   });
 
   /*******************************************
    *
@@ -530,7 +645,7 @@ app.get('/profile/:username', function (req, res, next) {
       form.parse(req, function(err, fields, files) {
         filename=files.upload.name;
       });
-      
+
       form.on('end', function(fields, files) {
         // Temporary location of our uploaded file 
         var temp_path = this.openedFiles[0].path;
