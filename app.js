@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
 var Parse = require('parse/node');
 var react = require('react');
+var ReactDOM = require('react-dom');
 var ReactBootstrap = require('react-bootstrap');
 var ParseReact = require('parse-react');
 var TagsInput = require('react-tagsinput');

@@ -4,12 +4,38 @@ var Button = ReactBootstrap.Button;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Profile = React.createClass ({
+    getInitialState: function() {
+      return { showModal: false,
+               step : 1 };
+    },
+    clickOpen() {
+      this.setState({ showModal: true });
+    },
+    clickClose() {
+      this.setState({ showModal: false, step : 1 });
+    },
     render: function() {
         return (
         <div>
-            <div className="item-top item-top-container">
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Update Profile Picture</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                        <div id="field1-container">
+                            <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
+                        </div>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <input className="publication-button" type="submit" value="Submit" onClick={this.clickSubmit} />
+                  </Modal.Footer>
+                </Modal>
+        <div className="item-top item-top-container">
+        </div>
+        <div className="content-wrap">
+            <div>
                 <div className="item-top-1 col">
-                    <img src={profile_imgURL} className="contain-image" />
+                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><img src={profile_imgURL} className="contain-image" /></a> : <img src={profile_imgURL} className="contain-image" />}
                 </div>
             </div>
             <div className="item-bottom">
@@ -35,11 +61,9 @@ var Profile = React.createClass ({
                             return <a href="#" className="body-link">{listValue}<br/></a>;
                         })}
                     </div>
-                <div className="extend-bottom">&nbsp;</div>
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
                      <ProfileMenu tabs={['About','Connections', 'Profile', 'Publications', 'Data', 'Models', 'More']} />
-                <div className="extend-bottom">&nbsp;</div>
                 </div>
                 <div className="item-bottom-3">
                     <div className="item-panel-empty contain-panel-empty">
@@ -60,9 +84,9 @@ var Profile = React.createClass ({
                     </div>
                     <div className="item-panel contain-panel"><h5>Adds</h5><br/>
                     </div>
-                <div className="extend-bottom">&nbsp;</div>
                 </div>
             </div>
+        </div>
         </div>
         );
     }
@@ -81,8 +105,8 @@ var ProfileMenu = React.createClass ({
                 1: <Connections />,
                 2: <ProfileTab />,
                 3: <Publications objectId={objectId}/>,
-                4: <Data />,
-                5: <Models />,
+                4: <Data objectId={objectId}/>,
+                5: <Models objectId={objectId}/>,
                 6: <More />};
         return (
             <div>
@@ -875,7 +899,7 @@ var Publications = React.createClass({
       <div>
         <PublicationForm />
         {this.data.publications.map(function(publication) {
-            rows.push(<Publication author={publication.author} title={publication.title} description={publication.description} />);
+            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
         })}
         {rows}
       </div>
@@ -888,10 +912,10 @@ var Publication = React.createClass({
         return (
                 <div className="publication-box">
                 <div className="publication-box-left">
-                    <h3 className="no-margin-top">{this.props.title}</h3>
+                    <h3 className="no-margin-top"><a href={"/publication/" + this.props.objectId} className="body-link"> {this.props.title}</a></h3>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
-                    Abstract: {this.props.description}... <a href="#" className="body-link">Show Full Abstract</a><br/>
-                    PUBLICATION CODE
+                    Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    {this.props.publication_code}
                 </div>
                 <div className="publication-box-right">
                     <h5>Information</h5><br/>
@@ -906,23 +930,378 @@ var Publication = React.createClass({
 });
 
 var Models = React.createClass({
+  mixins: [ParseReact.Mixin],
+  getInitialState: function() {
+      return {data: []};
+    },
+  observe: function() {
+      return {
+        models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
+                                                          className: "_User",
+                                                          objectId: this.props.objectId}))
+      };
+    },
+  render: function() {
+    var rows = [];
+    return (
+      <div>
+        <ModelForm />
+        {this.data.models.map(function(model) {
+            rows.push(<Model objectId={model.objectId}
+                                   collaborators={model.collaborators}
+                                   title={model.title}
+                                   image_URL={model.image_URL}
+                                   keywords={model.keywords}
+                                   number_cited={model.number_cited}
+                                   number_syncholar_factor={model.number_syncholar_factor}
+                                   license={model.license}
+                                   access={model.access}
+                                   abstract={model.abstract} />);
+        })}
+        {rows}
+      </div>
+    );
+  }
+});
+
+var Model = React.createClass({
+    render: function() {
+        return (
+                <div className="model-box">
+                <div className="model-box-image">
+                    <img src={this.props.image_URL} className="contain-image-preview" />
+                </div>
+                <div className="model-box-left">
+                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <b>Authors: </b>
+                        {this.props.collaborators.map(function(item, i){
+                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
+                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
+                        })}
+                    <br/>
+                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                </div>
+                <div className="model-box-right">
+                    <h5>Information</h5><br/>
+                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
+                    {this.props.number_cited} Times Cited<br/>
+                    {this.props.license}<br/>
+                    {this.props.access.map(function(item, i){
+                        if (i == 0) {return item;}
+                        else {return ", " + item;}
+                    })} <br/> Uses This
+                </div>
+                </div>
+        )
+    }
+});
+
+var ModelForm = React.createClass({
+  getInitialState: function() {
+    return { showModal: false,
+             step : 1,
+             txtTitle : "",
+             txtCollaborators : [fullname],
+             txtCreationDate : "",
+             txtAbstract : "",
+             txtLicense : "",
+             txtLinkToPublication : "",
+             txtLinkToPatent : "",
+             txtKeywordsTags : [],
+             txtURL : "",
+             txtTags: [],
+             txtPrivacy: [] };
+  },
+  clickOpen() {
+    this.setState({ showModal: true });
+  },
+  clickClose() {
+    this.setState({ showModal: false, step : 1 });
+  },
+  clickBack: function(currentStep) {
+    this.setState({ step: currentStep - 1 });
+  },
+  clickContinue: function(currentStep) {
+    this.setState({ step: currentStep + 1 });
+  },
+  clickSubmit: function() {
+     var batch = new ParseReact.Mutation.Batch();
+     ParseReact.Mutation.Create('Organization', {
+       name: 'DDD'
+     }).dispatch();
+     batch.dispatch();
+  },
+  title: function(e) {
+    this.setState({ txtTitle : e.target.value })
+  },
+  collaborators: function(e) {
+    this.setState({ txtCollaborators : e })
+  },
+  creationDate: function(e) {
+    this.setState({ txtCreationDate : e.target.value })
+  },
+  license: function(e) {
+    this.setState({ txtLicense : e.target.value })
+  },
+  linkToPublication: function(e) {
+    this.setState({ txtLinkToPublication : e.target.value })
+  },
+  linkToPatent: function(e) {
+    this.setState({ txtLinkToPatent : e.target.value })
+  },
+  abstract: function(e) {
+    this.setState({ txtAbstract : e.target.value })
+  },
+  keywordsTags: function(e) {
+    this.setState({ txtKeywordsTags : e })
+  },
+  URL: function(e) {
+    this.setState({ txtURL : e.target.value })
+  },
+  tags: function(e) {
+    this.setState({ txtTags : e })
+  },
+  privacy: function(e) {
+    this.setState({ txtPrivacy : e })
+  },
+  render: function() {
+    var self = this;
+    var stepMap = {1: <Step1Model title={this.title} txtTitle={this.state.txtTitle}
+                             collaborators={this.collaborators} txtCollaborators={this.state.txtCollaborators}
+                             creationDate={this.creationDate} txtCreationDate={this.state.txtCreationDate}
+                             license={this.license} license={this.state.license}
+                             linkToPublication={this.linkToPublication} txtLinkToPublication={this.state.txtLinkToPublication}
+                             linkToPatent={this.linkToPatent} txtLinkToPatent={this.state.txtLinkToPatent}
+                             abstract={this.abstract} txtAbstract={this.state.txtAbstract}
+                             keywordsTags={this.keywordsTags} txtKeywordsTags={this.state.txtKeywordsTags}
+                             URL={this.URL} txtURL={this.state.txtURL}/>,
+                   2: <Step2Model tags={this.tags} txtTags={this.state.txtTags}
+                             privacy={this.privacy} txtPrivacy={this.state.txtPrivacy}/>,
+                   3: <Step3Model txtTitle={this.state.txtTitle}
+                             txtCollaborators={this.state.txtCollaborators}
+                             txtCreationDate={this.state.txtCreationDate}
+                             license={this.state.license}
+                             txtLinkToPublication={this.state.txtLinkToPublication}
+                             txtLinkToPatent={this.state.txtLinkToPatent}
+                             txtAbstract={this.state.txtAbstract}
+                             txtKeywordsTags={this.state.txtKeywordsTags}
+                             txtURL={this.state.txtURL} />,
+                   4: <Step4Model />};
+    return (
+      <div className="">
+            <form id="publication-form" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
+                <table id="upload-field" width="100%"><tr>
+                    <td className="padding-right">
+                    <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                    </td>
+                    <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td>
+                </tr>
+                </table>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>New Model</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {stepMap[self.state.step]}
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <table id="form-submit" width="100%"><tr>
+                      <td className="padding-right fifty-fifty">
+                        {this.state.step == 1 || this.state.step == 4 ? <div></div> : <input className="publication-button" type="submit" value="Back" onClick={this.clickBack.bind(self, this.state.step)}/>}
+                      </td>
+                      <td className="padding-left fifty-fifty">
+                        {this.state.step == 3 || this.state.step == 4 ? <div></div> : <input className="publication-button" type="submit" value="Next" onClick={this.clickContinue.bind(self, this.state.step)} />}
+                        {this.state.step != 3 ? <div></div> : <input className="publication-button" type="submit" value="Submit" onClick={this.clickSubmit} />}
+                        {this.state.step != 4 ? <div></div> : <input className="publication-button" type="submit" value="Close" onClick={this.clickClose} />}
+                      </td>
+                    </tr></table>
+                  </Modal.Footer>
+                </Modal>
+            </form>
+      </div>
+    )
+  }
+});
+
+var Step1Model = React.createClass({
+  imagePreview: function(e) {
+    this.setState({ txtCollaborators : e })
+  },
   render: function() {
     return (
-           <div>
-             Models
-           </div>
-         )
+            <div>
+                <div className="breadcrumb flat">
+                            <a href="#" className="active">General Info</a>
+                            <a href="#">Extra Info</a>
+                            <a href="#">Check Info</a>
+                            <a href="#">Completion!</a>
+                        </div>
+                <div id="field1-container" className="form-group">
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="Image" onChange={this.imagePreview}/>
+                </div>
+                <div id="field1-container" className="form-group">
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.clickClose}/>
+                </div>
+                <div id="field1-container" className="form-group">
+                    <input onChange={this.props.title} defaultValue={this.props.txtTitle} className="form-control" type="text" name="title" id="field1" required="required" placeholder="Title" />
+                </div>
+                <div id="field8-container" className="form-group">
+                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Collaborators (Enter Separated)", onChange : this.props.collaborators, defaultValue : this.props.txtCollaborators}))}
+                </div>
+                <div id="field3-container" className="form-group">
+                    <input onChange={this.props.creationDate} defaultValue={this.props.txtCreationDate} className="form-control" id="field3" maxlength="524288" name="creation-date" placeholder="Creation Date" type="date"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.abstract} defaultValue={this.props.txtAbstract} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.license} defaultValue={this.props.txtLicense} className="form-control" type="text" name="description" id="field9" required="required" placeholder="License"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.linkToPublication} defaultValue={this.props.txtLinkToPublication} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Link To Publication"/>
+                </div>
+                <div id="field9-container" className="form-group">
+                    <input onChange={this.props.linkToPatent} defaultValue={this.props.txtLinkToPatent} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Link To Patent"/>
+                </div>
+                <div id="field10-container" className="form-group">
+                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", onChange : this.props.keywordsTags, defaultValue : this.props.txtKeywordsTags}))}
+                </div>
+                <div id="field10-container" className="form-group">
+                    <input onChange={this.props.URL} defaultValue={this.props.txtURL} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
+                </div>
+            </div>
+    )
+  }
+});
+var Step2Model = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <div className="breadcrumb flat">
+            <a href="#">General Info</a>
+            <a href="#" className="active">Extra Info</a>
+            <a href="#">Check Info</a>
+            <a href="#">Completion!</a>
+        </div>
+        <div id="field1-container" className="form-group">
+         {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Please Provide Tags That Describe Your Model", onChange : this.props.tags, defaultValue : this.props.txtTags}))}
+        </div>
+        <div id="field2-container" className="form-group">
+          {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Please Provide Who Can View Your Model", onChange : this.props.privacy, defaultValue : this.props.txtPrivacy}))}
+        </div>
+      </div>
+    )
+  }
+});
+var Step3Model = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <div className="breadcrumb flat">
+            <a href="#">General Info</a>
+            <a href="#">Extra Info</a>
+            <a href="#" className="active">Check Info</a>
+            <a href="#">Completion!</a>
+        </div>
+        <table className="summary"><tr><td>
+        <b>Title:</b> { this.props.title } <br/>
+        <b>Collaborators:</b> { this.props.collaborators } <br/>
+        <b>Creation Date:</b> { this.props.creationDate } <br/>
+        <b>Abstract:</b> { this.props.abstract } <br/>
+        <b>License:</b> { this.props.license } <br/>
+        <b>Link To Publication:</b> { this.props.linkToPublication } <br/>
+        <b>Link To Patent:</b> { this.props.linkToPatent } <br/>
+        <b>Keywords:</b> { this.props.keywordsTags } <br/>
+        <b>URL:</b> { this.props.URL } <br/>
+        <b>Tags:</b> { this.props.tags } <br/>
+        <b>Privacy:</b> { this.props.privacy }
+        </td></tr></table>
+      </div>
+    )
+  }
+});
+var Step4Model = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <div className="breadcrumb flat">
+            <a href="#">General Info</a>
+            <a href="#">Extra Info</a>
+            <a href="#">Check Info</a>
+            <a href="#" className="active">Completion!</a>
+        </div>
+        <h3>Congrats! Completed!</h3>
+            <a href="#">Click here to view your publication!</a>
+      </div>
+    )
   }
 });
 
 var Data = React.createClass({
+  mixins: [ParseReact.Mixin],
+  getInitialState: function() {
+      return {data: []};
+    },
+  observe: function() {
+      return {
+        items: (new Parse.Query('Data').equalTo("user", {__type: "Pointer",
+                                                          className: "_User",
+                                                          objectId: this.props.objectId}))
+      };
+    },
   render: function() {
+    var rows = [];
     return (
-           <div>
-             Data
-           </div>
-         )
+      <div>
+        <ModelForm />
+        {this.data.items.map(function(item) {
+            rows.push(<Datum objectId={item.objectId}
+                                   collaborators={item.collaborators}
+                                   title={item.title}
+                                   image_URL={item.image_URL}
+                                   keywords={item.keywords}
+                                   number_cited={item.number_cited}
+                                   number_syncholar_factor={item.number_syncholar_factor}
+                                   license={item.license}
+                                   access={item.access}
+                                   abstract={item.description} />);
+        })}
+        {rows}
+      </div>
+    );
   }
+});
+
+var Datum = React.createClass({
+    render: function() {
+        return (
+                <div className="model-box">
+                <div className="model-box-image">
+                    <img src={this.props.image_URL} className="contain-image-preview" />
+                </div>
+                <div className="model-box-left">
+                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <b>Authors: </b>
+                        {this.props.collaborators.map(function(item, i){
+                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
+                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
+                        })}
+                    <br/>
+                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                </div>
+                <div className="model-box-right">
+                    <h5>Information</h5><br/>
+                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
+                    {this.props.number_cited} Times Cited<br/>
+                    {this.props.license}<br/>
+                    {this.props.access.map(function(item, i){
+                        if (i == 0) {return item;}
+                        else {return ", " + item;}
+                    })} <br/> Uses This
+                </div>
+                </div>
+        )
+    }
 });
 
 React.render(<Profile

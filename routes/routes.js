@@ -285,11 +285,11 @@ app.get('/publication/:objectId', function (req, res, next) {
  *
 ********************************************/
 app.get('/data', function (req, res, next) {
-    res.render('publication', {layout: 'home', title: 'Data', path: req.path});
+    res.render('data', {layout: 'home', title: 'Data', path: req.path});
 });
 app.get('/data/:objectId', function (req, res, next) {
   var currentUser = Parse.User.current();
-  var query = new Parse.Query('Publication');
+  var query = new Parse.Query('Data');
   query.get(req.params.objectId,{
     success: function(result) {
       res.render('data', {layout: 'home', title: 'Data', path: req.path,
@@ -306,6 +306,7 @@ app.get('/data/:objectId', function (req, res, next) {
         license: result.get('license'),
         keywords: result.get('keywords'),
         createdAt: result.get('createdAt'),
+        image_URL: result.get('image_URL'),
         publication: result.get('publication'),
         publication_link: result.get('publication_link')
       });
@@ -337,10 +338,11 @@ app.get('/model/:objectId', function (req, res, next) {
         description: result.get('abstract'),
         hashtags: result.get('hashtags'),
         title: result.get('title'),
-        image: result.get('image'),
+        image_URL: result.get('image_URL'),
         collaborators: result.get('collaborators'),
         license: result.get('license'),
         keywords: result.get('keywords'),
+        createdAt: result.get('createdAt'),
         publication_link: result.get('publication_link')
       });
     },

@@ -1,7 +1,7 @@
 var Publication = React.createClass ({
     render: function() {
         return (
-        <div>
+        <div className="content-wrap">
             <div className="item-bottom-big">
                     <div className="item-panel contain-panel-big">
                     <div>
@@ -14,7 +14,7 @@ var Publication = React.createClass ({
                     </div>
                     <div className="item-panel contain-panel-big">
                     <div>
-                        <h4 className="contain-panel-big-h4">Collaborators</h4>
+                        <h4 className="contain-panel-big-h4">Collaborator(s)</h4>
                     </div>
                     <div>
                         <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons"/></a>
@@ -56,8 +56,8 @@ var Publication = React.createClass ({
 
                     <form role="comment" method="post" action="/comment">
                         <div className="input-group contain-panel-big-input-group">
-                            <input type="text" placeholder="Comment..." className="form-control search-bar"/>
-                            <button type="submit" className="btn btn-primary btn-search">Post</button>
+                            <input type="text" placeholder="Comment..." className="form-control comment-bar"/>
+                            <button type="submit" className="btn btn-primary btn-comment">Post</button>
                         </div>
                     </form>
                     </div>

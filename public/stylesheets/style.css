@@ -4070,7 +4070,7 @@ tbody.collapse.in {
     .navbar-right ~ .navbar-right {
       margin-right: 0; } }
 .navbar-default {
-  background-color: #f8f8f8;
+  background-color: transparent;
   border-color: #e7e7e7; }
   .navbar-default .navbar-brand {
     color: #777; }
@@ -4082,11 +4082,9 @@ tbody.collapse.in {
   .navbar-default .navbar-nav > li > a {
     color: #777; }
     .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
-      color: #333;
-      background-color: transparent; }
+      color: #333; }
   .navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
-    color: #555;
-    background-color: #e7e7e7; }
+    color: #555;}
   .navbar-default .navbar-nav > .disabled > a, .navbar-default .navbar-nav > .disabled > a:hover, .navbar-default .navbar-nav > .disabled > a:focus {
     color: #ccc;
     background-color: transparent; }
@@ -4109,8 +4107,7 @@ tbody.collapse.in {
         color: #333;
         background-color: transparent; }
     .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-      color: #555;
-      background-color: #e7e7e7; }
+      color: #555; }
     .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a, .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .disabled > a:focus {
       color: #ccc;
       background-color: transparent; } }
@@ -5957,8 +5954,10 @@ body {
 
 .footer-nav {
   margin-bottom: 0px !important;
-  background-color: white;
-  border-bottom: none !important; }
+  border-bottom: none !important;
+  z-index:10000;
+  max-width: 1200px;
+  margin:auto;}
 
 body {
   font: Helvetica, sans-serif;
@@ -6241,7 +6240,7 @@ div.fileUpload input {
 
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
-  background-color: #70ab8f; }
+  background-color: none; }
 
 .navbar-brand,
 .navbar-nav li a {
@@ -6556,7 +6555,16 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     margin: 10%;
     margin-bottom: 25px;
     background-color:#70ab8f;
+    -webkit-filter: brightness(100%);
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
     }
+    .contain-image:hover {
+                     -webkit-filter: brightness(125%);
+                     }
 .contain-icons {
         float:left;
         width:25%;
@@ -6626,6 +6634,10 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 .contain-panel-big-icons:hover { opacity: .75; }
 .contain-panel-big-comment-icons { width:100%; margin-right:0;}
 .contain-panel-big-input-group { width:100%; margin-bottom:5px; }
+.contain-panel-big-image { width:100%; border:solid; margin-top:5px; margin-bottom:20px; border-radius:3px; }
+.contain-panel-big-p { width:100%; border:solid; border-radius:3px; margin-bottom:15px; padding:0px 10px; }
+.contain-panel-big-image2 { width:40%; border:solid; margin-top:5px; margin-bottom:20px; border-radius:3px; }
+.contain-panel-big-p2 { width:40%; border:solid; border-radius:3px; margin-bottom:15px; padding:0px 10px; }
 .corner {position:absolute;top:-10px;right:25px;}
 .space {margin-left:10px;}
 
@@ -6645,7 +6657,8 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     z-index: -5;
     }
     .item-top {
-    float:left;
+    position:absolute;
+    height: 220px;
     width: 100%;
     display: table;
     background: -webkit-linear-gradient(left top, #70ab8f , #508a63); /* For Safari 5.1 to 6.0 */
@@ -6654,6 +6667,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     background: linear-gradient(to bottom right, #70ab8f , #508a63); /* Standard syntax */
     background-size: 100% 85%;
     background-repeat: no-repeat;
+    z-index: -5;
     }
     .item-bottom {
     float:left;
@@ -6719,6 +6733,16 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     position:absolute;
     z-index:1000;
     }
+
+    .btn-comment {
+        border-top-left-radius:0;
+        border-bottom-left-radius:0;
+        bottom:0px;
+        right:0px;
+        margin: 0px;
+        position:absolute;
+        z-index:0;
+        }
 
     #tabs ul {
     list-style: none;
@@ -7178,3 +7202,16 @@ div.react-tagsinput {
     .editable:active {
       border-style:dotted;
     }
+
+    .comment-bar {
+        width: 100%;
+        bottom:0px;
+        border-radius:4px;
+        margin: 0px;
+        position:absolute;
+        z-index: 0 !important;
+        }
+  .content-wrap {
+    max-width:1200px;
+    margin:auto;
+  }

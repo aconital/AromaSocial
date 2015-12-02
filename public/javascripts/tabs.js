@@ -3,6 +3,9 @@ var Organization = React.createClass ({
         return (
             <div>
                 <div className="item-top item-top-container">
+                </div>
+                <div className="content-wrap">
+                <div>
                     <div className="item-top-1 col">
                         <img src={organization_imgURL} className="contain-image" />
                     </div>
@@ -15,6 +18,7 @@ var Organization = React.createClass ({
                     <div id="item-bottom-2-organization" className="item-bottom-2">
                         <OrganizationMenu tabs={['Connections', 'People', 'About', 'News And Events', 'Knowledge']} />
                     </div>
+                </div>
                 </div>
             </div>
         );
