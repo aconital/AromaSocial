@@ -258,8 +258,10 @@ app.get('/publication/:objectId', function (req, res, next) {
   query.get(req.params.objectId,{
     success: function(result) {
       res.render('publication', {layout: 'home', title: 'Publication', path: req.path,
+        currentUserId: currentUser.id,
         currentUsername: currentUser.attributes.username,
         currentUserImg: currentUser.attributes.imgUrl,
+        creatorId: result.get("user").id,
         objectId: req.params.objectId,
         author: result.get('author'),
         description: result.get('description'),
@@ -293,9 +295,11 @@ app.get('/data/:objectId', function (req, res, next) {
   query.get(req.params.objectId,{
     success: function(result) {
       res.render('data', {layout: 'home', title: 'Data', path: req.path,
+        currentUserId: currentUser.id,
         currentUsername: currentUser.attributes.username,
         currentUserImg: currentUser.attributes.imgUrl,
         objectId: req.params.objectId,
+        creatorId: result.get("user").id,
         access: result.get('author'),
         collaborators: result.get('collaborators'),
         description: result.get('description'),
@@ -331,9 +335,11 @@ app.get('/model/:objectId', function (req, res, next) {
   query.get(req.params.objectId,{
     success: function(result) {
       res.render('model', {layout: 'home', title: 'Model', path: req.path,
+        currentUserId: currentUser.id,
         currentUsername: currentUser.attributes.username,
         currentUserImg: currentUser.attributes.imgUrl,
         objectId: req.params.objectId,
+        creatorId: result.get("user").id,
         access: result.get('access'),
         description: result.get('abstract'),
         hashtags: result.get('hashtags'),

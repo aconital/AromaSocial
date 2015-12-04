@@ -1,25 +1,63 @@
+var Modal = ReactBootstrap.Modal;
+var Button = ReactBootstrap.Button;
+var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+
 var Model = React.createClass ({
+    getInitialState: function() {
+      return { showModal: false };
+    },
+    clickOpen() {
+      this.setState({ showModal: true });
+    },
+    clickClose() {
+      this.setState({ showModal: false});
+    },
     render: function() {
         return (
         <div className="content-wrap">
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Update Data Image</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                        <div id="field1-container">
+                            <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
+                        </div>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <input className="publication-button" type="submit" value="Submit" />
+                  </Modal.Footer>
+                </Modal>
             <div className="item-bottom-big">
                     <div className="item-panel contain-panel-big">
                     <div>
-                        <h2 className="contain-panel-big-h2">{title}</h2>
+                        {(currentUserId == creatorId) ? <h2 className="contain-panel-big-h2 p-editable" contentEditable="true">{title}</h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner"><a href="#" className="image-link"><span className="glyphicon glyphicon-check space"></span></a>
                             <a href="#" className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
                         </h2>
                     </div>
                     <div>
+                    <table className="model-layout">
+                    <tr><td className="model-layout-td-left">
                         <div className="contain-panel-big-p2">
                             <h4>Description</h4>
-                            <p>{description}</p>
+                            {(currentUserId == creatorId) ? <p className="p-editable" contentEditable="true">{description}</p> : <p className="p-noneditable">{description}</p>}
                         </div>
-                        <img src={image_URL} className="contain-panel-big-image2"/>
-                        <div className="contain-panel-big-p2">
-                            <h4>Description</h4>
-                            <p>{description}</p>
+                    </td><td>
+                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
+                    </td></tr>
+                    <tr><td className="model-layout-td-left">
+                        <div className="contain-panel-big-p">
+                            <h4>Features</h4>
+                            {(currentUserId == creatorId) ? <p className="p-editable" contentEditable="true">{description}</p> : <p className="p-noneditable">{description}</p>}
                         </div>
+                    </td><td>
+                        <div className="contain-panel-big-p">
+                            <h4>More Explanation</h4>
+                            {(currentUserId == creatorId) ? <p className="p-editable" contentEditable="true">{description}</p> : <p className="p-noneditable">{description}</p>}
+                        </div>
+                    </td></tr>
+                    </table>
                     </div>
                     </div>
                     <div className="item-panel contain-panel-big">

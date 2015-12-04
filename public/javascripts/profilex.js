@@ -5,14 +5,13 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Profile = React.createClass ({
     getInitialState: function() {
-      return { showModal: false,
-               step : 1 };
+      return { showModal: false };
     },
     clickOpen() {
       this.setState({ showModal: true });
     },
     clickClose() {
-      this.setState({ showModal: false, step : 1 });
+      this.setState({ showModal: false});
     },
     render: function() {
         return (
@@ -34,8 +33,8 @@ var Profile = React.createClass ({
         </div>
         <div className="content-wrap">
             <div>
-                <div className="item-top-1 col">
-                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><img src={profile_imgURL} className="contain-image" /></a> : <img src={profile_imgURL} className="contain-image" />}
+                <div className="item-top-1 col" id="overlay">
+                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
                 </div>
             </div>
             <div className="item-bottom">

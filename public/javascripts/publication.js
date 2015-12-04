@@ -1,3 +1,7 @@
+var Modal = ReactBootstrap.Modal;
+var Button = ReactBootstrap.Button;
+var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+
 var Publication = React.createClass ({
     render: function() {
         return (
@@ -5,12 +9,14 @@ var Publication = React.createClass ({
             <div className="item-bottom-big">
                     <div className="item-panel contain-panel-big">
                     <div>
-                        <h2 className="contain-panel-big-h2">{title}</h2>
+                        {(currentUserId == creatorId) ? <h2 className="contain-panel-big-h2 p-editable" contentEditable="true">{title}</h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner"><a href="#" className="image-link"><span className="glyphicon glyphicon-check space"></span></a>
                             <a href="#" className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
                         </h2>
                     </div>
-                    <div><p>{description}</p></div>
+                    <div>
+                       {(currentUserId == creatorId) ? <p className="p-editable" contentEditable="true">{description}</p> : <p className="p-noneditable">{description}</p>}
+                    </div>
                     </div>
                     <div className="item-panel contain-panel-big">
                     <div>
