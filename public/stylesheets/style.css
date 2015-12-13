@@ -7271,3 +7271,15 @@ div.react-tagsinput {
     max-width:1200px;
     margin:auto;
   }
+
+
+ #people-row
+ {
+   margin-top: 15px;
+ }
+ .people-title
+ {
+   font-weight: 700;
+   font-size: 22px;
+   color: #47745f;
+ }

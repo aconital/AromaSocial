@@ -36,8 +36,9 @@ var OrganizationMenu = React.createClass ({
     },
     render: function() {
         var self = this;
+
         var tabMap = {0: <Connections />,
-                1: <People />,
+                1: <People  />,
                 2: <About />,
                 3: <NewsAndEvents/>,
                 4: <Knowledge/>,
@@ -78,10 +79,57 @@ var Connections = React.createClass({
 });
 
 var People = React.createClass({
+    getInitialState: function() {
+        return {data: []};
+    },
+    componentDidMount : function(){
+        var peopleUrl= "/organization/"+objectId+"/people";
+
+      $.ajax({
+          url: peopleUrl,
+          success: function(data) {
+
+              this.setState({data: data});
+          }.bind(this),
+          error: function(xhr, status, err) {
+              console.error("couldnt retrieve people");
+          }.bind(this)
+      });
+  },
   render: function() {
+
+      var peopleList = $.map(this.state.data,function(objects) {
+          var role= objects[0].title;
+          var plist=[];
+          for(var i in objects)
+          {
+              var person = objects[i];
+
+              plist.push(person);
+          }
+
+          return (
+                <div>
+                    <div><span className="people-title">{role}</span></div>
+                    {plist.map(person =>
+
+                    <div key={person.username} className="row" id="people-row">
+                        <div className="col-lg-2">
+                           <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="img-circle newsfeed-profile-pic" /></a>
+                        </div>
+                        <div className="col-lg-10">
+                            <div>{person.fullname}</div>
+                            <div>{person.workTitle}</div>
+                            <div>{person.company}</div>
+                        </div>
+                    </div>
+                    )}
+                </div>
+          );
+      });
     return (
       <div>
-        People of {name}
+          {peopleList}
       </div>
     )
   }

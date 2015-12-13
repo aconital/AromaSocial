@@ -204,6 +204,8 @@ app.get('/organization/:objectId', function (req, res, next) {
                     var verified= result[uo].attributes.verified;
 
                     var user= result[uo].attributes.userId.attributes;
+
+                    var username= user.username;
                     var fullname="N/A";
                     var company= "N/A";
                     var work_title= "N/A";
@@ -227,6 +229,7 @@ app.get('/organization/:objectId', function (req, res, next) {
                     if(verified)
                     {
                         var person = {
+                            username:username,
                             title: title,
                             fullname: fullname,
                             userImgUrl: userImgUrl,
