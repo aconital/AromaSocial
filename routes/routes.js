@@ -5,6 +5,10 @@ var fs  = require('fs-extra');
 var moment = require('moment');
 var path = require('path');
 var _= require('underscore');
+var aws = require('aws-sdk');
+var s3 = new aws.S3();
+var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+
 module.exports=function(app,Parse) {
   /*******************************************
    *
@@ -93,7 +97,7 @@ module.exports=function(app,Parse) {
                                   hashtags: hashtags,
                                   title: title,
                               });
-                              console.log(feeds);
+//                              console.log(feeds);
                           }
                       }
                       }
@@ -362,6 +366,7 @@ app.get('/data/:objectId', function (req, res, next) {
   var query = new Parse.Query('Data');
   query.get(req.params.objectId,{
     success: function(result) {
+    console.log("this is the path of the data get req" + result.get('path'));
       res.render('data', {layout: 'home', title: 'Data', path: req.path,
         currentUserId: currentUser.id,
         currentUsername: currentUser.attributes.username,
@@ -373,12 +378,12 @@ app.get('/data/:objectId', function (req, res, next) {
         description: result.get('description'),
         hashtags: result.get('hashtags'),
         keywords: result.get('title'),
-        license: result.get('year'),
         title: result.get('title'),
         license: result.get('license'),
         keywords: result.get('keywords'),
         createdAt: result.get('createdAt'),
         image_URL: result.get('image_URL'),
+        aws_path: result.get('path'),
         publication: result.get('publication'),
         publication_link: result.get('publication_link')
       });
@@ -412,6 +417,7 @@ app.get('/model/:objectId', function (req, res, next) {
         description: result.get('abstract'),
         hashtags: result.get('hashtags'),
         title: result.get('title'),
+        image: result.get('image'),
         image_URL: result.get('image_URL'),
         collaborators: result.get('collaborators'),
         license: result.get('license'),
@@ -592,6 +598,198 @@ app.get('/model/:objectId', function (req, res, next) {
 
     });
 
+    app.post('/profile/:username/data',function(req,res,next){
+        var currentUser = Parse.User.current();
+        if (currentUser && currentUser.attributes.username == req.params.username) {
+            var objectId;
+            var now = moment();
+            var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
+            console.log(formatted);
+
+            var reqBody = req.body;
+            console.log(reqBody);
+
+            // send to Parse
+			var keywords = reqBody.keywords.split(/\s*,\s*/g);
+			var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
+			var Data = Parse.Object.extend("Data");
+			var data= new Data();
+			console.log(keywords);
+			console.log(collaborators);
+			data.set('user',currentUser);
+			data.set('access', ["UBC"]);
+			data.set('collaborators',collaborators);
+			data.set('description', reqBody.description);
+			data.set('title',reqBody.title);
+			data.set('hashtags',keywords); // TODO are they the same?
+			data.set('keywords',keywords);
+			data.set('image_URL','/images/blackpaper.png');
+			data.set('license',reqBody.license);
+			data.set('path',"TODO");
+//			data.set('publication',reqBody.pubLink); // TODO takes pointer to Publication obj
+			data.set('number_cited',0);
+			data.set('number_syncholar_factor',0);
+
+			console.log(data);
+
+			data.save(null, {
+			  success: function(response) {
+				  // Execute any logic that should take place after the object is saved.
+				  objectId = response.id;
+
+				// encode file
+				var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
+				var contentType = reqBody.file.match(/^data:(\w+\/\w+)/);
+				var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/\w+;base64,/, ""),'base64')
+				var params = {
+					Key: s3Key,
+					Body: fileBuff,
+					ContentEncoding: 'base64',
+					ContentType: (contentType ? contentType[1] : 'text/plain')
+				};
+
+				// upload files to S3
+				var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+				bucket.putObject(params, function (err, response) {
+					if (err) { console.log("Data Upload Error:", err); }
+					else {
+						console.log('uploading to s3');
+
+						// update file name in parse object
+						data.set('path', awsLink + s3Key);
+
+						data.save(null, {
+                          success: function(data) {
+                            console.log("Path name updated successfully.");
+                            res.status(200).json({status:"Back from routes.js!"});
+                          },
+                          error: function(data, error) {
+                            console.log('Failed to update new object path, with error code: ' + error.message);
+                            res.status(500).json({status:"Uploading file failed." + error.message});
+                          }
+                        });
+					}
+				});
+			  },
+			  error: function(response, error) {
+				  console.log('Failed to create new object, with error code: ' + error.message);
+                  res.status(500).json({status: "Creating data object failed. " + error.message});
+			  }
+			});
+
+        } else {
+            res.status(500).json({status: 'Data upload failed!'});
+        }
+    });
+
+
+    app.post('/profile/:username/model',function(req,res,next){
+        var currentUser = Parse.User.current();
+        if (currentUser && currentUser.attributes.username == req.params.username) {
+            var objectId;
+            var now = moment();
+            var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
+            var reqBody = req.body;
+
+            // send to Parse
+			var keywords = reqBody.keywords.split(/\s*,\s*/g);
+			var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
+			var Model = Parse.Object.extend("Model");
+			var model= new Model();
+			model.set('user',currentUser);
+			model.set('abstract', reqBody.description);
+			model.set('access', ["UBC"]);
+			model.set('collaborators',collaborators);
+			model.set('image','/images/paper.png');
+			model.set('image_URL','/images/paper.png');
+			model.set('title',reqBody.title);
+			model.set('keywords',keywords);
+			model.set('license',reqBody.license);
+//			model.set('publication',reqBody.pubLink);
+			model.set('number_cited',0);
+			model.set('number_syncholar_factor',1);
+
+			model.save(null, {
+			  success: function(response) {
+				  // Execute any logic that should take place after the object is saved.
+				  objectId = response.id;
+
+                  var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+
+				// encode file
+				if (reqBody.file != null) {
+                    var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
+                    var contentType = reqBody.file.match(/^data:(\w+\/\w+)/);
+                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/\w+;base64,/, ""),'base64')
+                    var fileParams = {
+                        Key: s3Key,
+                        Body: fileBuff,
+                        ContentEncoding: 'base64',
+                        ContentType: (contentType ? contentType[1] : 'text/plain')
+                    };
+                    console.log(contentType);
+
+                    // upload files to S3
+                    bucket.putObject(fileParams, function (err, data) {
+                        if (err) { console.log("Model Upload Error:", err); }
+                        else {
+                            console.log('uploading to s3');
+
+                            // update file name in parse object
+                            model.set('image_URL', awsLink + s3Key);
+                            model.save();
+                        }
+                    });
+                }
+                console.log(objectId);
+
+				// encode picture
+				if (reqBody.picture != null) {
+                    var s3KeyP = req.params.username + "_" + objectId + "_pic." + reqBody.pictureType;
+                    var contentTypeP = reqBody.picture.match(/^data:(\w+\/\w+)/);
+                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w+\/\w+;base64,/, ""),'base64')
+                    var pictureParams = {
+                        Key: s3KeyP,
+                        Body: pictureBuff,
+                        ContentEncoding: 'base64',
+                        ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
+                    };
+
+                    bucket.putObject(pictureParams, function (err, data) {
+                        if (err) { console.log("Model image Upload Error:", err); }
+                        else {
+                            console.log('uploading to s3');
+
+                            // update file name in parse object
+                            model.set('image', awsLink + s3KeyP);
+
+                            model.save(null, {
+//                              success: function(data) {
+//                                  console.log("Path name updated successfully.");
+//                                  res.status(200).json({status:"Back from routes.js!"});
+//                              },
+//                              error: function(data, error) {
+//                                console.log('Failed to update new object path, with error code: ' + error.message);
+//                                res.status(500).json({status:"Uploading image failed." + error.message});
+//                              }
+                            });
+                        }
+                    });
+                }
+                res.status(200).json({status: "Model uploaded successfully!"});
+			  },
+			  error: function(response, error) {
+                console.log('Failed to create new object, with error code: ' + error.message);
+                res.status(500).json({status: "Creating model object failed. " + error.message});
+			  }
+			});
+
+        } else {
+            res.render('profile', {Error: 'Model Upload Failed!'});
+            res.status(500).json({status: "Model Upload Failed! " + error.message});
+        }
+    });
+
     /*******************************************
      *
      * Search
@@ -664,7 +862,7 @@ app.get('/model/:objectId', function (req, res, next) {
     /*******************************************
    *
    * SIGN UP
-       *
+   *
    ********************************************/
   app.get('/signup', function (req, res, next) {
 

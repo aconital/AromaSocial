@@ -33,7 +33,7 @@ var Model = React.createClass ({
                     <div>
                         {(currentUserId == creatorId) ? <h2 className="contain-panel-big-h2 p-editable" contentEditable="true">{title}</h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner"><a href="#" className="image-link"><span className="glyphicon glyphicon-check space"></span></a>
-                            <a href="#" className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
+                            <a href={image_URL} className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
                         </h2>
                     </div>
                     <div>

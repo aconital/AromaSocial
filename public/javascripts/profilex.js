@@ -1,6 +1,7 @@
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
+var Input = ReactBootstrap.Input;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Profile = React.createClass ({
@@ -104,8 +105,8 @@ var ProfileMenu = React.createClass ({
                 1: <Connections />,
                 2: <ProfileTab />,
                 3: <Publications objectId={objectId}/>,
-                4: <Data objectId={objectId}/>,
-                5: <Models objectId={objectId}/>,
+                4: <DataList objectId={objectId}/>,
+                5: <ModelsList objectId={objectId}/>,
                 6: <More />};
         return (
             <div>
@@ -928,7 +929,7 @@ var Publication = React.createClass({
     }
 });
 
-var Models = React.createClass({
+var ModelsList = React.createClass({
   mixins: [ParseReact.Mixin],
   getInitialState: function() {
       return {data: []};
@@ -944,9 +945,9 @@ var Models = React.createClass({
     var rows = [];
     return (
       <div>
-        <ModelForm />
+        <ResourceForm fromModelTab={true} />
         {this.data.models.map(function(model) {
-            rows.push(<Model objectId={model.objectId}
+            rows.push(<ModelListItem objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
                                    image_URL={model.image_URL}
@@ -963,7 +964,7 @@ var Models = React.createClass({
   }
 });
 
-var Model = React.createClass({
+var ModelListItem = React.createClass({
     render: function() {
         return (
                 <div className="model-box">
@@ -1023,13 +1024,33 @@ var ModelForm = React.createClass({
   clickContinue: function(currentStep) {
     this.setState({ step: currentStep + 1 });
   },
-  clickSubmit: function() {
-     var batch = new ParseReact.Mutation.Batch();
-     ParseReact.Mutation.Create('Organization', {
-       name: 'DDD'
-     }).dispatch();
-     batch.dispatch();
-  },
+    clickSubmit: function(e) {
+        e.preventDefault();
+
+        var endpoint = fromModel ? "/model" : "/data";
+        var dataForm = {file: this.state.fileChosen, picture: this.state.pictureChosen,
+            collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+            description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+            keywords: this.state.keywords, url: this.state.url};
+
+        $.ajax({
+            url: path + endpoint,
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Data upload done");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + endpoint, status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
   title: function(e) {
     this.setState({ txtTitle : e.target.value })
   },
@@ -1236,7 +1257,7 @@ var Step4Model = React.createClass({
   }
 });
 
-var Data = React.createClass({
+var DataList = React.createClass({
   mixins: [ParseReact.Mixin],
   getInitialState: function() {
       return {data: []};
@@ -1252,9 +1273,9 @@ var Data = React.createClass({
     var rows = [];
     return (
       <div>
-        <ModelForm />
+        <ResourceForm />
         {this.data.items.map(function(item) {
-            rows.push(<Datum objectId={item.objectId}
+            rows.push(<DatumListItem objectId={item.objectId}
                                    collaborators={item.collaborators}
                                    title={item.title}
                                    image_URL={item.image_URL}
@@ -1271,7 +1292,7 @@ var Data = React.createClass({
   }
 });
 
-var Datum = React.createClass({
+var DatumListItem = React.createClass({
     render: function() {
         return (
                 <div className="model-box">
@@ -1300,6 +1321,205 @@ var Datum = React.createClass({
                 </div>
                 </div>
         )
+    }
+});
+
+var ResourceForm = React.createClass({
+  getInitialState: function() {
+    return {
+        showModal: false,
+        fromModelTab: false
+    };
+  },
+  close() {
+    this.setState({ showModal: false });
+  },
+  open() {
+    this.setState({ showModal: true });
+  },
+  render: function() {
+    return (
+		<div>
+        <table id="upload-field" width="100%">
+            <tr>
+                <td className="padding-right">
+                <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                </td>
+                <td className="padding-left"><input className="publication-button" onClick={this.open} type="button" value="+"/></td>
+            </tr>
+        </table>
+       {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}
+
+
+		 <Modal show={this.state.showModal} onHide={this.close}>
+		   <Modal.Header closeButton>
+			 <Modal.Title>Add {this.props.fromModelTab ? 'Model' : 'Data'}</Modal.Title>
+		   </Modal.Header>
+		   <Modal.Body>
+
+			 <ResourceAddForm fromModelTab={this.props.fromModelTab} submitSuccess={this.close}/>
+
+		   </Modal.Body>
+		 </Modal>
+		</div>
+     );
+  }
+});
+
+var ResourceAddForm = React.createClass({
+//    propTypes: {
+//        fromModelTab:      React.PropTypes.bool,
+//        submitSuccess:   React.PropTypes.func
+//    },
+//    getDefaultProps: function() {
+//        return {
+//            fromModelTab: false
+//        };
+//    },
+    close: function(e) {
+        console.log("hello!!");
+        if (typeof this.props.submitSuccess === 'function') {
+            this.props.submitSuccess();
+        }
+    },
+    getInitialState: function() {
+     return {
+        fromModelTab: false,
+        fileChosen: null, //TODO unnecessary? remove after verifying
+        pictureChosen: null,
+        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+
+        // form
+        picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
+        creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: ''
+        };
+    },
+
+	render: function() {
+		return (
+		<div>
+			<form className="form" onSubmit={this.handleSubmitData}>
+			    <div className="well" style={this.buttonStyles}>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
+                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                    </Button>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block>
+                        Select Files... <input type="file" onChange={this.handleFile} />
+                    </Button>
+                  </div>
+
+                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+                <Input type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleChange} value={this.state.collaborators} />
+                <Input type="date" placeholder="Creation Date:" name="creationDate"
+                   onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
+                <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
+                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+
+               <Modal.Footer>
+                   <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+               </Modal.Footer>
+            </form>
+		</div>
+		);
+	},
+
+	handleChange: function(e) {
+	    var changedState = {};
+	    changedState[e.target.name] = e.target.value;
+	    this.setState( changedState );
+	},
+
+	handleSubmitData: function(e) {
+        e.preventDefault();
+
+        var endpoint = this.props.fromModelTab ? "/model" : "/data";
+        var dataForm = {file: this.state.file, picture: this.state.picture,
+            fileType: this.state.fileType, pictureType: this.state.pictureType,
+            collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+            description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+            keywords: this.state.keywords, url: this.state.url};
+
+        $.ajax({
+            url: path + endpoint,  //TODO: verify path for production
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Data upload done");
+                console.log(data);
+                this.close();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + endpoint, status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+
+	showPictureUpload(fromModel) {
+	    if (fromModel) {
+            return '';
+	    }
+	    return 'none';
+	},
+
+	openFileUpload() {
+	    var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+        //TODO save file into props
+        this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
+            console.log(numFiles);
+            console.log(label);
+            return input;
+        });
+	},
+
+	handleFile: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+          self.setState({
+            fileChosen: upload.target.result,
+            file: upload.target.result,
+            fileType: extension,
+          });
+        var contentType = upload.target.result.match(/^data:(\w+\/\w+)/);
+        console.log(JSON.stringify(contentType));
+        }
+        console.log(file);
+        console.log(file.name.substr(file.name.lastIndexOf('.')+1) || 'nope');
+        reader.readAsDataURL(file);
+        console.log(reader);
+    },
+
+    handlePicture: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+         self.setState({
+           pictureChosen: upload.target.result,
+           picture: upload.target.result,
+           pictureType: extension,
+         });
+        }
+
+        reader.readAsDataURL(file);
+        console.log(reader);
     }
 });
 
