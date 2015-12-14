@@ -37,7 +37,7 @@ var Data = React.createClass ({
                         </h2>
                     </div>
                     <div>
-                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
+                        {/*{(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}*/}
                         <div className="contain-panel-big-p">
                             <h4>Description</h4>
                             {(currentUserId == creatorId) ? <p className="p-editable" contentEditable="true">{description}</p> : <p className="p-noneditable">{description}</p>}

@@ -1475,7 +1475,7 @@ var ResourceAddForm = React.createClass({
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
-        //TODO save file into props
+
         this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
             console.log(numFiles);
             console.log(label);
@@ -1495,13 +1495,8 @@ var ResourceAddForm = React.createClass({
             file: upload.target.result,
             fileType: extension,
           });
-        var contentType = upload.target.result.match(/^data:(\w+\/\w+)/);
-        console.log(JSON.stringify(contentType));
         }
-        console.log(file);
-        console.log(file.name.substr(file.name.lastIndexOf('.')+1) || 'nope');
         reader.readAsDataURL(file);
-        console.log(reader);
     },
 
     handlePicture: function(e) {
@@ -1517,9 +1512,7 @@ var ResourceAddForm = React.createClass({
            pictureType: extension,
          });
         }
-
         reader.readAsDataURL(file);
-        console.log(reader);
     }
 });
 

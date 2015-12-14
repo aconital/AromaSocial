@@ -607,7 +607,6 @@ app.get('/model/:objectId', function (req, res, next) {
             console.log(formatted);
 
             var reqBody = req.body;
-            console.log(reqBody);
 
             // send to Parse
 			var keywords = reqBody.keywords.split(/\s*,\s*/g);
@@ -636,11 +635,10 @@ app.get('/model/:objectId', function (req, res, next) {
 			  success: function(response) {
 				  // Execute any logic that should take place after the object is saved.
 				  objectId = response.id;
-
 				// encode file
 				var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
-				var contentType = reqBody.file.match(/^data:(\w+\/\w+)/);
-				var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/\w+;base64,/, ""),'base64')
+				var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
+				var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/.+;base64,/, ""),'base64')
 				var params = {
 					Key: s3Key,
 					Body: fileBuff,
@@ -719,8 +717,8 @@ app.get('/model/:objectId', function (req, res, next) {
 				// encode file
 				if (reqBody.file != null) {
                     var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
-                    var contentType = reqBody.file.match(/^data:(\w+\/\w+)/);
-                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/\w+;base64,/, ""),'base64')
+                    var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
+                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/.+;base64,/, ""),'base64')
                     var fileParams = {
                         Key: s3Key,
                         Body: fileBuff,
@@ -743,11 +741,12 @@ app.get('/model/:objectId', function (req, res, next) {
                 }
                 console.log(objectId);
 
-				// encode picture
+				// encode picture NOTE: Parse object currently does not differentiate between image and file.
+				// Only file (saved in image_URL) is accessible on website
 				if (reqBody.picture != null) {
                     var s3KeyP = req.params.username + "_" + objectId + "_pic." + reqBody.pictureType;
-                    var contentTypeP = reqBody.picture.match(/^data:(\w+\/\w+)/);
-                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w+\/\w+;base64,/, ""),'base64')
+                    var contentTypeP = reqBody.picture.match(/^data:(\w+\/.+);base64,/);
+                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w+\/.+;base64,/, ""),'base64')
                     var pictureParams = {
                         Key: s3KeyP,
                         Body: pictureBuff,
@@ -762,17 +761,7 @@ app.get('/model/:objectId', function (req, res, next) {
 
                             // update file name in parse object
                             model.set('image', awsLink + s3KeyP);
-
-                            model.save(null, {
-//                              success: function(data) {
-//                                  console.log("Path name updated successfully.");
-//                                  res.status(200).json({status:"Back from routes.js!"});
-//                              },
-//                              error: function(data, error) {
-//                                console.log('Failed to update new object path, with error code: ' + error.message);
-//                                res.status(500).json({status:"Uploading image failed." + error.message});
-//                              }
-                            });
+                            model.save();
                         }
                     });
                 }
