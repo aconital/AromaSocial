@@ -69,13 +69,52 @@ var OrganizationMenu = React.createClass ({
 });
 
 var Connections = React.createClass({
-  render: function() {
-    return (
-      <div>
-        Connections of {name}
-      </div>
-    )
-  }
+    getInitialState: function() {
+        return {data: []};
+    },
+    componentDidMount : function(){
+        var connectionUrl= "/organization/"+objectId+"/connections";
+
+        $.ajax({
+            url: connectionUrl,
+            success: function(data) {
+
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve orgs");
+            }.bind(this)
+        });
+    },
+    render: function() {
+
+        var orgList = $.map(this.state.data,function(org) {
+
+            return (
+                <div>
+
+
+
+                            <div key={org.orgId} className="row" id="people-row">
+                                <div className="col-lg-2">
+                                <a href={'/organization/'+org.orgId}> <img  src={org.orgImgUrl} className="img-circle newsfeed-profile-pic" /></a>
+                                </div>
+                                <div className="col-lg-10">
+                                    <div>{org.name}</div>
+                                    <div>{org.location}</div>
+
+                                </div>
+                            </div>
+
+                </div>
+            );
+        });
+        return (
+            <div>
+                {orgList}
+            </div>
+        )
+    }
 });
 
 var People = React.createClass({
