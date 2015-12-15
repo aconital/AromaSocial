@@ -33,11 +33,11 @@ var Data = React.createClass ({
                     <div>
                         {(currentUserId == creatorId) ? <h2 className="contain-panel-big-h2 p-editable" contentEditable="true">{title}</h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner"><a href="#" className="image-link"><span className="glyphicon glyphicon-check space"></span></a>
-                            <a href="#" className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
+                            <a href={aws_path} className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
                         </h2>
                     </div>
                     <div>
-                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
+                        {/*{(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}*/}
                         <div className="contain-panel-big-p">
                             <h4>Description</h4>
                             {(currentUserId == creatorId) ? <p className="p-editable" contentEditable="true">{description}</p> : <p className="p-noneditable">{description}</p>}
@@ -173,7 +173,7 @@ var Models = React.createClass({
   }
 });
 
-var Data = React.createClass({
+var DataInline = React.createClass({
   getInitialState: function() {
     return { showModal: false };
   },
