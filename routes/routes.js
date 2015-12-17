@@ -697,7 +697,7 @@ app.get('/model/:objectId', function (req, res, next) {
 				// encode file
 				var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
 				var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
-				var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/.+;base64,/, ""),'base64')
+				var fileBuff = new Buffer(reqBody.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
 				var params = {
 					Key: s3Key,
 					Body: fileBuff,
@@ -718,7 +718,7 @@ app.get('/model/:objectId', function (req, res, next) {
 						data.save(null, {
                           success: function(data) {
                             console.log("Path name updated successfully.");
-                            res.status(200).json({status:"Back from routes.js!"});
+                            res.status(200).json({status:"OK", query: data});
                           },
                           error: function(data, error) {
                             console.log('Failed to update new object path, with error code: ' + error.message);
@@ -777,7 +777,7 @@ app.get('/model/:objectId', function (req, res, next) {
 				if (reqBody.file != null) {
                     var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
                     var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
-                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w+\/.+;base64,/, ""),'base64')
+                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                     var fileParams = {
                         Key: s3Key,
                         Body: fileBuff,
@@ -805,7 +805,7 @@ app.get('/model/:objectId', function (req, res, next) {
 				if (reqBody.picture != null) {
                     var s3KeyP = req.params.username + "_" + objectId + "_pic." + reqBody.pictureType;
                     var contentTypeP = reqBody.picture.match(/^data:(\w+\/.+);base64,/);
-                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w+\/.+;base64,/, ""),'base64')
+                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                     var pictureParams = {
                         Key: s3KeyP,
                         Body: pictureBuff,

@@ -945,8 +945,8 @@ var ModelsList = React.createClass({
     var rows = [];
     return (
       <div>
-        <ResourceForm fromModelTab={true} />
-        {this.data.models.map(function(model) {
+        <ResourceForm fromModelTab={true} list={this.data} />
+        {this.models.map(function(model) {
             rows.push(<ModelListItem objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
@@ -1272,8 +1272,8 @@ var DataList = React.createClass({
   render: function() {
     var rows = [];
     return (
-      <div>
-        <ResourceForm />
+      <div id="dataListItems">
+        <ResourceForm list={this.data}/>
         {this.data.items.map(function(item) {
             rows.push(<DatumListItem objectId={item.objectId}
                                    collaborators={item.collaborators}
@@ -1357,7 +1357,7 @@ var ResourceForm = React.createClass({
 		   </Modal.Header>
 		   <Modal.Body>
 
-			 <ResourceAddForm fromModelTab={this.props.fromModelTab} submitSuccess={this.close}/>
+			 <ResourceAddForm fromModelTab={this.props.fromModelTab} submitSuccess={this.close} list={this.list} />
 
 		   </Modal.Body>
 		 </Modal>
@@ -1377,7 +1377,6 @@ var ResourceAddForm = React.createClass({
 //        };
 //    },
     close: function(e) {
-        console.log("hello!!");
         if (typeof this.props.submitSuccess === 'function') {
             this.props.submitSuccess();
         }
