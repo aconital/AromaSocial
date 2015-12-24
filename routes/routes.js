@@ -255,6 +255,75 @@ app.get('/organization/:objectId', function (req, res, next) {
             }
         });
     });
+    //Done by Hirad
+    //not doing it in REACT
+    //getting pending requests for People of org here and pass it to view
+    app.get('/organization/:objectId/pending', function (req, res, next) {
+        // var currentUser = Parse.User.current();
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery)
+        query.equalTo('verified',0)
+        query.include('userId');
+        query.find({
+            success: function(result) {
+                var people =[];
+                for(var uo in result)
+                {
+                    var title= result[uo].attributes.title;
+                    var verified= result[uo].attributes.verified;
+
+                    var user= result[uo].attributes.userId.attributes;
+
+                    var username= user.username;
+                    var fullname="N/A";
+                    var company= "N/A";
+                    var work_title= "N/A";
+                    var userImgUrl= "/images/user.png";
+                    var work_experience= [];
+
+                    if(user.hasOwnProperty('fullname')){
+                        fullname=user.fullname;
+                    }
+                    if(user.hasOwnProperty('imgUrl')){
+                        userImgUrl=user.imgUrl;
+                    }
+                    //getting first work experience, since there is no date on these objects
+                    if(user.hasOwnProperty('work_experience')){
+                        var work_experience= user.work_experience[0];
+                        company= work_experience.company;
+                        work_title= work_experience.title;
+                    }
+
+                    //only show people who are verified by admin
+                    if(!verified)
+                    {
+                        var person = {
+                            username:username,
+                            title: title,
+                            fullname: fullname,
+                            userImgUrl: userImgUrl,
+                            company: company,
+                            workTitle: work_title
+                        };
+                        people.push(person);
+
+                    }
+
+                }
+                res.json(people);
+
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
     app.get('/organization/:objectId/connections', function (req, res, next) {
         // var currentUser = Parse.User.current();
 
@@ -313,6 +382,38 @@ app.get('/organization/:objectId', function (req, res, next) {
                 res.render('index', {title: error, path: req.path});
             }
         });
+    });
+    app.get('/organization/isadmin/:username', function (req, res, next) {
+
+        var isAdmin = false;
+        if (req.params.username != "")
+        {
+            var innerQuery =  new Parse.Query(Parse.User);
+            innerQuery.equalTo("username",req.params.username);
+
+            var query = new Parse.Query('Relationship');
+            query.matchesQuery("userId", innerQuery)
+            query.first({
+                success: function (result) {
+                    console.log(result);
+                    if(result != null) {
+                        isAdmin = result.attributes.isAdmin;
+                        res.json({isAdmin: isAdmin});
+                    }
+                    else{
+                        res.json({isAdmin:isAdmin});
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    res.render('index', {title: error, path: req.path});
+                }
+            });
+        }
+        else
+        {
+            res.json({isAdmin:isAdmin});
+        }
     });
 /*******************************************
  *
