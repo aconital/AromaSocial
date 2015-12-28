@@ -575,6 +575,8 @@ app.get('/model/:objectId', function (req, res, next) {
         creatorId: result.get("user").id,
         access: result.get('access'),
         description: result.get('abstract'),
+        feature: result.get('feature'),
+        other: result.get('other'),
         hashtags: result.get('hashtags'),
         title: result.get('title'),
         image: result.get('image'),
@@ -618,6 +620,10 @@ app.get('/model/:objectId', function (req, res, next) {
             res.render('profile', {Error: 'Profile Update Failed!'});
         }
     });
+
+
+
+
 
   app.get('/profile/:username/publications',function(req,res,next){
 
@@ -840,6 +846,48 @@ app.get('/model/:objectId', function (req, res, next) {
         }
     });
 
+    app.post('/publication/:objectId/update',function(req,res,next){
+        var query = new Parse.Query("Publication");
+        query.get(req.params.objectId,{
+            success: function(result) {
+                result.set("title", req.body.title);
+                result.set("description", req.body.description);
+                console.log(req.body.title);
+                console.log(req.body.description);
+                result.save();
+            }
+        });
+    });
+
+    app.post('/model/:objectId/update',function(req,res,next){
+        var query = new Parse.Query("Model");
+        query.get(req.params.objectId,{
+            success: function(result) {
+                result.set("title", req.body.title);
+                result.set("abstract", req.body.description);
+                result.set("feature", req.body.feature);
+                result.set("other", req.body.other);
+                console.log(req.body.title);
+                console.log(req.body.description);
+                console.log(req.body.feature);
+                console.log(req.body.other);
+                result.save();
+            }
+        });
+    });
+
+    app.post('/data/:objectId/update',function(req,res,next){
+        var query = new Parse.Query("Data");
+        query.get(req.params.objectId,{
+            success: function(result) {
+                result.set("title", req.body.title);
+                result.set("description", req.body.description);
+                console.log(req.body.title);
+                console.log(req.body.description);
+                result.save();
+            }
+        });
+    });
 
     app.post('/profile/:username/model',function(req,res,next){
         var currentUser = Parse.User.current();
@@ -938,6 +986,53 @@ app.get('/model/:objectId', function (req, res, next) {
             res.status(500).json({status: "Model Upload Failed! " + error.message});
         }
     });
+
+
+app.post('/profile/:username/update',function(req,res,next){
+    var currentUser = Parse.User.current();
+    var linkUser = req.params.username;
+    if (currentUser) {
+        if(currentUser.attributes.username == linkUser) {
+            var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+
+                    var s3Key = req.params.username + "_profile_picture." + req.body.fileType;
+                    var contentType = req.body.file.match(/^data:(\w+\/.+);base64,/);
+                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                    var fileParams = {
+                        Key: s3Key,
+                        Body: fileBuff,
+                        ContentEncoding: 'base64',
+                        ContentType: (contentType ? contentType[1] : 'text/plain')
+                    };
+                    console.log(contentType);
+
+                    bucket.putObject(fileParams, function (err, data) {i
+                        if (err) { console.log("Profile Picture (File) Upload Error:", err); }
+                        else {
+                            console.log('Uploaded File to S3!');
+                        }
+                    });
+
+                    var s3KeyP = req.params.username + "__profile_picture." + req.body.pictureType;
+                    var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                    var pictureParams = {
+                        Key: s3KeyP,
+                        Body: pictureBuff,
+                        ContentEncoding: 'base64',
+                        ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
+                    };
+
+                    bucket.putObject(pictureParams, function (err, data) {
+                        if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
+                        else {
+                            console.log('Uploading Image to S3!');
+
+                        }
+                    });
+        }
+    }
+});
 
     /*******************************************
      *

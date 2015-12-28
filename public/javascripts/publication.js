@@ -1,21 +1,52 @@
+Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Publication = React.createClass ({
+    getInitialState: function() {
+     return {
+        title: [title],
+        description: description
+        };
+    },
+    handleChange: function(e) {
+        this.setState({[e.target.name]:e.target.value});
+        console.log("YES");
+    },
+    submitChange: function() {
+        var dataForm = {title: this.state.title, description: this.state.description};
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
     render: function() {
         return (
         <div className="content-wrap">
             <div className="item-bottom-big">
                     <div className="item-panel contain-panel-big">
                     <div>
-                        {(currentUserId == creatorId) ? <h2 className="contain-panel-big-h2 p-editable" contentEditable="true">{title}</h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
+                        {(currentUserId == creatorId) ? <h2 className="no-margin"><input className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.title} /></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner"><a href="#" className="image-link"><span className="glyphicon glyphicon-check space"></span></a>
                             <a href="#" className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
                         </h2>
                     </div>
                     <div>
-                       {(currentUserId == creatorId) ? <p className="p-editable" contentEditable="true">{description}</p> : <p className="p-noneditable">{description}</p>}
+                       {(currentUserId == creatorId) ? <p className="no-margin"><input className="p-editable" type="text" name="description" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.description}/></p> : <p className="p-noneditable">{description}</p>}
                     </div>
                     </div>
                     <div className="item-panel contain-panel-big">

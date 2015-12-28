@@ -6,13 +6,92 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Profile = React.createClass ({
     getInitialState: function() {
-      return { showModal: false };
+      return { showModal: false,
+
+            fromModelTab: false,
+            fileChosen: null,
+            pictureChosen: null,
+            buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+
+            picture: null, file: null, pictureType: '', fileType: ''
+      };
     },
     clickOpen() {
       this.setState({ showModal: true });
     },
     clickClose() {
       this.setState({ showModal: false});
+    },
+    openFileUpload() {
+	    var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+
+        this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
+            console.log(numFiles);
+            console.log(label);
+            return input;
+        });
+	},
+    showPictureUpload(fromModel) {
+	    if (fromModel) {
+            return '';
+	    }
+	    return 'none';
+	},
+	handleFile: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+          self.setState({
+            fileChosen: upload.target.result,
+            file: upload.target.result,
+            fileType: extension,
+          });
+        }
+        reader.readAsDataURL(file);
+    },
+    handlePicture: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+         self.setState({
+           pictureChosen: upload.target.result,
+           picture: upload.target.result,
+           pictureType: extension,
+         });
+        }
+        reader.readAsDataURL(file);
+    },
+    handleSubmitData: function(e) {
+        e.preventDefault();
+
+        var dataForm = {file: this.state.file, picture: this.state.picture,
+            fileType: this.state.fileType, pictureType: this.state.pictureType};
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
     },
     render: function() {
         return (
@@ -22,12 +101,15 @@ var Profile = React.createClass ({
                     <Modal.Title>Update Profile Picture</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                        <div id="field1-container">
-                            <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                        </div>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
+                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                    </Button>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block>
+                        Select Files... <input type="file" onChange={this.handleFile} />
+                    </Button>
                   </Modal.Body>
                   <Modal.Footer>
-                    <input className="publication-button" type="submit" value="Submit" onClick={this.clickSubmit} />
+                    <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
                   </Modal.Footer>
                 </Modal>
         <div className="item-top item-top-container">
@@ -946,7 +1028,7 @@ var ModelsList = React.createClass({
     return (
       <div>
         <ResourceForm fromModelTab={true} list={this.data} />
-        {this.models.map(function(model) {
+        {this.data.models.map(function(model) {
             rows.push(<ModelListItem objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
