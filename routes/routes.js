@@ -889,6 +889,64 @@ app.get('/model/:objectId', function (req, res, next) {
         });
     });
 
+    app.post('/data/:objectId/picture',function(req,res,next){
+       var query = new Parse.Query("Data");
+       query.get(req.params.objectId,{
+           success: function(result) {
+               var bucket = new aws.S3();
+
+               var s3KeyP = req.params.objectId + "_data_picture_" + req.body.randomNumber + "." + req.body.pictureType;
+               var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+               var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+               var pictureParams = {
+                   Bucket: 'syncholar',
+                   Key: s3KeyP,
+                   Body: pictureBuff,
+                   ContentEncoding: 'base64',
+                   ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
+               };
+
+               bucket.putObject(pictureParams, function (err, data) {
+                   if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
+                   else {
+                       console.log('Uploaded Image to S3!');
+                       result.set("image_URL",awsLink + s3KeyP);
+                       result.save();
+                   }
+               });
+           }
+       });
+   });
+
+    app.post('/model/:objectId/picture',function(req,res,next){
+       var query = new Parse.Query("Model");
+       query.get(req.params.objectId,{
+           success: function(result) {
+               var bucket = new aws.S3();
+
+               var s3KeyP = req.params.objectId + "_model_picture_" + req.body.randomNumber + "." + req.body.pictureType;
+               var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+               var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+               var pictureParams = {
+                   Bucket: 'syncholar',
+                   Key: s3KeyP,
+                   Body: pictureBuff,
+                   ContentEncoding: 'base64',
+                   ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
+               };
+
+               bucket.putObject(pictureParams, function (err, data) {
+                   if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
+                   else {
+                       console.log('Uploaded Image to S3!');
+                       result.set("image_URL",awsLink + s3KeyP);
+                       result.save();
+                   }
+               });
+           }
+       });
+   });
+
     app.post('/profile/:username/model',function(req,res,next){
         var currentUser = Parse.User.current();
         if (currentUser && currentUser.attributes.username == req.params.username) {
@@ -987,49 +1045,32 @@ app.get('/model/:objectId', function (req, res, next) {
         }
     });
 
-
 app.post('/profile/:username/update',function(req,res,next){
     var currentUser = Parse.User.current();
     var linkUser = req.params.username;
     if (currentUser) {
         if(currentUser.attributes.username == linkUser) {
-            var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+            var bucket = new aws.S3();
 
-                    var s3Key = req.params.username + "_profile_picture." + req.body.fileType;
-                    var contentType = req.body.file.match(/^data:(\w+\/.+);base64,/);
-                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                    var fileParams = {
-                        Key: s3Key,
-                        Body: fileBuff,
-                        ContentEncoding: 'base64',
-                        ContentType: (contentType ? contentType[1] : 'text/plain')
-                    };
-                    console.log(contentType);
+            var s3KeyP = req.params.username + "_profile_picture_" + req.body.randomNumber + "." + req.body.pictureType;
+            var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+            var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+            var pictureParams = {
+                Bucket: 'syncholar',
+                Key: s3KeyP,
+                Body: pictureBuff,
+                ContentEncoding: 'base64',
+                ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
+            };
 
-                    bucket.putObject(fileParams, function (err, data) {i
-                        if (err) { console.log("Profile Picture (File) Upload Error:", err); }
-                        else {
-                            console.log('Uploaded File to S3!');
-                        }
-                    });
-
-                    var s3KeyP = req.params.username + "__profile_picture." + req.body.pictureType;
-                    var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                    var pictureParams = {
-                        Key: s3KeyP,
-                        Body: pictureBuff,
-                        ContentEncoding: 'base64',
-                        ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                    };
-
-                    bucket.putObject(pictureParams, function (err, data) {
-                        if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
-                        else {
-                            console.log('Uploading Image to S3!');
-
-                        }
-                    });
+            bucket.putObject(pictureParams, function (err, data) {
+                if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
+                else {
+                    console.log('Uploaded Image to S3!');
+                    currentUser.set("imgUrl",awsLink + s3KeyP);
+                    currentUser.save();
+                }
+            });
         }
     }
 });

@@ -8,7 +8,15 @@ var Model = React.createClass ({
         title: [title],
         description: [description],
         feature: [feature],
-        other: [other]
+        other: [other],
+
+        objectId: [objectId],
+        image_URL: [image_URL],
+
+        fromModelTab: false,
+        pictureChosen: null,
+
+        picture: null, pictureType: ''
         };
     },
     handleChange: function(e) {
@@ -43,6 +51,57 @@ var Model = React.createClass ({
     clickClose() {
       this.setState({ showModal: false});
     },
+    openFileUpload() {
+	    var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+
+        this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
+            console.log(numFiles);
+            console.log(label);
+            return input;
+        });
+	},
+    handlePicture: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+         self.setState({
+           pictureChosen: upload.target.result,
+           picture: upload.target.result,
+           pictureType: extension,
+         });
+        }
+        reader.readAsDataURL(file);
+    },
+    handleSubmitData: function(e) {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
+        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_model_picture_" + randomNumber + "." + this.state.pictureType;
+
+        $.ajax({
+            url: path + "/picture",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data:data});
+                this.setState({image_URL: changeImgURL});
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/picture", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
     render: function() {
         return (
         <div className="content-wrap">
@@ -52,11 +111,11 @@ var Model = React.createClass ({
                   </Modal.Header>
                   <Modal.Body>
                         <div id="field1-container">
-                            <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
+                            <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
                         </div>
                   </Modal.Body>
                   <Modal.Footer>
-                    <input className="publication-button" type="submit" value="Submit" />
+                    <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
                   </Modal.Footer>
                 </Modal>
             <div className="item-bottom-big">
@@ -75,7 +134,7 @@ var Model = React.createClass ({
                             {(currentUserId == creatorId) ? <p className="no-margin"><input type="text" name="description" className="p-editable" onChange={this.handleChange}  onBlur={this.submitChange} value={this.state.description}/></p> : <p className="p-noneditable">{description}</p>}
                         </div>
                     </td><td>
-                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
+                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </td></tr>
                     <tr><td className="model-layout-td-left">
                         <div className="contain-panel-big-p">

@@ -7,13 +7,13 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 var Profile = React.createClass ({
     getInitialState: function() {
       return { showModal: false,
+            username: [username],
+            profile_imgURL: [profile_imgURL],
 
             fromModelTab: false,
-            fileChosen: null,
             pictureChosen: null,
-            buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
 
-            picture: null, file: null, pictureType: '', fileType: ''
+            picture: null, pictureType: ''
       };
     },
     clickOpen() {
@@ -34,27 +34,6 @@ var Profile = React.createClass ({
             return input;
         });
 	},
-    showPictureUpload(fromModel) {
-	    if (fromModel) {
-            return '';
-	    }
-	    return 'none';
-	},
-	handleFile: function(e) {
-        var self = this;
-        var reader = new FileReader();
-        var file = e.target.files[0];
-        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
-
-        reader.onload = function(upload) {
-          self.setState({
-            fileChosen: upload.target.result,
-            file: upload.target.result,
-            fileType: extension,
-          });
-        }
-        reader.readAsDataURL(file);
-    },
     handlePicture: function(e) {
         var self = this;
         var reader = new FileReader();
@@ -70,11 +49,10 @@ var Profile = React.createClass ({
         }
         reader.readAsDataURL(file);
     },
-    handleSubmitData: function(e) {
-        e.preventDefault();
-
-        var dataForm = {file: this.state.file, picture: this.state.picture,
-            fileType: this.state.fileType, pictureType: this.state.pictureType};
+    handleSubmitData: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
+        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.username + "_profile_picture_" + randomNumber + "." + this.state.pictureType;
 
         $.ajax({
             url: path + "/update",
@@ -82,16 +60,13 @@ var Profile = React.createClass ({
             contentType: "application/json; charset=utf-8",
             type: 'POST',
             data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
+            success: function(data, status, xhr) {
+                console.log("Successful!");
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/update", status, err.toString());
             }.bind(this)
         });
-
-        return;
     },
     render: function() {
         return (
@@ -101,12 +76,9 @@ var Profile = React.createClass ({
                     <Modal.Title>Update Profile Picture</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
-                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-                    </Button>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block>
-                        Select Files... <input type="file" onChange={this.handleFile} />
-                    </Button>
+                    <div id="field1-container">
+                        <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
+                    </div>
                   </Modal.Body>
                   <Modal.Footer>
                     <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
@@ -117,7 +89,7 @@ var Profile = React.createClass ({
         <div className="content-wrap">
             <div>
                 <div className="item-top-1 col" id="overlay">
-                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
+                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
                 </div>
             </div>
             <div className="item-bottom">
