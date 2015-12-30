@@ -1,7 +1,53 @@
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
 
 var Organization = React.createClass ({
+    getInitialState: function() {
+        return {isAdmin: []};
+    },
+    componentDidMount : function() {
+        var peopleUrl = "/organization/" + objectId + "/admins";
+
+        $.ajax({
+            url: peopleUrl,
+            success: function (data) {
+                var isAdmin = false;
+                for (var p in data) {
+                    if (data[p].username == currentUsername)
+                        isAdmin = true;
+                }
+                this.setState({isAdmin: isAdmin});
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        })
+    },
     render: function() {
+        if(this.state.isAdmin)
+            return (
+                <div>
+                    <div className="item-top item-top-container">
+                    </div>
+                    <div className="content-wrap">
+                        <div>
+                            <div className="item-top-1 col">
+                                <img src={organization_imgURL} className="contain-image" />
+                            </div>
+                        </div>
+                        <div className="item-bottom">
+                            <div className="item-bottom-1">
+                                <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
+                                <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                            </div>
+                            <div id="item-bottom-2-organization" className="item-bottom-organization">
+                                <OrganizationMenu tabs={['Connections', 'People', 'About', 'News And Events', 'Knowledge', 'Publications', 'Data', 'Models','Manage']} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        //not admin
+        else
         return (
             <div>
                 <div className="item-top item-top-container">
@@ -44,7 +90,8 @@ var OrganizationMenu = React.createClass ({
                 4: <Knowledge/>,
                 5: <Publications objectId={objectId}/>,
                 6: <Data objectId={objectId}/>,
-                7: <Models objectId={objectId}/>};
+                7: <Models objectId={objectId}/>,
+                8: <Manage objectId={objectId}/>};
         return (
             <div>
                 <div id="tabs">
@@ -92,8 +139,6 @@ var Connections = React.createClass({
 
             return (
                 <div>
-
-
 
                             <div key={org.orgId} className="row" id="people-row">
                                 <div className="col-lg-2">
@@ -172,6 +217,47 @@ var People = React.createClass({
       </div>
     )
   }
+});
+
+var Manage = React.createClass({
+    getInitialState: function() {
+        return {data: []};
+    },
+    componentDidMount : function(){
+        $.ajax({
+            url: "/organization/"+objectId+"/pending",
+            success: function(data) {
+
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
+    },
+    render: function() {
+
+        return (
+            <div>
+                <div><span className="people-title">Pending Approval</span></div>
+                {this.state.data.map(person =>
+
+                        <div key={person.username} className="row" id="people-row">
+                            <div className="col-lg-2">
+                                <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="img-circle newsfeed-profile-pic" /></a>
+                            </div>
+                            <div className="col-lg-10">
+                                <div>{person.fullname}</div>
+                                <div>{person.workTitle}</div>
+                                <div>{person.company}</div>
+                                <div><a id="pending-action"><span id="pending-accept" className="glyphicon glyphicon-ok" aria-hidden="true"></span></a> <a id="pending-action"><span id="pending-deny" className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div>
+                            </div>
+                        </div>
+                )}
+            </div>
+
+        )
+    }
 });
 
 var About = React.createClass({

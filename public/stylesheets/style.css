@@ -7283,3 +7283,17 @@ div.react-tagsinput {
    font-size: 22px;
    color: #47745f;
  }
+#pending-action
+ { margin-right: 10px;
+   cursor: pointer;
+   text-decoration: none;
+
+ }
+#pending-accept
+{
+  color: #03c400;
+}
+ #pending-deny
+ {
+   color: #de000b;
+ }

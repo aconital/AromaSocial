@@ -267,7 +267,7 @@ app.get('/organization/:objectId', function (req, res, next) {
 
         var query = new Parse.Query('Relationship');
         query.matchesQuery("orgId",innerQuery)
-        query.equalTo('verified',0)
+        query.equalTo('verified',false)
         query.include('userId');
         query.find({
             success: function(result) {
@@ -384,37 +384,39 @@ app.get('/organization/:objectId', function (req, res, next) {
             }
         });
     });
-    app.get('/organization/isadmin/:username', function (req, res, next) {
+    app.get('/organization/:objectId/admins', function (req, res, next) {
 
-        var isAdmin = false;
-        if (req.params.username != "")
-        {
-            var innerQuery =  new Parse.Query(Parse.User);
-            innerQuery.equalTo("username",req.params.username);
+        var admins=[];
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
 
-            var query = new Parse.Query('Relationship');
-            query.matchesQuery("userId", innerQuery)
-            query.first({
-                success: function (result) {
-                    console.log(result);
-                    if(result != null) {
-                        isAdmin = result.attributes.isAdmin;
-                        res.json({isAdmin: isAdmin});
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery)
+        query.equalTo("isAdmin",true)
+        query.include('userId');
+        query.find({
+            success: function (result) {
+                    if(result!=null)
+                    {
+                        for (var i = 0; i < result.length; i++) {
+                            var object = result[i];
+                            var admin = {
+                                username: object.attributes.userId.attributes.username
+                            };
+                            admins.push(admin);
+                        }
                     }
-                    else{
-                        res.json({isAdmin:isAdmin});
-                    }
+                         res.json(admins);
                 },
                 error: function (error) {
                     console.log(error);
                     res.render('index', {title: error, path: req.path});
                 }
             });
-        }
-        else
-        {
-            res.json({isAdmin:isAdmin});
-        }
+
+
+
+
     });
 /*******************************************
  *
