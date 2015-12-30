@@ -7,6 +7,7 @@ var path = require('path');
 var _= require('underscore');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
+var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
