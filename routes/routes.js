@@ -527,7 +527,6 @@ app.get('/data/:objectId', function (req, res, next) {
   var query = new Parse.Query('Data');
   query.get(req.params.objectId,{
     success: function(result) {
-    console.log("this is the path of the data get req" + result.get('path'));
       res.render('data', {layout: 'home', title: 'Data', path: req.path,
         currentUserId: currentUser.id,
         currentUsername: currentUser.attributes.username,
@@ -665,78 +664,71 @@ app.get('/model/:objectId', function (req, res, next) {
       });
 
   });
-  app.post('/profile/:username/publications',function(req,res,next){
-      var currentUser = Parse.User.current();
-      if (currentUser && currentUser.attributes.username == req.params.username) {
-          var tags;
-          var title;
-          var filename;
-            //upload publication
-          var form = new formidable.IncomingForm();
-          console.log(form);
-          
-          var now = moment();
-          var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
-          console.log(formatted); 
 
-          form.parse(req, function(err, fields, files) {
-              tags=fields.tags;
-              console.log(tags);
-              title=fields.title;
-              //filename=files.upload.name;
-              var start = files.upload.name.indexOf(path.extname(files.upload.name));
-              filename = files.upload.name.substring(0, start) + formatted + path.extname(files.upload.name);
-              //console.log(path.extname(files.upload.name));
-              author= fields.author;
-              description= fields.description;
-              year= fields.year;
-          });
-          form.on('end', function(fields, files) {
-              // Temporary location of our uploaded file 
-              var temp_path = this.openedFiles[0].path;
-              // The file name of the uploaded file 
-              //var file_name = this.openedFiles[0].name;
-              var start = this.openedFiles[0].name.indexOf(path.extname(this.openedFiles[0].name));
-              var file_name = this.openedFiles[0].name.substring(0, start) + formatted + path.extname(this.openedFiles[0].name);
-              // Location where we want to copy the uploaded file 
-              var new_location = 'uploads/'+req.params.username+'/publications/';
+  app.post('/profile/:username/publication', function(req,res,next){
+    var currentUser = Parse.User.current();
+    if (currentUser && currentUser.attributes.username == req.params.username) {
+        var objectId;
+        var now = moment();
+        var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
+        console.log(formatted);
 
-              fs.copy(temp_path, new_location + file_name, function(err) {
-                  if (err) {
-                      console.error(err);
-                  } else {
+        var reqBody = req.body;
 
-                      var hashtags = tags.match(/#.+?\b/g);
-                      var Publication = Parse.Object.extend("Publication");
-                      var pub= new Publication();
-                      pub.set('user',currentUser);
-                      pub.set('title',title);
-                      pub.set('hashtags',hashtags);
-                      pub.set('filename',filename);
-                      pub.set('year',year);
-                      pub.set('description',description);
-                      pub.set('author',author);
-                      pub .save(null, {
-                          success: function(pub) {
-                              // Execute any logic that should take place after the object is saved.
-                              res.render('profile', {title: 'Profile', msg: 'Publication uploaded successfully!', username: currentUser.attributes.username,
-                                'isMe': true, currentUserImg:currentUser.attributes.imgUrl, fullname:currentUser.attributes.fullname,
-                                email: currentUser.attributes.email});
-                          },
-                          error: function(pub, error) {
-                              // Execute any logic that should take place if the save fails.
-                              // error is a Parse.Error with an error code and message.
-                              alert('Failed to create new object, with error code: ' + error.message);
-                              res.render('profile', {title: 'Profile', msg: 'Uploading publication failed!'});
-                          }
-                      });
-                  }
-              });
-          });
-      } else {
-          res.render('profile', {Error: 'Submit Publication Failed!'});
-      }
+        // send to Parse
+        var Publication = Parse.Object.extend("Publication");
+        var pub = new Publication();
 
+        pub.set('user',currentUser);
+        pub.set('author',reqBody.author);
+        pub.set('description',reqBody.description);
+        pub.set('filename',"");
+        pub.set('groups',reqBody.groups);
+        pub.set('hashtags',reqBody.hashtags);
+        pub.set('keywords',reqBody.keywords);
+        pub.set('license',reqBody.license);
+        pub.set('publication_link',reqBody.publication_link);
+        pub.set('title',reqBody.title);
+        pub.set('year',reqBody.publishDate.substring(0,4));
+
+        pub.save(null, {
+          success: function(response) {
+            objectId = response.id;
+            // encode file
+            var params = awsUtils.encodeFile(req.params.username, objectId, reqBody, "_pub_");
+
+            // upload files to S3
+            var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+            bucket.putObject(params, function (err, response) {
+                if (err) { console.log("Data Upload Error:", err); }
+                else {
+                    console.log('uploading to s3');
+
+                    // update file name in parse object
+                    pub.set('filename', awsLink + params.Key);
+
+                    pub.save(null, {
+                      success: function(data) {
+                        console.log("Path name updated successfully.");
+                        res.status(200).json({status:"OK", query: data});
+                      },
+                      error: function(data, error) {
+                        console.log('Failed to update new object path, with error code: ' + error.message);
+                        res.status(500).json({status:"Uploading file failed." + error.message});
+                      }
+                    });
+                }
+            });
+          },
+          error: function(response, error) {
+              console.log('Failed to create new object, with error code: ' + error.message);
+              res.status(500).json({status: "Creating pub object failed. " + error.message});
+          }
+        });
+
+    } else {
+        res.status(500).json({status: 'Publication upload failed!'});
+    }
   });
     app.delete('/profile/:username/publications',function(req,res,next){
         var currentUser = Parse.User.current();

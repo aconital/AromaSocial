@@ -313,7 +313,7 @@ var PublicationForm = React.createClass({
     this.setState({ step: currentStep + 1 });
   },
   clickSubmit: function() {
-//  NOTE: ParseReact POSTing might not work atm due to versioning issues. see commit message for more details.
+//  NOTE: ParseReact POSTing might not work atm due to versioning issues (see commit msg). Using regular Ajax.
 //     var creator = ParseReact.Mutation.Create('Publication', {
 //       title: this.state.title,
 //       author: this.state.txtAuthors[0],
@@ -328,12 +328,32 @@ var PublicationForm = React.createClass({
 //
 //     // ...and execute it
 //     creator.dispatch();
-//
-//     // TODO send file to S3 if one is uploaded
-//     if (this.state.pubFile != null) {
-//        console.log(this.state.pubFileExt);
-//     }
-//     console.log("kill me!!!!")
+    var pubForm = {  title: this.state.txtTitle,
+                  author: this.state.txtAuthors[0],
+                  description: this.state.txtAbstract,
+                  publishDate: this.state.txtPublishDate,
+                  groups: this.state.txtPrivacy,
+                  keywords: this.state.txtKeywordsTags,
+                  hashtags: this.state.txtTags,
+                  license: "Testtt",
+                  publication_link: "why.jpg",
+                  file: this.state.pubFile,
+                  fileType: this.state.pubFileExt };
+
+    $.ajax({
+     url: path + "/publication",
+     dataType: 'json',
+     contentType: "application/json; charset=utf-8",
+     type: 'POST',
+     data: JSON.stringify(pubForm),
+     processData: false,
+     success: function(data) {
+         this.setState({data: data});
+     }.bind(this),
+     error: function(xhr, status, err) {
+        console.error(path + "/publication", status, err.toString());
+     }.bind(this)
+    });
   },
   title: function(e) {
     this.setState({ txtTitle : e.target.value })
@@ -348,7 +368,6 @@ var PublicationForm = React.createClass({
     this.setState({ txtPublishPartner : e.target.value })
   },
   publishDate: function(e) {
-    console.log("kill me");
     this.setState({ txtPublishDate : e.target.value })
   },
   input1: function(e) {
@@ -392,8 +411,6 @@ var PublicationForm = React.createClass({
       });
     }
     reader.readAsDataURL(file);
-    console.log(file);
-    console.log(extension);
   },
   render: function() {
     var self = this;
@@ -657,7 +674,7 @@ var PublicationBookChapter = React.createClass ({
         return (
             <div>
                 <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.pubUpload} />
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
                 </div>
                 <div id="field1-container" className="form-group">
                     <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Book Title" />
@@ -703,7 +720,7 @@ var PublicationConferenceProceeding = React.createClass ({
         return (
             <div>
                 <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.pubUpload} />
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
                 </div>
                 <div id="field1-container" className="form-group">
                     <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Conference Proceeding Title" />
@@ -742,7 +759,7 @@ var PublicationJournalArticle = React.createClass ({
         return (
             <div>
                 <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.pubUpload} />
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
                 </div>
                 <div id="field1-container" className="form-group">
                     <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Journal Article Title" />
@@ -782,7 +799,7 @@ var PublicationPatent = React.createClass ({
         return (
             <div>
                 <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.pubUpload} />
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
                 </div>
                 <div id="field1-container" className="form-group">
                     <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Patent Title" />
@@ -821,7 +838,7 @@ var PublicationReport = React.createClass ({
         return (
             <div>
                 <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.pubUpload} />
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
                 </div>
                 <div id="field1-container" className="form-group">
                     <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Report Title" />
@@ -858,7 +875,7 @@ var PublicationThesis = React.createClass ({
         return (
             <div>
                 <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.pubUpload} />
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
                 </div>
                 <div id="field1-container" className="form-group">
                     <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Thesis Title" />
@@ -902,7 +919,7 @@ var PublicationUnpublishedArticle = React.createClass ({
         return (
             <div>
                 <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.pubUpload} />
+                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
                 </div>
                 <div id="field1-container" className="form-group">
                     <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Unpublished Article Title" />
@@ -956,7 +973,7 @@ var PublicationJournal = React.createClass ({
                     <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Date" type="date"/>
                 </div>
                 <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File"  onChange={this.pubUpload} /></td>
+                    <td className="padding-right"><input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/></td>
                     <td className="padding-left"><input className="form-control" type="url" name="publication-url" id="field6" required="required" placeholder="URL"/></td>
                 </tr>
                 </table>
@@ -1200,7 +1217,7 @@ var ModelForm = React.createClass({
                    4: <Step4Model />};
     return (
       <div className="">
-            <form id="publication-form" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
+            <form id="" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
                 <table id="upload-field" width="100%"><tr>
                     <td className="padding-right">
                     <input type="text" id="search" placeholder="Search..." className="form-control"/>
@@ -1603,23 +1620,3 @@ React.render(<Profile
     connections={["BiofuelNet","FFABNet","IIE","INFORMS"]}
     expertise={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}
     news={["INFORMS","IIASA","FRESH LAB"]}/>, document.getElementById('content'));
-
-$('#upload-publication').submit( function(e){
-    console.log(this);
-    $.ajax({
-      url: "/profile/"+user+"/publications",
-      type: 'POST',
-      data: new FormData( this ),
-      processData: false,
-      contentType: false,
-      success: function(data){
-        console.log('w-we did it kids');
-        revertToList();
-      },
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }
-    });
-    e.preventDefault();
-
-});
