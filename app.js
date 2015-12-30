@@ -31,6 +31,11 @@ s3.listBuckets(function(err, data) {
   }
 });
 
+aws.config.update({
+    accessKeyId: "AKIAJAKJNWQBINWXOD7Q",
+    secretAccessKey: "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"
+});
+
 // view engine setup
 // Configure express to use handlebars templates
 var hbs = exphbs.create({
