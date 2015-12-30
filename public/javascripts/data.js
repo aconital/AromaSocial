@@ -79,6 +79,7 @@ var Data = React.createClass ({
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
         var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_data_picture_" + randomNumber + "." + this.state.pictureType;
 
+        var $this = this;
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -86,14 +87,15 @@ var Data = React.createClass ({
             type: 'POST',
             data: JSON.stringify(dataForm),
             processData: false,
-            success: function(data) {
-                this.setState({data:data});
-                this.setState({image_URL: changeImgURL});
-                this.clickClose();
+            success: function(status) {
+                console.log(status);
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
             }.bind(this)
+        }).then(function(){
+            $this.clickClose();
+            $this.setState({image_URL:changeImgURL});
         });
 
         return;

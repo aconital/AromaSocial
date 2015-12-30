@@ -54,18 +54,22 @@ var Profile = React.createClass ({
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
         var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.username + "_profile_picture_" + randomNumber + "." + this.state.pictureType;
 
+        var $this = this;
         $.ajax({
             url: path + "/update",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             type: 'POST',
             data: JSON.stringify(dataForm),
-            success: function(data, status, xhr) {
-                console.log("Successful!");
+            success: function(status) {
+                console.log(status);
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/update", status, err.toString());
             }.bind(this)
+        }).then(function(){
+            $this.clickClose();
+            $this.setState({profile_imgURL:changeImgURL});
         });
     },
     render: function() {

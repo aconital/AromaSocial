@@ -907,6 +907,7 @@ app.get('/model/:objectId', function (req, res, next) {
                        console.log('Uploaded Image to S3!');
                        result.set("image_URL",awsLink + s3KeyP);
                        result.save();
+                       res.status(200).json({status: "Picture Uploaded Successfully!"});
                    }
                });
            }
@@ -936,6 +937,7 @@ app.get('/model/:objectId', function (req, res, next) {
                        console.log('Uploaded Image to S3!');
                        result.set("image_URL",awsLink + s3KeyP);
                        result.save();
+                       res.status(200).json({status: "Picture Uploaded Successfully!"});
                    }
                });
            }
@@ -1064,6 +1066,7 @@ app.post('/profile/:username/update',function(req,res,next){
                     console.log('Uploaded Image to S3!');
                     currentUser.set("imgUrl",awsLink + s3KeyP);
                     currentUser.save();
+                    res.status(200).json({status: "Picture Uploaded Successfully!"});
                 }
             });
         }
