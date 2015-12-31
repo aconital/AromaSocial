@@ -285,7 +285,7 @@ app.get('/organization/:objectId', function (req, res, next) {
                     var work_title= "N/A";
                     var userImgUrl= "/images/user.png";
                     var work_experience= [];
-
+                    var id = result[uo].attributes.userId.id;
                     if(user.hasOwnProperty('fullname')){
                         fullname=user.fullname;
                     }
@@ -303,6 +303,7 @@ app.get('/organization/:objectId', function (req, res, next) {
                     if(!verified)
                     {
                         var person = {
+                            id : id,
                             username:username,
                             title: title,
                             fullname: fullname,
@@ -324,7 +325,57 @@ app.get('/organization/:objectId', function (req, res, next) {
             }
         });
     });
+    app.post('/organization/:objectId/pending', function (req, res, next) {
+        var person= req.body.person;
+        var orgId= req.params.objectId;
+        var mode= req.body.mode;
 
+
+            var innerQuery = new Parse.Query("Organization");
+            innerQuery.equalTo("objectId",orgId);
+
+            var innerQuery2 = new Parse.Query(Parse.User);
+            innerQuery2.equalTo("objectId",person.id);
+
+            var query = new Parse.Query('Relationship');
+            query.matchesQuery("orgId",innerQuery)
+            query.matchesQuery("userId",innerQuery2)
+            query.equalTo('verified',false)
+            query.include('userId');
+            query.first({
+                success: function(result) {
+                    if(mode=="approve")
+                    {
+                        result.set("verified",true);
+                        result.save(null, {
+                            success:function(){
+                                res.json({scucess:"approved"});
+                            },
+                            error:function(error){
+                                res.json({error:error});
+                            }
+                        });
+                    }
+                    else if(mode=="deny")
+                    {
+                        result.destroy({
+                            success: function(model, response){
+                                res.json({scucess:"denied"});
+                            },
+                            error: function(model, response){
+                                res.json({error:error});
+                            }
+                        });
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.render('index', {title: error, path: req.path});
+                }
+            });
+
+
+    });
     app.get('/organization/:objectId/connections', function (req, res, next) {
         // var currentUser = Parse.User.current();
 

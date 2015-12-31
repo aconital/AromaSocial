@@ -205,7 +205,8 @@ var People = React.createClass({
                             <div>{person.fullname}</div>
                             <div>{person.workTitle}</div>
                             <div>{person.company}</div>
-                        </div>
+
+</div>
                     </div>
                     )}
                 </div>
@@ -235,6 +236,22 @@ var Manage = React.createClass({
             }.bind(this)
         });
     },
+    pending_action:function(person,action)
+    {
+            $.ajax({
+                url:"/organization/"+objectId+"/pending/" ,
+                method: "POST",
+                data:{mode:action,person:person},
+                success: function(data) {
+
+                   console.log(data);
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error("couldnt retrieve people");
+                }.bind(this)
+            });
+
+    },
     render: function() {
 
         return (
@@ -250,7 +267,7 @@ var Manage = React.createClass({
                                 <div>{person.fullname}</div>
                                 <div>{person.workTitle}</div>
                                 <div>{person.company}</div>
-                                <div><a id="pending-action"><span id="pending-accept" className="glyphicon glyphicon-ok" aria-hidden="true"></span></a> <a id="pending-action"><span id="pending-deny" className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div>
+                                <div><a onClick={this.pending_action.bind(this,person,"approve")} id="pending-action"><span id="pending-accept" className="glyphicon glyphicon-ok" aria-hidden="true"></span></a> <a onClick={this.pending_action.bind(this,person,"deny")}  id="pending-action"><span id="pending-deny" className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div>
                             </div>
                         </div>
                 )}
@@ -464,3 +481,8 @@ var Model = React.createClass({
 
 
 React.render(<Organization />, document.getElementById('content'));
+
+function pending_action(action,orgId,userId)
+{
+
+}
