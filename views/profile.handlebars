@@ -10,9 +10,9 @@
         fullname = '{{fullname}}',
         position = '{{position}}',
         summary = '{{summary}}',
-        work_experience = '{{work_experience}}',
-        education = '{{education}}',
-        projects = '{{projects}}',
+        work_experiences = '{{work_experiences}}'.replace(/&quot;/g,'"'),
+        educations = '{{educations}}'.replace(/&quot;/g,'"'),
+        projects = '{{projects}}'.replace(/&quot;/g,'"'),
         profile_imgURL = '{{profile_imgURL}}';
 </script>
 <script type="text/jsx" src="/javascripts/profilex.js"></script>

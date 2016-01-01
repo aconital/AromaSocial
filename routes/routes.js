@@ -439,9 +439,9 @@ app.get('/profile/:username', function (req, res, next) {
         position: currentUser.attributes.position,
         location: currentUser.attributes.location,
         summary: currentUser.attributes.summary,
-        work_experience: currentUser.attributes.work_experience,
-        education: currentUser.attributes.education,
-        projects: currentUser.attributes.projects,
+        work_experiences: JSON.stringify(currentUser.attributes.work_experiences),
+        educations: JSON.stringify(currentUser.attributes.educations),
+        projects: JSON.stringify(currentUser.attributes.projects),
         profile_imgURL: currentUser.attributes.imgUrl,
         'isMe': true
       });
@@ -462,9 +462,9 @@ app.get('/profile/:username', function (req, res, next) {
             position: result[0].attributes.position,
             location: result[0].attributes.location,
              summary: result[0].attributes.summary,
-             work_experience: result[0].attributes.work_experience,
-             education: result[0].attributes.education,
-             projects: result[0].attributes.projects,
+             work_experiences: JSON.stringify(result[0].attributes.work_experiences),
+             educations: JSON.stringify(result[0].attributes.educations),
+             projects: JSON.stringify(result[0].attributes.projects),
             profile_imgURL: result[0].attributes.imgUrl,
             'isMe': false
           });
@@ -1042,7 +1042,7 @@ app.get('/model/:objectId', function (req, res, next) {
         }
     });
 
-app.post('/profile/:username/update',function(req,res,next){
+app.post('/profile/:username/picture',function(req,res,next){
     var currentUser = Parse.User.current();
     var linkUser = req.params.username;
     if (currentUser) {
@@ -1069,6 +1069,30 @@ app.post('/profile/:username/update',function(req,res,next){
                     res.status(200).json({status: "Picture Uploaded Successfully!"});
                 }
             });
+        }
+    }
+});
+
+app.post('/profile/:username/update',function(req,res,next){
+    var currentUser = Parse.User.current();
+    var linkUser = req.params.username;
+    if (currentUser) {
+        if(currentUser.attributes.username == linkUser) {
+            if (req.body.summary) {
+                console.log(req.body.summary);
+                currentUser.set("summary",req.body.summary);
+                res.status(200).json({status: "Info Uploaded Successfully!"});
+            } else {
+                /*
+                for(var x in object){
+                    if(object[x].key == req.body.key){
+                        // Update Object
+                    } else {
+                        // New Object
+                    }
+                }
+                */
+            }
         }
     }
 });

@@ -56,7 +56,7 @@ var Profile = React.createClass ({
 
         var $this = this;
         $.ajax({
-            url: path + "/update",
+            url: path + "/picture",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             type: 'POST',
@@ -65,7 +65,7 @@ var Profile = React.createClass ({
                 console.log(status);
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
+                console.error(path + "/picture", status, err.toString());
             }.bind(this)
         }).then(function(){
             $this.clickClose();
@@ -205,53 +205,160 @@ var Connections = React.createClass({
 });
 
 var ProfileTab = React.createClass({
-  render: function() {
-    return (
+    getInitialState: function() {
+        return {
+            summary: [summary],
+            work_experiences: [work_experiences],
+            educations: [educations],
+            projects: [projects]
+            };
+    },
+    handleChange: function(e) {
+        this.setState({[e.target.name]:e.target.value});
+    },
+    addWE: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        var result = work_experiences.substring(0,work_experiences.length-1) + ', {"company":"Organization Name","description":"Work Description","key":' + randomNumber + ',"title":"Work Position"}]';
+        this.setState({work_experiences:result});
+        console.log(work_experiences);
+    },
+    addE: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        var result = educations.substring(0,educations.length-1) + ', {"company":"Organization Name","description":"Education Description","key":' + randomNumber + ',"title":"Major / Degree"}]';
+        this.setState({educations:result});
+        console.log(educations);
+    },
+    addP: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        var result = projects.substring(0,projects.length-1) + ', {"company":"Organization Name","description":"Project Description","key":' + randomNumber + ',"title":"Project Position"}]';
+        this.setState({projects:result});
+        console.log(projects);
+    },
+    submitChange: function() {
+        var dataForm = {summary: this.state.summary};
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+    render: function() {
+        var work_experiences_data = [];
+        var educations_data = [];
+        var projects_data = [];
+        var WEItems = JSON.parse(this.state.work_experiences);
+        WEItems.forEach(function(item) {
+            work_experiences_data.push(<ProfileTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+        });
+        var EItems = JSON.parse(this.state.educations);
+        EItems.forEach(function(item) {
+            educations_data.push(<ProfileTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+        });
+        var PItems = JSON.parse(this.state.projects);
+        PItems.forEach(function(item) {
+            projects_data.push(<ProfileTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+        });
+        return (
             <div id="resume">
                 <div id="resume-summary">
                 <div>
-                    <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Summary</h3>
+                    <h3 className="summary-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Summary</h3>
                 </div>
                 <div id="resume-summary-item">
-                    React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
+                    {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
                 </div>
                 </div>
                 <hr/>
-                <div id="resume-education">
-                    <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-education"></span> Education</h3>
-                    </div>
-                    <div id="resume-education-item">
-                        <h4 className="h4-resume-item">Hogwarts University (January  - Present)</h4>
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
-                    </div><br/>
-                    <div id="resume-education-item">
-                        <h4 className="h4-resume-item">Monsters University (January  - January )</h4>
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
-                    </div>
-                </div>
-                <hr/>
-                <div id="resume-experience">
+                <div id="resume-education" className="div-relative">
                     <div>
                         <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-paperclip"></span> Experience</h3>
                     </div>
-                    <div id="resume-experience-item">
-                        <h4 className="h4-resume-item">Cake Eater (January  - Present)</h4>
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via
-                    </div>
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {work_experiences_data}
                 </div>
                 <hr/>
-                <div id="resume-projects">
+                <div id="resume-experience" className="div-relative">
+                    <div>
+                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-education"></span> Education</h3>
+                    </div>
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {educations_data}
+                </div>
+                <hr/>
+                <div id="resume-projects" className="div-relative">
                     <div>
                         <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-star"></span> Projects</h3>
                     </div>
-                    <div id="resume-project-item">
-                        React components implement a render() method that takes input data and returns what to display. This example uses an XML-like syntax called JSX. Input data that is passed into the component can be accessed by render() via\
-                    </div>
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addP} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {projects_data}
                 </div>
             </div>
-    )
-  }
+        )
+    }
+});
+var ProfileTabObject = React.createClass({
+    getInitialState: function() {
+        return {
+            key: [this.props.key],
+            title: [this.props.title],
+            company: [this.props.company],
+            description: [this.props.description],
+            start: [this.props.start],
+            end: [this.props.end]
+            };
+    },
+    handleObjectChange: function(e) {
+        this.setState({[e.target.name]:e.target.value});
+    },
+    submitObjectChange: function() {
+        var dataForm = {key: this.state.key, title: this.state.title,
+                        company: this.state.company, description: this.state.description,
+                        start: this.state.start, end: this.state.end};
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+    render: function() {
+        return(
+            <div className="resume-item">
+                <h4 className="h4-resume-item">
+                    <b>{(currentUsername == username) ? <span type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange}>{this.state.title}</span> : <span className="r-noneditable">{this.state.title}</span>}
+                     @ {(currentUsername == username) ? <span type="text" className="r-editable" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange}>{this.state.company}</span> : <span  className="no-margin">{this.state.company}</span>}
+                    </b></h4>
+                    <p className="no-margin">&nbsp;(&nbsp;{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">{this.state.start}</span>}
+                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{this.state.end}</span>}&nbsp;)</p>
+                {(currentUsername == username) ? <p className="no-margin"><input type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.description} /></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+            </div>
+        )
+    }
 });
 
 var More = React.createClass({
