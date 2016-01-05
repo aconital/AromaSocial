@@ -6607,6 +6607,13 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 .r-editable-full { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:100%; outline: none; display:inline-block; }
 .r-editable:hover { border: 1px dotted #70ab8f; }
 
+.l-editable  { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:100%; outline: none; display:inline-block; }
+.l-editable:hover { border: 1px dotted #70ab8f; }
+.l-editable-input  { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:100%; outline: none; display:inline-block; }
+
+.tagsinput-tag-link:hover { color: white; text-decoration: none; }
+.tagsinput-tag-link:active { color: white; text-decoration: none; }
+
 .model-layout {
     height:100%;
 }
@@ -6770,6 +6777,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     position:absolute;
     }
     .no-margin{ 0px; }
+    .margin-top-bottom-5{ margin:5px 0px; }
     .no-padding{ 0px; }
     .btn-wrap {
     margin-top:10%;
@@ -7085,6 +7093,7 @@ color: #fff;
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     padding:10px;
+    position: relative;
     }
 .publication-box + .publication-box {
     margin-top:10px;
@@ -7110,6 +7119,7 @@ color: #fff;
     width:25%;
     text-align:center;
     }
+    .clear { clear: both; }
 
  .publication-content{border-top-right-radius: 0;}
 .right{right:0px;}
@@ -7212,13 +7222,15 @@ div.react-tagsinput {
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     padding:10px;
+    position: relative;
+    display:block;
     }
 .model-box + .model-box {
     margin-top:10px;
     }
 .model-box-left {
     float:left;
-    width:56%;
+    width:51%;
     margin-right:2%;
 }
 .model-box-right {
@@ -7229,7 +7241,7 @@ div.react-tagsinput {
     border-radius: 4px;
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    width:20%;
+    width:25%;
     text-align:center;
     }
  .model-box-image {
@@ -7285,8 +7297,9 @@ div.react-tagsinput {
     margin:auto;
   }
 
-.div-absolute{position:absolute; right:0px; top:-20px;}
-.div-relative{position:relative;}
+.div-absolute{position:absolute; right:0px; top:0px;}
+.div-relative{position:relative;width:100%;}
+.div-relative-hidden{position:relative;display:none;}
  #people-row
  {
    margin-top: 15px;

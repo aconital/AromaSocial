@@ -439,6 +439,8 @@ app.get('/profile/:username', function (req, res, next) {
         position: currentUser.attributes.position,
         location: currentUser.attributes.location,
         summary: currentUser.attributes.summary,
+        expertise: JSON.stringify(currentUser.attributes.expertise),
+        interests: JSON.stringify(currentUser.attributes.interests),
         work_experiences: JSON.stringify(currentUser.attributes.work_experiences),
         educations: JSON.stringify(currentUser.attributes.educations),
         projects: JSON.stringify(currentUser.attributes.projects),
@@ -462,6 +464,8 @@ app.get('/profile/:username', function (req, res, next) {
             position: result[0].attributes.position,
             location: result[0].attributes.location,
              summary: result[0].attributes.summary,
+             expertise: JSON.stringify(result[0].attributes.expertise),
+             interests: JSON.stringify(result[0].attributes.interests),
              work_experiences: JSON.stringify(result[0].attributes.work_experiences),
              educations: JSON.stringify(result[0].attributes.educations),
              projects: JSON.stringify(result[0].attributes.projects),
@@ -1081,17 +1085,18 @@ app.post('/profile/:username/update',function(req,res,next){
             if (req.body.summary) {
                 console.log(req.body.summary);
                 currentUser.set("summary",req.body.summary);
+                currentUser.save();
+                res.status(200).json({status: "Info Uploaded Successfully!"});
+            } else if (req.body.expertise && req.body.interests) {
+                console.log(req.body.expertise);
+                currentUser.set("expertise",req.body.expertise);
+                console.log(req.body.interests);
+                currentUser.set("interests",req.body.interests);
+                currentUser.save();
                 res.status(200).json({status: "Info Uploaded Successfully!"});
             } else {
-                /*
-                for(var x in object){
-                    if(object[x].key == req.body.key){
-                        // Update Object
-                    } else {
-                        // New Object
-                    }
-                }
-                */
+                /* Work Experience, Education, and Projects */
+                res.status(200).json({status: "Info Uploaded Successfully!"});
             }
         }
     }

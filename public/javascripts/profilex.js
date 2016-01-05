@@ -121,7 +121,7 @@ var Profile = React.createClass ({
                     </div>
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                     <ProfileMenu tabs={['About','Connections', 'Profile', 'Publications', 'Data', 'Models', 'More']} />
+                     <ProfileMenu tabs={['About','Connections', 'Projects', 'Publications', 'Data', 'Models', 'More']} />
                 </div>
                 <div className="item-bottom-3">
                     <div className="item-panel-empty contain-panel-empty">
@@ -159,9 +159,9 @@ var ProfileMenu = React.createClass ({
     },
     render: function() {
         var self = this;
-        var tabMap = {0: <About />,
+        var tabMap = {0: <About tab={this.clicked}/>,
                 1: <Connections />,
-                2: <ProfileTab />,
+                2: <Projects />,
                 3: <Publications objectId={objectId}/>,
                 4: <DataList objectId={objectId}/>,
                 5: <ModelsList objectId={objectId}/>,
@@ -204,35 +204,60 @@ var Connections = React.createClass({
   }
 });
 
-var ProfileTab = React.createClass({
+
+var Publications = React.createClass({
+  mixins: [ParseReact.Mixin],
+  getInitialState: function() {
+      return {data: []};
+    },
+  observe: function() {
+      return {
+        publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
+                                                                      className: "_User",
+                                                                      objectId: this.props.objectId}))
+      };
+    },
+  render: function() {
+    var rows = [];
+    return (
+      <div>
+        <PublicationForm />
+        {this.data.publications.map(function(publication) {
+            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
+        })}
+        {rows}
+      </div>
+    );
+  }
+});
+
+var About = React.createClass({
+    mixins: [ParseReact.Mixin],
+    observe: function() {
+        return {
+            publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
+                                                                           className: "_User",
+                                                                           objectId: objectId}).limit(2)),
+            datas: (new Parse.Query('Data').equalTo("user", {__type: "Pointer",
+                                                                           className: "_User",
+                                                                           objectId: objectId}).limit(2)),
+            models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
+                                                                           className: "_User",
+                                                                           objectId: objectId}).limit(2))
+        };
+    },
     getInitialState: function() {
         return {
             summary: [summary],
             work_experiences: [work_experiences],
             educations: [educations],
-            projects: [projects]
+            projects: [projects],
+            expertise: [expertise],
+            interests: [interests]
             };
     },
     handleChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
-    },
-    addWE: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var result = work_experiences.substring(0,work_experiences.length-1) + ', {"company":"Organization Name","description":"Work Description","key":' + randomNumber + ',"title":"Work Position"}]';
-        this.setState({work_experiences:result});
-        console.log(work_experiences);
-    },
-    addE: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var result = educations.substring(0,educations.length-1) + ', {"company":"Organization Name","description":"Education Description","key":' + randomNumber + ',"title":"Major / Degree"}]';
-        this.setState({educations:result});
-        console.log(educations);
-    },
-    addP: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var result = projects.substring(0,projects.length-1) + ', {"company":"Organization Name","description":"Project Description","key":' + randomNumber + ',"title":"Project Position"}]';
-        this.setState({projects:result});
-        console.log(projects);
     },
     submitChange: function() {
         var dataForm = {summary: this.state.summary};
@@ -255,22 +280,117 @@ var ProfileTab = React.createClass({
 
         return;
     },
+    handleArrayChange: function() {
+        console.log("Done");
+    },
+    handleTagsInputChange: function(e) {
+        this.setState({interests:JSON.stringify(e)});
+        console.log(JSON.stringify(e));
+        console.log(interests);
+    },
+    submitArrayChange: function() {
+        var dataForm = { expertise: this.state.expertise, interests: this.state.interests };
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+    addEI: function() {
+        if (this.state.expertise != "") { var result = expertise.substring(0,expertise.length-1) + ',"Add Another Expertise!"]'; }
+        else { var result = '["Add An Expertise!"]'; }
+        this.setState({expertise:result});
+        console.log(result);
+    },
+    addWE: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        if (this.state.work_experiences != "") { var result = work_experiences.substring(0,work_experiences.length-1) + ',{"company":"Organization Name","description":"Work Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Work Position"}]'; }
+        else { var result = '[{"company":"Organization Name","description":"Work Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Work Position"}]'; }
+        this.setState({work_experiences:result});
+        console.log(result);
+    },
+    addE: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        if (this.state.educations != "") { var result = educations.substring(0,educations.length-1) + ',{"company":"Organization Name","description":"Education Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Major / Degree"}]'; }
+        else { var result = '[{"company":"Organization Name","description":"Education Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Major / Degree"}]'; }
+        this.setState({educations:result});
+        console.log(result);
+    },
+    addP: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        if (this.state.projects != "") { var result = projects.substring(0,projects.length-1) + ',{"company":"Organization Name","description":"Project Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Project Position"}]'; }
+        else { var result = '[{"company":"Organization Name","description":"Project Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Project Position"}]'; }
+        this.setState({projects:result});
+        console.log(result);
+    },
+    tabChange: function(index) {
+        this.props.tab(index);
+    },
     render: function() {
         var work_experiences_data = [];
         var educations_data = [];
         var projects_data = [];
-        var WEItems = JSON.parse(this.state.work_experiences);
-        WEItems.forEach(function(item) {
-            work_experiences_data.push(<ProfileTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
-        });
-        var EItems = JSON.parse(this.state.educations);
-        EItems.forEach(function(item) {
-            educations_data.push(<ProfileTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
-        });
-        var PItems = JSON.parse(this.state.projects);
-        PItems.forEach(function(item) {
-            projects_data.push(<ProfileTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
-        });
+        var publications_data = [];
+        var datas_data = [];
+        var models_data = [];
+        if (this.state.work_experiences != "") {
+            var WEItems = JSON.parse(this.state.work_experiences);
+            WEItems.forEach(function(item) {
+                work_experiences_data.push(<AboutTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+            });
+        }
+        if (this.state.educations != "") {
+            var EItems = JSON.parse(this.state.educations);
+            EItems.forEach(function(item) {
+                educations_data.push(<AboutTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+            });
+        }
+        if (this.state.projects != "") {
+            var PItems = JSON.parse(this.state.projects);
+            PItems.forEach(function(item) {
+                projects_data.push(<AboutTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+            });
+        }
+        this.data.publications.map(function(publication) {
+            publications_data.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
+        })
+        this.data.datas.map(function(item) {
+            datas_data.push(<DatumListItem objectId={item.objectId}
+                                   collaborators={item.collaborators}
+                                   title={item.title}
+                                   image_URL={item.image_URL}
+                                   keywords={item.keywords}
+                                   number_cited={item.number_cited}
+                                   number_syncholar_factor={item.number_syncholar_factor}
+                                   license={item.license}
+                                   access={item.access}
+                                   abstract={item.description} />);
+        })
+        this.data.models.map(function(model) {
+            models_data.push(<ModelListItem objectId={model.objectId}
+                                   collaborators={model.collaborators}
+                                   title={model.title}
+                                   image_URL={model.image_URL}
+                                   keywords={model.keywords}
+                                   number_cited={model.number_cited}
+                                   number_syncholar_factor={model.number_syncholar_factor}
+                                   license={model.license}
+                                   access={model.access}
+                                   abstract={model.abstract} />);
+        })
         return (
             <div id="resume">
                 <div id="resume-summary">
@@ -281,35 +401,68 @@ var ProfileTab = React.createClass({
                     {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
                 </div>
                 </div>
-                <hr/>
-                <div id="resume-education" className="div-relative">
+                <div id="resume-expertise-and-interests" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-paperclip"></span> Experience</h3>
+                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-certificate"></span> Expertise & Interests</h3>
                     </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
-                    {work_experiences_data}
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEI} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {JSON.parse(this.state.expertise).map(function(item, i) {
+                       return <div>{(currentUsername == username) ? <p className="no-margin"><input type="text" className="r-editable r-editable-full" name={"expertise-" + i} value={item} /></p> : <p className="r-noneditable no-margin">{item}</p>}</div>;
+                    })}
+                    <hr className="margin-top-bottom-5"/>
+                    {(currentUsername == username) ? <div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, onBlur: this.submitArrayChange, value : JSON.parse(this.state.interests)}))}</div> : <div>{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
-                <hr/>
-                <div id="resume-experience" className="div-relative">
+                <div className="clear"></div>
+                <div id="resume-education" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-education"></span> Education</h3>
+                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-paperclip"></span> Education</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {educations_data}
                 </div>
-                <hr/>
-                <div id="resume-projects" className="div-relative">
+                <div id="resume-experience" className="div-relative"><hr/>
+                    <div>
+                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-education"></span> Work Experience</h3>
+                    </div>
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {work_experiences_data}
+                </div>
+                <div id="resume-projects" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-star"></span> Projects</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addP} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {projects_data}
                 </div>
+                <div id="resume-publications" className="div-relative"><hr/>
+                    <div>
+                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-book"></span> Publications</h3>
+                    </div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(self,3)} className="body-link">See More</a></h3></div>
+                    {publications_data}
+                </div>
+                <div className="clear"></div>
+                <div id="resume-datas" className="div-relative"><hr/>
+                    <div>
+                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-stats"></span> Data</h3>
+                    </div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(self,4)} className="body-link">See More</a></h3></div>
+                    {datas_data}
+                </div>
+                <div className="clear"></div>
+                <div id="resume-models" className="div-relative"><hr/>
+                    <div>
+                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-tint"></span> Models</h3>
+                    </div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(self,5)} className="body-link">See More</a></h3></div>
+                    {models_data}
+                </div>
             </div>
         )
     }
 });
-var ProfileTabObject = React.createClass({
+var AboutTabObject = React.createClass({
+    mixins: [ParseReact.Mixin],
     getInitialState: function() {
         return {
             key: [this.props.key],
@@ -319,6 +472,11 @@ var ProfileTabObject = React.createClass({
             start: [this.props.start],
             end: [this.props.end]
             };
+    },
+    observe: function() {
+        return {
+        organization: (new Parse.Query('Organization').equalTo("name", this.state.company))
+        };
     },
     handleObjectChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
@@ -347,14 +505,16 @@ var ProfileTabObject = React.createClass({
         return;
     },
     render: function() {
+        var startDate = this.props.start.replace(/-/g,'/');
+        var endDate = this.props.end.replace(/-/g,'/');
         return(
             <div className="resume-item">
                 <h4 className="h4-resume-item">
                     <b>{(currentUsername == username) ? <span type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange}>{this.state.title}</span> : <span className="r-noneditable">{this.state.title}</span>}
                      @ {(currentUsername == username) ? <span type="text" className="r-editable" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange}>{this.state.company}</span> : <span  className="no-margin">{this.state.company}</span>}
                     </b></h4>
-                    <p className="no-margin">&nbsp;(&nbsp;{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">{this.state.start}</span>}
-                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{this.state.end}</span>}&nbsp;)</p>
+                    <p className="no-margin">&nbsp;(&nbsp;{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">{startDate}</span>}
+                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}&nbsp;)</p>
                 {(currentUsername == username) ? <p className="no-margin"><input type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.description} /></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
             </div>
         )
@@ -374,7 +534,7 @@ var More = React.createClass({
   }
 });
 
-var About = React.createClass({
+var Projects = React.createClass({
   render: function() {
     return (
            <div>
