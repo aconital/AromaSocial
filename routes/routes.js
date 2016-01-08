@@ -545,46 +545,53 @@ app.get('/profile/:username', function (req, res, next) {
         query.include('userId1');
         query.find({
             success: function(result) {
-                var orgs =[];
+                var people =[];
                 for(var uo in result)
                 {
-
+                    var title= result[uo].attributes.title;
                     var verified= result[uo].attributes.verified;
 
-                    var connected_orgs= result[uo].attributes.orgId1.attributes;
+                    var user= result[uo].attributes.userId1.attributes;
 
-                    var orgId= result[uo].attributes.orgId1.id;
+                    var username= user.username;
+                    var fullname="N/A";
+                    var company= "N/A";
+                    var work_title= "N/A";
+                    var userImgUrl= "/images/user.png";
+                    var work_experience= [];
 
-                    var name= "N/A";
-                    var location= "N/A";
-                    var orgImgUrl= "/images/organization.png";
-
-                    if(connected_orgs.hasOwnProperty('name')){
-                        name=connected_orgs.name;
+                    if(user.hasOwnProperty('fullname')){
+                        fullname=user.fullname;
                     }
-                    if(connected_orgs.hasOwnProperty('location')){
-                        location=connected_orgs.location;
+                    if(user.hasOwnProperty('imgUrl')){
+                        userImgUrl=user.imgUrl;
                     }
-                    if(connected_orgs.hasOwnProperty('profile_imgURL')){
-                        orgImgUrl=connected_orgs.profile_imgURL;
+                    //getting first work experience, since there is no date on these objects
+                    if(user.hasOwnProperty('work_experience')){
+                        var work_experience= user.work_experience[0];
+                        company= work_experience.company;
+                        work_title= work_experience.title;
                     }
 
                     //only show people who are verified by admin
                     if(verified)
                     {
-                        var org = {
-                            orgId:orgId,
-                            name:name,
-                            location: location,
-                            orgImgUrl: orgImgUrl,
+                        var person = {
+                            username:username,
+                            title: title,
+                            fullname: fullname,
+                            userImgUrl: userImgUrl,
+                            company: company,
+                            workTitle: work_title
                         };
-                        orgs.push(org);
+                        people.push(person);
 
                     }
 
                 }
+                var filtered_people=  _.groupBy(people,'title');
+                res.json(filtered_people);
 
-                res.json(orgs);
 
             },
             error: function(error) {
