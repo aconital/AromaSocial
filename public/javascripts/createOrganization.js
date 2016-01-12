@@ -56,6 +56,7 @@ var CreateOrganization = React.createClass({
 				pictureType: extension,
 			});
 		}
+		reader.readAsDataURL(file);
 	},
 	handleSubmitData: function(e) {
 		e.preventDefault();
