@@ -190,18 +190,61 @@ var ProfileMenu = React.createClass ({
 });
 
 var Connections = React.createClass({
-  render: function() {
-    return (
-      <div>
-      <div id="connections-list">
-         <div className="list-item"><a href="#" className="nostyle"><img src="/images/organization.png" className="contain-icons"/><h4 className="no-margin">Organizations Name</h4></a><span>Organizations Title</span> @ <span>Organizations Location</span></div>
-         <div className="list-item"><a href="#" className="nostyle"><img src="/images/organization.png" className="contain-icons"/><h4 className="no-margin">Organizations Name</h4></a><span>Organizations Title</span> @ <span>Organizations Location</span></div>
-         <div className="list-item"><a href="#" className="nostyle"><img src="/images/organization.png" className="contain-icons"/><h4 className="no-margin">Organizations Name</h4></a><span>Organizations Title</span> @ <span>Organizations Location</span></div>
-         <div className="list-item"><a href="#" className="nostyle"><img src="/images/organization.png" className="contain-icons"/><h4 className="no-margin">Organizations Name</h4></a><span>Organizations Title</span> @ <span>Organizations Location</span></div>
-      </div>
-      </div>
-    )
-  }
+    getInitialState: function() {
+        return {data: []};
+    },
+    componentDidMount : function(){
+        var peopleUrl= "/profile/"+objectId+"/connections";
+
+        $.ajax({
+            url: peopleUrl,
+            success: function(data) {
+
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
+    },
+    render: function() {
+
+        var peopleList = $.map(this.state.data,function(objects) {
+            var role= objects[0].title;
+            var plist=[];
+            for(var i in objects)
+            {
+                var person = objects[i];
+
+                plist.push(person);
+            }
+
+            return (
+                <div>
+                    <div><span className="people-title">{role}</span></div>
+                    {plist.map(person =>
+
+                            <div key={person.username} className="row" id="people-row">
+                                <div className="col-lg-2">
+                                    <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="img-circle newsfeed-profile-pic" /></a>
+                                </div>
+                                <div className="col-lg-10">
+                                    <div>{person.fullname}</div>
+                                    <div>{person.workTitle}</div>
+                                    <div>{person.company}</div>
+
+                                </div>
+                            </div>
+                    )}
+                </div>
+            );
+        });
+        return (
+            <div>
+                {peopleList}
+            </div>
+        )
+    }
 });
 
 
@@ -249,11 +292,11 @@ var About = React.createClass({
     getInitialState: function() {
         return {
             summary: [summary],
-            work_experiences: [work_experiences],
-            educations: [educations],
-            projects: [projects],
-            expertise: [expertise],
-            interests: [interests]
+            work_experiences: work_experiences,
+            educations: educations,
+            projects: projects,
+            expertise: expertise,
+            interests: interests
             };
     },
     handleChange: function(e) {
@@ -280,13 +323,23 @@ var About = React.createClass({
 
         return;
     },
-    handleArrayChange: function() {
-        console.log("Done");
+    deleteArrayChange: function(index) {
+        var expertiseTemp = JSON.parse(this.state.expertise);
+        delete expertiseTemp[index];
+        var expertiseTemp = JSON.stringify(expertiseTemp).replace(',null','').replace('null,','');
+        this.setState({expertise: expertiseTemp}, function(){ this.submitArrayChange() }.bind(this));
+    },
+    handleArrayChange: function(index) {
+        var expertiseChange = document.getElementById("expertise-" + index).value;
+        console.log(expertiseChange);
+        var expertiseTemp = JSON.parse(this.state.expertise);
+        expertiseTemp[index] = expertiseChange;
+        var expertiseTemp = JSON.stringify(expertiseTemp);
+        this.setState({expertise: expertiseTemp});
     },
     handleTagsInputChange: function(e) {
-        this.setState({interests:JSON.stringify(e)});
-        console.log(JSON.stringify(e));
-        console.log(interests);
+        var interestsSubmit = (JSON.stringify(e));
+        this.setState({interests:interestsSubmit}, function(){ this.submitArrayChange() }.bind(this));
     },
     submitArrayChange: function() {
         var dataForm = { expertise: this.state.expertise, interests: this.state.interests };
@@ -309,32 +362,58 @@ var About = React.createClass({
 
         return;
     },
+    submitObjectChange: function() {
+        var dataForm = { work_experiences: this.state.work_experiences,
+                         educations: this.state.educations,
+                         projects: this.state.projects };
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
     addEI: function() {
-        if (this.state.expertise != "") { var result = expertise.substring(0,expertise.length-1) + ',"Add Another Expertise!"]'; }
+        if (this.state.expertise != "") { var result = this.state.expertise.substring(0,this.state.expertise.length-1) + ',"Add Another Expertise!"]'; }
         else { var result = '["Add An Expertise!"]'; }
         this.setState({expertise:result});
         console.log(result);
     },
     addWE: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.work_experiences != "") { var result = work_experiences.substring(0,work_experiences.length-1) + ',{"company":"Organization Name","description":"Work Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Work Position"}]'; }
-        else { var result = '[{"company":"Organization Name","description":"Work Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Work Position"}]'; }
-        this.setState({work_experiences:result});
-        console.log(result);
+        if (this.state.work_experiences == "") { var arrayWE = [{company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"}]; }
+        else { var newWE = {company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"};
+               var arrayWE = JSON.parse(this.state.work_experiences); arrayWE.push(newWE); }
+        this.setState({work_experiences:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
+        console.log(work_experiences);
     },
     addE: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations != "") { var result = educations.substring(0,educations.length-1) + ',{"company":"Organization Name","description":"Education Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Major / Degree"}]'; }
-        else { var result = '[{"company":"Organization Name","description":"Education Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Major / Degree"}]'; }
-        this.setState({educations:result});
-        console.log(result);
+        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"}]; }
+        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"};
+               var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
+        this.setState({educations:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
+        console.log(educations);
     },
     addP: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.projects != "") { var result = projects.substring(0,projects.length-1) + ',{"company":"Organization Name","description":"Project Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Project Position"}]'; }
-        else { var result = '[{"company":"Organization Name","description":"Project Description","end":"yyyy-MM-dd","key":' + randomNumber + ',"start":"yyyy-MM-dd","title":"Project Position"}]'; }
-        this.setState({projects:result});
-        console.log(result);
+        if (this.state.projects == "") { var arrayWE = [{company:"Project Name",description:"Project Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Project Position"}]; }
+        else { var newWE = {company:"Project Name",description:"Project Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Project Position"};
+               var arrayWE = JSON.parse(this.state.projects); arrayWE.push(newWE); }
+        this.setState({projects:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
+        console.log(projects);
     },
     tabChange: function(index) {
         this.props.tab(index);
@@ -343,26 +422,38 @@ var About = React.createClass({
         var work_experiences_data = [];
         var educations_data = [];
         var projects_data = [];
+        var expertise_data = [];
         var publications_data = [];
         var datas_data = [];
         var models_data = [];
         if (this.state.work_experiences != "") {
             var WEItems = JSON.parse(this.state.work_experiences);
             WEItems.forEach(function(item) {
-                work_experiences_data.push(<AboutTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+                console.log(item.key);
+                work_experiences_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="work_experience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                educations_data.push(<AboutTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+                console.log(item.key);
+                educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.projects != "") {
             var PItems = JSON.parse(this.state.projects);
             PItems.forEach(function(item) {
-                projects_data.push(<AboutTabObject key={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} />);
+                console.log(item.key);
+                projects_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="project" />);
             });
+        }
+        if (this.state.expertise != "") {
+            JSON.parse(this.state.expertise).map(function(item, i) {
+               expertise_data.push (<div className="div-relative">
+                        {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
+                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="1" type="text" className="r-editable r-editable-full" id={"expertise-" + i} name={"expertise-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitArrayChange}>{item}</textarea></p> : <p className="r-noneditable no-margin">{item}</p>}
+                     </div>);
+            }, this)
         }
         this.data.publications.map(function(publication) {
             publications_data.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
@@ -406,11 +497,9 @@ var About = React.createClass({
                         <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-certificate"></span> Expertise & Interests</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEI} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
-                    {JSON.parse(this.state.expertise).map(function(item, i) {
-                       return <div>{(currentUsername == username) ? <p className="no-margin"><input type="text" className="r-editable r-editable-full" name={"expertise-" + i} value={item} /></p> : <p className="r-noneditable no-margin">{item}</p>}</div>;
-                    })}
+                    {expertise_data}
                     <hr className="margin-top-bottom-5"/>
-                    {(currentUsername == username) ? <div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, onBlur: this.submitArrayChange, value : JSON.parse(this.state.interests)}))}</div> : <div>{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
+                    {(currentUsername == username) ? <div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.interests)}))}</div> : <div>{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
                 <div className="clear"></div>
                 <div id="resume-education" className="div-relative"><hr/>
@@ -438,7 +527,7 @@ var About = React.createClass({
                     <div>
                         <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-book"></span> Publications</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(self,3)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,3)} className="body-link">See More</a></h3></div>
                     {publications_data}
                 </div>
                 <div className="clear"></div>
@@ -446,7 +535,7 @@ var About = React.createClass({
                     <div>
                         <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-stats"></span> Data</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(self,4)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,4)} className="body-link">See More</a></h3></div>
                     {datas_data}
                 </div>
                 <div className="clear"></div>
@@ -454,7 +543,7 @@ var About = React.createClass({
                     <div>
                         <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-tint"></span> Models</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(self,5)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
                     {models_data}
                 </div>
             </div>
@@ -465,12 +554,17 @@ var AboutTabObject = React.createClass({
     mixins: [ParseReact.Mixin],
     getInitialState: function() {
         return {
-            key: [this.props.key],
-            title: [this.props.title],
-            company: [this.props.company],
-            description: [this.props.description],
-            start: [this.props.start],
-            end: [this.props.end]
+            key: this.props.identifier,
+            title: this.props.title,
+            company: this.props.company,
+            description: this.props.description,
+            start: this.props.start,
+            end: this.props.end,
+            data: this.props.data,
+            type: this.props.type,
+            action: "",
+
+            display: ""
             };
     },
     observe: function() {
@@ -478,13 +572,19 @@ var AboutTabObject = React.createClass({
         organization: (new Parse.Query('Organization').equalTo("name", this.state.company))
         };
     },
-    handleObjectChange: function(e) {
-        this.setState({[e.target.name]:e.target.value});
+    deleteObjectChange: function(index) {
+        this.setState({display: "deleted"});
+        this.setState({action: "delete"}, function(){ this.submitObjectChange() }.bind(this));
     },
-    submitObjectChange: function() {
-        var dataForm = {key: this.state.key, title: this.state.title,
+    handleObjectChange: function(e) {
+        this.setState({[e.target.name]: e.target.value, action: "update"});
+    },
+    submitObjectChange: function(index) {
+        var dataForm = {key: this.state.key, action: this.state.action, title: this.state.title,
                         company: this.state.company, description: this.state.description,
-                        start: this.state.start, end: this.state.end};
+                        start: this.state.start, end: this.state.end, type: this.state.type};
+
+        console.log(dataForm);
 
         $.ajax({
             url: path + "/update",
@@ -508,14 +608,17 @@ var AboutTabObject = React.createClass({
         var startDate = this.props.start.replace(/-/g,'/');
         var endDate = this.props.end.replace(/-/g,'/');
         return(
-            <div className="resume-item">
+            <div className={this.state.display}>
+            <div className="resume-item div-relative">
+                {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                 <h4 className="h4-resume-item">
-                    <b>{(currentUsername == username) ? <span type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange}>{this.state.title}</span> : <span className="r-noneditable">{this.state.title}</span>}
-                     @ {(currentUsername == username) ? <span type="text" className="r-editable" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange}>{this.state.company}</span> : <span  className="no-margin">{this.state.company}</span>}
+                    <b>{(currentUsername == username) ? <input type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}
+                     @ {(currentUsername == username) ? <input type="text" className="r-editable r-editable-50" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}
                     </b></h4>
-                    <p className="no-margin">&nbsp;(&nbsp;{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">{startDate}</span>}
-                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.props.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}&nbsp;)</p>
-                {(currentUsername == username) ? <p className="no-margin"><input type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.description} /></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+                    <p className="no-margin">&nbsp;(&nbsp;{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">{startDate}</span>}
+                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}&nbsp;)</p>
+                {(currentUsername == username) ? <p className="no-margin"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+            </div>
             </div>
         )
     }
@@ -722,10 +825,10 @@ var PublicationForm = React.createClass({
                     <td className="padding-right">
                     <input type="text" id="search" placeholder="Search..." className="form-control"/>
                     </td>
-                    <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td>
+                    {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
                 </tr>
                 </table>
-                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                 <Modal show={this.state.showModal} onHide={this.clickClose}>
                   <Modal.Header closeButton>
                     <Modal.Title>New Publication</Modal.Title>
                   </Modal.Header>
@@ -1493,7 +1596,7 @@ var ModelForm = React.createClass({
                     <td className="padding-right">
                     <input type="text" id="search" placeholder="Search..." className="form-control"/>
                     </td>
-                    <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td>
+                    {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
                 </tr>
                 </table>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1724,7 +1827,7 @@ var ResourceForm = React.createClass({
                 <td className="padding-right">
                 <input type="text" id="search" placeholder="Search..." className="form-control"/>
                 </td>
-                <td className="padding-left"><input className="publication-button" onClick={this.open} type="button" value="+"/></td>
+                {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
             </tr>
         </table>
        {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}

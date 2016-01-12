@@ -119,7 +119,7 @@ var Data = React.createClass ({
             <div className="item-bottom-big">
                     <div className="item-panel contain-panel-big">
                     <div>
-                        {(currentUserId == creatorId) ? <h2 className="no-margin"><input className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.title} /></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
+                        {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner"><a href="#" className="image-link"><span className="glyphicon glyphicon-check space"></span></a>
                             <a href={aws_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>
                         </h2>
@@ -128,7 +128,7 @@ var Data = React.createClass ({
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.image_URL} className="contain-panel-big-image"/>}
                         <div className="contain-panel-big-p">
                             <h4>Description</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><input type="text" className="p-editable" name="description" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.description} /></p> : <p className="p-noneditable">{description}</p>}
+                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea type="text" className="p-editable" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
                         </div>
                     </div>
                     </div>

@@ -5743,14 +5743,14 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     opacity: 0.8;
 }
 .p-noneditable { border: 1px solid #FFF; padding:10px; }
-.p-editable { border: 1px solid #FFF; padding:10px; width:100%; }
+.p-editable { border: 1px solid #FFF; padding:10px; width:100%; max-width:100%; }
 .p-editable:hover {
     border: 1px dotted #70ab8f; width:100%;
 }
 .r-noneditable { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:auto; outline: none; display:inline-block; }
 .r-editable { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:auto; outline: none; display:inline-block; }
 .r-editable-date { width:145px; padding: 0px; vertical-align:middle;}
-.r-editable-full { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:100%; outline: none; display:inline-block; }
+.r-editable-full { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:100%;  max-width:100%; outline: none; display:inline-block; }
 .r-editable:hover { border: 1px dotted #70ab8f; }
 
 .l-editable  { border: 1px solid #FFF; padding:5px; margin-right: 5px; width:100%; outline: none; display:inline-block; }
@@ -5849,7 +5849,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 .contain-panel-big-image2 { width:40%; border:solid; border-radius:4px; border-color: #70ab8f; }
 .corner {position:absolute;top:0px;right:25px;}
 .space {margin-left:10px;}
-
+.deleted {display:none;}
 .comment-picture {width:9%; padding-right:1%; }
 
     div.cover-photo {
@@ -6444,6 +6444,7 @@ div.react-tagsinput {
   }
 
 .div-absolute{position:absolute; right:0px; top:0px;}
+.div-minus{position:absolute; right:5px; top:-5px;}
 .div-relative{position:relative;width:100%;}
 .div-relative-hidden{position:relative;display:none;}
  #people-row
