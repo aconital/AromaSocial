@@ -479,66 +479,68 @@ app.get('/organization/:objectId', function (req, res, next) {
     });
     app.post('/create/organization', function (req, res, next) {
 		var currentUser = Parse.User.current();
-        var query = new Parse.Query('Organization');
-        var Organization = Parse.Object.extend("Organization");
-		var org = new Organization();
-		org.set('cover_imgURL', '/images/organization.png');
-		org.set('name', req.body.name);
-		org.set('location', req.body.location);
-		org.set('about', req.body.description);
+		if (currentUser) {
+			var Organization = Parse.Object.extend("Organization");
+			var org = new Organization();
+			org.set('cover_imgURL', '/images/organization.png');
+			org.set('name', req.body.name);
+			org.set('location', req.body.location);
+			org.set('about', req.body.description);
 
-		org.save(null, {
-			success: function(response) {
-				objectId = response.id;
-				// encode file
-				var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
+			org.save(null, {
+				success: function(response) {
+					objectId = response.id;
+					// encode file
+					var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
 
-				// upload files to S3
-				var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-				bucket.putObject(params, function (err, response) {
-					if (err) { console.log("Data Upload Error:", err); }
-					else {
-						console.log('uploading to s3');
-						// update file name in parse object
-						org.set('profile_imgURL', awsLink + params.Key);
+					// upload files to S3
+					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+					bucket.putObject(params, function (err, response) {
+						if (err) { console.log("Data Upload Error:", err); }
+						else {
+							console.log('uploading to s3');
+							// update file name in parse object
+							org.set('profile_imgURL', awsLink + params.Key);
 
-						org.save(null, {
-							success: function(data) {
-								console.log("Path name updated successfully.");
+							org.save(null, {
+								success: function(data) {
+									console.log("Path name updated successfully.");
 
-								var Relationship = Parse.Object.extend("Relationship");
-								var relation = new Relationship();
-								relation.set('userId', currentUser);
-								relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
-								relation.set('isAdmin', true);
-								relation.set('verified', false);
-								relation.set('title', 'TODO');
+									var Relationship = Parse.Object.extend("Relationship");
+									var relation = new Relationship();
+									relation.set('userId', currentUser);
+									relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
+									relation.set('isAdmin', true);
+									relation.set('verified', false);
+									relation.set('title', 'TODO');
 
-								relation.save(null, {
-									success: function(data) {
-										console.log("Organization created successfully.");
-										res.status(200).json({status:"OK", query: data});
-									},
-									error: function(data, error) {
-										console.log('Failed to create organization, with error code: ' + error.message);
-										res.status(500).json({status:"Uploading file failed." + error.message});
-									}
-								});
-							},
-							error: function(data, error) {
-								console.log('Failed to update new object path, with error code: ' + error.message);
-								res.status(500).json({status:"Uploading file failed." + error.message});
-							}
-						});
-					}
-				});
-			},
-			error: function(response, error) {
-				console.log('Failed to create new object, with error code: ' + error.message);
-				res.status(500).json({status: "Creating org object failed. " + error.message});
-			}
-		});
-
+									relation.save(null, {
+										success: function(result) {
+											console.log("Organization created successfully.");
+											res.status(200).json({status:"OK", location: objectId});
+										},
+										error: function(result, error) {
+											console.log('Failed to create organization, with error code: ' + error.message);
+											res.status(500).json({status:"Uploading file failed." + error.message});
+										}
+									});
+								},
+								error: function(data, error) {
+									console.log('Failed to update new object path, with error code: ' + error.message);
+									res.status(500).json({status:"Uploading file failed." + error.message});
+								}
+							});
+						}
+					});
+				},
+				error: function(response, error) {
+					console.log('Failed to create new object, with error code: ' + error.message);
+					res.status(500).json({status: "Creating org object failed. " + error.message});
+				}
+			});
+		} else {
+            res.status(403).json({status:"Please login!"});
+        }
     });
 /*******************************************
  *

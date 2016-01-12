@@ -27,8 +27,6 @@ var CreateOrganization = React.createClass({
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
 										<Input type="text" name="location" label="Location" placeholder="Location" onChange={this.handleChange} value={this.state.location} />
 										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} />
-										<Input type="text" label="test" placeholder="test" />
-										<ButtonInput type="reset" value="Reset Button" onClick={this.helloFn}/>
 										<ButtonInput type="submit" value="Submit Button" />
 									</form>
 								</ListGroupItem>
@@ -58,17 +56,14 @@ var CreateOrganization = React.createClass({
 				pictureType: extension,
 			});
 		}
-		reader.readAsDataURL(file);
-		console.log(this.state.picture);
-		console.log(path);
 	},
 	handleSubmitData: function(e) {
 		e.preventDefault();
 
 		var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType,
 			description: this.state.description, name: this.state.name, location: this.state.location};
-		console.log(dataForm)
 		this.setState({createStatus: 'In progress...'});
+
 		$.ajax({
 			url: '/create/organization',
 			dataType: 'json',
@@ -77,12 +72,8 @@ var CreateOrganization = React.createClass({
 			data: JSON.stringify(dataForm),
 			processData: false,
 			success: function(data) {
-				this.setState({data: data});
-				console.log("Organization creation done");
-				console.log(data);
-				console.log(data.query.orgId.objectId);
-				this.setState({createStatus: 'Organization created! Click here to visit: <a href="/organization/' + data.query.orgId.objectId + '"></a>'});
-			this.close();
+				this.setState({createStatus: 'Organization created! Redirecting...'});
+				window.location = '../organization/' + data.location;
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('/create/organization', status, err.toString());
@@ -90,10 +81,6 @@ var CreateOrganization = React.createClass({
 			}.bind(this)
 		});
 		return;
-	},
-	helloFn: function(e) {
-		console.log('test');
-		this.setState({createStatus: 'Organization created! Click here to visit: <a href="/organization/jfhdkfsd"></a>'});
 	},
 });
 
