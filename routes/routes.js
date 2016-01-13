@@ -234,7 +234,7 @@ app.get('/organization/:objectId', function (req, res, next) {
                         userImgUrl=user.imgUrl;
                     }
                     //getting first work experience, since there is no date on these objects
-                    if(user.hasOwnProperty('work_experience')){
+                    if(user.hasOwnProperty('work_experiences')){
                         var work_experience= user.work_experience[0];
                         company= work_experience.company;
                         work_title= work_experience.title;
@@ -650,8 +650,8 @@ app.get('/profile/:username', function (req, res, next) {
                         userImgUrl=user.imgUrl;
                     }
                     //getting first work experience, since there is no date on these objects
-                    if(user.hasOwnProperty('work_experience')){
-                        var work_experience= user.work_experience[0];
+                    if(user.hasOwnProperty('work_experiences')){
+                        var work_experience= user.work_experiences[0];
                         company= work_experience.company;
                         work_title= work_experience.title;
                     }
