@@ -133,7 +133,7 @@ var Model = React.createClass ({
                     <tr><td className="model-layout-td-left">
                         <div className="contain-panel-big-p2">
                             <h4>Description</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea type="text" name="description" className="p-editable" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
+                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="description" className="p-editable" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
                         </div>
                     </td><td>
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
@@ -141,12 +141,12 @@ var Model = React.createClass ({
                     <tr><td className="model-layout-td-left">
                         <div className="contain-panel-big-p">
                             <h4>Features</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea type="text" name="feature" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.feature}</textarea></p> : <p className="p-noneditable">{feature}</p>}
+                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="feature" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.feature}</textarea></p> : <p className="p-noneditable">{feature}</p>}
                         </div>
                     </td><td>
                         <div className="contain-panel-big-p">
                             <h4>More Explanation</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea type="text" name="other" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.other}</textarea></p> : <p className="p-noneditable">{other}</p>}
+                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="other" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.other}</textarea></p> : <p className="p-noneditable">{other}</p>}
                         </div>
                     </td></tr>
                     </table>
@@ -161,6 +161,7 @@ var Model = React.createClass ({
                         <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-big-icons"/></a>
                     </div>
                     </div>
+              {/*}
                     <div className="item-panel contain-panel-big">
                     <div>
                         <h4 className="contain-panel-big-h4">Discussions</h4>
@@ -201,7 +202,9 @@ var Model = React.createClass ({
                     </form>
                     </div>
                     </div>
+                 */}
             </div>
+            {/*
             <div className="item-bottom-3">
                     <div className="item-panel contain-panel-above"><h5>Publication Link</h5><br/>
                         <a href={"/publication/" + publication_link} className="body-link">Published Here!</a>
@@ -232,6 +235,7 @@ var Model = React.createClass ({
                     </div>
                 <div className="extend-bottom">&nbsp;</div>
             </div>
+            */}
         </div>
         );
     }

@@ -128,7 +128,7 @@ var Data = React.createClass ({
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.image_URL} className="contain-panel-big-image"/>}
                         <div className="contain-panel-big-p">
                             <h4>Description</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea type="text" className="p-editable" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
+                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" className="p-editable" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
                         </div>
                     </div>
                     </div>
@@ -141,6 +141,7 @@ var Data = React.createClass ({
                         <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-big-icons"/></a>
                     </div>
                     </div>
+            {/*
                     <div className="item-panel contain-panel-big">
                     <div>
                         <h4 className="contain-panel-big-h4">Discussions</h4>
@@ -172,7 +173,6 @@ var Data = React.createClass ({
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
                     </td></tr>
                     </table>
-
                     <form role="comment" method="post" action="/comment">
                         <div className="input-group contain-panel-big-input-group">
                             <input type="text" placeholder="Comment..." className="form-control comment-bar"/>
@@ -181,7 +181,9 @@ var Data = React.createClass ({
                     </form>
                     </div>
                     </div>
+            */}
             </div>
+            {/*
             <div className="item-bottom-3">
                     <div className="item-panel contain-panel-above"><h5>Publication Link</h5><br/>
                         <a href={"/publication/" + publication_link} className="body-link">Published Here!</a>
@@ -209,6 +211,7 @@ var Data = React.createClass ({
                     </div>
                 <div className="extend-bottom">&nbsp;</div>
             </div>
+            */}
         </div>
         );
     }

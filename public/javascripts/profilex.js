@@ -99,6 +99,7 @@ var Profile = React.createClass ({
             <div className="item-bottom">
                 <div className="item-bottom-1">
                     <div className="item-panel contain-panel"><h5>{fullname}</h5><br/>{position}</div>
+                    {/*
                     <div className="item-panel contain-panel"><h5>{position} @</h5><br/>
                         {this.props.locations.map(function(listValue){
                             return <a href="#" className="body-link">{listValue}<br/></a>;
@@ -119,9 +120,10 @@ var Profile = React.createClass ({
                             return <a href="#" className="body-link">{listValue}<br/></a>;
                         })}
                     </div>
+                    */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                     <ProfileMenu tabs={['About','Connections', 'Projects', 'Publications', 'Data', 'Models', 'More']} />
+                     <ProfileMenu tabs={['About','Connections', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
                     <div className="item-panel-empty contain-panel-empty">
@@ -130,6 +132,7 @@ var Profile = React.createClass ({
                     <input className="btn btn-panel" value="Message" />
                     <input className="btn btn-panel" value="Ask" />
                     </div>
+                    {/*
                     <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
                         48 Syncholarity Rating<br/>
                         2000 Times Cited<br/>
@@ -142,6 +145,7 @@ var Profile = React.createClass ({
                     </div>
                     <div className="item-panel contain-panel"><h5>Adds</h5><br/>
                     </div>
+                    */}
                 </div>
             </div>
         </div>
@@ -161,11 +165,12 @@ var ProfileMenu = React.createClass ({
         var self = this;
         var tabMap = {0: <About tab={this.clicked}/>,
                 1: <Connections />,
-                2: <Projects />,
-                3: <Publications objectId={objectId}/>,
-                4: <DataList objectId={objectId}/>,
-                5: <ModelsList objectId={objectId}/>,
-                6: <More />};
+                // 2: <Projects />,
+                2: <Publications objectId={objectId}/>,
+                3: <DataList objectId={objectId}/>,
+                4: <ModelsList objectId={objectId}/>
+                // 6: <More />
+                };
         return (
             <div>
                 <div id="tabs">

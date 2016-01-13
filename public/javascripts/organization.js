@@ -64,7 +64,7 @@ var Organization = React.createClass ({
                         <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
                     </div>
                     <div id="item-bottom-2-organization" className="item-bottom-organization">
-                        <OrganizationMenu tabs={['Connections', 'People', 'About', 'News And Events', 'Knowledge', 'Publications', 'Data', 'Models']} />
+                        <OrganizationMenu tabs={['Connections', 'People', 'About', 'Publications', 'Data', 'Models']} />
                     </div>
                 </div>
                 </div>
@@ -86,12 +86,13 @@ var OrganizationMenu = React.createClass ({
         var tabMap = {0: <Connections />,
                 1: <People  />,
                 2: <About />,
-                3: <NewsAndEvents/>,
-                4: <Knowledge/>,
-                5: <Publications objectId={objectId}/>,
-                6: <Data objectId={objectId}/>,
-                7: <Models objectId={objectId}/>,
-                8: <Manage objectId={objectId}/>};
+                // 3: <NewsAndEvents/>,
+                // 4: <Knowledge/>,
+                3: <Publications objectId={objectId}/>,
+                4: <Data objectId={objectId}/>,
+                5: <Models objectId={objectId}/>
+                // 8: <Manage objectId={objectId}/>
+                };
         return (
             <div>
                 <div id="tabs">
