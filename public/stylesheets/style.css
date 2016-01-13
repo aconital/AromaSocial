@@ -5839,10 +5839,10 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
         }
 
     .contain-panel-big {
-            width: 97%;
+            width: 100%;
             border: solid;
             border-color: #70ab8f;
-            margin: 3%;
+            margin: 0%;
             margin-top: 25px;
             margin-bottom: 25px;
             padding:20px;
@@ -5858,6 +5858,9 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
                 padding:15px;
                 position:relative;
             }
+.contain-panel-big-half-left{margin:0px; margin-right:2%; margin-bottom:15px;width:98%;}
+.contain-panel-big-half-right{margin:0px; margin-left:2%; margin-bottom:15px;width:98%;}
+.full{width:100%;}
 .contain-panel-big-h2 { margin: 5px 0px; margin-bottom:8px;}
 .contain-panel-big-h4 { margin: 5px 0px; margin-bottom:8px;}
 .contain-panel-big-icons { width:9%;
@@ -6290,9 +6293,13 @@ color: #fff;
 }
 
 .publication-box-left {
-    float:left;
-    width:70%;
-    margin-right:5%;
+       float:left;
+       width:70%;
+       margin-right:5%;
+   }
+.publication-box-left {
+    width:100%;
+    margin-right:0%;
 }
 .publication-box-right {
     float:left;
@@ -6418,6 +6425,10 @@ div.react-tagsinput {
     float:left;
     width:51%;
     margin-right:2%;
+}
+.model-box-left-full {
+    width:78%;
+    margin-right:0%;
 }
 .model-box-right {
     float:left;
@@ -6553,3 +6564,4 @@ textarea {
      }
 
 .logout-button{margin-top:2px;color:#70ab8f;font-size:25px;}
+.colspan{ colspan: 2;}

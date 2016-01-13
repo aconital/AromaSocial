@@ -1398,12 +1398,13 @@ var Publication = React.createClass({
     render: function() {
         return (
                 <div className="publication-box">
-                <div className="publication-box-left">
+                <div className="publication-box-left publication-box-left-full">
                     <h3 className="no-margin-top"><a href={"/publication/" + this.props.objectId} className="body-link"> {this.props.title}</a></h3>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
                 </div>
+                {/*
                 <div className="publication-box-right">
                     <h5>Information</h5><br/>
                     ## Syncholar Factor<br/>
@@ -1411,6 +1412,7 @@ var Publication = React.createClass({
                     ## Views<br/>
                     ## Impact Factor
                 </div>
+                */}
                 </div>
         )
     }
@@ -1458,7 +1460,7 @@ var ModelListItem = React.createClass({
                 <div className="model-box-image">
                     <img src={this.props.image_URL} className="contain-image-preview" />
                 </div>
-                <div className="model-box-left">
+                <div className="model-box-left model-box-left-full">
                     <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -1468,6 +1470,7 @@ var ModelListItem = React.createClass({
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
+                {/*
                 <div className="model-box-right">
                     <h5>Information</h5><br/>
                     {this.props.number_syncholar_factor} Syncholar Factor<br/>
@@ -1478,6 +1481,7 @@ var ModelListItem = React.createClass({
                         else {return ", " + item;}
                     })} <br/> Uses This
                 </div>
+                */}
                 </div>
         )
     }
@@ -1786,7 +1790,7 @@ var DatumListItem = React.createClass({
                 <div className="model-box-image">
                     <img src={this.props.image_URL} className="contain-image-preview" />
                 </div>
-                <div className="model-box-left">
+                <div className="model-box-left model-box-left-full">
                     <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -1796,6 +1800,7 @@ var DatumListItem = React.createClass({
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
+                {/*
                 <div className="model-box-right">
                     <h5>Information</h5><br/>
                     {this.props.number_syncholar_factor} Syncholar Factor<br/>
@@ -1806,6 +1811,7 @@ var DatumListItem = React.createClass({
                         else {return ", " + item;}
                     })} <br/> Uses This
                 </div>
+                */}
                 </div>
         )
     }

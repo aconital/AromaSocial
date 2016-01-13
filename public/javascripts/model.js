@@ -129,14 +129,28 @@ var Model = React.createClass ({
                         </h2>
                     </div>
                     <div>
+                        <div>
+                            {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
+                            <div className="contain-panel-big">
+                                <h4>Description</h4>
+                                {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="description" className="p-editable" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
+                            </div>
+                        </div>
+                        <table className="full"><tr><td>
+                        <div className="contain-panel-big contain-panel-big-half-left">
+                            <h4>Features</h4>
+                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="feature" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.feature}</textarea></p> : <p className="p-noneditable">{feature}</p>}
+                        </div>
+                        </td><td>
+                        <div className="contain-panel-big contain-panel-big-half-right">
+                            <h4>More Explanation</h4>
+                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="other" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.other}</textarea></p> : <p className="p-noneditable">{other}</p>}
+                        </div>
+                        </td></tr>
+                        </table>
+                    {/*
                     <table className="model-layout">
                     <tr><td className="model-layout-td-left">
-                        <div className="contain-panel-big-p2">
-                            <h4>Description</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="description" className="p-editable" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
-                        </div>
-                    </td><td>
-                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </td></tr>
                     <tr><td className="model-layout-td-left">
                         <div className="contain-panel-big-p">
@@ -150,6 +164,7 @@ var Model = React.createClass ({
                         </div>
                     </td></tr>
                     </table>
+                    */}
                     </div>
                     </div>
                     <div className="item-panel contain-panel-big">
