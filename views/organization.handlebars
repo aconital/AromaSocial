@@ -8,6 +8,11 @@
         name = '{{name}}',
         about = "{{about}}",
         orgLocation = '{{location}}',
-        organization_imgURL = '{{organization_imgURL}}';
+        organization_imgURL = '{{organization_imgURL}}'
+        isCreate = '{{isCreate}}';
 </script>
-<script type="text/jsx" src="/javascripts/organization.js"></script>
+{{#if isCreate}}
+    <script type="text/jsx" src="/javascripts/createOrganization.js"></script>
+{{else}}
+    <script type="text/jsx" src="/javascripts/organization.js"></script>
+{{/if}}
