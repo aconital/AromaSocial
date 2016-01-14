@@ -40,7 +40,7 @@ var Organization = React.createClass ({
                                 <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-organization">
-                                <OrganizationMenu tabs={['Connections', 'People', 'About', 'News And Events', 'Knowledge', 'Publications', 'Data', 'Models','Manage']} />
+                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
                     </div>
@@ -64,7 +64,7 @@ var Organization = React.createClass ({
                         <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
                     </div>
                     <div id="item-bottom-2-organization" className="item-bottom-organization">
-                        <OrganizationMenu tabs={['Connections', 'People', 'About', 'Publications', 'Data', 'Models']} />
+                        <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models']} />
                     </div>
                 </div>
                 </div>
@@ -83,9 +83,9 @@ var OrganizationMenu = React.createClass ({
     render: function() {
         var self = this;
 
-        var tabMap = {0: <Connections />,
-                1: <People  />,
-                2: <About />,
+        var tabMap = {0: <About />,
+                1: <Connections  />,
+                2: <People />,
                 // 3: <NewsAndEvents/>,
                 // 4: <Knowledge/>,
                 3: <Publications objectId={objectId}/>,
@@ -309,22 +309,28 @@ var Knowledge = React.createClass({
 });
 
 var Publications = React.createClass({
-  mixins: [ParseReact.Mixin],
   getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        users: (new Parse.Query('Relationship').equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: this.props.objectId}))
-      };
-    },
+    return {data: []};
+  },
+  componentDidMount : function(){
+    var peopleUrl= "/organization/"+objectId+"/publications";
+
+    $.ajax({
+        url: peopleUrl,
+        success: function(data) {
+            this.setState({data: data});
+            console.log(data);
+            console.log(this.state.data);
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't Retrieve Publications!");
+        }.bind(this)
+    });
+  },
   render: function() {
-    var rows = [];
-    console.log(this.data.users);
     return (
       <div>
-
-        {rows}
+        {this.state.data}
       </div>
     );
   }
