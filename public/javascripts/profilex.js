@@ -99,6 +99,7 @@ var Profile = React.createClass ({
             <div className="item-bottom">
                 <div className="item-bottom-1">
                     <div className="item-panel contain-panel"><h5>{fullname}</h5><br/>{position}</div>
+                    {/*
                     <div className="item-panel contain-panel"><h5>{position} @</h5><br/>
                         {this.props.locations.map(function(listValue){
                             return <a href="#" className="body-link">{listValue}<br/></a>;
@@ -119,9 +120,10 @@ var Profile = React.createClass ({
                             return <a href="#" className="body-link">{listValue}<br/></a>;
                         })}
                     </div>
+                    */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                     <ProfileMenu tabs={['About','Connections', 'Projects', 'Publications', 'Data', 'Models', 'More']} />
+                     <ProfileMenu tabs={['About','Connections', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
                     <div className="item-panel-empty contain-panel-empty">
@@ -130,6 +132,7 @@ var Profile = React.createClass ({
                     <input className="btn btn-panel" value="Message" />
                     <input className="btn btn-panel" value="Ask" />
                     </div>
+                    {/*
                     <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
                         48 Syncholarity Rating<br/>
                         2000 Times Cited<br/>
@@ -142,6 +145,7 @@ var Profile = React.createClass ({
                     </div>
                     <div className="item-panel contain-panel"><h5>Adds</h5><br/>
                     </div>
+                    */}
                 </div>
             </div>
         </div>
@@ -161,11 +165,12 @@ var ProfileMenu = React.createClass ({
         var self = this;
         var tabMap = {0: <About tab={this.clicked}/>,
                 1: <Connections />,
-                2: <Projects />,
-                3: <Publications objectId={objectId}/>,
-                4: <DataList objectId={objectId}/>,
-                5: <ModelsList objectId={objectId}/>,
-                6: <More />};
+                // 2: <Projects />,
+                2: <Publications objectId={objectId}/>,
+                3: <DataList objectId={objectId}/>,
+                4: <ModelsList objectId={objectId}/>
+                // 6: <More />
+                };
         return (
             <div>
                 <div id="tabs">
@@ -1393,12 +1398,13 @@ var Publication = React.createClass({
     render: function() {
         return (
                 <div className="publication-box">
-                <div className="publication-box-left">
+                <div className="publication-box-left publication-box-left-full">
                     <h3 className="no-margin-top"><a href={"/publication/" + this.props.objectId} className="body-link"> {this.props.title}</a></h3>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
                 </div>
+                {/*
                 <div className="publication-box-right">
                     <h5>Information</h5><br/>
                     ## Syncholar Factor<br/>
@@ -1406,6 +1412,7 @@ var Publication = React.createClass({
                     ## Views<br/>
                     ## Impact Factor
                 </div>
+                */}
                 </div>
         )
     }
@@ -1453,7 +1460,7 @@ var ModelListItem = React.createClass({
                 <div className="model-box-image">
                     <img src={this.props.image_URL} className="contain-image-preview" />
                 </div>
-                <div className="model-box-left">
+                <div className="model-box-left model-box-left-full">
                     <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -1463,6 +1470,7 @@ var ModelListItem = React.createClass({
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
+                {/*
                 <div className="model-box-right">
                     <h5>Information</h5><br/>
                     {this.props.number_syncholar_factor} Syncholar Factor<br/>
@@ -1473,6 +1481,7 @@ var ModelListItem = React.createClass({
                         else {return ", " + item;}
                     })} <br/> Uses This
                 </div>
+                */}
                 </div>
         )
     }
@@ -1781,7 +1790,7 @@ var DatumListItem = React.createClass({
                 <div className="model-box-image">
                     <img src={this.props.image_URL} className="contain-image-preview" />
                 </div>
-                <div className="model-box-left">
+                <div className="model-box-left model-box-left-full">
                     <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -1791,6 +1800,7 @@ var DatumListItem = React.createClass({
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
+                {/*
                 <div className="model-box-right">
                     <h5>Information</h5><br/>
                     {this.props.number_syncholar_factor} Syncholar Factor<br/>
@@ -1801,6 +1811,7 @@ var DatumListItem = React.createClass({
                         else {return ", " + item;}
                     })} <br/> Uses This
                 </div>
+                */}
                 </div>
         )
     }

@@ -1,4 +1,12 @@
+Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+
 var NewsFeed = React.createClass({
+  mixins: [ParseReact.Mixin],
+  getInitialState: function() {
+    return {
+      data: []
+    };
+   },
   loadFeedFromServer: function() {
     console.log(this.props.url);
     $.ajax({
@@ -29,25 +37,42 @@ var NewsFeed = React.createClass({
       }.bind(this)
     });
   },
-  getInitialState: function() {
-    return {data: [], groups:[{name: "UBC"}, {name: "Natural Scientists Of Canada"}]};
+  observe: function() {
+    return {
+      organizations: (new Parse.Query('Relationship').equalTo("userId", {__type: "Pointer",
+                                                                        className: "_User",
+                                                                        objectId: this.props.userId}))
+    };
   },
   componentDidMount: function() {
     this.loadFeedFromServer();
-    //this.loadGroupsFromServer();
-    //setInterval(this.loadPublicationsFromServer, this.props.pollInterval);
   },
   render: function() {
     return (
-      <div className="newsfeedlist">
+      <div className="container-newsfeed">
         <div className="row">
-          <div className="col-xs-4 col-xs-offset-3">
-            <NewsFeedList data={this.state.data}/>
+          <div className="col-xs-8">
+            {this.state.data.map(function(item) {
+              return (<NewsFeedList itemId={item.itemId}
+                                    userName={item.username}
+                                    fullname={item.fullname}
+                                    userImg={item.userImg}
+                                    type={item.type}
+                                    date={item.date}
+                                    year={item.year}
+                                    filename={item.filename}
+                                    title={item.title}
+                                    description={item.description}
+                                    upload={item.upload}
+                                    hashtags={item.hashtags} />);
+            })}
           </div>
-          <div className="col-xs-3">
+          <div className="col-xs-4">
             <div className = "panel search-panel your-groups">
-              <h4 className="white">YOUR GROUPS</h4>
-              <GroupsList groups={this.state.groups}/>
+              <h4 className="white">ORGANIZATIONS</h4>
+              {this.data.organizations.map(function(organization) {
+                  return (<OrganizationList organizationId={organization.orgId.objectId} organizationName={organization.orgId.name}/>);
+              })}
             </div>
           </div>
         </div>
@@ -56,47 +81,50 @@ var NewsFeed = React.createClass({
   }
 });
 
-var GroupsList = React.createClass({
-  render: function(){
-    var GroupNodes = this.props.groups.map(function(group){
-      return (<Group groupname={group.name}/>);
-    });
-    return(
-      <div className="list-group">
-        {GroupNodes}
-      </div>
-    );
-  }
-});
-
-var Group = React.createClass({
+var OrganizationList = React.createClass({
+  mixins: [ParseReact.Mixin],
+  observe: function() {
+    return {
+      organization: (new Parse.Query('Organization').equalTo("objectId", this.props.organizationId).limit(1))
+    };
+  },
   render: function(){
     return(
-      <a href="organization/AJgSwufvvO" className="list-group-item groups-list">{this.props.groupname} <span aria-hidden="true">{String.fromCharCode(215)}</span></a>
+    <div className="list-group">
+      <a href={"organization/" + this.props.organizationId} className="list-group-item groups-list">&#x25cf; {this.props.organizationName}</a>
+    </div>
     );
   }
 });
 
 var NewsFeedList = React.createClass({
   render: function() {
-	  var NewsFeedNodes = this.props.data.map(function (item) {
-  	  console.log(item);
-  	  var jsonString = JSON.stringify(item.hashtags);
-  	  var author = item.author;
-  	  if(author==""){
-    	  author = item.username;
-  	  }
-      return (
-        <Update filename={item.filename} type={item.type} tags={jsonString} title={item.title} date={item.date} 
-          description={item.description} author={author} username={item.username} year={item.year} img={item.userImg}>
-        </Update>
-      );
-    });
-    return (
-      <div className="publicationList" id="container">
+    var date = moment(this.props.date).format("MMMM D, YYYY");
+    if (this.props.type=="pub"){ type="Publication"; typeLink="publication"; }
+    else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
+    else if (this.props.type=="data"){ type="Data"; typeLink="data"; }
+	return (
+      <div className="item-panel-newsFeed contain-panel-newsFeed">
+        <div className="row">
+          <div className="col-xs-1 col-xs-1-5 no-padding">
+            <a href={"/profile/" + this.props.userName}><img src={this.props.userImg} alt="" className="img-circle newsfeed-profile-pic"/></a>
+          </div>
+          <div className="col-xs-10 col-xs-10-5 no-padding-right">
+            <a href={"/profile/" + this.props.userName} className="nostyle"><h3 className="non-inline">{this.props.fullname}</h3></a>
+            <h4 className="black non-inline">Added a {type} on {date}</h4>
 
-          {NewsFeedNodes}
+            <div className="item-box">
+            <div className="item-box-left">
+                // <img src={this.props.image_URL} className="contain-image-preview" />
+            </div>
+            <div className="item-box-right">
+                <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>
+            </div>
+            </div>
 
+          </div>
+        </div>
       </div>
     );
   }
@@ -117,18 +145,17 @@ var Update = React.createClass({
       type="publication";
     }
     
-    var profileurl = "/profile/"+ this.props.username;
+    var profileurl = "/profile/"+ this.props.userName;
     
     return (
 
-      <div className="update">
-        <hr/>
+      <div className="item-panel contain-panel-newsfeed update">
         <div className="row">
           <div className="col-xs-2">
             <a href={profileurl}><img src={this.props.img} alt="" className="img-circle newsfeed-profile-pic"/></a>
           </div>
           <div className="col-xs-8">
-            <a href={profileurl} className="nostyle"><h5 className="non-inline">{this.props.username}</h5></a>
+            <a href={profileurl} className="nostyle"><h5 className="non-inline">{this.props.userName}</h5></a>
             <h5 className="black non-inline">added a {type}</h5>
           </div>
           <div className="col-xs-2 no-right-padding">
@@ -151,16 +178,16 @@ var Update = React.createClass({
   showPublication: function(){
     var author = this.props.author;
     if (author ==""){
-      author = this.props.username;
+      author = this.props.userName;
     }
-    showPublicationNewsFeed(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username, this.props.img);
+    showPublicationNewsFeed(this.props.pubid, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.userName, this.props.img);
   }
 
 });
 
 
-React.render(
-  <NewsFeed url={getNewsFeedUrl} username={user}/>,
+ReactDOM.render(
+  <NewsFeed url={getNewsFeedUrl} userName={userName} userId={userId}/>,
   document.getElementById('content')
 );
 

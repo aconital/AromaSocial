@@ -46,6 +46,7 @@ module.exports=function(app,Parse) {
                       var userImg = "";
                       if(object.attributes.from!=null) {
                            username = object.attributes.from.attributes.username;
+                           fullname = object.attributes.from.attributes.fullname;
                            userImg = object.attributes.from.attributes.imgUrl;
                       }
 
@@ -68,6 +69,7 @@ module.exports=function(app,Parse) {
                               var year ="";
                               var author ="";
                               var description ="";
+                              var itemId = pubItem.objectId;
                               if (pubItem.filename != null) {
                                   filename = pubItem.filename;
                               }
@@ -87,6 +89,8 @@ module.exports=function(app,Parse) {
                                   description = pubItem.description;
                               }
                               feeds.push({
+                                  itemId: itemId,
+                                  fullname: fullname,
                                   username: username,
                                   userImg: userImg,
                                   type:type,
@@ -98,7 +102,7 @@ module.exports=function(app,Parse) {
                                   hashtags: hashtags,
                                   title: title,
                               });
-//                              console.log(feeds);
+//                              console.log(itemId);
                           }
                       }
                       }
@@ -126,7 +130,11 @@ module.exports=function(app,Parse) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           console.log(currentUser);
-          res.render('newsfeed', {layout:'home',title: 'Website', currentUsername: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
+          res.render('newsfeed', {layout:'home',
+                                  title: 'Website',
+                                  currentUserId: currentUser.id,
+                                  currentUsername: currentUser.attributes.username,
+                                  currentUserImg: currentUser.attributes.imgUrl});
       } else {
           res.render('index', {title: 'Login failed', path: req.path});
       }
@@ -142,7 +150,9 @@ module.exports=function(app,Parse) {
             newsFeed .save(null, {
                 success: function(newsfeed) {
                     // Execute any logic that should take place after the object is saved.
-                    res.render('newsfeed', {title: 'NewsFeed', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
+                    res.render('newsfeed', {title: 'NewsFeed', userId: currentUser.id,
+                                                               username: currentUser.attributes.username,
+                                                               currentUserImg: currentUser.attributes.imgUrl});
                 },
                 error: function(newsfeed, error) {
                     // Execute any logic that should take place if the save fails.
@@ -224,7 +234,7 @@ app.get('/organization/:objectId', function (req, res, next) {
                         userImgUrl=user.imgUrl;
                     }
                     //getting first work experience, since there is no date on these objects
-                    if(user.hasOwnProperty('work_experience')){
+                    if(user.hasOwnProperty('work_experiences')){
                         var work_experience= user.work_experience[0];
                         company= work_experience.company;
                         work_title= work_experience.title;
@@ -633,8 +643,8 @@ app.get('/profile/:username', function (req, res, next) {
                         userImgUrl=user.imgUrl;
                     }
                     //getting first work experience, since there is no date on these objects
-                    if(user.hasOwnProperty('work_experience')){
-                        var work_experience= user.work_experience[0];
+                    if(user.hasOwnProperty('work_experiences')){
+                        var work_experience= user.work_experiences[0];
                         company= work_experience.company;
                         work_title= work_experience.title;
                     }

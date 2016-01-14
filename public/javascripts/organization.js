@@ -64,7 +64,7 @@ var Organization = React.createClass ({
                         <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
                     </div>
                     <div id="item-bottom-2-organization" className="item-bottom-organization">
-                        <OrganizationMenu tabs={['Connections', 'People', 'About', 'News And Events', 'Knowledge', 'Publications', 'Data', 'Models']} />
+                        <OrganizationMenu tabs={['Connections', 'People', 'About', 'Publications', 'Data', 'Models']} />
                     </div>
                 </div>
                 </div>
@@ -86,12 +86,13 @@ var OrganizationMenu = React.createClass ({
         var tabMap = {0: <Connections />,
                 1: <People  />,
                 2: <About />,
-                3: <NewsAndEvents/>,
-                4: <Knowledge/>,
-                5: <Publications objectId={objectId}/>,
-                6: <Data objectId={objectId}/>,
-                7: <Models objectId={objectId}/>,
-                8: <Manage objectId={objectId}/>};
+                // 3: <NewsAndEvents/>,
+                // 4: <Knowledge/>,
+                3: <Publications objectId={objectId}/>,
+                4: <Data objectId={objectId}/>,
+                5: <Models objectId={objectId}/>
+                // 8: <Manage objectId={objectId}/>
+                };
         return (
             <div>
                 <div id="tabs">
@@ -333,12 +334,13 @@ var Publication = React.createClass({
     render: function() {
         return (
                 <div className="publication-box">
-                <div className="publication-box-left">
+                <div className="publication-box-left publication-box-left-full">
                     <h3 className="no-margin-top"><a href={"/publication/" + this.props.objectId} className="body-link"> {this.props.title}</a></h3>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
                 </div>
+                {/*
                 <div className="publication-box-right">
                     <h5>Information</h5><br/>
                     ## Syncholar Factor<br/>
@@ -346,6 +348,7 @@ var Publication = React.createClass({
                     ## Views<br/>
                     ## Impact Factor
                 </div>
+                */}
                 </div>
         )
     }
@@ -390,7 +393,7 @@ var Datum = React.createClass({
                 <div className="model-box-image">
                     <img src={this.props.image_URL} className="contain-image-preview" />
                 </div>
-                <div className="model-box-left">
+                <div className="model-box-left model-box-left-full">
                     <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -400,6 +403,7 @@ var Datum = React.createClass({
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
+                {/*
                 <div className="model-box-right">
                     <h5>Information</h5><br/>
                     {this.props.number_syncholar_factor} Syncholar Factor<br/>
@@ -410,6 +414,7 @@ var Datum = React.createClass({
                         else {return ", " + item;}
                     })} <br/> Uses This
                 </div>
+                */}
                 </div>
         )
     }
@@ -454,7 +459,7 @@ var Model = React.createClass({
                 <div className="model-box-image">
                     <img src={this.props.image_URL} className="contain-image-preview" />
                 </div>
-                <div className="model-box-left">
+                <div className="model-box-left model-box-left-full">
                     <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -464,6 +469,7 @@ var Model = React.createClass({
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
+                {/*}
                 <div className="model-box-right">
                     <h5>Information</h5><br/>
                     {this.props.number_syncholar_factor} Syncholar Factor<br/>
@@ -474,6 +480,7 @@ var Model = React.createClass({
                         else {return ", " + item;}
                     })} <br/> Uses This
                 </div>
+                */}
                 </div>
         )
     }

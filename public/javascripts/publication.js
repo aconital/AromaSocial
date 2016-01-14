@@ -46,7 +46,7 @@ var Publication = React.createClass ({
                         </h2>
                     </div>
                     <div>
-                       {(currentUserId == creatorId) ? <p className="no-margin"><textarea className="p-editable" type="text" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
+                       {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" className="p-editable" type="text" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
                     </div>
                     </div>
                     <div className="item-panel contain-panel-big">
@@ -58,6 +58,7 @@ var Publication = React.createClass ({
                         <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-big-icons"/></a>
                     </div>
                     </div>
+            {/*}
                     <div className="item-panel contain-panel-big">
                     <div>
                         <h4 className="contain-panel-big-h4">Discussions</h4>
@@ -99,7 +100,9 @@ var Publication = React.createClass ({
                     </form>
                     </div>
                     </div>
+                */}
             </div>
+            {/*}
             <div className="item-bottom-3">
                     <div className="item-panel contain-panel-above"><h5>Publication Link</h5><br/>
                         <a href={publication_link} className="body-link">Published Here!</a>
@@ -127,6 +130,7 @@ var Publication = React.createClass ({
                     </div>
                 <div className="extend-bottom">&nbsp;</div>
             </div>
+            */}
         </div>
         );
     }
