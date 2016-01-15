@@ -45,7 +45,6 @@ module.exports=function(app,Parse) {
        },
        error: function (user, error) {
          // Show the error message somewhere and let the user try again.
-         console.log("unsucessful signup: " + error.message);
          res.render('signup', {Error: error.message, path: req.path});
        }
      });
@@ -68,7 +67,8 @@ module.exports=function(app,Parse) {
           res.redirect('/newsfeed');
       },
       error: function(user, error) {
-          res.render('index', {title: 'Login failed', path: req.path});
+          // Show the error message somewhere and let the user try again.
+          res.render('signin', {Error: error.message, path: req.path});
       }
     });
 

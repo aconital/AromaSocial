@@ -53,20 +53,28 @@ var Organization = React.createClass ({
                 <div className="item-top item-top-container">
                 </div>
                 <div className="content-wrap">
-                <div>
-                    <div className="item-top-1 col">
-                        <img src={organization_imgURL} className="contain-image" />
+                    <div>
+                        <div className="item-top-1 col">
+                            <img src={organization_imgURL} className="contain-image" />
+                        </div>
                     </div>
-                </div>
-                <div className="item-bottom">
-                    <div className="item-bottom-1">
-                        <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
-                        <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                    <div className="item-bottom">
+                        <div className="item-bottom-1">
+                            <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
+                            <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                        </div>
+                        <div id="item-bottom-2-organization" className="item-bottom-2">
+                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models']} />
+                        </div>
+                        <div className="item-bottom-3">
+                            <div className="item-panel-empty contain-panel-empty">
+                                <input className="btn btn-panel" value="Join" />
+                                <input className="btn btn-panel" value="Follow" />
+                                {/*<input className="btn btn-panel" value="Message" />
+                                 <input className="btn btn-panel" value="Ask" />*/}
+                            </div>
+                        </div>
                     </div>
-                    <div id="item-bottom-2-organization" className="item-bottom-organization">
-                        <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models']} />
-                    </div>
-                </div>
                 </div>
             </div>
         );

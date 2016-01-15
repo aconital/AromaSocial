@@ -129,8 +129,8 @@ var Profile = React.createClass ({
                     <div className="item-panel-empty contain-panel-empty">
                     <input className="btn btn-panel" value="Connect" />
                     <input className="btn btn-panel" value="Follow" />
-                    <input className="btn btn-panel" value="Message" />
-                    <input className="btn btn-panel" value="Ask" />
+    {/*<input className="btn btn-panel" value="Message" />
+                    <input className="btn btn-panel" value="Ask" />*/}
                     </div>
                     {/*
                     <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
