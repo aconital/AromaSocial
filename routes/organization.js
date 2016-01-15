@@ -294,52 +294,28 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/organization/:objectId/publications', function (req, res, next) {
+        var userResults =[];
+        var publicationResults =[];
         var innerQuery = new Parse.Query("Organization");
         innerQuery.equalTo("objectId",req.params.objectId);
-
         var query = new Parse.Query('Relationship');
         query.matchesQuery("orgId",innerQuery);
         query.include("userId");
-        query.find({
-            success: function(result) {
-                var userResults =[];
-                var publicationResults =[];
-                for(var user in result) {
-                    var userId = result[user].attributes.userId.id;
-                    userResults.push(userId);
-
-                    var innerQuery = new Parse.Query('User');
-                    innerQuery.equalTo("objectId",userId);
-                    var queryPublications = new Parse.Query('Publication');
-                    queryPublications.matchesQuery("user",innerQuery);
-                    queryPublications.include("objectId");
-                    queryPublications.find({
-                        success: function(publications) {
-                            for(var publication in publications) {
-                                var attributes = publications[publication].attributes;
-                                var object = { objectId: attributes.objectId,
-                                               title: attributes.title,
-                                               user: attributes.user,
-                                               author: attributes.author,
-                                               description: attributes.description,
-                                               publication_code: attributes.publication_code };
-                                publicationResults.push(object);
-                            }
-                        },
-                        error: function(error) {
-                            console.log(error);
-                            res.render('index', {title: error, path: req.path});
-                        }
-                    });
-                }
-                console.log(publicationResults);
-                res.json(publicationResults);
-            },
-            error: function(error) {
-                console.log(error);
-                res.render('index', {title: error, path: req.path});
+        query.find().then(function(users) {
+            _.each(users, function(user) {
+                var userId = user.id;
+                userResults.push(userId);
+                console.log(userId);
+            });
+        }).then(function() {
+            for(var userId in userResults) {
+                var innerQuery = new Parse.Query(Parse.User);
+                innerQuery.equalTo("objectId",userResults[userId]);
+                innerQuery.find().then(function(item) {
+                    console.log(item);
+                });
             }
-        });
+        }).then(function() {console.log(publicationResults)});
     });
 
     app.get('/organization/:objectId/admins', function (req, res, next) {
