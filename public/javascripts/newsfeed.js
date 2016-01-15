@@ -54,6 +54,7 @@ var NewsFeed = React.createClass({
           <div className="col-xs-8">
             {this.state.data.map(function(item) {
               return (<NewsFeedList itemId={item.itemId}
+                                    objId={item.objId}
                                     userName={item.username}
                                     fullname={item.fullname}
                                     userImg={item.userImg}
@@ -97,7 +98,27 @@ var OrganizationList = React.createClass({
   }
 });
 
+// <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>
+
 var NewsFeedList = React.createClass({
+
+  showMore: function() {
+    var itemType = this.props.type;
+    var author = this.props.author;
+
+    if (itemType == "pub") {
+      window.location.href="/publication/" + this.props.objId['objectId'];
+    }
+    else if (itemType == "mod") {
+      window.location.href="/model/" + this.props.objId['objectId'];
+    }
+
+    else if (itemType == "data") {
+      window.location.href="/data/" + this.props.objId['objectId'];
+    }
+    return false;
+  },
+
   render: function() {
     var date = moment(this.props.date).format("MMMM D, YYYY");
     if (this.props.type=="pub"){ type="Publication"; typeLink="publication"; }
@@ -119,7 +140,8 @@ var NewsFeedList = React.createClass({
             </div>
             <div className="item-box-right">
                 <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
-                <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>
+                
+                <a href="#" onClick={this.showMore}>Show More</a>
             </div>
             </div>
 
@@ -143,6 +165,9 @@ var Update = React.createClass({
     var type=this.props.type;
     if (type=="pub"){
       type="publication";
+    }
+    else if (type=="mod") {
+      type="model";
     }
     
     var profileurl = "/profile/"+ this.props.userName;
@@ -168,12 +193,32 @@ var Update = React.createClass({
               <h3 className="black non-inline">{this.props.title}</h3>
               <p className="newsfeed-date grey non-inline">{this.props.year}</p>
               <p className="black smaller">{this.props.author}</p>
-              <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showPublication}>SEE FULL TEXT</a>
+              <a className="newsfeed-link" href="javascript:void(0)" onClick={this.showMore}>SEE FULL TEXT</a>
             </div>
           </div>
         </div>
       </div>
     );
+  },
+  showMore: function() {
+    var itemType = this.props.type;
+    var author = this.props.author;
+    if (author ==""){
+      author = this.props.username;
+    }
+
+    if (itemType == "pub") {
+      window.location.href="/publication/" + this.props.objId['objectId'];
+      //showPublicationNewsFeed(this.props.itemId, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username, this.props.img);
+    }
+    else if (itemType == "mod") {
+      window.location.href="/model/" + this.props.objId['objectId'];
+      //showModelNewsFeed();
+    }
+
+    else if (itemType == "data") {
+      window.location.href="/data/" + this.props.objId['objectId'];
+    }
   },
   showPublication: function(){
     var author = this.props.author;

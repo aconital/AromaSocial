@@ -30,10 +30,18 @@ module.exports=function(app,Parse) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           var NewsFeed = Parse.Object.extend("NewsFeed");
+
+          // pub query
           var query = new Parse.Query(NewsFeed);
-         query.include("pubId");
+          query.include("pubId");
+          query.include("modId");
+          query.include("dataId");
           query.include('from');
           query.descending("createdAt");
+
+          // mod query
+          // var mquery = new Parse.Query(NewsFeed);
+          // mquery.include();
           query.find({
               success: function(results) {
                   console.log("Successfully retrieved " + results.length + " feed.");
@@ -63,6 +71,9 @@ module.exports=function(app,Parse) {
 
                               var pubItem = object.attributes.pubId.attributes;
 
+                              console.log("PUB ATTRIBUTES: ");
+                              console.log(object.attributes);
+
                               var filename ="";
                               var title ="";
                               var hashtags ="";
@@ -70,6 +81,8 @@ module.exports=function(app,Parse) {
                               var author ="";
                               var description ="";
                               var itemId = pubItem.objectId;
+                              var objectId = object.attributes.pubId;
+
                               if (pubItem.filename != null) {
                                   filename = pubItem.filename;
                               }
@@ -101,15 +114,106 @@ module.exports=function(app,Parse) {
                                   year: year,
                                   hashtags: hashtags,
                                   title: title,
+                                  objId: objectId
                               });
 //                              console.log(itemId);
                           }
                       }
                       }
 
-                    if(type =="model")
-                    {
-                        //do stuff
+                    else if(type == "mod") {
+                        if (object.attributes.modId != null && object.attributes.modId.attributes != null) {
+                          var modItem = object.attributes.modId.attributes;
+
+                          var filename ="";
+                          var title ="";
+                          var hashtags ="";
+                          var year ="";
+                          var author ="";
+                          var description ="";
+                          var objectId = object.attributes.modId;
+
+                          if (modItem.filename != null) {
+                            filename = modItem.filename;
+                          }
+                          if (modItem.title != null) {
+                              title = modItem.title;
+                          }
+                          if (modItem.hashtags != null) {
+                              hashtags = modItem.hashtags;
+                          }
+                          if (modItem.year != null) {
+                              year = modItem.year;
+                          }
+                          if (modItem.author != null) {
+                              author = modItem.author;
+                          }
+                          if (modItem.description != null) {
+                              description = modItem.description;
+                          }
+
+                          feeds.push({
+                            username: username,
+                            userImg: userImg,
+                            type:type,
+                            date:date,
+                            filename: filename,
+                            description: description,
+                            author: author,
+                            year: year,
+                            hashtags: hashtags,
+                            title: title,
+                            objId: objectId
+                          });
+
+                        }
+                    }
+                    else if (type == "data") {
+                          if (object.attributes.dataId != null && object.attributes.dataId.attributes != null) {
+                          var dataItem = object.attributes.dataId.attributes;
+
+                          var filename ="";
+                          var title ="";
+                          var hashtags ="";
+                          var year ="";
+                          var author ="";
+                          var description ="";
+                          var objectId = object.attributes.dataId;
+
+                          if (dataItem.filename != null) {
+                            filename = modItem.filename;
+                          }
+                          if (dataItem.title != null) {
+                              title = modItem.title;
+                          }
+                          if (dataItem.hashtags != null) {
+                              hashtags = modItem.hashtags;
+                          }
+                          if (dataItem.year != null) {
+                              year = modItem.year;
+                          }
+                          if (dataItem.author != null) {
+                              author = modItem.author;
+                          }
+                          if (dataItem.description != null) {
+                              description = modItem.description;
+                          }
+
+                          feeds.push({
+                            username: username,
+                            userImg: userImg,
+                            type:type,
+                            date:date,
+                            filename: filename,
+                            description: description,
+                            author: author,
+                            year: year,
+                            hashtags: hashtags,
+                            title: title,
+                            objId: objectId
+                          });
+
+                        }
                     }
 
                   }
@@ -1394,70 +1498,184 @@ app.post('/profile/:username/update',function(req,res,next){
      * Search
      *
      ********************************************/
-    app.post('/search', function (req, res, next) {
 
-        var tags=req.body.tags;
-     //   console.log(tags);
-        var Publication = Parse.Object.extend("Publication");
-        var query = new Parse.Query(Publication);
-        query.include('user');
-        query.containedIn("hashtags", tags.match(/#.+?\b/g));
-        query.find({
-            success: function(results) {
-                console.log("Successfully retrieved " + results.length + " publications.");
-                // Do something with the returned Parse.Object values
+    app.post('/searchpage', function (req, res, next) {
+      var searchQ = req.body.searchQuery;
 
-                var pubs=[];
-                for (var i = 0; i < results.length; i++) {
-                    var object = results[i];
+      var matching_users = {};
+      var matching_models = {};
+      var matching_data = {};
+      var matching_pubs = {};
+      var matching_orgs = {};
 
-                    var  username= object.attributes.user.attributes.username;
-                    var  userImg=  object.attributes.user.attributes.imgUrl;
-                    pubs.push({
-                        username: username,
-                        userImg: userImg,
-                        filename: object.attributes.filename,
-                        title:object.attributes.title,
-                        hashtags:object.attributes.hashtags,
-                        author:object.attributes.author,
-                        description:object.attributes.description,
-                        year:object.attributes.year
-                    });
+      var users_done = false;
+      var models_done = false;
+      var data_done = false;
+      var pubs_done = false;
+      var orgs_done = false;
 
+      var currentUser = Parse.User.current();
+      if (currentUser) {
 
-                }
-                res.setHeader('Content-Type', 'application/json');
-                console.log(JSON.stringify(pubs))
-                res.send(JSON.stringify(pubs));
-                //res.render("search", {title:'Search', results: JSON.stringify(pubs)});
-            },
-            error: function(error) {
-                console.log("Error: " + error.code + " " + error.message);
+        // Search User
+        var User = Parse.Object.extend("User");
+        var uquery = new Parse.Query(User);
+        uquery.equalTo("username", searchQ);
+        uquery.find({
+          success: function (results) {
+            for (var i = 0; i < results.length; i++) {
+              var object = results[i];
+              console.log(object.id);
+              matching_users[object.get('username')] = object.id;
+              //matching_users.push(object.get('username'));
             }
+          console.log("Matching users are: ");
+          console.log(matching_users);
+          users_done = true;
+            if (users_done && models_done && data_done && pubs_done && orgs_done) {
+              res.render('search', {title: 'Complete Search', query: req.body.searchQuery,
+                                username: currentUser.attributes.username, 
+                                currentUserImg: currentUser.attributes.imgUrl,
+                                users: matching_users,
+                                models: matching_models,
+                                publications: matching_pubs,
+                                data: matching_data,
+                                organizations: matching_orgs
+              });
+            }
+          },
+          error: function(error) {
+              console.log("Error in searching");
+          }
         });
 
-    });
-    app.get('/searchpage', function (req, res, next) {
-        var currentUser = Parse.User.current();
-        if (currentUser) {
-            res.render('search', {title: 'Search', username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
-        }else{
-            res.render('index', {title: 'Please Login', path: req.path});
-        }
+        // Search Model
+        var Model = Parse.Object.extend("Model");
+        var mquery = new Parse.Query(Model);
+        mquery.equalTo("keywords", searchQ);
+        mquery.find({
+          success: function(results) {
+            for (var i = 0; i < results.length; i++) {
+              console.log("MODEL FOUND");
+              var object = results[i];
+              matching_models[object.get('title')] = object.id;
+              //matching_models.push(object.get('title'));
+            }
+            models_done = true;
+            if (users_done && models_done && data_done && pubs_done && orgs_done) {
+              res.render('search', {title: 'Complete Search', query: req.body.searchQuery,
+                                  username: currentUser.attributes.username, 
+                                  currentUserImg: currentUser.attributes.imgUrl,
+                                  users: matching_users,
+                                  models: matching_models,
+                                  publications: matching_pubs,
+                                  data: matching_data,
+                                  organizations: matching_orgs
+                                });
+          }
+          },
+          error: function(error) {
+            console.log("ERROR WHILE SEARCHING MODEL");
+          }
+        });
 
-    });
+        // Search Data
+        var Data = Parse.Object.extend("Data");
+        var dquery = new Parse.Query(Data);
+        dquery.equalTo("keywords", searchQ);
+        dquery.find({
+          success: function(results) {
+            for (var i = 0; i < results.length; i++) {
+              console.log("DATA FOUND");
+              var object = results[i];
+              matching_data[object.get('title')] = object.id;
+              //matching_data.push(object.get('description'));
+            }
+            data_done = true;
+              if (users_done && models_done && data_done && pubs_done && orgs_done) {
+                res.render('search', {title: 'Complete Search', query: req.body.searchQuery,
+                                  username: currentUser.attributes.username, 
+                                  currentUserImg: currentUser.attributes.imgUrl,
+                                  users: matching_users,
+                                  models: matching_models,
+                                  publications: matching_pubs,
+                                  data: matching_data,
+                                  organizations: matching_orgs
+              });
+            }
+          },
+          error: function(error) {
+            console.log("ERROR WHILE SEARCHING DATA");
+          }
+        });
 
-    app.post('/searchpage', function(req,res,next){
+        // Search Publication
+        var Publication = Parse.Object.extend("Publication");
+        var pquery = new Parse.Query(Publication);
+        pquery.equalTo("keywords", searchQ);
+        pquery.find({
+          success: function(results) {
+            for (var i = 0; i < results.length; i++) {
+              console.log("PUBLICATION FOUND");
+              var object = results[i];
+              matching_pubs[object.get('title')] = object.id;
+              //matching_pubs.push(object.get('description'));
+            }
+            pubs_done = true;
+            if (users_done && models_done && data_done && pubs_done && orgs_done) {
+              res.render('search', {title: 'Complete Search', query: req.body.searchQuery,
+                                  username: currentUser.attributes.username, 
+                                  currentUserImg: currentUser.attributes.imgUrl,
+                                  users: matching_users,
+                                  models: matching_models,
+                                  publications: matching_pubs,
+                                  data: matching_data,
+                                  organizations: matching_orgs
+                                });
+            }
+          },
+          error: function(error) {
+            console.log("ERROR WHILE SEARCHING PUBLICATIONS");
+          }
+        });
 
-        var currentUser = Parse.User.current();
-        if (currentUser) {
-            var tagString=req.body.tags;
-            console.log("TAGS:" + tagString);
-            res.render("search", {title:'Search', tags: tagString,username: currentUser.attributes.username, currentUserImg: currentUser.attributes.imgUrl});
-        }else{
-            res.render('index', {title: 'Please Login', path: req.path});
-        }
-    });
+        // Organization
+        var Organization = Parse.Object.extend("Organization");
+        var oquery = new Parse.Query(Organization);
+        oquery.equalTo("name", searchQ);
+        oquery.find({
+          success: function(results) {
+            for (var i = 0; i < results.length; i++) {
+              console.log("ORGANIZATION FOUND");
+              var object = results[i];
+              matching_orgs[object.get('name')] = object.id;
+              //matching_orgs.push(object.get('name'));
+            }
+            orgs_done = true;
+            if (users_done && models_done && data_done && pubs_done && orgs_done) {
+              res.render('search', {title: 'Complete Search', query: req.body.searchQuery,
+                                  username: currentUser.attributes.username, 
+                                  currentUserImg: currentUser.attributes.imgUrl,
+                                  users: matching_users,
+                                  models: matching_models,
+                                  publications: matching_pubs,
+                                  data: matching_data,
+                                  organizations: matching_orgs
+                                });
+            }
+          },
+          error: function(error) {
+            console.log("ERROR WHILE SEARCHING ORGANIZATIONS");
+          }
+        });
+
+
+      }
+      else {
+        res.render('index', {title: 'Please Login', path: req.path});
+      }
+     });
+
     /*******************************************
    *
    * SIGN UP
