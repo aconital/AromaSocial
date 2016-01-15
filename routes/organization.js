@@ -82,7 +82,7 @@ module.exports=function(app,Parse) {
                     }
                     //getting first work experience, since there is no date on these objects
                     if(user.hasOwnProperty('work_experiences')){
-                        var work_experience= user.work_experience[0];
+                        var work_experience= user.work_experiences[0];
                         company= work_experience.company;
                         work_title= work_experience.title;
                     }
