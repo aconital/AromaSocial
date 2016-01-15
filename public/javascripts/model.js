@@ -124,7 +124,7 @@ var Model = React.createClass ({
                     <div className="item-panel contain-panel-big">
                     <div>
                         {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
-                        <h2 className="corner"><a href="#" className="image-link"><span className="glyphicon glyphicon-check space"></span></a>
+                        <h2 className="corner">
                             <a href={image_URL} className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
                         </h2>
                     </div>
