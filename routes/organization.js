@@ -512,7 +512,7 @@ module.exports=function(app,Parse) {
             relation.set('userId', currentUser);
             relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: orgId });
             relation.set('isAdmin', false);
-            relation.set('verified', true);
+            relation.set('verified', false);
             relation.set('title', 'TODO');
             relation.save(null,{
                 success:function(){
