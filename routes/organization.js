@@ -294,6 +294,7 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/organization/:objectId/publications', function (req, res, next) {
+        var count = 0;
         var userResults =[];
         var publicationResults =[];
         var innerQuery = new Parse.Query("Organization");
@@ -303,19 +304,101 @@ module.exports=function(app,Parse) {
         query.include("userId");
         query.find().then(function(users) {
             _.each(users, function(user) {
-                var userId = user.id;
+                var userId = user.get("userId").id;
                 userResults.push(userId);
                 console.log(userId);
             });
         }).then(function() {
-            for(var userId in userResults) {
-                var innerQuery = new Parse.Query(Parse.User);
-                innerQuery.equalTo("objectId",userResults[userId]);
-                innerQuery.find().then(function(item) {
-                    console.log(item);
+            _.each(userResults, function(userId, i) {
+                var queryPublications = new Parse.Query('Publication');
+                queryPublications.equalTo("user", {__type: "Pointer",
+                                                  className: "_User",
+                                                  objectId: userId });
+                queryPublications.find().then(function(publications) {
+                    _.each(publications, function(publication) {
+                        publicationResults.push(publication);
+                    });
+                }).then(function(){
+                    count++;
+                    if (userResults.length == count) {
+                        console.log(publicationResults);
+                        res.json(publicationResults);
+                    }
                 });
-            }
-        }).then(function() {console.log(publicationResults)});
+            });
+        });
+    });
+    
+    app.get('/organization/:objectId/datas', function (req, res, next) {
+        var count = 0;
+        var userResults =[];
+        var dataResults =[];
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery);
+        query.include("userId");
+        query.find().then(function(users) {
+            _.each(users, function(user) {
+                var userId = user.get("userId").id;
+                userResults.push(userId);
+                console.log(userId);
+            });
+        }).then(function() {
+            _.each(userResults, function(userId, i) {
+                var queryDatas = new Parse.Query('Data');
+                queryDatas.equalTo("user", {__type: "Pointer",
+                                                  className: "_User",
+                                                  objectId: userId });
+                queryDatas.find().then(function(datas) {
+                    _.each(datas, function(data) {
+                        dataResults.push(data);
+                    });
+                }).then(function(){
+                    count++;
+                    if (userResults.length == count) {
+                        console.log(dataResults);
+                        res.json(dataResults);
+                    }
+                });
+            });
+        });
+    });
+    
+    app.get('/organization/:objectId/models', function (req, res, next) {
+        var count = 0;
+        var userResults =[];
+        var modelResults =[];
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery);
+        query.include("userId");
+        query.find().then(function(users) {
+            _.each(users, function(user) {
+                var userId = user.get("userId").id;
+                userResults.push(userId);
+                console.log(userId);
+            });
+        }).then(function() {
+            _.each(userResults, function(userId, i) {
+                var queryModels = new Parse.Query('Model');
+                queryModels.equalTo("user", {__type: "Pointer",
+                                                  className: "_User",
+                                                  objectId: userId });
+                queryModels.find().then(function(models) {
+                    _.each(models, function(model) {
+                        modelResults.push(model);
+                    });
+                }).then(function(){
+                    count++;
+                    if (userResults.length == count) {
+                        console.log(modelResults);
+                        res.json(modelResults);
+                    }
+                });
+            });
+        });
     });
 
     app.get('/organization/:objectId/admins', function (req, res, next) {

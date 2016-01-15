@@ -317,9 +317,8 @@ var Publications = React.createClass({
 
     $.ajax({
         url: peopleUrl,
-        success: function(data) {
-            this.setState({data: data});
-            console.log(data);
+        success: function(publications) {
+            this.setState({data: publications});
             console.log(this.state.data);
         }.bind(this),
         error: function(xhr, status, err) {
@@ -330,7 +329,13 @@ var Publications = React.createClass({
   render: function() {
     return (
       <div>
-        {this.state.data}
+        {this.state.data.map(function(publication){
+            return (<Publication objectId={publication.objectId}
+                                 author={publication.author}
+                                 description={publication.description}
+                                 title={publication.title}
+                                 publication_code={publication.publication_code} />);
+        })}
       </div>
     );
   }
@@ -361,32 +366,39 @@ var Publication = React.createClass({
 });
 
 var Data = React.createClass({
-  mixins: [ParseReact.Mixin],
   getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        items: (new Parse.Query('Data'))
-      };
-    },
+    return {data: []};
+  },
+  componentDidMount : function(){
+    var peopleUrl= "/organization/"+objectId+"/datas";
+
+    $.ajax({
+        url: peopleUrl,
+        success: function(datas) {
+            this.setState({data: datas});
+            console.log(this.state.data);
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't Retrieve Data!");
+        }.bind(this)
+    });
+  },
   render: function() {
     var rows = [];
     return (
       <div>
-        {this.data.items.map(function(item) {
-            rows.push(<Datum objectId={item.objectId}
-                                   collaborators={item.collaborators}
-                                   title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description} />);
+        {this.state.data.map(function(item) {
+            return (<Datum objectId={item.objectId}
+                                    collaborators={item.collaborators}
+                                    title={item.title}
+                                    image_URL={item.image_URL}
+                                    keywords={item.keywords}
+                                    number_cited={item.number_cited}
+                                    number_syncholar_factor={item.number_syncholar_factor}
+                                    license={item.license}
+                                    access={item.access}
+                                    abstract={item.description} />);
         })}
-        {rows}
       </div>
     );
   }
@@ -427,21 +439,29 @@ var Datum = React.createClass({
 });
 
 var Models = React.createClass({
-  mixins: [ParseReact.Mixin],
   getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        models: (new Parse.Query('Model'))
-      };
-    },
+    return {data: []};
+  },
+  componentDidMount : function(){
+    var peopleUrl= "/organization/"+objectId+"/models";
+
+    $.ajax({
+        url: peopleUrl,
+        success: function(models) {
+            this.setState({data: models});
+            console.log(this.state.data);
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't Retrieve Publications!");
+        }.bind(this)
+    });
+  },
   render: function() {
     var rows = [];
     return (
       <div>
-        {this.data.models.map(function(model) {
-            rows.push(<Model objectId={model.objectId}
+        {this.state.data.map(function(model) {
+          return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
                                    image_URL={model.image_URL}
