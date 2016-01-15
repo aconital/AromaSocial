@@ -123,7 +123,7 @@ var Profile = React.createClass ({
                     */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                     <ProfileMenu tabs={['About','Connections', 'Publications', 'Data', 'Models']} />
+                     <ProfileMenu tabs={['About','Connections','Organizations', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
                     <div className="item-panel-empty contain-panel-empty">
@@ -165,10 +165,10 @@ var ProfileMenu = React.createClass ({
         var self = this;
         var tabMap = {0: <About tab={this.clicked}/>,
                 1: <Connections />,
-                // 2: <Projects />,
-                2: <Publications objectId={objectId}/>,
-                3: <DataList objectId={objectId}/>,
-                4: <ModelsList objectId={objectId}/>
+                2: <Organizations />,
+                3: <Publications objectId={objectId}/>,
+                4: <DataList objectId={objectId}/>,
+                5: <ModelsList objectId={objectId}/>
                 // 6: <More />
                 };
         return (
@@ -247,6 +247,53 @@ var Connections = React.createClass({
         return (
             <div>
                 {peopleList}
+            </div>
+        )
+    }
+});
+
+var Organizations = React.createClass({
+    getInitialState: function() {
+        return {data: []};
+    },
+    componentDidMount : function(){
+        var orgUrl= "/profile/"+objectId+"/organizations";
+
+        $.ajax({
+            url: orgUrl,
+            success: function(data) {
+
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve orgs");
+            }.bind(this)
+        });
+    },
+    render: function() {
+
+        var orgList = $.map(this.state.data,function(org) {
+
+            return (
+                <div>
+
+                    <div key={org.orgId} className="row" id="people-row">
+                        <div className="col-lg-2">
+                            <a href={'/organization/'+org.orgId}> <img  src={org.orgImgUrl} className="img-circle newsfeed-profile-pic" /></a>
+                        </div>
+                        <div className="col-lg-10">
+                            <div>{org.name}</div>
+                            <div>{org.location}</div>
+
+                        </div>
+                    </div>
+
+                </div>
+            );
+        });
+        return (
+            <div>
+                {orgList}
             </div>
         )
     }
