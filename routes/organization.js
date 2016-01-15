@@ -292,7 +292,6 @@ module.exports=function(app,Parse) {
             }
         });
     });
-
     app.get('/organization/:objectId/publications', function (req, res, next) {
         var count = 0;
         var userResults =[];
@@ -500,6 +499,35 @@ module.exports=function(app,Parse) {
         } else {
             res.status(403).json({status:"Please login!"});
         }
+    });
+
+    app.get('/join/organization/:objectId', function (req, res, next) {
+        var orgId= req.params.objectId;
+        var currentUser = Parse.User.current();
+        if(currentUser)
+        {
+            var Relationship = Parse.Object.extend("Relationship");
+            var relation = new Relationship();
+
+            relation.set('userId', currentUser);
+            relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: orgId });
+            relation.set('isAdmin', false);
+            relation.set('verified', false);
+            relation.set('title', 'TODO');
+            relation.save(null,{
+                success:function(){
+                    res.json({success: "joined successfully"});
+                },
+                error:function(error){
+                    res.json({error:error});
+                }
+            });
+        }
+        else
+        {
+            res.json({error: "Please sign in!"})
+        }
+
     });
 
 

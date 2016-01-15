@@ -346,4 +346,31 @@ module.exports=function(app,Parse) {
         }
     });
 
+    app.get('/join/profile/:objectId', function (req, res, next) {
+        var userId= req.params.objectId;
+        var currentUser = Parse.User.current();
+        if(currentUser)
+        {
+            var Relationship = Parse.Object.extend("RelationshipUser");
+            var relation = new Relationship();
+
+            relation.set('userId1', currentUser);
+            relation.set('userId0', { __type: "Pointer", className: "User", objectId: userId });
+            relation.set('verified', false);
+            relation.save(null,{
+                success:function(){
+                    res.json({success: "joined successfully"});
+                },
+                error:function(error){
+                    res.json({error:error});
+                }
+            });
+        }
+        else
+        {
+            res.json({error: "Please sign in!"})
+        }
+
+    });
+
 };
