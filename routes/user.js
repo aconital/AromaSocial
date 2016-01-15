@@ -146,6 +146,65 @@ module.exports=function(app,Parse) {
             }
         });
     });
+    app.get('/profile/:objectId/organizations', function (req, res, next) {
+        // var currentUser = Parse.User.current();
+
+        var innerQuery = new Parse.Query(Parse.User);
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("userId",innerQuery)
+        query.include('orgId');
+        query.find({
+            success: function(result) {
+                var orgs =[];
+                for(var uo in result)
+                {
+
+                    var verified= result[uo].attributes.verified;
+
+                    var connected_orgs= result[uo].attributes.orgId.attributes;
+
+                    var orgId= result[uo].attributes.orgId.id;
+
+                    var name= "N/A";
+                    var location= "N/A";
+                    var orgImgUrl= "/images/organization.png";
+
+                    if(connected_orgs.hasOwnProperty('name')){
+                        name=connected_orgs.name;
+                    }
+                    if(connected_orgs.hasOwnProperty('location')){
+                        location=connected_orgs.location;
+                    }
+                    if(connected_orgs.hasOwnProperty('profile_imgURL')){
+                        orgImgUrl=connected_orgs.profile_imgURL;
+                    }
+
+                    //only show people who are verified by admin
+                    if(verified)
+                    {
+                        var org = {
+                            orgId:orgId,
+                            name:name,
+                            location: location,
+                            orgImgUrl: orgImgUrl,
+                        };
+                        orgs.push(org);
+
+                    }
+
+                }
+
+                res.json(orgs);
+
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
 
     app.post('/profile/:username',function(req,res,next){
         var currentUser = Parse.User.current();
