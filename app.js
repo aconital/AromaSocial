@@ -58,6 +58,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 require('./routes/routes')(app,Parse);
+require('./routes/organization')(app,Parse);
+require('./routes/user')(app,Parse);
+require('./routes/publication')(app,Parse);
+require('./routes/data')(app,Parse);
+require('./routes/model')(app,Parse);
+require('./routes/newsfeed')(app,Parse);
+require('./routes/search')(app,Parse);
+require('./routes/group')(app,Parse);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

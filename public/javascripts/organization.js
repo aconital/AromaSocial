@@ -40,7 +40,7 @@ var Organization = React.createClass ({
                                 <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-organization">
-                                <OrganizationMenu tabs={['Connections', 'People', 'About', 'News And Events', 'Knowledge', 'Publications', 'Data', 'Models','Manage']} />
+                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -53,20 +53,28 @@ var Organization = React.createClass ({
                 <div className="item-top item-top-container">
                 </div>
                 <div className="content-wrap">
-                <div>
-                    <div className="item-top-1 col">
-                        <img src={organization_imgURL} className="contain-image" />
+                    <div>
+                        <div className="item-top-1 col">
+                            <img src={organization_imgURL} className="contain-image" />
+                        </div>
                     </div>
-                </div>
-                <div className="item-bottom">
-                    <div className="item-bottom-1">
-                        <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
-                        <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                    <div className="item-bottom">
+                        <div className="item-bottom-1">
+                            <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
+                            <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                        </div>
+                        <div id="item-bottom-2-organization" className="item-bottom-2">
+                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models']} />
+                        </div>
+                        <div className="item-bottom-3">
+                            <div className="item-panel-empty contain-panel-empty">
+                                <input className="btn btn-panel" value="Join" />
+                                <input className="btn btn-panel" value="Follow" />
+                                {/*<input className="btn btn-panel" value="Message" />
+                                 <input className="btn btn-panel" value="Ask" />*/}
+                            </div>
+                        </div>
                     </div>
-                    <div id="item-bottom-2-organization" className="item-bottom-organization">
-                        <OrganizationMenu tabs={['Connections', 'People', 'About', 'Publications', 'Data', 'Models']} />
-                    </div>
-                </div>
                 </div>
             </div>
         );
@@ -83,15 +91,15 @@ var OrganizationMenu = React.createClass ({
     render: function() {
         var self = this;
 
-        var tabMap = {0: <Connections />,
-                1: <People  />,
-                2: <About />,
+        var tabMap = {0: <About />,
+                1: <Connections  />,
+                2: <People />,
                 // 3: <NewsAndEvents/>,
                 // 4: <Knowledge/>,
                 3: <Publications objectId={objectId}/>,
                 4: <Data objectId={objectId}/>,
-                5: <Models objectId={objectId}/>
-                // 8: <Manage objectId={objectId}/>
+                5: <Models objectId={objectId}/>,
+                6: <Manage objectId={objectId}/>
                 };
         return (
             <div>
@@ -309,22 +317,33 @@ var Knowledge = React.createClass({
 });
 
 var Publications = React.createClass({
-  mixins: [ParseReact.Mixin],
   getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        users: (new Parse.Query('Relationship').equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: this.props.objectId}))
-      };
-    },
+    return {data: []};
+  },
+  componentDidMount : function(){
+    var peopleUrl= "/organization/"+objectId+"/publications";
+
+    $.ajax({
+        url: peopleUrl,
+        success: function(publications) {
+            this.setState({data: publications});
+            console.log(this.state.data);
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't Retrieve Publications!");
+        }.bind(this)
+    });
+  },
   render: function() {
-    var rows = [];
-    console.log(this.data.users);
     return (
       <div>
-
-        {rows}
+        {this.state.data.map(function(publication){
+            return (<Publication objectId={publication.objectId}
+                                 author={publication.author}
+                                 description={publication.description}
+                                 title={publication.title}
+                                 publication_code={publication.publication_code} />);
+        })}
       </div>
     );
   }
@@ -355,32 +374,39 @@ var Publication = React.createClass({
 });
 
 var Data = React.createClass({
-  mixins: [ParseReact.Mixin],
   getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        items: (new Parse.Query('Data'))
-      };
-    },
+    return {data: []};
+  },
+  componentDidMount : function(){
+    var peopleUrl= "/organization/"+objectId+"/datas";
+
+    $.ajax({
+        url: peopleUrl,
+        success: function(datas) {
+            this.setState({data: datas});
+            console.log(this.state.data);
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't Retrieve Data!");
+        }.bind(this)
+    });
+  },
   render: function() {
     var rows = [];
     return (
       <div>
-        {this.data.items.map(function(item) {
-            rows.push(<Datum objectId={item.objectId}
-                                   collaborators={item.collaborators}
-                                   title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description} />);
+        {this.state.data.map(function(item) {
+            return (<Datum objectId={item.objectId}
+                                    collaborators={item.collaborators}
+                                    title={item.title}
+                                    image_URL={item.image_URL}
+                                    keywords={item.keywords}
+                                    number_cited={item.number_cited}
+                                    number_syncholar_factor={item.number_syncholar_factor}
+                                    license={item.license}
+                                    access={item.access}
+                                    abstract={item.description} />);
         })}
-        {rows}
       </div>
     );
   }
@@ -421,21 +447,29 @@ var Datum = React.createClass({
 });
 
 var Models = React.createClass({
-  mixins: [ParseReact.Mixin],
   getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        models: (new Parse.Query('Model'))
-      };
-    },
+    return {data: []};
+  },
+  componentDidMount : function(){
+    var peopleUrl= "/organization/"+objectId+"/models";
+
+    $.ajax({
+        url: peopleUrl,
+        success: function(models) {
+            this.setState({data: models});
+            console.log(this.state.data);
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't Retrieve Publications!");
+        }.bind(this)
+    });
+  },
   render: function() {
     var rows = [];
     return (
       <div>
-        {this.data.models.map(function(model) {
-            rows.push(<Model objectId={model.objectId}
+        {this.state.data.map(function(model) {
+          return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
                                    image_URL={model.image_URL}
