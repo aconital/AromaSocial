@@ -2,7 +2,21 @@ Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQ
 
 var Organization = React.createClass ({
     getInitialState: function() {
-        return {isAdmin: []};
+        return {isAdmin: [], status: ''};
+    },
+    componentWillMount: function() {
+      var connectURL= "/organization/"+objectId+"/join-status";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            console.log(status);
+            this.setState({status: status})
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
     },
     componentDidMount : function() {
         var peopleUrl = "/organization/" + objectId + "/admins";
@@ -22,7 +36,44 @@ var Organization = React.createClass ({
             }.bind(this)
         })
     },
+    clickJoin: function() {
+      var connectURL= "/organization/"+objectId+"/join";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            this.setState({status: "pending"});
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
+    clickLeave: function() {
+      var connectURL= "/organization/"+objectId+"/leave";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            this.setState({status: "join"});
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
     render: function() {
+        var joinButton = <input className="btn btn-panel btn-right-side" value="" />;
+        if (this.state.status == "joined") {
+             joinButton = <input onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave" />;
+        }
+        else if (this.state.status == "pending") {
+             joinButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
+        }
+        else if (this.state.status == "not-joined") {
+             joinButton = <input onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join" />;
+        }
+        else { console.log("Nothing"); }
         if(this.state.isAdmin)
             return (
                 <div>
@@ -68,7 +119,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
                             <div className="item-panel-empty contain-panel-empty">
-                                <input className="btn btn-panel" value="Join" />
+                                {joinButton}
                                 <input className="btn btn-panel" value="Follow" />
                                 {/*<input className="btn btn-panel" value="Message" />
                                  <input className="btn btn-panel" value="Ask" />*/}
