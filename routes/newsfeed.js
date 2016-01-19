@@ -1,8 +1,6 @@
 /**
  * Created by hroshandel on 2016-01-14.
  */
-
-
 var express = require('express');
 var formidable = require('formidable');
 var util = require('util');
@@ -26,7 +24,6 @@ app.get('/newsfeeddata', function (req, res, next) {
       var currentUser = Parse.User.current();
       if (currentUser) {
           var NewsFeed = Parse.Object.extend("NewsFeed");
-
           // pub query
           var query = new Parse.Query(NewsFeed);
           query.include("pubId");
@@ -34,7 +31,6 @@ app.get('/newsfeeddata', function (req, res, next) {
           query.include("dataId");
           query.include('from');
           query.descending("createdAt");
-
           query.find({
               success: function(results) {
                   console.log("Successfully retrieved " + results.length + " feed.");
@@ -42,7 +38,6 @@ app.get('/newsfeeddata', function (req, res, next) {
                   var feeds=[];
                   for (var i = 0; i < results.length; i++) {
                       var object = results[i];
-
                       var username = "N/A";
                       var userImg = "";
                       if(object.attributes.from!=null) {
@@ -50,32 +45,22 @@ app.get('/newsfeeddata', function (req, res, next) {
                            fullname = object.attributes.from.attributes.fullname;
                            userImg = object.attributes.from.attributes.imgUrl;
                       }
-
-
                       var  type=object.attributes.type;
                       var  date=object.createdAt;
-
                       if(type == "pub") {
-
-                            if(object.attributes.pubId!=null){
-
-                          if (object.attributes.pubId.attributes != null) {
-
-
-                              var pubItem = object.attributes.pubId.attributes;
-
-                              console.log("PUB ATTRIBUTES: ");
-                              console.log(object.attributes);
-
-                              var filename ="";
-                              var title ="";
-                              var hashtags ="";
-                              var year ="";
-                              var author ="";
-                              var description ="";
-                              var itemId = pubItem.objectId;
-                              var objectId = object.attributes.pubId;
-
+                          if(object.attributes.pubId!=null){
+                              if (object.attributes.pubId.attributes != null) {
+                                  var pubItem = object.attributes.pubId.attributes;
+                                  console.log("PUB ATTRIBUTES: ");
+                                  console.log(object.attributes);
+                                  var filename ="";
+                                  var title ="";
+                                  var hashtags ="";
+                                  var year ="";
+                                  var author ="";
+                                  var description ="";
+                                  var itemId = pubItem.objectId;
+                                  var objectId = object.attributes.pubId;
                               if (pubItem.filename != null) {
                                   filename = pubItem.filename;
                               }
@@ -110,118 +95,107 @@ app.get('/newsfeeddata', function (req, res, next) {
                                   objId: objectId
                               });
 //                              console.log(itemId);
+                              }
                           }
                       }
+                      else if(type == "mod") {
+                          if (object.attributes.modId != null && object.attributes.modId.attributes != null) {
+                              var modItem = object.attributes.modId.attributes;
+                              var filename ="";
+                              var title ="";
+                              var hashtags ="";
+                              var year ="";
+                              var author ="";
+                              var description ="";
+                              var objectId = object.attributes.modId;
+                              if (modItem.filename != null) {
+                                filename = modItem.filename;
+                              }
+                              if (modItem.title != null) {
+                                  title = modItem.title;
+                              }
+                              if (modItem.hashtags != null) {
+                                  hashtags = modItem.hashtags;
+                              }
+                              if (modItem.year != null) {
+                                  year = modItem.year;
+                              }
+                              if (modItem.author != null) {
+                                  author = modItem.author;
+                              }
+                              if (modItem.description != null) {
+                                  description = modItem.description;
+                              }
+                              feeds.push({
+                                  username: username,
+                                  userImg: userImg,
+                                  type:type,
+                                  date:date,
+                                  filename: filename,
+                                  description: description,
+                                  author: author,
+                                  year: year,
+                                  hashtags: hashtags,
+                                  title: title,
+                                  objId: objectId
+                              });
+                          }
                       }
-
-                    else if(type == "mod") {
-                        if (object.attributes.modId != null && object.attributes.modId.attributes != null) {
-                          var modItem = object.attributes.modId.attributes;
-
-                          var filename ="";
-                          var title ="";
-                          var hashtags ="";
-                          var year ="";
-                          var author ="";
-                          var description ="";
-                          var objectId = object.attributes.modId;
-
-                          if (modItem.filename != null) {
-                            filename = modItem.filename;
-                          }
-                          if (modItem.title != null) {
-                              title = modItem.title;
-                          }
-                          if (modItem.hashtags != null) {
-                              hashtags = modItem.hashtags;
-                          }
-                          if (modItem.year != null) {
-                              year = modItem.year;
-                          }
-                          if (modItem.author != null) {
-                              author = modItem.author;
-                          }
-                          if (modItem.description != null) {
-                              description = modItem.description;
-                          }
-
-                          feeds.push({
-                            username: username,
-                            userImg: userImg,
-                            type:type,
-                            date:date,
-                            filename: filename,
-                            description: description,
-                            author: author,
-                            year: year,
-                            hashtags: hashtags,
-                            title: title,
-                            objId: objectId
-                          });
-
-                        }
-                    }
-                    else if (type == "data") {
+                      else if (type == "data") {
                           if (object.attributes.dataId != null && object.attributes.dataId.attributes != null) {
-                          var dataItem = object.attributes.dataId.attributes;
-
-                          var filename ="";
-                          var title ="";
-                          var hashtags ="";
-                          var year ="";
-                          var author ="";
-                          var description ="";
-                          var objectId = object.attributes.dataId;
-
-                          if (dataItem.filename != null) {
-                            filename = modItem.filename;
+                              var dataItem = object.attributes.dataId.attributes;
+                              var filename ="";
+                              var title ="";
+                              var hashtags ="";
+                              var year ="";
+                              var author ="";
+                              var description ="";
+                              var objectId = object.attributes.dataId;
+                              if (dataItem.filename != null) {
+                                  filename = modItem.filename;
+                              }
+                              if (dataItem.title != null) {
+                                  title = modItem.title;
+                              }
+                              if (dataItem.hashtags != null) {
+                                  hashtags = modItem.hashtags;
+                              }
+                              if (dataItem.year != null) {
+                                  year = modItem.year;
+                              }
+                              if (dataItem.author != null) {
+                                  author = modItem.author;
+                              }
+                              if (dataItem.description != null) {
+                                  description = modItem.description;
+                              }
+                              feeds.push({
+                                  username: username,
+                                  userImg: userImg,
+                                  type:type,
+                                  date:date,
+                                  filename: filename,
+                                  description: description,
+                                  author: author,
+                                  year: year,
+                                  hashtags: hashtags,
+                                  title: title,
+                                  objId: objectId
+                              });
                           }
-                          if (dataItem.title != null) {
-                              title = modItem.title;
-                          }
-                          if (dataItem.hashtags != null) {
-                              hashtags = modItem.hashtags;
-                          }
-                          if (dataItem.year != null) {
-                              year = modItem.year;
-                          }
-                          if (dataItem.author != null) {
-                              author = modItem.author;
-                          }
-                          if (dataItem.description != null) {
-                              description = modItem.description;
-                          }
-
-                          feeds.push({
-                            username: username,
-                            userImg: userImg,
-                            type:type,
-                            date:date,
-                            filename: filename,
-                            description: description,
-                            author: author,
-                            year: year,
-                            hashtags: hashtags,
-                            title: title,
-                            objId: objectId
-                          });
-
-                        }
-                    }
-
+                      }
                   }
-
                   res.send(feeds);
               },
               error: function(error) {
                   console.log("Error: " + error.code + " " + error.message);
               }
           });
-      } else {
+      }
+      else {
           res.render('index', {title: 'Login failed', path: req.path});
       }
-
-});
+    });
 
     app.get('/newsfeed', function (req, res, next) {
         var currentUser = Parse.User.current();
@@ -234,7 +208,8 @@ app.get('/newsfeeddata', function (req, res, next) {
                 currentUsername: currentUser.attributes.username,
                 currentUserImg: currentUser.attributes.imgUrl
             });
-        } else {
+        }
+        else {
             res.render('index', {title: 'Login failed', path: req.path});
         }
     });
@@ -262,13 +237,9 @@ app.get('/newsfeeddata', function (req, res, next) {
                     res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
                 }
             });
-
-
-        } else {
+        }
+        else {
             res.render('index', {title: 'Login failed', path: req.path});
         }
-
     });
 };
-
-

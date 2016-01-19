@@ -139,9 +139,7 @@ var NewsFeedList = React.createClass({
                 // <img src={this.props.image_URL} className="contain-image-preview" />
             </div>
             <div className="item-box-right">
-                <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
-                
-                <a href="#" onClick={this.showMore}>Show More</a>
+                <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
             </div>
             </div>
 
