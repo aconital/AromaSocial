@@ -6565,3 +6565,8 @@ textarea {
 
 .logout-button{margin-top:2px;color:#70ab8f;font-size:25px;}
 .colspan{ colspan: 2;}
+
+#friendrequest-menu
+{list-style-type: none;
+  width: 300px !important;
+}

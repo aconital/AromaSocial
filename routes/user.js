@@ -432,4 +432,122 @@ module.exports=function(app,Parse) {
 
     });
 
+    app.get('/friendrequest',function(req,res,next){
+        var user= Parse.User.current();
+        if(user)
+        {
+            var query = new Parse.Query('RelationshipUser');
+            query.equalTo("verified",false)
+            query.include('userId1')
+            query.equalTo("userId0",user)
+            query.find({
+                success: function(result) {
+                    var people =[];
+                    for(var uo in result)
+                    {
+                        var title= result[uo].attributes.title;
+                        var verified= result[uo].attributes.verified;
+
+                        var user= result[uo].attributes.userId1.attributes;
+
+                        var username= user.username;
+                        var fullname="N/A";
+                        var company= "N/A";
+                        var work_title= "N/A";
+                        var userImgUrl= "/images/user.png";
+                        var work_experience= [];
+
+                        if(user.hasOwnProperty('fullname')){
+                            fullname=user.fullname;
+                        }
+                        if(user.hasOwnProperty('imgUrl')){
+                            userImgUrl=user.imgUrl;
+                        }
+                        //getting first work experience, since there is no date on these objects
+                        if(user.hasOwnProperty('work_experiences')){
+                            var work_experience= user.work_experiences[0];
+                            company= work_experience.company;
+                            work_title= work_experience.title;
+                        }
+
+                        //only show people who are verified by admin
+                        if(!verified)
+                        {
+                            var person = {
+                                username:username,
+                                title: title,
+                                fullname: fullname,
+                                userImgUrl: userImgUrl,
+                                company: company,
+                                workTitle: work_title
+                            };
+                            people.push(person);
+
+                        }
+
+                    }
+                    res.json(people);
+
+
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.render('home', {title: error, path: req.path});
+                }
+            });
+
+        }
+        else
+        {
+            res.render('home', {title: 'Please Login!', path: req.path});
+        }
+    });
+
+    app.post('/friendrequest/', function (req, res, next) {
+        var person= req.body.person;
+        var mode= req.body.mode;
+        var friendusername= person.username;
+
+        var innerQuery = new Parse.Query(Parse.User);
+        innerQuery.equalTo("username",friendusername);
+
+        var query = new Parse.Query('RelationshipUser');
+        query.equalTo("userId0",Parse.User.current())
+        query.matchesQuery("userId1",innerQuery)
+        query.equalTo('verified',false)
+        query.first({
+            success: function(result) {
+                if(mode=="approve")
+                {
+                    result.set("verified",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json({scucess:"approved"});
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="deny")
+                {
+                    result.destroy({
+                        success: function(model, response){
+                            res.json({scucess:"denied"});
+                        },
+                        error: function(model, response){
+                            res.json({error:error});
+                        }
+                    });
+                }
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+
+
+    });
+
 };
