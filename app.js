@@ -14,6 +14,7 @@ var ParseReact = require('parse-react');
 var TagsInput = require('react-tagsinput');
 var TextAreaAutoSize = require('react-textarea-autosize');
 var InputAutoSize = require('react-input-autosize');
+var Loading = require('react-loading');
 var exphbs = require('express-handlebars');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();

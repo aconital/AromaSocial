@@ -47,7 +47,7 @@ module.exports=function(app,Parse) {
             }
             else {
                 var query = new Parse.Query(Parse.User);
-                query.equalTo("username",linkUser); query.limit(1);
+                query.equalTo("username",linkUser).limit(1);
                 query.find({
                     success: function(result) {
                         res.render('profile', {layout: 'home', title: 'Profile', path: req.path,
@@ -78,6 +78,30 @@ module.exports=function(app,Parse) {
         } else {
             res.render('index', {title: 'Please Login!', path: req.path});
         }
+    });
+
+    app.get('/profile/:objectId/connection-status', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        var currentUserId = currentUser.id;
+        var otherUserId = req.params.objectId;
+        var status; console.log(otherUserId); console.log(currentUserId);
+
+        var connectQuery1 = new Parse.Query("RelationshipUser");
+        var connectQuery2 = new Parse.Query("RelationshipUser");
+        connectQuery1.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: otherUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: currentUserId});
+        connectQuery2.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: currentUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: otherUserId});
+        var connectQuery = Parse.Query.or(connectQuery1, connectQuery2);
+        connectQuery.find({
+            success: function(result) {
+                if (result.length == 0) { status = "not-connected"; }
+                else if (result[0].attributes.verified == true) { status = "connected"; }
+                else { status = "pending"; }
+                res.json(status);
+            }, error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
     });
 
     app.get('/profile/:objectId/connections', function (req, res, next) {
@@ -405,7 +429,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.get('/join/profile/:objectId', function (req, res, next) {
+    app.get('/profile/:objectId/connect', function (req, res, next) {
         var userId= req.params.objectId;
         var currentUser = Parse.User.current();
         if(currentUser)
@@ -413,12 +437,12 @@ module.exports=function(app,Parse) {
             var Relationship = Parse.Object.extend("RelationshipUser");
             var relation = new Relationship();
 
-            relation.set('userId1', currentUser);
-            relation.set('userId0', { __type: "Pointer", className: "User", objectId: userId });
+            relation.set('userId0', { __type: "Pointer", className: "_User", objectId: currentUser.id });
+            relation.set('userId1', { __type: "Pointer", className: "_User", objectId: userId });
             relation.set('verified', false);
             relation.save(null,{
                 success:function(){
-                    res.json({success: "joined successfully"});
+                    res.json({success: "Requested Successfully"});
                 },
                 error:function(error){
                     res.json({error:error});
@@ -427,9 +451,8 @@ module.exports=function(app,Parse) {
         }
         else
         {
-            res.json({error: "Please sign in!"})
+            res.json({error: "Please Sign In!"})
         }
-
     });
 
     app.get('/friendrequest',function(req,res,next){

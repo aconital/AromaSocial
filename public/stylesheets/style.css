@@ -6570,3 +6570,7 @@ textarea {
 {list-style-type: none;
   width: 300px !important;
 }
+
+.invisible { display: none; }
+.visible { display: block; }
+.btn-right-side { padding: 6px 3px; }

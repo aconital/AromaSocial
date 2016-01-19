@@ -13,7 +13,7 @@ var Profile = React.createClass ({
             fromModelTab: false,
             pictureChosen: null,
 
-            picture: null, pictureType: ''
+            picture: null, pictureType: '', status: ''
       };
     },
     clickOpen() {
@@ -72,7 +72,58 @@ var Profile = React.createClass ({
             $this.setState({profile_imgURL:changeImgURL});
         });
     },
+    componentWillMount: function() {
+      var connectURL= "/profile/"+objectId+"/connection-status";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            console.log(status);
+            this.setState({status: status})
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
+    clickConnect: function() {
+      var connectURL= "/profile/"+objectId+"/connect";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            this.setState({status: "pending"});
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
+    clickDisconnect: function() {
+      var connectURL= "/profile/"+objectId+"/disconnect";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            this.setState({status: "connect"});
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
     render: function() {
+        var connectButton = <input className="btn btn-panel btn-right-side" value="" />;
+        if (this.state.status == "connected") {
+             connectButton = <input onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect" />;
+        }
+        else if (this.state.status == "pending") {
+             connectButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
+        }
+        else if (this.state.status == "not-connected") {
+             connectButton = <input onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect" />;
+        }
+        else { console.log("Nothing"); }
         return (
         <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -126,12 +177,9 @@ var Profile = React.createClass ({
                      <ProfileMenu tabs={['About','Connections','Organizations', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
-                    <div className="item-panel-empty contain-panel-empty">
-                    <input className="btn btn-panel" value="Connect" />
-                    <input className="btn btn-panel" value="Follow" />
-    {/*<input className="btn btn-panel" value="Message" />
+                    {(currentUsername == username) ? "" : <div className="item-panel-empty contain-panel-empty">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
+                    {/*<input className="btn btn-panel" value="Message" />
                     <input className="btn btn-panel" value="Ask" />*/}
-                    </div>
                     {/*
                     <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
                         48 Syncholarity Rating<br/>
@@ -481,21 +529,18 @@ var About = React.createClass({
         if (this.state.work_experiences != "") {
             var WEItems = JSON.parse(this.state.work_experiences);
             WEItems.forEach(function(item) {
-                console.log(item.key);
                 work_experiences_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="work_experience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                console.log(item.key);
                 educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.projects != "") {
             var PItems = JSON.parse(this.state.projects);
             PItems.forEach(function(item) {
-                console.log(item.key);
                 projects_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="project" />);
             });
         }
