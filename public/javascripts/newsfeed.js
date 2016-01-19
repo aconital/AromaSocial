@@ -4,7 +4,9 @@ var NewsFeed = React.createClass({
   mixins: [ParseReact.Mixin],
   getInitialState: function() {
     return {
-      data: []
+      data: [],
+      load: "visible",
+      main: "invisible"
     };
    },
   loadFeedFromServer: function() {
@@ -77,7 +79,7 @@ var NewsFeed = React.createClass({
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     );
   }
 });
