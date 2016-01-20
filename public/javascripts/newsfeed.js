@@ -115,7 +115,7 @@ var NewsFeedList = React.createClass({
       window.location.href="/model/" + this.props.objId['objectId'];
     }
 
-    else if (itemType == "data") {
+    else if (itemType == "dat") {
       window.location.href="/data/" + this.props.objId['objectId'];
     }
     return false;
@@ -125,7 +125,7 @@ var NewsFeedList = React.createClass({
     var date = moment(this.props.date).format("MMMM D, YYYY");
     if (this.props.type=="pub"){ type="Publication"; typeLink="publication"; }
     else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
-    else if (this.props.type=="data"){ type="Data"; typeLink="data"; }
+    else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
 	return (
       <div className="item-panel-newsFeed contain-panel-newsFeed">
         <div className="row">
