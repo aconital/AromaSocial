@@ -36,7 +36,7 @@ var Publication = React.createClass ({
     },
     render: function() {
         return (
-        <div className="content-wrap">
+        <div className="content-wrap-pdm">
             <div className="item-bottom-big">
                     <div className="item-panel contain-panel-big">
                     <div>

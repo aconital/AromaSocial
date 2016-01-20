@@ -108,6 +108,7 @@ app.get('/newsfeeddata', function (req, res, next) {
                               var author ="";
                               var description ="";
                               var objectId = object.attributes.modId;
+                              var image_URL = modItem.image_URL;
                               if (modItem.filename != null) {
                                 filename = modItem.filename;
                               }
@@ -123,12 +124,13 @@ app.get('/newsfeeddata', function (req, res, next) {
                               if (modItem.author != null) {
                                   author = modItem.author;
                               }
-                              if (modItem.description != null) {
-                                  description = modItem.description;
+                              if (modItem.abstract != null) {
+                                  description = modItem.abstract;
                               }
                               feeds.push({
                                   username: username,
                                   userImg: userImg,
+                                  fullname: fullname,
                                   type:type,
                                   date:date,
                                   filename: filename,
@@ -137,7 +139,8 @@ app.get('/newsfeeddata', function (req, res, next) {
                                   year: year,
                                   hashtags: hashtags,
                                   title: title,
-                                  objId: objectId
+                                  objId: objectId,
+                                  image_URL: image_URL
                               });
                           }
                       }
@@ -151,6 +154,7 @@ app.get('/newsfeeddata', function (req, res, next) {
                               var author ="";
                               var description ="";
                               var objectId = object.attributes.dataId;
+                              var image_URL = dataItem.image_URL;
                               if (dataItem.filename != null) {
                                   filename = modItem.filename;
                               }
@@ -172,6 +176,7 @@ app.get('/newsfeeddata', function (req, res, next) {
                               feeds.push({
                                   username: username,
                                   userImg: userImg,
+                                  fullname: fullname,
                                   type:type,
                                   date:date,
                                   filename: filename,
@@ -180,7 +185,8 @@ app.get('/newsfeeddata', function (req, res, next) {
                                   year: year,
                                   hashtags: hashtags,
                                   title: title,
-                                  objId: objectId
+                                  objId: objectId,
+                                  image_URL: image_URL
                               });
                           }
                       }

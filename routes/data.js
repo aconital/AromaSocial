@@ -84,7 +84,7 @@ module.exports=function(app,Parse) {
             data.set('title',reqBody.title);
             data.set('hashtags',keywords); // TODO are they the same?
             data.set('keywords',keywords);
-            data.set('image_URL','/images/paper.png');
+            data.set('image_URL','/images/data.png');
             data.set('license',reqBody.license);
             data.set('path',"TODO");
 //			data.set('publication',reqBody.pubLink); // TODO takes pointer to Publication obj

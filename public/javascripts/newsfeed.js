@@ -60,6 +60,7 @@ var NewsFeed = React.createClass({
                                     userName={item.username}
                                     fullname={item.fullname}
                                     userImg={item.userImg}
+                                    image_URL={item.image_URL}
                                     type={item.type}
                                     date={item.date}
                                     year={item.year}
@@ -67,7 +68,7 @@ var NewsFeed = React.createClass({
                                     title={item.title}
                                     description={item.description}
                                     upload={item.upload}
-                                    hashtags={item.hashtags} />);
+                                    keywords={item.keywords} />);
             })}
           </div>
           <div className="col-xs-4">
@@ -125,7 +126,9 @@ var NewsFeedList = React.createClass({
     var date = moment(this.props.date).format("MMMM D, YYYY");
     if (this.props.type=="pub"){ type="Publication"; typeLink="publication"; }
     else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
-    else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
+     else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
+    if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+    else { var title = this.props.title; }
 	return (
       <div className="item-panel-newsFeed contain-panel-newsFeed">
         <div className="row">
@@ -135,13 +138,11 @@ var NewsFeedList = React.createClass({
           <div className="col-xs-10 col-xs-10-5 no-padding-right">
             <a href={"/profile/" + this.props.userName} className="nostyle"><h3 className="non-inline">{this.props.fullname}</h3></a>
             <h4 className="black non-inline">Added a {type} on {date}</h4>
-
             <div className="item-box">
-            <div className="item-box-left">
-                // <img src={this.props.image_URL} className="contain-image-preview" />
-            </div>
+                {(this.props.type=="pub") ? "" : <div className="item-box-left"><img src={this.props.image_URL} className="contain-image-preview" /></div>}
             <div className="item-box-right">
-                <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top">{title}</h3></a>
+                <span className="font-15">{this.props.description}</span>
             </div>
             </div>
 
