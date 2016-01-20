@@ -5849,6 +5849,9 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
             padding:20px;
             position:relative;
         }
+    .contain-panel-big + .contain-panel-big {
+        margin-bottom: 25px;
+    }
 
     .contain-panel-newsFeed {
                 width: 100%;
@@ -6302,6 +6305,7 @@ color: #fff;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
     padding:10px;
     position: relative;
+    overflow: hidden;
     }
 .item-box + .item-box {
     margin-top:10px;
@@ -6509,6 +6513,9 @@ div.react-tagsinput {
         }
   .content-wrap {
     max-width:1200px;
+    margin:auto;
+  } .content-wrap-pdm {
+    max-width:1150px;
     margin:auto;
   }
 

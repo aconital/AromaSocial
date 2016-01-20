@@ -5,10 +5,10 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 var Data = React.createClass ({
     getInitialState: function() {
      return {
-        title: [title],
-        description: [description],
-        objectId: [objectId],
-        image_URL: [image_URL],
+        title: title,
+        description: description,
+        objectId: objectId,
+        image_URL: image_URL,
 
         fromModelTab: false,
         pictureChosen: null,
@@ -102,7 +102,7 @@ var Data = React.createClass ({
     },
     render: function() {
         return (
-        <div className="content-wrap">
+        <div className="content-wrap-pdm">
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
                   <Modal.Header closeButton>
                     <Modal.Title>Update Data Image</Modal.Title>
