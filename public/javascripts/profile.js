@@ -273,21 +273,15 @@ var Connections = React.createClass({
             }
 
             return (
-                <div>
-                    <div><span className="people-title">{role}</span></div>
+                <div id="item-list">
                     {plist.map(person =>
-
-                            <div key={person.username} className="row" id="people-row">
-                                <div className="col-lg-2">
-                                    <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="img-circle newsfeed-profile-pic" /></a>
-                                </div>
-                                <div className="col-lg-10">
-                                    <div>{person.fullname}</div>
-                                    <div>{person.workTitle}</div>
-                                    <div>{person.company}</div>
-
-                                </div>
-                            </div>
+                    <div className="item-box">
+                        <div key={person.username} id="item-list" className="row">
+                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="contain-icons" /></a>
+                                <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                                <span className="font-15">{person.workTitle} @ {person.company}</span>
+                        </div>
+                    </div>
                     )}
                 </div>
             );
@@ -323,19 +317,12 @@ var Organizations = React.createClass({
         var orgList = $.map(this.state.data,function(org) {
 
             return (
-                <div>
-
-                    <div key={org.orgId} className="row" id="people-row">
-                        <div className="col-lg-2">
-                            <a href={'/organization/'+org.orgId}> <img  src={org.orgImgUrl} className="img-circle newsfeed-profile-pic" /></a>
-                        </div>
-                        <div className="col-lg-10">
-                            <div>{org.name}</div>
-                            <div>{org.location}</div>
-
-                        </div>
+                <div className="item-box">
+                    <div key={org.orgId} id="item-list" className="row">
+                        <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
+                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <span className="font-15">{org.location}</span>
                     </div>
-
                 </div>
             );
         });
@@ -638,7 +625,7 @@ var About = React.createClass({
                 <div className="clear"></div>
                 <div id="resume-models" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-tint"></span> Models</h3>
+                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-blackboard"></span> Models</h3>
                     </div>
                     <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
                     {models_data}
@@ -1488,13 +1475,17 @@ var Publications = React.createClass({
 
 var Publication = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="publication-box">
                 <div className="publication-box-left publication-box-left-full">
-                    <h3 className="no-margin-top"><a href={"/publication/" + this.props.objectId} className="body-link"> {this.props.title}</a></h3>
-                    Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
-                    Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    <h3 className="margin-top-bottom-5"><a href={"/publication/" + this.props.objectId} className="body-link"> {title}</a></h3>
+                    <span className="font-15">
+                    <b>Authors:</b> <a href="#" className="body-link">{this.props.author}</a><br/>
+                    <b>Abstract:</b> {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
+                    </span>
                 </div>
                 {/*
                 <div className="publication-box-right">
@@ -1547,13 +1538,16 @@ var ModelsList = React.createClass({
 
 var ModelListItem = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="model-box">
                 <div className="model-box-image">
-                    <img src={this.props.image_URL} className="contain-image-preview" />
+                    <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>
                 <div className="model-box-left model-box-left-full">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <span className="font-15">
+                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
                             if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
@@ -1561,6 +1555,7 @@ var ModelListItem = React.createClass({
                         })}
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    </span>
                 </div>
                 {/*
                 <div className="model-box-right">
@@ -1877,13 +1872,16 @@ var DataList = React.createClass({
 
 var DatumListItem = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="model-box">
                 <div className="model-box-image">
-                    <img src={this.props.image_URL} className="contain-image-preview" />
+                    <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>
                 <div className="model-box-left model-box-left-full">
-                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <span className="font-15">
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
                             if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
@@ -1891,6 +1889,7 @@ var DatumListItem = React.createClass({
                         })}
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    </span>
                 </div>
                 {/*
                 <div className="model-box-right">
