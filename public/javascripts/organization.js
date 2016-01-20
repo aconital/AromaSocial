@@ -194,23 +194,14 @@ var Connections = React.createClass({
         });
     },
     render: function() {
-
         var orgList = $.map(this.state.data,function(org) {
-
             return (
-                <div>
-
-                            <div key={org.orgId} className="row" id="people-row">
-                                <div className="col-lg-2">
-                                <a href={'/organization/'+org.orgId}> <img  src={org.orgImgUrl} className="img-circle newsfeed-profile-pic" /></a>
-                                </div>
-                                <div className="col-lg-10">
-                                    <div>{org.name}</div>
-                                    <div>{org.location}</div>
-
-                                </div>
-                            </div>
-
+                <div className="item-box">
+                <div key={org.orgId} id="item-list" className="row">
+                        <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
+                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <span className="font-15">{org.location}</span>
+                </div>
                 </div>
             );
         });
@@ -232,11 +223,10 @@ var People = React.createClass({
       $.ajax({
           url: peopleUrl,
           success: function(data) {
-
               this.setState({data: data});
           }.bind(this),
           error: function(xhr, status, err) {
-              console.error("couldnt retrieve people");
+              console.error("Couldn't Retrieve People");
           }.bind(this)
       });
   },
@@ -245,29 +235,24 @@ var People = React.createClass({
       var peopleList = $.map(this.state.data,function(objects) {
           var role= objects[0].title;
           var plist=[];
-          for(var i in objects)
-          {
+          for(var i in objects) {
               var person = objects[i];
-
               plist.push(person);
           }
 
           return (
-                <div>
-                    <div><span className="people-title">{role}</span></div>
+                <div id="items-list">
+                    <div className="clear"></div>
+                    <div><h2 className="margin-top-bottom-5">{role}</h2></div>
+                    <div className="clear"></div>
                     {plist.map(person =>
-
-                    <div key={person.username} className="row" id="people-row">
-                        <div className="col-lg-2">
-                           <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="img-circle newsfeed-profile-pic" /></a>
+                        <div className="item-box">
+                        <div key={person.username} id="item-list" className="row">
+                            <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="contain-icons" /></a>
+                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <span className="font-15">{person.workTitle} @ {person.company}</span>
                         </div>
-                        <div className="col-lg-10">
-                            <div>{person.fullname}</div>
-                            <div>{person.workTitle}</div>
-                            <div>{person.company}</div>
-
-</div>
-                    </div>
+                        </div>
                     )}
                 </div>
           );
@@ -388,6 +373,13 @@ var Publications = React.createClass({
   render: function() {
     return (
       <div>
+        <table id="upload-field" width="100%">
+            <tr>
+                <td className="padding-right">
+                <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                </td>
+            </tr>
+        </table>
         {this.state.data.map(function(publication){
             return (<Publication objectId={publication.objectId}
                                  author={publication.author}
@@ -402,10 +394,12 @@ var Publications = React.createClass({
 
 var Publication = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="publication-box">
                 <div className="publication-box-left publication-box-left-full">
-                    <h3 className="no-margin-top"><a href={"/publication/" + this.props.objectId} className="body-link"> {this.props.title}</a></h3>
+                    <a href={"/publication/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
@@ -446,6 +440,13 @@ var Data = React.createClass({
     var rows = [];
     return (
       <div>
+          <table id="upload-field" width="100%">
+              <tr>
+                  <td className="padding-right">
+                  <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                  </td>
+              </tr>
+          </table>
         {this.state.data.map(function(item) {
             return (<Datum objectId={item.objectId}
                                     collaborators={item.collaborators}
@@ -465,13 +466,15 @@ var Data = React.createClass({
 
 var Datum = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="model-box">
                 <div className="model-box-image">
-                    <img src={this.props.image_URL} className="contain-image-preview" />
+                    <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>
                 <div className="model-box-left model-box-left-full">
-                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
                             if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
@@ -519,6 +522,13 @@ var Models = React.createClass({
     var rows = [];
     return (
       <div>
+          <table id="upload-field" width="100%">
+              <tr>
+                  <td className="padding-right">
+                  <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                  </td>
+              </tr>
+          </table>
         {this.state.data.map(function(model) {
           return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
@@ -539,13 +549,15 @@ var Models = React.createClass({
 
 var Model = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="model-box">
                 <div className="model-box-image">
-                    <img src={this.props.image_URL} className="contain-image-preview" />
+                    <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>
                 <div className="model-box-left model-box-left-full">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
                             if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
