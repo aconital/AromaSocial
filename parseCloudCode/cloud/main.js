@@ -1,18 +1,106 @@
-
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
-Parse.Cloud.afterSave("Publication", function(request) { 
-Parse.Cloud.useMasterKey();
+Parse.Cloud.afterSave("Publication", function(request) {
+	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("user");
-	var pubId= request.object;
-	var NewsFeed = Parse.Object.extend("NewsFeed");
-	var feed = new NewsFeed();
-	feed.set("from",userId);
-	feed.set("type","pub");
-	feed.set("pubId",pubId);
-	feed.save();
+	var pubId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("pubId", pubId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "pub");
+				feed.set("pubId", pubId);
+				feed.save();
+			}
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "empty pub");
+			feed.set("pubId", pubId);
+			feed.save();
+		}
+	});
 });
 
+Parse.Cloud.afterSave("Model", function(request) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var modId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("modId", modId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "mod");
+				feed.set("modId", modId);
+				feed.save();
+			}
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "mod");
+			feed.set("modId", modId);
+			feed.save();
+		}
+	});
+});
+
+Parse.Cloud.afterSave("Data", function(request) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var datId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("datId", datId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "dat");
+				feed.set("datId", datId);
+				feed.save();
+			}
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "dat");
+			feed.set("datId", datId);
+			feed.save();
+		}
+	});
+});
 
 Parse.Cloud.afterDelete("Publication", function(request) {
 	Parse.Cloud.useMasterKey();
