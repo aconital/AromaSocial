@@ -739,6 +739,7 @@ creator.dispatch({waitForServer: 'false'});
 var PublicationForm = React.createClass({
   getInitialState: function() {
     return { showModal: false,
+    		 formFeedback: '',
              step : 1,
              type : 1,
              pubFile : null,
@@ -786,33 +787,55 @@ var PublicationForm = React.createClass({
 //
 //     // ...and execute it
 //     creator.dispatch();
-    var pubForm = {  title: this.state.txtTitle,
-                  author: this.state.txtAuthors[0],
-                  description: this.state.txtAbstract,
-                  publishDate: this.state.txtPublishDate,
-                  groups: this.state.txtPrivacy,
-                  keywords: this.state.txtKeywordsTags,
-                  hashtags: this.state.txtTags,
-                  license: "Testtt",
-                  publication_link: "why.jpg",
-                  file: this.state.pubFile,
-                  fileType: this.state.pubFileExt };
+	var isValidForm = this.validateForm();
+	if (isValidForm.length === 0) {
+		var pubForm = {  title: this.state.txtTitle,
+					  author: this.state.txtAuthors[0],
+					  description: this.state.txtAbstract,
+					  publishDate: this.state.txtPublishDate,
+					  groups: this.state.txtPrivacy,
+					  keywords: this.state.txtKeywordsTags,
+					  hashtags: this.state.txtTags,
+					  license: "Testtt",
+					  publication_link: "why.jpg",
+					  file: this.state.pubFile,
+					  fileType: this.state.pubFileExt };
 
-    $.ajax({
-     url: path + "/publication",
-     dataType: 'json',
-     contentType: "application/json; charset=utf-8",
-     type: 'POST',
-     data: JSON.stringify(pubForm),
-     processData: false,
-     success: function(data) {
-         this.setState({data: data});
-     }.bind(this),
-     error: function(xhr, status, err) {
-        console.error(path + "/publication", status, err.toString());
-     }.bind(this)
-    });
+		$.ajax({
+		 url: path + "/publication",
+		 dataType: 'json',
+		 contentType: "application/json; charset=utf-8",
+		 type: 'POST',
+		 data: JSON.stringify(pubForm),
+		 processData: false,
+		 success: function(data) {
+			 this.setState({data: data});
+		 }.bind(this),
+		 error: function(xhr, status, err) {
+			console.error(path + "/publication", status, err.toString());
+		 }.bind(this)
+		});
+	} else {
+		var message = 'Publication could not be added: ';
+		if (isValidForm.indexOf('REQUIRED') > -1) {
+			message += ' Please check that all required fields are filled in.';
+		}
+		if (isValidForm.indexOf('FILE') > -1) {
+			message += ' Please upload a file.';
+		}
+		this.setState({formFeedback: message});
+	}
   },
+  	validateForm: function() {
+  		var issues = []
+  		if (!this.state.txtTitle.trim() || !this.state.txtAuthors || !this.state.txtKeywordsTags || !this.state.txtPublishDate) {
+  			issues.push("REQUIRED");
+  		}
+  		if (!this.state.pubFile) {
+  			issues.push("FILE");
+  		}
+  		return issues;
+  	},
   title: function(e) {
     this.setState({ txtTitle : e.target.value })
   },
@@ -930,6 +953,8 @@ var PublicationForm = React.createClass({
                         {this.state.step != 4 ? <div></div> : <input className="publication-button" type="submit" value="Close" onClick={this.clickClose} />}
                       </td>
                     </tr></table>
+
+      				<div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
                   </Modal.Footer>
                 </Modal>
             </form>
@@ -997,16 +1022,16 @@ var Step3 = React.createClass({
             <a href="#">Completion!</a>
         </div>
         <table className="summary"><tr><td>
-        <b>Title:</b> { this.props.title } <br/>
-        <b>Authors:</b> { this.props.authors } <br/>
+        <b><Required content="*"/>Title:</b> { this.props.title } <br/>
+        <b><Required content="*"/>Authors:</b> { this.props.authors } <br/>
         <b>Editors:</b> { this.props.editors } <br/>
         <b>Publisher:</b> { this.props.publishPartner } <br/>
-        <b>Publishing Date:</b> { this.props.publishDate } <br/>
+        <b><Required content="*"/>Publishing Date:</b> { this.props.publishDate } <br/>
           - { this.props.input1 } <br/>
           - { this.props.input2 } <br/>
           - { this.props.input3 } <br/>
         <b>Abstract:</b> { this.props.abstract } <br/>
-        <b>Keywords:</b> { this.props.keywordsTags } <br/>
+        <b><Required content="*"/>Keywords:</b> { this.props.keywordsTags } <br/>
         <b>URL:</b> { this.props.URL } <br/>
         <b>DOI:</b> { this.props.DOI } <br/>
         <b>Tags:</b> { this.props.tags } <br/>
@@ -1606,7 +1631,7 @@ var ModelForm = React.createClass({
         e.preventDefault();
 
         var endpoint = fromModel ? "/model" : "/data";
-        var dataForm = {file: this.state.fileChosen, picture: this.state.pictureChosen,
+        var dataForm = {file: this.state.file, picture: this.state.picture,
             collaborators: this.state.collaborators, creationDate: this.state.creationDate,
             description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
             keywords: this.state.keywords, url: this.state.url};
@@ -1959,9 +1984,10 @@ var ResourceAddForm = React.createClass({
     getInitialState: function() {
      return {
         fromModelTab: false,
-        fileChosen: null, //TODO unnecessary? remove after verifying
-        pictureChosen: null,
         buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+        formFeedback: '',
+        fileFeedback: {},
+        pictureFeedback: '',
 
         // form
         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
@@ -1974,10 +2000,11 @@ var ResourceAddForm = React.createClass({
 		<div>
 			<form className="form" onSubmit={this.handleSubmitData}>
 			    <div className="well" style={this.buttonStyles}>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
+                    	style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
                         Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                     </Button>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
                         Select Files... <input type="file" onChange={this.handleFile} />
                     </Button>
                   </div>
@@ -1994,6 +2021,7 @@ var ResourceAddForm = React.createClass({
 
                <Modal.Footer>
                    <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                   <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
                </Modal.Footer>
             </form>
 		</div>
@@ -2009,31 +2037,56 @@ var ResourceAddForm = React.createClass({
 	handleSubmitData: function(e) {
         e.preventDefault();
 
-        var endpoint = this.props.fromModelTab ? "/model" : "/data";
         var dataForm = {file: this.state.file, picture: this.state.picture,
-            fileType: this.state.fileType, pictureType: this.state.pictureType,
-            collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-            description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-            keywords: this.state.keywords, url: this.state.url};
+        				fileType: this.state.fileType, pictureType: this.state.pictureType,
+        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
+		console.log(dataForm);
 
-        $.ajax({
-            url: path + endpoint,  //TODO: verify path for production
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Data upload done");
-                console.log(data);
-                this.close();
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + endpoint, status, err.toString());
-            }.bind(this)
-        });
+        var isValidForm = this.validateForm();
+		if (isValidForm.length === 0) {
+			var endpoint = this.props.fromModelTab ? "/model" : "/data";
+			var dataFormORIG = {file: this.state.file, picture: this.state.picture,
+				fileType: this.state.fileType, pictureType: this.state.pictureType,
+				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
 
+			$.ajax({
+				url: path + endpoint,
+				dataType: 'json',
+				contentType: "application/json; charset=utf-8",
+				type: 'POST',
+				data: JSON.stringify(dataForm),
+				processData: false,
+				success: function(data) {
+					this.setState({data: data});
+					console.log("Data upload done");
+					console.log(data);
+					this.close();
+				}.bind(this),
+				error: function(xhr, status, err) {
+					console.error(path + endpoint, status, err.toString());
+				}.bind(this)
+			});
+		}
+		else {
+			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
+			if (isValidForm.indexOf('TITLE') > -1) {
+				message += ' Title is required.';
+			}
+			if (isValidForm.indexOf('FILE') > -1) {
+				message += ' Please upload a file.';
+			}
+			if (isValidForm.indexOf('DATE') > -1) {
+				message += ' Please indicate the creation date.';
+			}
+			if (isValidForm.indexOf('KEYWORDS') > -1) {
+				message += ' Please specify at least one keyword.';
+			}
+			this.setState({formFeedback: message});
+		}
         return;
     },
 
@@ -2050,7 +2103,7 @@ var ResourceAddForm = React.createClass({
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
 
-        this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
+        this.state.file.on('fileselect', function(event, numFiles, label) {
             console.log(numFiles);
             console.log(label);
             return input;
@@ -2065,9 +2118,9 @@ var ResourceAddForm = React.createClass({
 
         reader.onload = function(upload) {
           self.setState({
-            fileChosen: upload.target.result,
             file: upload.target.result,
             fileType: extension,
+            fileFeedback: {background: '#dff0d8'}
           });
         }
         reader.readAsDataURL(file);
@@ -2081,13 +2134,39 @@ var ResourceAddForm = React.createClass({
 
         reader.onload = function(upload) {
          self.setState({
-           pictureChosen: upload.target.result,
            picture: upload.target.result,
            pictureType: extension,
+           pictureFeedback: '#dff0d8'
          });
         }
         reader.readAsDataURL(file);
-    }
+    },
+
+	validateForm: function() {
+		var issues = []
+		if (!this.state.title.trim()) {
+			issues.push("TITLE");
+		}
+		if (!this.state.file) {
+			issues.push("FILE");
+		}
+		if (!this.state.creationDate) {
+			issues.push("DATE");
+		}
+		if (!this.state.keywords.trim()) {
+			issues.push("KEYWORDS");
+		}
+		return issues;
+	},
+});
+
+var Required = React.createClass({
+	render: function() {
+		var requiredField = {color: 'red', fontWeight: '800'}
+		return (
+			<span style={requiredField}>{this.props.content}</span>
+		);
+	},
 });
 
 React.render(<Profile

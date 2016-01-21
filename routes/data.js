@@ -82,7 +82,6 @@ module.exports=function(app,Parse) {
             data.set('collaborators',collaborators);
             data.set('description', reqBody.description);
             data.set('title',reqBody.title);
-            data.set('hashtags',keywords); // TODO are they the same?
             data.set('keywords',keywords);
             data.set('image_URL','/images/data.png');
             data.set('license',reqBody.license);
