@@ -55,7 +55,8 @@ var NewsFeed = React.createClass({
         <div className="row">
           <div className="col-xs-8">
             {this.state.data.map(function(item) {
-              return (<NewsFeedList itemId={item.itemId}
+              return (<NewsFeedList
+                                    itemId={item.itemId}
                                     objId={item.objId}
                                     userName={item.username}
                                     fullname={item.fullname}
