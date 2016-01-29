@@ -378,7 +378,7 @@ var About = React.createClass({
     },
     getInitialState: function() {
         return {
-            summary: [summary],
+            summary: summary,
             work_experiences: work_experiences,
             educations: educations,
             projects: projects,
@@ -2011,8 +2011,7 @@ var ResourceAddForm = React.createClass({
 
                 <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
                 <Input type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Creation Date:" name="creationDate"
-                   onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
                 <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />

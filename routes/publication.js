@@ -38,12 +38,10 @@ module.exports=function(app,Parse) {
                     author: result.get('author'),
                     description: result.get('description'),
                     filename: result.get('filename'),
-                    hashtags: result.get('hashtags'),
                     title: result.get('title'),
                     year: result.get('year'),
-                    groups: result.get('groups'),
                     license: result.get('license'),
-                    keywords: result.get('keywords'),
+                    keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link')
                 });
             },
@@ -190,10 +188,14 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query("Publication");
         query.get(req.params.objectId,{
             success: function(result) {
-                result.set("title", req.body.title);
-                result.set("description", req.body.description);
-                console.log(req.body.title);
-                console.log(req.body.description);
+                if (req.body.title) {
+                    result.set("title", req.body.title);
+                    result.set("description", req.body.description);
+                    result.set("year", req.body.year);
+                    result.set("filename", req.body.filename);
+                    result.set("license", req.body.license);
+                }
+                else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save();
             }
         });
