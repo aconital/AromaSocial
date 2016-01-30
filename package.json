@@ -35,6 +35,7 @@
     "react-dom": "^0.14.6",
     "react-input-autosize": "^0.6.6",
     "react-router": "^1.0.3",
+    "react-loading": "0.0.7",
     "react-tagsinput": "^3.0.2",
     "react-xeditable": "^0.1.3",
     "serve-favicon": "~2.2.0",

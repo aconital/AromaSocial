@@ -1,21 +1,27 @@
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
+var Input = ReactBootstrap.Input;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Publication = React.createClass ({
     getInitialState: function() {
      return {
         title: title,
-        description: description
+        description: description,
+
+        filename: filename,
+        publicationDate: year,
+        license: license,
+
+        keywords: keywords
         };
     },
     handleChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
-        console.log("YES");
     },
     submitChange: function() {
-        var dataForm = {title: this.state.title, description: this.state.description};
+        var dataForm = {title: this.state.title, description: this.state.description, filename: this.state.filename, year: this.state.publicationDate, license: this.state.license};
 
         $.ajax({
             url: path + "/update",
@@ -34,9 +40,34 @@ var Publication = React.createClass ({
 
         return;
     },
+    handleTagsInputChange: function(e) {
+        var keywordsSubmit = (JSON.stringify(e));
+        this.setState({keywords:keywordsSubmit}, function(){ console.log(this.state.keywords); this.submitArrayChange(); }.bind(this));
+    },
+    submitArrayChange: function() {
+        var dataForm = { keywords: this.state.keywords };
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
     render: function() {
         return (
-        <div className="content-wrap">
+        <div className="content-wrap-pdm">
             <div className="item-bottom-big">
                     <div className="item-panel contain-panel-big">
                     <div>
@@ -48,6 +79,15 @@ var Publication = React.createClass ({
                     <div>
                        {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" className="p-editable" type="text" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
                     </div>
+                    <hr/>
+                    <table className="publication-table">
+                    <tbody>
+                       {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="filename" name="filename" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.filename}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><a href={publication_link} className="body-link">{this.state.filename}</a></td></tr>}
+                       {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="license">License:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="license" name="license" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.license}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">License:</label></td><td className="publication-table-info-right">{this.state.license}</td></tr>}
+                       {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><p className="no-margin"><input type="date" name="publicationDate" id="publicationDate" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.publicationDate} className="p-editable date-editable-input"/></p></td></tr> : <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><span className="no-margin">{this.state.publicationDate}</span></td></tr>}
+                       {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", className: "l-editable-input", name: "keywords", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.keywords)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.keywords).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
+                    </tbody>
+                    </table>
                     </div>
                     <div className="item-panel contain-panel-big">
                     <div>

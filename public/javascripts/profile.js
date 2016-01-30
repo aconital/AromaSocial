@@ -13,7 +13,7 @@ var Profile = React.createClass ({
             fromModelTab: false,
             pictureChosen: null,
 
-            picture: null, pictureType: ''
+            picture: null, pictureType: '', status: ''
       };
     },
     clickOpen() {
@@ -72,7 +72,58 @@ var Profile = React.createClass ({
             $this.setState({profile_imgURL:changeImgURL});
         });
     },
+    componentWillMount: function() {
+      var connectURL= "/profile/"+objectId+"/connection-status";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            console.log(status);
+            this.setState({status: status})
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
+    clickConnect: function() {
+      var connectURL= "/profile/"+objectId+"/connect";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            this.setState({status: "pending"});
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
+    clickDisconnect: function() {
+      var connectURL= "/profile/"+objectId+"/disconnect";
+
+      $.ajax({
+        url: connectURL,
+        success: function(status) {
+            this.setState({status: "connect"});
+        }.bind(this),
+        error: function(xhr, status, err) {
+            console.error("Couldn't retrieve people.");
+        }.bind(this)
+      });
+    },
     render: function() {
+        var connectButton = <input className="btn btn-panel btn-right-side" value="" />;
+        if (this.state.status == "connected") {
+             connectButton = <input onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect" />;
+        }
+        else if (this.state.status == "pending") {
+             connectButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
+        }
+        else if (this.state.status == "not-connected") {
+             connectButton = <input onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect" />;
+        }
+        else { console.log("Nothing"); }
         return (
         <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -126,12 +177,9 @@ var Profile = React.createClass ({
                      <ProfileMenu tabs={['About','Connections','Organizations', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
-                    <div className="item-panel-empty contain-panel-empty">
-                    <input className="btn btn-panel" value="Connect" />
-                    <input className="btn btn-panel" value="Follow" />
-    {/*<input className="btn btn-panel" value="Message" />
+                    {(currentUsername == username) ? "" : <div className="item-panel-empty contain-panel-empty">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
+                    {/*<input className="btn btn-panel" value="Message" />
                     <input className="btn btn-panel" value="Ask" />*/}
-                    </div>
                     {/*
                     <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
                         48 Syncholarity Rating<br/>
@@ -225,21 +273,15 @@ var Connections = React.createClass({
             }
 
             return (
-                <div>
-                    <div><span className="people-title">{role}</span></div>
+                <div id="item-list">
                     {plist.map(person =>
-
-                            <div key={person.username} className="row" id="people-row">
-                                <div className="col-lg-2">
-                                    <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="img-circle newsfeed-profile-pic" /></a>
-                                </div>
-                                <div className="col-lg-10">
-                                    <div>{person.fullname}</div>
-                                    <div>{person.workTitle}</div>
-                                    <div>{person.company}</div>
-
-                                </div>
-                            </div>
+                    <div className="item-box">
+                        <div key={person.username} id="item-list" className="row">
+                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="contain-icons" /></a>
+                                <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                                <span className="font-15">{person.workTitle} @ {person.company}</span>
+                        </div>
+                    </div>
                     )}
                 </div>
             );
@@ -275,19 +317,12 @@ var Organizations = React.createClass({
         var orgList = $.map(this.state.data,function(org) {
 
             return (
-                <div>
-
-                    <div key={org.orgId} className="row" id="people-row">
-                        <div className="col-lg-2">
-                            <a href={'/organization/'+org.orgId}> <img  src={org.orgImgUrl} className="img-circle newsfeed-profile-pic" /></a>
-                        </div>
-                        <div className="col-lg-10">
-                            <div>{org.name}</div>
-                            <div>{org.location}</div>
-
-                        </div>
+                <div className="item-box">
+                    <div key={org.orgId} id="item-list" className="row">
+                        <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
+                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <span className="font-15">{org.location}</span>
                     </div>
-
                 </div>
             );
         });
@@ -343,7 +378,7 @@ var About = React.createClass({
     },
     getInitialState: function() {
         return {
-            summary: [summary],
+            summary: summary,
             work_experiences: work_experiences,
             educations: educations,
             projects: projects,
@@ -481,21 +516,18 @@ var About = React.createClass({
         if (this.state.work_experiences != "") {
             var WEItems = JSON.parse(this.state.work_experiences);
             WEItems.forEach(function(item) {
-                console.log(item.key);
                 work_experiences_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="work_experience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                console.log(item.key);
                 educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.projects != "") {
             var PItems = JSON.parse(this.state.projects);
             PItems.forEach(function(item) {
-                console.log(item.key);
                 projects_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="project" />);
             });
         }
@@ -593,7 +625,7 @@ var About = React.createClass({
                 <div className="clear"></div>
                 <div id="resume-models" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-tint"></span> Models</h3>
+                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-blackboard"></span> Models</h3>
                     </div>
                     <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
                     {models_data}
@@ -707,6 +739,7 @@ creator.dispatch({waitForServer: 'false'});
 var PublicationForm = React.createClass({
   getInitialState: function() {
     return { showModal: false,
+    		 formFeedback: '',
              step : 1,
              type : 1,
              pubFile : null,
@@ -754,33 +787,55 @@ var PublicationForm = React.createClass({
 //
 //     // ...and execute it
 //     creator.dispatch();
-    var pubForm = {  title: this.state.txtTitle,
-                  author: this.state.txtAuthors[0],
-                  description: this.state.txtAbstract,
-                  publishDate: this.state.txtPublishDate,
-                  groups: this.state.txtPrivacy,
-                  keywords: this.state.txtKeywordsTags,
-                  hashtags: this.state.txtTags,
-                  license: "Testtt",
-                  publication_link: "why.jpg",
-                  file: this.state.pubFile,
-                  fileType: this.state.pubFileExt };
+	var isValidForm = this.validateForm();
+	if (isValidForm.length === 0) {
+		var pubForm = {  title: this.state.txtTitle,
+					  author: this.state.txtAuthors[0],
+					  description: this.state.txtAbstract,
+					  publishDate: this.state.txtPublishDate,
+					  groups: this.state.txtPrivacy,
+					  keywords: this.state.txtKeywordsTags,
+					  hashtags: this.state.txtTags,
+					  license: "Testtt",
+					  publication_link: "why.jpg",
+					  file: this.state.pubFile,
+					  fileType: this.state.pubFileExt };
 
-    $.ajax({
-     url: path + "/publication",
-     dataType: 'json',
-     contentType: "application/json; charset=utf-8",
-     type: 'POST',
-     data: JSON.stringify(pubForm),
-     processData: false,
-     success: function(data) {
-         this.setState({data: data});
-     }.bind(this),
-     error: function(xhr, status, err) {
-        console.error(path + "/publication", status, err.toString());
-     }.bind(this)
-    });
+		$.ajax({
+		 url: path + "/publication",
+		 dataType: 'json',
+		 contentType: "application/json; charset=utf-8",
+		 type: 'POST',
+		 data: JSON.stringify(pubForm),
+		 processData: false,
+		 success: function(data) {
+			 this.setState({data: data});
+		 }.bind(this),
+		 error: function(xhr, status, err) {
+			console.error(path + "/publication", status, err.toString());
+		 }.bind(this)
+		});
+	} else {
+		var message = 'Publication could not be added: ';
+		if (isValidForm.indexOf('REQUIRED') > -1) {
+			message += ' Please check that all required fields are filled in.';
+		}
+		if (isValidForm.indexOf('FILE') > -1) {
+			message += ' Please upload a file.';
+		}
+		this.setState({formFeedback: message});
+	}
   },
+  	validateForm: function() {
+  		var issues = []
+  		if (!this.state.txtTitle.trim() || !this.state.txtAuthors || !this.state.txtKeywordsTags || !this.state.txtPublishDate) {
+  			issues.push("REQUIRED");
+  		}
+  		if (!this.state.pubFile) {
+  			issues.push("FILE");
+  		}
+  		return issues;
+  	},
   title: function(e) {
     this.setState({ txtTitle : e.target.value })
   },
@@ -898,6 +953,8 @@ var PublicationForm = React.createClass({
                         {this.state.step != 4 ? <div></div> : <input className="publication-button" type="submit" value="Close" onClick={this.clickClose} />}
                       </td>
                     </tr></table>
+
+      				<div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
                   </Modal.Footer>
                 </Modal>
             </form>
@@ -965,16 +1022,16 @@ var Step3 = React.createClass({
             <a href="#">Completion!</a>
         </div>
         <table className="summary"><tr><td>
-        <b>Title:</b> { this.props.title } <br/>
-        <b>Authors:</b> { this.props.authors } <br/>
+        <b><Required content="*"/>Title:</b> { this.props.title } <br/>
+        <b><Required content="*"/>Authors:</b> { this.props.authors } <br/>
         <b>Editors:</b> { this.props.editors } <br/>
         <b>Publisher:</b> { this.props.publishPartner } <br/>
-        <b>Publishing Date:</b> { this.props.publishDate } <br/>
+        <b><Required content="*"/>Publishing Date:</b> { this.props.publishDate } <br/>
           - { this.props.input1 } <br/>
           - { this.props.input2 } <br/>
           - { this.props.input3 } <br/>
         <b>Abstract:</b> { this.props.abstract } <br/>
-        <b>Keywords:</b> { this.props.keywordsTags } <br/>
+        <b><Required content="*"/>Keywords:</b> { this.props.keywordsTags } <br/>
         <b>URL:</b> { this.props.URL } <br/>
         <b>DOI:</b> { this.props.DOI } <br/>
         <b>Tags:</b> { this.props.tags } <br/>
@@ -1443,13 +1500,17 @@ var Publications = React.createClass({
 
 var Publication = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="publication-box">
                 <div className="publication-box-left publication-box-left-full">
-                    <h3 className="no-margin-top"><a href={"/publication/" + this.props.objectId} className="body-link"> {this.props.title}</a></h3>
-                    Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
-                    Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    <h3 className="margin-top-bottom-5"><a href={"/publication/" + this.props.objectId} className="body-link"> {title}</a></h3>
+                    <span className="font-15">
+                    <b>Authors:</b> <a href="#" className="body-link">{this.props.author}</a><br/>
+                    <b>Abstract:</b> {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
+                    </span>
                 </div>
                 {/*
                 <div className="publication-box-right">
@@ -1502,13 +1563,16 @@ var ModelsList = React.createClass({
 
 var ModelListItem = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="model-box">
                 <div className="model-box-image">
-                    <img src={this.props.image_URL} className="contain-image-preview" />
+                    <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>
                 <div className="model-box-left model-box-left-full">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <span className="font-15">
+                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
                             if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
@@ -1516,6 +1580,7 @@ var ModelListItem = React.createClass({
                         })}
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    </span>
                 </div>
                 {/*
                 <div className="model-box-right">
@@ -1566,7 +1631,7 @@ var ModelForm = React.createClass({
         e.preventDefault();
 
         var endpoint = fromModel ? "/model" : "/data";
-        var dataForm = {file: this.state.fileChosen, picture: this.state.pictureChosen,
+        var dataForm = {file: this.state.file, picture: this.state.picture,
             collaborators: this.state.collaborators, creationDate: this.state.creationDate,
             description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
             keywords: this.state.keywords, url: this.state.url};
@@ -1832,13 +1897,16 @@ var DataList = React.createClass({
 
 var DatumListItem = React.createClass({
     render: function() {
+        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
+        else { var title = this.props.title; }
         return (
                 <div className="model-box">
                 <div className="model-box-image">
-                    <img src={this.props.image_URL} className="contain-image-preview" />
+                    <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>
                 <div className="model-box-left model-box-left-full">
-                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="no-margin-top">{this.props.title}</h3></a>
+                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <span className="font-15">
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
                             if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
@@ -1846,6 +1914,7 @@ var DatumListItem = React.createClass({
                         })}
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    </span>
                 </div>
                 {/*
                 <div className="model-box-right">
@@ -1915,9 +1984,10 @@ var ResourceAddForm = React.createClass({
     getInitialState: function() {
      return {
         fromModelTab: false,
-        fileChosen: null, //TODO unnecessary? remove after verifying
-        pictureChosen: null,
         buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+        formFeedback: '',
+        fileFeedback: {},
+        pictureFeedback: '',
 
         // form
         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
@@ -1930,18 +2000,18 @@ var ResourceAddForm = React.createClass({
 		<div>
 			<form className="form" onSubmit={this.handleSubmitData}>
 			    <div className="well" style={this.buttonStyles}>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
+                    	style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
                         Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                     </Button>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
                         Select Files... <input type="file" onChange={this.handleFile} />
                     </Button>
                   </div>
 
                 <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
                 <Input type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Creation Date:" name="creationDate"
-                   onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
                 <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
@@ -1950,6 +2020,7 @@ var ResourceAddForm = React.createClass({
 
                <Modal.Footer>
                    <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                   <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
                </Modal.Footer>
             </form>
 		</div>
@@ -1965,31 +2036,56 @@ var ResourceAddForm = React.createClass({
 	handleSubmitData: function(e) {
         e.preventDefault();
 
-        var endpoint = this.props.fromModelTab ? "/model" : "/data";
         var dataForm = {file: this.state.file, picture: this.state.picture,
-            fileType: this.state.fileType, pictureType: this.state.pictureType,
-            collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-            description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-            keywords: this.state.keywords, url: this.state.url};
+        				fileType: this.state.fileType, pictureType: this.state.pictureType,
+        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
+		console.log(dataForm);
 
-        $.ajax({
-            url: path + endpoint,  //TODO: verify path for production
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Data upload done");
-                console.log(data);
-                this.close();
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + endpoint, status, err.toString());
-            }.bind(this)
-        });
+        var isValidForm = this.validateForm();
+		if (isValidForm.length === 0) {
+			var endpoint = this.props.fromModelTab ? "/model" : "/data";
+			var dataFormORIG = {file: this.state.file, picture: this.state.picture,
+				fileType: this.state.fileType, pictureType: this.state.pictureType,
+				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
 
+			$.ajax({
+				url: path + endpoint,
+				dataType: 'json',
+				contentType: "application/json; charset=utf-8",
+				type: 'POST',
+				data: JSON.stringify(dataForm),
+				processData: false,
+				success: function(data) {
+					this.setState({data: data});
+					console.log("Data upload done");
+					console.log(data);
+					this.close();
+				}.bind(this),
+				error: function(xhr, status, err) {
+					console.error(path + endpoint, status, err.toString());
+				}.bind(this)
+			});
+		}
+		else {
+			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
+			if (isValidForm.indexOf('TITLE') > -1) {
+				message += ' Title is required.';
+			}
+			if (isValidForm.indexOf('FILE') > -1) {
+				message += ' Please upload a file.';
+			}
+			if (isValidForm.indexOf('DATE') > -1) {
+				message += ' Please indicate the creation date.';
+			}
+			if (isValidForm.indexOf('KEYWORDS') > -1) {
+				message += ' Please specify at least one keyword.';
+			}
+			this.setState({formFeedback: message});
+		}
         return;
     },
 
@@ -2006,7 +2102,7 @@ var ResourceAddForm = React.createClass({
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
 
-        this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
+        this.state.file.on('fileselect', function(event, numFiles, label) {
             console.log(numFiles);
             console.log(label);
             return input;
@@ -2021,9 +2117,9 @@ var ResourceAddForm = React.createClass({
 
         reader.onload = function(upload) {
           self.setState({
-            fileChosen: upload.target.result,
             file: upload.target.result,
             fileType: extension,
+            fileFeedback: {background: '#dff0d8'}
           });
         }
         reader.readAsDataURL(file);
@@ -2037,13 +2133,39 @@ var ResourceAddForm = React.createClass({
 
         reader.onload = function(upload) {
          self.setState({
-           pictureChosen: upload.target.result,
            picture: upload.target.result,
            pictureType: extension,
+           pictureFeedback: '#dff0d8'
          });
         }
         reader.readAsDataURL(file);
-    }
+    },
+
+	validateForm: function() {
+		var issues = []
+		if (!this.state.title.trim()) {
+			issues.push("TITLE");
+		}
+		if (!this.state.file) {
+			issues.push("FILE");
+		}
+		if (!this.state.creationDate) {
+			issues.push("DATE");
+		}
+		if (!this.state.keywords.trim()) {
+			issues.push("KEYWORDS");
+		}
+		return issues;
+	},
+});
+
+var Required = React.createClass({
+	render: function() {
+		var requiredField = {color: 'red', fontWeight: '800'}
+		return (
+			<span style={requiredField}>{this.props.content}</span>
+		);
+	},
 });
 
 React.render(<Profile

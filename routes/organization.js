@@ -230,9 +230,29 @@ module.exports=function(app,Parse) {
                 res.render('index', {title: error, path: req.path});
             }
         });
-
-
     });
+
+    app.get('/organization/:objectId/join-status', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        var currentUserId = currentUser.id;
+        var organizationId = req.params.objectId;
+        var status; console.log(organizationId); console.log(currentUserId);
+
+        var connectQuery = new Parse.Query("Relationship");
+        connectQuery.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: organizationId}).equalTo("userId", {__type: "Pointer", className: "_User", objectId: currentUserId});
+        connectQuery.find({
+            success: function(result) {
+                if (result.length == 0) { status = "not-joined"; }
+                else if (result[0].attributes.verified == true) { status = "joined"; }
+                else { status = "pending"; }
+                res.json(status);
+            }, error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
     app.get('/organization/:objectId/connections', function (req, res, next) {
         // var currentUser = Parse.User.current();
 
@@ -501,7 +521,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.get('/join/organization/:objectId', function (req, res, next) {
+    app.get('/organization/:objectId/join', function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = Parse.User.current();
         if(currentUser)
@@ -509,14 +529,14 @@ module.exports=function(app,Parse) {
             var Relationship = Parse.Object.extend("Relationship");
             var relation = new Relationship();
 
-            relation.set('userId', currentUser);
             relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: orgId });
+            relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id });
             relation.set('isAdmin', false);
             relation.set('verified', false);
             relation.set('title', 'TODO');
             relation.save(null,{
                 success:function(){
-                    res.json({success: "joined successfully"});
+                    res.json({success: "Joined Successfully"});
                 },
                 error:function(error){
                     res.json({error:error});

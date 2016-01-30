@@ -73,7 +73,6 @@ module.exports=function(app,Parse) {
 
   });
 
-
 /*******************************************
  *
  * SIGN OUT
@@ -82,7 +81,7 @@ module.exports=function(app,Parse) {
 
 app.get('/signout', function (req, res, next) {
     Parse.User.logOut();
-    res.render('index', {title: 'Come back again!', path: req.path});
+    res.render('home', {title: 'Come back again!', path: req.path});
 });
 
 };

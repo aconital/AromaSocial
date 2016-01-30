@@ -120,8 +120,8 @@ module.exports=function(app,Parse) {
             model.set('abstract', reqBody.description);
             model.set('access', ["UBC"]);
             model.set('collaborators',collaborators);
-            model.set('image','/images/paper.png');
-            model.set('image_URL','/images/paper.png');
+            model.set('image','/images/model.png');
+            model.set('image_URL','/images/model.png');
             model.set('title',reqBody.title);
             model.set('keywords',keywords);
             model.set('license',reqBody.license);
