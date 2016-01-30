@@ -1,3 +1,10 @@
+// require('babel-register');
+// var React = require('react');
+// var ReactDOM = require('react-dom/server');
+//var components = require('./public/components.js'); // change path later
+
+//var HelloMessage = React.createFactory(components.HelloMessage); //???
+
 var express = require('express');
 var fs = require('fs');
 var path = require('path');

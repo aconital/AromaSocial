@@ -19,6 +19,7 @@
     "formidable": "^1.0.17",
     "fs-extra": "^0.26.3",
     "grunt-contrib-copy": "^0.8.0",
+    "history": "^1.17.0",
     "jade": "~1.9.2",
     "jquery": "^2.1.4",
     "mixin": "*",
@@ -29,9 +30,11 @@
     "node-neat": "^1.7.1-beta1",
     "parse": "^1.6.13",
     "parse-react": "^0.5.0",
-    "react": "^0.14.2",
+    "react": "^0.14.6",
     "react-bootstrap": "^0.28.1",
+    "react-dom": "^0.14.6",
     "react-input-autosize": "^0.6.6",
+    "react-router": "^1.0.3",
     "react-tagsinput": "^3.0.2",
     "react-xeditable": "^0.1.3",
     "serve-favicon": "~2.2.0",
@@ -39,12 +42,21 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
-    "node-sass": "~2.0.1",
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
     "grunt": "~0.4.5",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-sass": "~0.18.0",
     "grunt-contrib-sass": "~0.9.0",
+    "grunt-contrib-watch": "~0.6.1",
     "grunt-express": "^1.4.1",
-    "load-grunt-tasks": "^3.1.0"
+    "grunt-sass": "~0.18.0",
+    "load-grunt-tasks": "^3.1.0",
+    "node-sass": "~2.0.1",
+    "react": "^0.14.7",
+    "react-hot-loader": "^1.3.0",
+    "react-router": "^1.0.3",
+    "webpack": "^1.12.12",
+    "webpack-dev-server": "^1.14.1"
   }
 }
