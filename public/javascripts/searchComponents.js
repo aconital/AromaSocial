@@ -1,60 +1,49 @@
 
 //var isNode = typeof module !== 'undefined' && module.exports
-//  , React = isNode ? require('react') : window.React
+//var React = isNode ? require('react'): React //: window.React
 //  , ReactDOM = isNode ? require('react') : window.ReactDOM
-var React = require('react');
-var Router = require('react-router').Router
-var Route = require('react-router').Route
-var Link = require('react-router').Link
+//var React = require('react');
+//var Router = require('react-router').Router
+//var Route = require('react-router').Route
+//var Link = require('react-router').Link
+var isNode = typeof require !== 'undefined'
+var React = typeof require === 'undefined'
+             ? window.React
+             : require('react')
 
 var SearchFeed = React.createClass({
   getInitialState: function() {
     return {
-      data: [1, 2, 3, 4, 5]
+      data: []
     };
+  },
+  loadSearchFeed: function() {
+    $.ajax({
+      url: '/searchfeeddata',
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        console.log(data);
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
   },
   componentDidMount: function() {
     console.log("Browser rendering working!");
+    this.loadSearchFeed();
   },
   render: function() {
-    // return (
-    //     React.createElement(
-    //       "div",
-    //       null,
-    //       React.createElement(
-    //         "h1",
-    //         null,
-    //         "App"
-    //       ),
-    //       React.createElement(
-    //         "ul",
-    //         null,
-    //         React.createElement(
-    //           "li",
-    //           null,
-    //           React.createElement(
-    //             "a",
-    //             { href: "/" },
-    //             key
-    //           )
-    //         ),
-    //         React.createElement(
-    //           "li",
-    //           null,
-    //           React.createElement(
-    //             "a",
-    //             { href: "/" },
-    //             items[key]
-    //           )
-    //         )
-    //       )
-    //     )        
-    // )
+    console.log("IN RENDERING")
     return (
-      React.createElement("div", {}, this.props.data.map(function(items){
+      React.createElement("div", {}, this.state.data.map(function(items){
+            console.log(items)
             for (var key in items) {
               var link = "/";
               var obj = items[key];
+              console.log(key);
               console.log(obj);
               switch (obj["type"]) {
                 case "user":
@@ -89,33 +78,23 @@ var SearchFeed = React.createClass({
                           { href: link },
                           key
                         )
-                      ))
+                      )
+                    )
                 )
               )
             }
           }))
+
         )
-    // return (
-    // 	React.createElement("div", {}, this.props.data.map(function(items){
-    //   		  for (var key in items) {
-    //           return (
-    //             React.createElement("div", {}, 
-    //               React.createElement("h1", null, key),
-    //               React.createElement("h5", null, items[key])
-    //             )
-    //           )
-    //         }
-    //       }))
-    // 		)
     	}
 });
 
-// if (isNode) {
-//   exports.SearchFeed = SearchFeed;
-// } else {
-//   ReactDOM.render(React.createElement(SearchFeed, {data: [1,2,3,4,5]}), document.getElementById('content'));
-// }
-exports.SearchFeed = SearchFeed;
+ if (isNode) {
+   exports.SearchFeed = SearchFeed;
+ } else {
+   ReactDOM.render(React.createElement(SearchFeed, {}), document.getElementById('reactSearchContainer'));
+ }
+//exports.SearchFeed = SearchFeed;
 
 
 
