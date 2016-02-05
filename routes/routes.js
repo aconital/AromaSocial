@@ -17,7 +17,11 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/', function(req, res, next) {
-        res.render('home', {user: req.user});
+        if (req.session && req.session.user) {
+        	res.redirect('/newsfeed');
+        } else {
+       		res.render('home', {user: req.user});
+        }
   });
 
   /*******************************************
@@ -26,8 +30,11 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/signup', function (req, res, next) {
-
+	if (req.session && !req.session.user) {
        res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
+	} else {
+		res.redirect('/newsfeed');
+	}
    });
      app.post('/signup', function (req, res, next) {
      var user = new Parse.User();
@@ -56,13 +63,17 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/signin', function (req, res, next) {
-
-    res.render('signin', {title: 'Login', path: req.path});
+	if (req.session && !req.session.user) {
+    	res.render('signin', {title: 'Login', path: req.path});
+	} else {
+		res.redirect('/newsfeed');
+	}
   });
 
   app.post('/signin', function (req, res, next) {
     Parse.User.logIn(req.body.username, req.body.password, {
       success: function(user) {
+      	  req.session.user = user;
           res.redirect('/newsfeed');
       },
       error: function(user, error) {
@@ -81,6 +92,7 @@ module.exports=function(app,Parse) {
 
 app.get('/signout', function (req, res, next) {
     Parse.User.logOut();
+    req.session.destroy();
     res.render('home', {title: 'Come back again!', path: req.path});
 });
 
