@@ -10,6 +10,7 @@ var fs = require('fs');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var bourbon = require('node-bourbon');
@@ -63,6 +64,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
+app.use(session({
+    secret: "SYNCHOLARTOKEN",
+//    store: todo,
+    proxy: true,
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 require('./routes/routes')(app,Parse);

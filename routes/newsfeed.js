@@ -51,8 +51,6 @@ app.get('/newsfeeddata', function (req, res, next) {
                           if(object.attributes.pubId!=null){
                               if (object.attributes.pubId.attributes != null) {
                                   var pubItem = object.attributes.pubId.attributes;
-                                  console.log("PUB ATTRIBUTES: ");
-                                  console.log(object.attributes);
                                   var filename ="";
                                   var title ="";
                                   var hashtags ="";
@@ -94,7 +92,6 @@ app.get('/newsfeeddata', function (req, res, next) {
                                   title: title,
                                   objId: objectId
                               });
-//                              console.log(itemId);
                               }
                           }
                       }
