@@ -37,55 +37,135 @@ var SearchFeed = React.createClass({
   },
   render: function() {
     console.log("IN RENDERING")
+    var users = [];
+    var models = [];
+    var data = [];
+    var publications = [];
+    var organizations = [];
+
+    this.state.data.map(function(item){
+      console.log(item)
+      for (var key in item) {
+          var link = "/";
+          var obj = item[key];
+          switch (obj["type"]) {
+          case "user":
+            link = "/profile/" + key;
+            users.push({
+              "obj": item,
+              "link": link,
+              "key" : key
+            });
+            break;
+          case "model":
+            link = "/model/"  + obj["id"];
+            models.push({
+              "obj": item,
+              "link": link,
+              "key" : key
+            });
+            break;
+          case "data":
+            link = "/data/" + obj["id"];
+            data.push({
+              "obj": item,
+              "link": link,
+              "key": key
+            });
+            break;
+          case "publication":
+            link = "/publication/" + obj["id"];
+            publications.push({
+              "obj": item,
+              "link": link,
+              "key": key
+            });
+            break;
+          case "organization":
+            link = "/organization/" + obj["id"];
+            organizations.push({
+              "obj": item,
+              "link": link,
+              "key": key
+            });
+            break;
+          case "default":
+            link = "/";
+            break;
+        };
+    }});
+
     return (
-      React.createElement("div", {}, this.state.data.map(function(items){
-            console.log(items)
-            for (var key in items) {
-              var link = "/";
-              var obj = items[key];
-              console.log(key);
-              console.log(obj);
-              switch (obj["type"]) {
-                case "user":
-                  link = "/profile/" + key;
-                  break;
-                case "model":
-                  link = "/model/"  + obj["id"];
-                  break;
-                case "data":
-                  link = "/data/" + obj["id"];
-                  break;
-                case "publication":
-                  link = "/publication/" + obj["id"];
-                  break;
-                case "organization":
-                  link = "/organization/" + obj["id"];
-                  break;
-                case "default":
-                  link = "/";
-                  break;
-              };
+        React.createElement("div", {}, 
+          React.createElement("h2", {}, "Search Results"),
+          React.createElement("h3", {}, "Users: "),
+          React.createElement("ul", {}, 
+            React.createElement("div", {}, users.map(function(i){
+              obj = i["obj"]
+              link = i["link"]
+              key = i["key"]
               return (
-                React.createElement("div", {},
-                    React.createElement(
-                      "ul",
-                      null,
-                      React.createElement(
-                        "li",
-                        null,
-                        React.createElement(
-                          "a",
-                          { href: link },
-                          key
-                        )
-                      )
-                    )
+                React.createElement("li", {},
+                  React.createElement("a", {href: link}, key)
                 )
               )
-            }
-          }))
-
+            }))
+          ),
+          React.createElement("h3", {}, "Data: "),
+          React.createElement("ul", {}, 
+            React.createElement("div", {}, data.map(function(i){
+              obj = i["obj"]
+              link = i["link"]
+              key = i["key"]
+              return (
+                React.createElement("li", {},
+                  React.createElement("a", {href: link}, key)
+                )
+              )
+            }))
+          ),
+          React.createElement("h3", {}, "Publications: "),
+          React.createElement("ul", {}, 
+            React.createElement("div", {}, publications.map(function(i){
+              obj = i["obj"]
+              link = i["link"]
+              key = i["key"]
+              return (
+                React.createElement("li", {},
+                  React.createElement("a", {href: link}, key)
+                )
+              )
+            }))
+          ),
+          React.createElement("h3", {}, "Organizations: "),
+          React.createElement("ul", {}, 
+            React.createElement("div", {}, organizations.map(function(i){
+              obj = i["obj"]
+              link = i["link"]
+              key = i["key"]
+              return (
+                React.createElement("li", {},
+                  React.createElement("a", {href: link}, key)
+                )
+              )
+            }))
+          ),
+          React.createElement("h3", {}, "Model: "),
+          React.createElement("ul", {}, 
+            React.createElement("div", {}, models.map(function(i){
+              obj = i["obj"]
+              link = i["link"]
+              key = i["key"]
+              return (
+                React.createElement("li", {},
+                  React.createElement("a", {href: link}, key)
+                )
+              )
+            }))
+          )
         )
+    )
+
     	}
 });
 
@@ -94,7 +174,6 @@ var SearchFeed = React.createClass({
  } else {
    ReactDOM.render(React.createElement(SearchFeed, {}), document.getElementById('reactSearchContainer'));
  }
-//exports.SearchFeed = SearchFeed;
 
 
 
