@@ -573,4 +573,61 @@ module.exports=function(app,Parse) {
 
     });
 
+    app.get('/profile/:objectId/equipments', function (req, res, next) {
+        var innerQuery = new Parse.Query(Parse.User);
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var queryEquipment = new Parse.Query('Equipment');
+        queryEquipment.matchesQuery('user',innerQuery);
+        queryEquipment.find({
+            success: function(results) {
+                var equipments = [];
+                for (var i in results) {
+                    var objectId = results[i].attributes.objectId;
+                    var title = results[i].attributes.title;
+                    var description = results[i].attributes.description;
+                    var image_URL = results[i].attributes.image_URL;
+                    var equipment = {
+                        title: title,
+                        description: description,
+                        image_URL: image_URL
+                    }; equipments.push(equipment);
+                }
+                res.json(equipments);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.get('/profile/:objectId/projects', function (req, res, next) {
+        var innerQuery = new Parse.Query(Parse.User);
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var queryProject = new Parse.Query('Project');
+        queryProject.matchesQuery('user',innerQuery);
+        queryProject.find({
+            success: function(results) {
+                var projects = [];
+                for (var i in results) {
+                    var objectId = results[i].attributes.objectId;
+                    var title = results[i].attributes.title;
+                    var description = results[i].attributes.description;
+                    var image_URL = results[i].attributes.image_URL;
+                    var project = {
+                        title: title,
+                        description: description,
+                        image_URL: image_URL
+                    }; projects.push(project);
+                }
+                res.json(projects);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
 };

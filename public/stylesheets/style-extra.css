@@ -1,0 +1,19 @@
+.body-link{color: #70ab8f; }
+.body-link:hover{color: #70ab8f;}
+
+.font-10 { font-size: 10px; }
+.font-15 { font-size: 15px; }
+
+.margin-top-5 { margin-top:5px; }
+.margin-top-10 { margin-top:10px; }
+.margin-top-bottom-5 { margin:5px 0px; }
+.margin-top-bottom-10 { margin:10px 0px; }
+
+.padding-left-5 { padding-left: 5px; }
+.padding-left-10 { padding-left: 10px; }
+.padding-right-5 { padding-right: 5px; }
+.padding-right-10 { padding-right: 10px; }
+.padding-top-5 { padding-top:5px; }
+.padding-top-10 { padding-top:10px; }
+.padding-top-bottom-5 { padding:5px 0px; }
+.padding-top-bottom-10 { padding:10px 0px; }

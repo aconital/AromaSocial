@@ -149,7 +149,7 @@ var Profile = React.createClass ({
             </div>
             <div className="item-bottom">
                 <div className="item-bottom-1">
-                    <div className="item-panel contain-panel"><h5>{fullname}</h5><br/>{position}</div>
+                    <div className="side-panel"><h5>{fullname}</h5><br/>{position}</div>
                     {/*
                     <div className="item-panel contain-panel"><h5>{position} @</h5><br/>
                         {this.props.locations.map(function(listValue){
@@ -174,7 +174,7 @@ var Profile = React.createClass ({
                     */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                     <ProfileMenu tabs={['About','Connections','Organizations', 'Publications', 'Data', 'Models']} />
+                     <ProfileMenu tabs={['About','Connections','Organizations', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
                     {(currentUsername == username) ? "" : <div className="item-panel-empty contain-panel-empty">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
@@ -214,9 +214,11 @@ var ProfileMenu = React.createClass ({
         var tabMap = {0: <About tab={this.clicked}/>,
                 1: <Connections />,
                 2: <Organizations />,
-                3: <Publications objectId={objectId}/>,
-                4: <DataList objectId={objectId}/>,
-                5: <ModelsList objectId={objectId}/>
+                3: <Equipments objectId={objectId}/>,
+                4: <Projects objectId={objectId}/>,
+                5: <Publications objectId={objectId}/>,
+                6: <DataList objectId={objectId}/>,
+                7: <ModelsList objectId={objectId}/>
                 // 6: <More />
                 };
         return (
@@ -721,14 +723,130 @@ var More = React.createClass({
   }
 });
 
+var Equipments = React.createClass({
+    getInitialState: function() {
+        return { data: [], showModal: false };
+    },
+    componentWillMount : function() {
+        var equipmentsURL= "/profile/"+objectId+"/equipments";
+
+        $.ajax({
+            type: 'GET',
+            url: equipmentsURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Equipments!");
+            }.bind(this)
+        });
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(item) {
+            console.log(item);
+            return (
+                <div className="item-box">
+                    <div key={item.objectId}>
+                        <div className="item-box-left">
+                            <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <span className="font-15">{item.description}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+        return (
+            <div>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Equipment</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Modal.Title>To Be Determined!</Modal.Title>
+                    </Modal.Body>
+                </Modal>
+                <table className="item-search-field" width="100%">
+                    <tr>
+                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                        {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                    </tr>
+                </table>
+                {itemsList}
+            </div>
+        )
+    }
+});
+
 var Projects = React.createClass({
-  render: function() {
-    return (
-           <div>
-             {about}
-           </div>
-         )
-  }
+    getInitialState: function() {
+        return { data: [], showModal: false };
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    componentWillMount : function() {
+        var projectsURL= "/profile/"+objectId+"/projects";
+
+        $.ajax({
+            type: 'GET',
+            url: projectsURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Equipments!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(item) {
+            console.log(item);
+            return (
+                <div className="item-box">
+                    <div key={item.objectId}>
+                        <div className="item-box-left">
+                            <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <span className="font-15">{item.description}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+        return (
+            <div>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Project</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Modal.Title>To Be Determined!</Modal.Title>
+                    </Modal.Body>
+                </Modal>
+                <table className="item-search-field" width="100%">
+                    <tr>
+                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                        {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                    </tr>
+                </table>
+                {itemsList}
+            </div>
+        )
+    }
 });
 
 var creator = ParseReact.Mutation.Create('Organization', {

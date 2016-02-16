@@ -1,0 +1,45 @@
+.content-wrap-item-page {
+    max-width:1150px;
+    margin:auto;
+} .content-wrap-item-page-20 {
+    float:left;
+    width:20%;
+} .content-wrap-item-page-80 {
+    float:left;
+    width:80%;
+} .content-wrap-item-page-100 {
+    float:left;
+    width:100%;
+}
+
+.item-panel {
+    position: relative;
+    border: solid;
+    border-color: #70ab8f;
+    border-radius: 4px;
+    margin: 0px; padding: 20px;
+    margin-top: 20px;
+    width: 100%;
+    background-color: #FFF;
+}
+
+.item-info-table { margin-bottom: 20px; margin-left; 10px; width: 100%; }
+.item-info-table-right { width: 75%; }
+.item-info-table-left { width: 25%; }
+
+.no-margin{ margin: 0px; padding: 0px; }
+
+.h2-editable { border: 1px solid #FFF; padding:10px; width:100%; max-width:100%; }
+.h2-editable:hover { border: 1px dotted #70ab8f; width:100%; }
+.h2-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
+.h2-editable-wrap { height: 75px; }
+
+.h3-item-wrap { margin: 0px; padding: 10px; }
+.h3-item-spacing { margin: 0px 0px; margin-bottom:20px; }
+
+.p-noneditable { border: 1px solid #FFF; padding:10px; }
+.p-editable { border: 1px solid #FFF; padding:10px; width:100%; max-width:100%; }
+.p-editable:hover { border: 1px dotted #70ab8f; width:100%; }
+.p-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
+.p-editable-bottom-spacing { margin: 0px 0px; margin-bottom:0px; }
+.p-editable-bottom-wrap { height: 117px; }
