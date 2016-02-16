@@ -6543,14 +6543,22 @@ div.react-tagsinput {
    text-decoration: none;
 
  }
-#pending-accept
-{
-  color: #03c400;
+.pending {
+  color: #fff;
+  background-color: #70ab8f;
+  display: inline;
+  border: solid;
+  border-color: #70ab8f;
+  border-width: 1px 1px 0 1px;
+  padding: 10px 5px 10px 5px;
+  font-size: 14px;
+  border-radius:4px;
+
 }
- #pending-deny
- {
-   color: #de000b;
- }
+.pending:hover {
+  background-color: #86B9A0;
+  border-color: #86B9A0;
+}
 
  .container-newsfeed { max-width:1180px;margin:auto; }
 
@@ -6595,11 +6603,28 @@ textarea {
 .logout-button{margin-top:2px;color:#70ab8f;font-size:25px;}
 .colspan{ colspan: 2;}
 
-#friendrequest-menu
+#friendrequest
 {list-style-type: none;
-  width: 300px !important;
+  width: 500px;
 }
-
+.friendrequest-pic
+{
+  width: 80px;
+  height: 80px;
+}
+.row.friendrequest
+{ margin-top: 10px;
+  margin-bottom: 5px;
+  background-color: rgba(130, 185, 157, 0.1);
+}
+#friendrequest-name
+{
+  margin-top: 25px;
+}
+#friendrequest-actions
+{ text-align: right;
+  margin-top: 25px;
+}
 .invisible { display: none; }
 .visible { display: block; }
 .btn-right-side { padding: 6px 3px; }
