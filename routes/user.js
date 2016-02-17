@@ -573,7 +573,7 @@ module.exports=function(app,Parse) {
 
     });
 
-    app.get('/profile/:objectId/equipments', function (req, res, next) {
+    app.get('/profile/:objectId/equipments_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -603,7 +603,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/projects', function (req, res, next) {
+    app.get('/profile/:objectId/projects_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -633,7 +633,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/publications', function (req, res, next) {
+    app.get('/profile/:objectId/publications_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -644,16 +644,15 @@ module.exports=function(app,Parse) {
                 var publications = [];
                 for (var i in results) {
                     var objectId = results[i].id;
-                    var title = results[i].attributes.title;
+                    var title = "Untitled";
                     var description = results[i].attributes.description;
                     var authors = results[i].attributes.authors;
-                    var publication_code = results[i].attributes.publication_code;
+                    var publication_code = "N/A";
                     var type = "Other";
 
-                    if (results[i].attributes.type){ type = results[i].attributes.type; }
-
-                    if (publication_code == ""){ publication_code = "N/A"; }
-                    if (type == ""){ type = "Other"; }
+                    if (results[i].attributes.title) { title = results[i].attributes.title; }
+                    if (results[i].attributes.type) { type = results[i].attributes.type; }
+                    if (results[i].attributes.publication_code) { publication_code = results[i].attributes.publication_code; }
 
                     var publication = {
                         objectId: objectId,
@@ -674,7 +673,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/data', function (req, res, next) {
+    app.get('/profile/:objectId/data_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -685,15 +684,15 @@ module.exports=function(app,Parse) {
                 var data = [];
                 for (var i in results) {
                     var objectId = results[i].id;
-                    var title = results[i].attributes.title;
+                    var title = "Untitled";
                     var description = results[i].attributes.description;
                     var authors = results[i].attributes.collaborators;
                     var image_URL = results[i].attributes.image_URL;
                     var type = "Other";
 
-                    if (results[i].attributes.type){ type = results[i].attributes.type; }
-
-                    if (type == ""){ type = "Other"; }
+                    if (results[i].attributes.title) { title = results[i].attributes.title; }
+                    if (results[i].attributes.type) { type = results[i].attributes.type; }
+                    if (results[i].attributes.publication_code) { publication_code = results[i].attributes.publication_code; }
 
                     var datum = {
                         objectId: objectId,
@@ -714,7 +713,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/models', function (req, res, next) {
+    app.get('/profile/:objectId/models_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -725,13 +724,14 @@ module.exports=function(app,Parse) {
                 var models = [];
                 for (var i in results) {
                     var objectId = results[i].id;
-                    var title = results[i].attributes.title;
+                    var title = "Untitled";
                     var description = results[i].attributes.abstract;
                     var authors = results[i].attributes.collaborators;
                     var image_URL = results[i].attributes.image_URL;
                     var type = "Other";
 
-                    if (results[i].attributes.type){ type = results[i].attributes.type; }
+                    if (results[i].attributes.title) { title = results[i].attributes.title; }
+                    if (results[i].attributes.type) { type = results[i].attributes.type; }
 
                     var model = {
                         objectId: objectId,

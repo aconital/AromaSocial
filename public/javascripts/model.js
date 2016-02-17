@@ -106,7 +106,7 @@ var Model = React.createClass ({
     },
     render: function() {
         return (
-        <div className="content-wrap-pdm">
+        <div className="content-wrap-item-page">
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
                   <Modal.Header closeButton>
                     <Modal.Title>Update Data Image</Modal.Title>
@@ -120,8 +120,8 @@ var Model = React.createClass ({
                     <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
                   </Modal.Footer>
                 </Modal>
-            <div className="item-bottom-big">
-                    <div className="item-panel contain-panel-big">
+            <div className="content-wrap-item-page-100">
+                <div className="item-panel">
                     <div>
                         {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner">
@@ -167,7 +167,7 @@ var Model = React.createClass ({
                     */}
                     </div>
                     </div>
-                    <div className="item-panel contain-panel-big">
+                    <div className="item-panel">
                     <div>
                         <h4 className="contain-panel-big-h4">Developer(s)</h4>
                     </div>

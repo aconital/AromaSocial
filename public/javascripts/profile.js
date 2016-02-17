@@ -701,7 +701,7 @@ var Equipments = React.createClass({
         return { data: [], showModal: false };
     },
     componentWillMount : function() {
-        var equipmentsURL= "/profile/"+objectId+"/equipments";
+        var equipmentsURL= "/profile/"+objectId+"/equipments_list";
 
         $.ajax({
             type: 'GET',
@@ -770,7 +770,7 @@ var Projects = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var projectsURL= "/profile/"+objectId+"/projects";
+        var projectsURL= "/profile/"+objectId+"/projects_list";
 
         $.ajax({
             type: 'GET',
@@ -1573,7 +1573,7 @@ var Publications = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var publicationsURL= "/profile/"+objectId+"/publications";
+        var publicationsURL= "/profile/"+objectId+"/publications_list";
 
         $.ajax({
             type: 'GET',
@@ -1662,7 +1662,7 @@ var Models = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var modelsURL= "/profile/"+objectId+"/models";
+        var modelsURL= "/profile/"+objectId+"/models_list";
 
         $.ajax({
             type: 'GET',
@@ -1709,7 +1709,7 @@ var Models = React.createClass({
         });
         return (
             <div>
-                <ModelForm />
+                <ResourceForm />
                 {itemsList}
             </div>
         )
@@ -1727,7 +1727,7 @@ var Data = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var dataURL= "/profile/"+objectId+"/data";
+        var dataURL= "/profile/"+objectId+"/data_list";
 
         $.ajax({
             type: 'GET',
@@ -1774,7 +1774,7 @@ var Data = React.createClass({
         });
         return (
             <div>
-                <ModelForm />
+                <ResourceForm />
                 {itemsList}
             </div>
         )
@@ -1852,153 +1852,6 @@ var ModelListItem = React.createClass({
                 </div>
         )
     }
-});
-
-var ModelForm = React.createClass({
-  getInitialState: function() {
-    return { showModal: false,
-             step : 1,
-             txtTitle : "",
-             txtCollaborators : [fullname],
-             txtCreationDate : "",
-             txtAbstract : "",
-             txtLicense : "",
-             txtLinkToPublication : "",
-             txtLinkToPatent : "",
-             txtKeywordsTags : [],
-             txtURL : "",
-             txtTags: [],
-             txtPrivacy: [] };
-  },
-  clickOpen() {
-    this.setState({ showModal: true });
-  },
-  clickClose() {
-    this.setState({ showModal: false, step : 1 });
-  },
-  clickBack: function(currentStep) {
-    this.setState({ step: currentStep - 1 });
-  },
-  clickContinue: function(currentStep) {
-    this.setState({ step: currentStep + 1 });
-  },
-    clickSubmit: function(e) {
-        e.preventDefault();
-
-        var endpoint = fromModel ? "/model" : "/data";
-        var dataForm = {file: this.state.file, picture: this.state.picture,
-            collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-            description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-            keywords: this.state.keywords, url: this.state.url};
-
-        $.ajax({
-            url: path + endpoint,
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Data upload done");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + endpoint, status, err.toString());
-            }.bind(this)
-        });
-
-        return;
-    },
-  title: function(e) {
-    this.setState({ txtTitle : e.target.value })
-  },
-  collaborators: function(e) {
-    this.setState({ txtCollaborators : e })
-  },
-  creationDate: function(e) {
-    this.setState({ txtCreationDate : e.target.value })
-  },
-  license: function(e) {
-    this.setState({ txtLicense : e.target.value })
-  },
-  linkToPublication: function(e) {
-    this.setState({ txtLinkToPublication : e.target.value })
-  },
-  linkToPatent: function(e) {
-    this.setState({ txtLinkToPatent : e.target.value })
-  },
-  abstract: function(e) {
-    this.setState({ txtAbstract : e.target.value })
-  },
-  keywordsTags: function(e) {
-    this.setState({ txtKeywordsTags : e })
-  },
-  URL: function(e) {
-    this.setState({ txtURL : e.target.value })
-  },
-  tags: function(e) {
-    this.setState({ txtTags : e })
-  },
-  privacy: function(e) {
-    this.setState({ txtPrivacy : e })
-  },
-  render: function() {
-    var self = this;
-    var stepMap = {1: <Step1Model title={this.title} txtTitle={this.state.txtTitle}
-                             collaborators={this.collaborators} txtCollaborators={this.state.txtCollaborators}
-                             creationDate={this.creationDate} txtCreationDate={this.state.txtCreationDate}
-                             license={this.license} license={this.state.license}
-                             linkToPublication={this.linkToPublication} txtLinkToPublication={this.state.txtLinkToPublication}
-                             linkToPatent={this.linkToPatent} txtLinkToPatent={this.state.txtLinkToPatent}
-                             abstract={this.abstract} txtAbstract={this.state.txtAbstract}
-                             keywordsTags={this.keywordsTags} txtKeywordsTags={this.state.txtKeywordsTags}
-                             URL={this.URL} txtURL={this.state.txtURL}/>,
-                   2: <Step2Model tags={this.tags} txtTags={this.state.txtTags}
-                             privacy={this.privacy} txtPrivacy={this.state.txtPrivacy}/>,
-                   3: <Step3Model txtTitle={this.state.txtTitle}
-                             txtCollaborators={this.state.txtCollaborators}
-                             txtCreationDate={this.state.txtCreationDate}
-                             license={this.state.license}
-                             txtLinkToPublication={this.state.txtLinkToPublication}
-                             txtLinkToPatent={this.state.txtLinkToPatent}
-                             txtAbstract={this.state.txtAbstract}
-                             txtKeywordsTags={this.state.txtKeywordsTags}
-                             txtURL={this.state.txtURL} />,
-                   4: <Step4Model />};
-    return (
-      <div className="">
-            <form id="" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
-                <table id="upload-field" width="100%"><tr>
-                    <td className="padding-right">
-                    <input type="text" id="search" placeholder="Search..." className="form-control"/>
-                    </td>
-                    {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                </tr>
-                </table>
-                <Modal show={this.state.showModal} onHide={this.clickClose}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>New Model</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    {stepMap[self.state.step]}
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <table id="form-submit" width="100%"><tr>
-                      <td className="padding-right fifty-fifty">
-                        {this.state.step == 1 || this.state.step == 4 ? <div></div> : <input className="publication-button" type="submit" value="Back" onClick={this.clickBack.bind(self, this.state.step)}/>}
-                      </td>
-                      <td className="padding-left fifty-fifty">
-                        {this.state.step == 3 || this.state.step == 4 ? <div></div> : <input className="publication-button" type="submit" value="Next" onClick={this.clickContinue.bind(self, this.state.step)} />}
-                        {this.state.step != 3 ? <div></div> : <input className="publication-button" type="submit" value="Submit" onClick={this.clickSubmit} />}
-                        {this.state.step != 4 ? <div></div> : <input className="publication-button" type="submit" value="Close" onClick={this.clickClose} />}
-                      </td>
-                    </tr></table>
-                  </Modal.Footer>
-                </Modal>
-            </form>
-      </div>
-    )
-  }
 });
 
 var Step1Model = React.createClass({
@@ -2209,7 +2062,7 @@ var ResourceForm = React.createClass({
                 <td className="padding-right">
                 <input type="text" id="search" placeholder="Search..." className="form-control"/>
                 </td>
-                {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
+                {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
             </tr>
         </table>
        {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}
