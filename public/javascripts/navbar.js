@@ -5,7 +5,8 @@ var FriendRequest = React.createClass({
     getInitialState: function() {
         return {data: []};
     },
-    componentDidMount : function(){
+    loadRequests :function()
+    {
         $.ajax({
             url: "/friendrequest",
             success: function(data) {
@@ -17,6 +18,10 @@ var FriendRequest = React.createClass({
             }.bind(this)
         });
     },
+    componentDidMount : function(){
+       this.loadRequests();
+
+    },
     pending_action:function(person,action)
     {
         $.ajax({
@@ -25,7 +30,8 @@ var FriendRequest = React.createClass({
             data:{mode:action,person:person},
             success: function(data) {
 
-                console.log(data);
+                this.loadRequests();
+
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve people");
