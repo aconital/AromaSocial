@@ -68,3 +68,8 @@
 } .item-box-image:hover {
     opacity: .75;
 }
+
+.item-box-table-info { width: 100%; overflow: hidden; }
+.item-box-table-info tr { width: 100%; overflow: hidden; }
+.item-box-table-info tr td:nth-child(1) { vertical-align:top; width: 20%; min-width: 20%; max-width: 20%; }
+.item-box-table-info tr td:nth-child(2) { width: 80%; min-width: 80%; max-width: 80%; }

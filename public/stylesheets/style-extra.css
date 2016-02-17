@@ -1,3 +1,5 @@
+.clear { clear: both; }
+
 .body-link{color: #70ab8f; }
 .body-link:hover{color: #70ab8f;}
 
@@ -17,3 +19,8 @@
 .padding-top-10 { padding-top:10px; }
 .padding-top-bottom-5 { padding:5px 0px; }
 .padding-top-bottom-10 { padding:10px 0px; }
+
+.navbar-default { background-color: rgba(0, 0, 0, 0) !important; }
+.navbar-right { margin-right: 0px !important; right: 0px; }
+.navbar-collapse { padding: 0px; width: 1165px; left: 0px; }
+.navbar-wrapper { max-width: 1175px; padding: 0px; padding-left: 25px; margin: auto; }

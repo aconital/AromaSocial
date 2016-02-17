@@ -583,11 +583,12 @@ module.exports=function(app,Parse) {
             success: function(results) {
                 var equipments = [];
                 for (var i in results) {
-                    var objectId = results[i].attributes.objectId;
+                    var objectId = results[i].id;
                     var title = results[i].attributes.title;
                     var description = results[i].attributes.description;
                     var image_URL = results[i].attributes.image_URL;
                     var equipment = {
+                        objectId: objectId,
                         title: title,
                         description: description,
                         image_URL: image_URL
@@ -612,17 +613,137 @@ module.exports=function(app,Parse) {
             success: function(results) {
                 var projects = [];
                 for (var i in results) {
-                    var objectId = results[i].attributes.objectId;
+                    var objectId = results[i].id;
                     var title = results[i].attributes.title;
                     var description = results[i].attributes.description;
                     var image_URL = results[i].attributes.image_URL;
                     var project = {
+                        objectId: objectId,
                         title: title,
                         description: description,
                         image_URL: image_URL
                     }; projects.push(project);
                 }
                 res.json(projects);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.get('/profile/:objectId/publications', function (req, res, next) {
+        var innerQuery = new Parse.Query(Parse.User);
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var queryProject = new Parse.Query('Publication');
+        queryProject.matchesQuery('user',innerQuery);
+        queryProject.find({
+            success: function(results) {
+                var publications = [];
+                for (var i in results) {
+                    var objectId = results[i].id;
+                    var title = results[i].attributes.title;
+                    var description = results[i].attributes.description;
+                    var authors = results[i].attributes.authors;
+                    var publication_code = results[i].attributes.publication_code;
+                    var type = "Other";
+
+                    if (results[i].attributes.type){ type = results[i].attributes.type; }
+
+                    if (publication_code == ""){ publication_code = "N/A"; }
+                    if (type == ""){ type = "Other"; }
+
+                    var publication = {
+                        objectId: objectId,
+                        title: title,
+                        description: description,
+                        authors: authors,
+                        publication_code: publication_code,
+                        type: type
+                    }; publications.push(publication);
+                }
+                var filtered_publications=  _.groupBy(publications,'type');
+                res.json(filtered_publications);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.get('/profile/:objectId/data', function (req, res, next) {
+        var innerQuery = new Parse.Query(Parse.User);
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var queryProject = new Parse.Query('Data');
+        queryProject.matchesQuery('user',innerQuery);
+        queryProject.find({
+            success: function(results) {
+                var data = [];
+                for (var i in results) {
+                    var objectId = results[i].id;
+                    var title = results[i].attributes.title;
+                    var description = results[i].attributes.description;
+                    var authors = results[i].attributes.collaborators;
+                    var image_URL = results[i].attributes.image_URL;
+                    var type = "Other";
+
+                    if (results[i].attributes.type){ type = results[i].attributes.type; }
+
+                    if (type == ""){ type = "Other"; }
+
+                    var datum = {
+                        objectId: objectId,
+                        title: title,
+                        description: description,
+                        authors: authors,
+                        image_URL: image_URL,
+                        type: type
+                    }; data.push(datum);
+                }
+                var filtered_data=  _.groupBy(data,'type');
+                res.json(filtered_data);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.get('/profile/:objectId/models', function (req, res, next) {
+        var innerQuery = new Parse.Query(Parse.User);
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var queryProject = new Parse.Query('Model');
+        queryProject.matchesQuery('user',innerQuery);
+        queryProject.find({
+            success: function(results) {
+                var models = [];
+                for (var i in results) {
+                    var objectId = results[i].id;
+                    var title = results[i].attributes.title;
+                    var description = results[i].attributes.abstract;
+                    var authors = results[i].attributes.collaborators;
+                    var image_URL = results[i].attributes.image_URL;
+                    var type = "Other";
+
+                    if (results[i].attributes.type){ type = results[i].attributes.type; }
+
+                    var model = {
+                        objectId: objectId,
+                        title: title,
+                        description: description,
+                        authors: authors,
+                        image_URL: image_URL,
+                        type: type
+                    }; models.push(model);
+                }
+                var filtered_models=  _.groupBy(models,'type');
+                res.json(filtered_models);
             },
             error: function(error) {
                 console.log(error);

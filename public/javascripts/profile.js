@@ -150,6 +150,7 @@ var Profile = React.createClass ({
             <div className="item-bottom">
                 <div className="item-bottom-1">
                     <div className="side-panel"><h5>{fullname}</h5><br/>{position}</div>
+                    {(currentUsername == username) ? "" : <div className="item-panel-empty contain-panel-empty">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
                     {/*
                     <div className="item-panel contain-panel"><h5>{position} @</h5><br/>
                         {this.props.locations.map(function(listValue){
@@ -177,7 +178,6 @@ var Profile = React.createClass ({
                      <ProfileMenu tabs={['About','Connections','Organizations', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
-                    {(currentUsername == username) ? "" : <div className="item-panel-empty contain-panel-empty">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
                     {/*<input className="btn btn-panel" value="Message" />
                     <input className="btn btn-panel" value="Ask" />*/}
                     {/*
@@ -217,8 +217,8 @@ var ProfileMenu = React.createClass ({
                 3: <Equipments objectId={objectId}/>,
                 4: <Projects objectId={objectId}/>,
                 5: <Publications objectId={objectId}/>,
-                6: <DataList objectId={objectId}/>,
-                7: <ModelsList objectId={objectId}/>
+                6: <Data objectId={objectId}/>,
+                7: <Models objectId={objectId}/>
                 // 6: <More />
                 };
         return (
@@ -334,33 +334,6 @@ var Organizations = React.createClass({
             </div>
         )
     }
-});
-
-
-var Publications = React.createClass({
-  mixins: [ParseReact.Mixin],
-  getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
-                                                                      className: "_User",
-                                                                      objectId: this.props.objectId}))
-      };
-    },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <PublicationForm />
-        {this.data.publications.map(function(publication) {
-            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
-        })}
-        {rows}
-      </div>
-    );
-  }
 });
 
 var About = React.createClass({
@@ -806,7 +779,7 @@ var Projects = React.createClass({
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve Equipments!");
+                console.error("Couldn't Retrieve Projects!");
             }.bind(this)
         });
     },
@@ -1047,10 +1020,10 @@ var PublicationForm = React.createClass({
       <div className="">
             <form id="publication-form" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
                 <table id="upload-field" width="100%"><tr>
-                    <td className="padding-right">
+                    <td>
                     <input type="text" id="search" placeholder="Search..." className="form-control"/>
                     </td>
-                    {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                    {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
                 </tr>
                 </table>
                  <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1589,31 +1562,65 @@ var PublicationJournal = React.createClass ({
     }
 });
 
-
 var Publications = React.createClass({
-  mixins: [ParseReact.Mixin],
-  getInitialState: function() {
-      return {data: []};
+    getInitialState: function() {
+        return { data: [], showModal: false };
     },
-  observe: function() {
-      return {
-        publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
-                                                                      className: "_User",
-                                                                      objectId: this.props.objectId}))
-      };
+    clickOpen() {
+        this.setState({ showModal: true });
     },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <PublicationForm />
-        {this.data.publications.map(function(publication) {
-            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
-        })}
-        {rows}
-      </div>
-    );
-  }
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    componentWillMount : function() {
+        var publicationsURL= "/profile/"+objectId+"/publications";
+
+        $.ajax({
+            type: 'GET',
+            url: publicationsURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Publications!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(items) {
+            var type = items[0].type;
+            var typeList = [];
+            for (var i in items) {
+                var item = items[i];
+                typeList.push(item);
+            }
+            return (
+            <div>
+                <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
+                {typeList.map(item =>
+                <div className="item-box">
+                    <div key={item.objectId}>
+                        <a href={'/publication/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                        <span className="font-15">
+                        <table className="item-box-table-info">
+                            <tr><td><b>Authors: </b></td><td>{item.authors.map(author => <a href="" className="body-link">{author} </a>)}</td></tr>
+                            <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
+                            <tr><td><b>Publication Code: </b></td><td>{item.publication_code}</td></tr>
+                        </table>
+                        </span>
+                    </div>
+                </div>
+                )} <div className="clear"></div>
+            </div>
+            );
+        });
+        return (
+            <div>
+                <PublicationForm />
+                {itemsList}
+            </div>
+        )
+    }
 });
 
 var Publication = React.createClass({
@@ -1640,6 +1647,136 @@ var Publication = React.createClass({
                 </div>
                 */}
                 </div>
+        )
+    }
+});
+
+var Models = React.createClass({
+    getInitialState: function() {
+        return { data: [], showModal: false };
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    componentWillMount : function() {
+        var modelsURL= "/profile/"+objectId+"/models";
+
+        $.ajax({
+            type: 'GET',
+            url: modelsURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Models!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(items) {
+            var type = items[0].type;
+            var typeList = [];
+            for (var i in items) {
+                var item = items[i];
+                typeList.push(item);
+            }
+            return (
+            <div>
+                <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
+                {typeList.map(item =>
+                <div className="item-box">
+                    <div key={item.objectId}>
+                        <div className="item-box-left">
+                            <a href={'/model/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/model/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <span className="font-15">
+                            <table className="item-box-table-info">
+                                <tr><td><b>Authors: </b></td><td>{item.authors.map(author => <a href="" className="body-link">{author} </a>)}</td></tr>
+                                <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
+                            </table>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                )} <div className="clear"></div>
+            </div>
+            );
+        });
+        return (
+            <div>
+                <ModelForm />
+                {itemsList}
+            </div>
+        )
+    }
+});
+
+var Data = React.createClass({
+    getInitialState: function() {
+        return { data: [], showModal: false };
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    componentWillMount : function() {
+        var dataURL= "/profile/"+objectId+"/data";
+
+        $.ajax({
+            type: 'GET',
+            url: dataURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Data!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(items) {
+            var type = items[0].type;
+            var typeList = [];
+            for (var i in items) {
+                var item = items[i];
+                typeList.push(item);
+            }
+            return (
+            <div>
+                <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
+                {typeList.map(item =>
+                <div className="item-box">
+                    <div key={item.objectId}>
+                        <div className="item-box-left">
+                            <a href={'/data/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/data/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <span className="font-15">
+                            <table className="item-box-table-info">
+                                <tr><td><b>Authors: </b></td><td>{item.authors.map(author => <a href="" className="body-link">{author} </a>)}</td></tr>
+                                <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
+                            </table>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                )} <div className="clear"></div>
+            </div>
+            );
+        });
+        return (
+            <div>
+                <ModelForm />
+                {itemsList}
+            </div>
         )
     }
 });

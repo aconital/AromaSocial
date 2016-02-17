@@ -3260,7 +3260,8 @@ input[type="button"].btn-block {
     opacity: 1; }
 
 .collapse {
-  display: none; }
+  display: none;
+  padding: 0xp; }
   .collapse.in {
     display: block; }
 
@@ -5406,7 +5407,7 @@ div.fileUpload input {
 
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
-  background-color: #86B9A0; }
+  background-color: #70ab8f; }
 
 .navbar-brand,
 .navbar-nav li a {
@@ -5464,7 +5465,8 @@ input[type="text"]:focus {
 
 .navbar.center .navbar-collapse .nav {
   display: inline-block;
-  float: none; }
+  float: none;
+  padding: 0px; }
 
 .logo {
   padding-top: 15px; }
@@ -6298,7 +6300,7 @@ color: #fff;
     width:25%;
     text-align:center;
     }
-    .clear { clear: both; }
+
 
  .publication-content{border-top-right-radius: 0;}
 .right{right:0px;}
