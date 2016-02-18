@@ -32,6 +32,7 @@ module.exports=function(app,Parse) {
                     currentUsername: currentUser.attributes.username,
                     currentUserImg: currentUser.attributes.imgUrl,
                     objectId: req.params.objectId,
+                    creatorId: result.get("user").id,
                     title: result.get('title'),
                     description: result.get('description'),
                     image_URL: result.get('image_URL'),

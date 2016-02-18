@@ -701,7 +701,7 @@ var Equipments = React.createClass({
         return { data: [], showModal: false };
     },
     componentWillMount : function() {
-        var equipmentsURL= "/profile/"+objectId+"/equipments";
+        var equipmentsURL= "/profile/"+objectId+"/equipments_list";
 
         $.ajax({
             type: 'GET',
@@ -747,12 +747,14 @@ var Equipments = React.createClass({
                         <Modal.Title>To Be Determined!</Modal.Title>
                     </Modal.Body>
                 </Modal>
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
-                        {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                    </tr>
-                </table>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                        </tr>
+                    </table>
+                </div>
                 {itemsList}
             </div>
         )
@@ -810,12 +812,14 @@ var Projects = React.createClass({
                         <Modal.Title>To Be Determined!</Modal.Title>
                     </Modal.Body>
                 </Modal>
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
-                        {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                    </tr>
-                </table>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                        </tr>
+                    </table>
+                </div>
                 {itemsList}
             </div>
         )
@@ -1019,13 +1023,16 @@ var PublicationForm = React.createClass({
     return (
       <div className="">
             <form id="publication-form" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
-                <table id="upload-field" width="100%"><tr>
-                    <td>
-                    <input type="text" id="search" placeholder="Search..." className="form-control"/>
-                    </td>
-                    {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                </tr>
-                </table>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                    <tr>
+                        <td>
+                        <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                        </td>
+                        {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                    </tr>
+                    </table>
+                </div>
                  <Modal show={this.state.showModal} onHide={this.clickClose}>
                   <Modal.Header closeButton>
                     <Modal.Title>New Publication</Modal.Title>
@@ -1573,7 +1580,7 @@ var Publications = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var publicationsURL= "/profile/"+objectId+"/publications";
+        var publicationsURL= "/profile/"+objectId+"/publications_list";
 
         $.ajax({
             type: 'GET',
@@ -1908,14 +1915,14 @@ var ResourceForm = React.createClass({
   render: function() {
     return (
 		<div>
-        <table id="upload-field" width="100%">
-            <tr>
-                <td className="padding-right">
-                <input type="text" id="search" placeholder="Search..." className="form-control"/>
-                </td>
-                {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
-            </tr>
-        </table>
+		<div className="item-search-div">
+            <table className="item-search-field" width="100%">
+                <tr>
+                    <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                    {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
+                </tr>
+            </table>
+        </div>
        {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}
 
 

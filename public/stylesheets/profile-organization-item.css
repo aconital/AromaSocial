@@ -34,6 +34,7 @@
 .h2-editable:hover { border: 1px dotted #70ab8f; width:100%; }
 .h2-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
 .h2-editable-wrap { height: 75px; }
+.h2-non-editable-wrap { padding:10px; width:100%; max-width:100%; height: 75px; margin: 0px; }
 
 .h3-item-wrap { margin: 0px; padding: 10px; }
 .h3-item-spacing { margin: 0px 0px; margin-bottom:20px; }
@@ -44,3 +45,7 @@
 .p-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
 .p-editable-bottom-spacing { margin: 0px 0px; margin-bottom:0px; }
 .p-editable-bottom-wrap { height: 117px; }
+.p-non-editable-bottom-wrap { padding:10px; width:100%; max-width:100%; margin: 0px; }
+
+#big-image + .p-editable-bottom-wrap { margin-top: 25px; }
+.contain-panel-big-image + .p-non-editable-bottom-wrap { margin-top: 25px; }
