@@ -41,16 +41,16 @@ module.exports=function(app,Parse) {
                     access: result.get('author'),
                     collaborators: result.get('collaborators'),
                     description: result.get('description'),
-                    hashtags: result.get('hashtags'),
-                    keywords: result.get('title'),
                     title: result.get('title'),
-                    license: result.get('license'),
-                    keywords: result.get('keywords'),
-                    createdAt: result.get('createdAt'),
                     image_URL: result.get('image_URL'),
                     aws_path: result.get('path'),
-                    publication: result.get('publication'),
-                    publication_link: result.get('publication_link')
+                    filename: result.get('filename'),
+                    license: result.get('license'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    publication_date: result.get('publication_date'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
                 });
             },
             error: function(error) {
@@ -145,10 +145,14 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query("Data");
         query.get(req.params.objectId,{
             success: function(result) {
-                result.set("title", req.body.title);
-                result.set("description", req.body.description);
-                console.log(req.body.title);
-                console.log(req.body.description);
+                if (req.body.title) {
+                    result.set("title", req.body.title);
+                    result.set("description", req.body.description);
+                    result.set("filename", req.body.filename);
+                    result.set("license", req.body.license);
+                    result.set("publication_date", req.body.publication_date);
+                    console.log(req.body.filename);
+                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save();
             }
         });

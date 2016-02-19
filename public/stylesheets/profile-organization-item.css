@@ -24,11 +24,14 @@
     background-color: #FFF;
 }
 
-.item-info-table { margin-bottom: 20px; margin-left; 10px; width: 100%; }
+.item-authors-div { padding: 10px; }
+.item-info-div { padding: 10px; }
+.item-info-table { width: 100%; }
 .item-info-table-right { width: 75%; }
 .item-info-table-left { width: 25%; }
 
 .no-margin{ margin: 0px; padding: 0px; }
+.padding-top-25 td { padding-top:25px; }
 
 .h2-editable { border: 1px solid #FFF; padding:10px; width:100%; max-width:100%; }
 .h2-editable:hover { border: 1px dotted #70ab8f; width:100%; }
@@ -37,7 +40,10 @@
 .h2-non-editable-wrap { padding:10px; width:100%; max-width:100%; height: 75px; margin: 0px; }
 
 .h3-item-wrap { margin: 0px; padding: 10px; }
-.h3-item-spacing { margin: 0px 0px; margin-bottom:20px; }
+.h3-item-spacing { margin: 0px 0px; margin-bottom: 8px; }
+
+.h4-item-inside-panel-wrap { padding: 0px; padding: 10px; }
+.h4-item-inside-panel-spacing { margin: 0px; margin-bottom: 20px; }
 
 .p-noneditable { border: 1px solid #FFF; padding:10px; }
 .p-editable { border: 1px solid #FFF; padding:10px; width:100%; max-width:100%; }
@@ -47,5 +53,5 @@
 .p-editable-bottom-wrap { height: 117px; }
 .p-non-editable-bottom-wrap { padding:10px; width:100%; max-width:100%; margin: 0px; }
 
-#big-image + .p-editable-bottom-wrap { margin-top: 25px; }
-.contain-panel-big-image + .p-non-editable-bottom-wrap { margin-top: 25px; }
+#big-image + .p-editable-bottom-wrap { margin-top: 20px; }
+.contain-panel-big-image + .p-non-editable-bottom-wrap { margin-top: 20px; }

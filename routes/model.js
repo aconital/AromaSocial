@@ -43,10 +43,13 @@ module.exports=function(app,Parse) {
                     image: result.get('image'),
                     image_URL: result.get('image_URL'),
                     collaborators: result.get('collaborators'),
+                    filename: result.get('filename'),
                     license: result.get('license'),
-                    keywords: result.get('keywords'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    publication_date: result.get('publication_date'),
                     createdAt: result.get('createdAt'),
-                    publication_link: result.get('publication_link')
+                    updatedAt: result.get('updatedAt')
                 });
             },
             error: function(error) {
@@ -60,14 +63,15 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query("Model");
         query.get(req.params.objectId,{
             success: function(result) {
-                result.set("title", req.body.title);
-                result.set("abstract", req.body.description);
-                result.set("feature", req.body.feature);
-                result.set("other", req.body.other);
-                console.log(req.body.title);
-                console.log(req.body.description);
-                console.log(req.body.feature);
-                console.log(req.body.other);
+                if (req.body.title) {
+                    result.set("title", req.body.title);
+                    result.set("abstract", req.body.description);
+                    result.set("feature", req.body.feature);
+                    result.set("other", req.body.other);
+                    result.set("filename", req.body.filename);
+                    result.set("license", req.body.license);
+                    result.set("publication_date", req.body.publication_date);
+                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save();
             }
         });

@@ -36,7 +36,8 @@ module.exports=function(app,Parse) {
                     name: result.get('name'),
                     about: result.get('about'),
                     location: result.get('location'),
-                    organization_imgURL: result.get('profile_imgURL')
+                    organization_imgURL: result.get('profile_imgURL'),
+                    cover_imgURL: result.get('cover_imgURL')
                 });
             },
             error: function(error) {
@@ -228,6 +229,19 @@ module.exports=function(app,Parse) {
             error: function(error) {
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.post('/organization/:objectId/update',function(req,res,next){
+        var query = new Parse.Query("Organization");
+        query.get(req.params.objectId,{
+            success: function(result) {
+                if (req.body.name) {
+                    result.set("name", req.body.name);
+                    result.set("about", req.body.about);
+                    result.set("location", req.body.location);
+                } result.save();
             }
         });
     });
@@ -521,6 +535,21 @@ module.exports=function(app,Parse) {
         }
     });
 
+    app.get('/manage/organization', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            console.log(currentUser);
+            res.render('organization',
+                {layout:'home',
+                currentUsername: currentUser.attributes.username,
+                currentUserImg: currentUser.attributes.imgUrl,
+                isCreate: false,
+                isManage: true});
+        } else {
+            res.render('index', {title: 'Login failed', path: req.path});
+        }
+    });
+
     app.get('/organization/:objectId/join', function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = Parse.User.current();
@@ -550,5 +579,57 @@ module.exports=function(app,Parse) {
 
     });
 
+    app.get('/organization/:objectId/equipments_list', function (req, res, next) {
+            var innerQuery = new Parse.Query("Organization");
+            innerQuery.equalTo("objectId",req.params.objectId);
 
+            var queryEquipment = new Parse.Query('Equipment');
+            queryEquipment.matchesQuery('organization',innerQuery);
+            queryEquipment.find({
+                success: function(results) {
+                    var equipments = [];
+                    for (var i in results) {
+                        var objectId = results[i].id;
+                        var title = results[i].attributes.title;
+                        var description = results[i].attributes.description;
+                        var image_URL = results[i].attributes.image_URL;
+                        var equipment = {
+                            objectId: objectId,
+                            title: title,
+                            description: description,
+                            image_URL: image_URL
+                        }; equipments.push(equipment);
+                    }
+                    res.json(equipments);
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.render('index', {title: error, path: req.path});
+                }
+            });
+        });
+
+    app.get('/organization/:objectId/isAdmin', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        var userQuery = new Parse.Query(Parse.User);
+        userQuery.equalTo("objectId",currentUser.id);
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var queryAdmin = new Parse.Query('Relationship');
+        queryAdmin.matchesQuery('orgId',innerQuery);
+        queryAdmin.matchesQuery('userId',userQuery);
+        queryAdmin.find({
+            success: function(results) {
+                var isAdmin = false;
+                if (results[0].attributes.isAdmin) { isAdmin = results[0].attributes.isAdmin; }
+                res.json({isAdmin: isAdmin});
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
 };

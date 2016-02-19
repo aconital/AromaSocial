@@ -49,14 +49,14 @@ module.exports=function(app,Parse) {
                     currentUserImg: currentUser.attributes.imgUrl,
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
+                    title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('description'),
                     filename: result.get('filename'),
-                    title: result.get('title'),
-                    year: result.get('year'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
+                    publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -209,7 +209,7 @@ module.exports=function(app,Parse) {
                 if (req.body.title) {
                     result.set("title", req.body.title);
                     result.set("description", req.body.description);
-                    result.set("year", req.body.year);
+                    result.set("year", req.body.publication_date);
                     result.set("filename", req.body.filename);
                     result.set("license", req.body.license);
                     result.set("publication_code", req.body.publication_code);

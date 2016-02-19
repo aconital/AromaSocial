@@ -13,6 +13,11 @@ var Model = React.createClass ({
         objectId: [objectId],
         image_URL: [image_URL],
 
+        filename: filename,
+        publicationDate: publication_date,
+        license: license,
+        keywords: keywords,
+
         fromModelTab: false,
         pictureChosen: null,
 
@@ -26,7 +31,10 @@ var Model = React.createClass ({
         var dataForm = {title: this.state.title,
                         description: this.state.description,
                         feature: this.state.feature,
-                        other: this.state.other};
+                        other: this.state.other,
+                        filename: this.state.filename,
+                        publication_date: this.state.publicationDate,
+                        license: this.state.license};
 
         $.ajax({
             url: path + "/update",
@@ -37,6 +45,31 @@ var Model = React.createClass ({
             processData: false,
             success: function(data) {
                 this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+    handleTagsInputChange: function(e) {
+        var keywordsSubmit = (JSON.stringify(e));
+        this.setState({keywords:keywordsSubmit}, function(){ console.log(this.state.keywords); this.submitArrayChange(); }.bind(this));
+    },
+    submitArrayChange: function() {
+        var dataForm = { keywords: this.state.keywords };
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/update", status, err.toString());
@@ -107,44 +140,40 @@ var Model = React.createClass ({
     render: function() {
         return (
         <div className="content-wrap-item-page">
-                <Modal show={this.state.showModal} onHide={this.clickClose}>
-                  <Modal.Header closeButton>
+            <Modal show={this.state.showModal} onHide={this.clickClose}>
+                <Modal.Header closeButton>
                     <Modal.Title>Update Data Image</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                        <div id="field1-container">
-                            <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
-                        </div>
-                  </Modal.Body>
-                  <Modal.Footer>
+                </Modal.Header>
+                <Modal.Body>
+                    <div id="field1-container">
+                        <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
                     <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
-                  </Modal.Footer>
-                </Modal>
+                </Modal.Footer>
+            </Modal>
             <div className="content-wrap-item-page-100">
                 <div className="item-panel">
-                    <div>
-                        {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
-                        <h2 className="corner">
-                            <a href={image_URL} className="image-link"><span className="glyphicon glyphicon-download space"></span></a>
-                        </h2>
-                    </div>
-                    <div>
+                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
+                    <h2 className="corner"><a href={image_URL} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>
+                <div>
                         <div>
                             {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                             <div className="contain-panel-big">
-                                <h4>Description</h4>
-                                {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="description" className="p-editable" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
+                                <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
+                                {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="description" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-non-editable-bottom-wrap">{description}</p>}
                             </div>
                         </div>
                         <table className="full"><tr><td>
                         <div className="contain-panel-big contain-panel-big-half-left">
-                            <h4>Features</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="feature" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.feature}</textarea></p> : <p className="p-noneditable">{feature}</p>}
+                            <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Features</h4>
+                            {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="feature" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.feature}</textarea></p> : <p className="p-non-editable-bottom-wrap">{feature}</p>}
                         </div>
                         </td><td>
                         <div className="contain-panel-big contain-panel-big-half-right">
-                            <h4>More Explanation</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" name="other" className="p-editable" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.other}</textarea></p> : <p className="p-noneditable">{other}</p>}
+                            <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">More Explanation</h4>
+                            {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="other" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.other}</textarea></p> : <p className="p-non-editable-bottom-wrap">{other}</p>}
                         </div>
                         </td></tr>
                         </table>
@@ -167,15 +196,31 @@ var Model = React.createClass ({
                     */}
                     </div>
                     </div>
-                    <div className="item-panel">
-                    <div>
-                        <h4 className="contain-panel-big-h4">Developer(s)</h4>
+
+                <div className="item-panel">
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Information</h3>
+                    <div className="item-info-div">
+                    <table className="item-info-table">
+                        <tbody>
+                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="filename" name="filename" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.filename}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><a href={publication_link} className="body-link">{this.state.filename}</a></td></tr>}
+                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="license">License:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="license" name="license" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.license}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">License:</label></td><td className="publication-table-info-right">{this.state.license}</td></tr>}
+                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><p className="no-margin"><input type="date" name="publicationDate" id="publicationDate" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.publicationDate} className="p-editable date-editable-input"/></p></td></tr> : <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><span className="no-margin">{this.state.publicationDate}</span></td></tr>}
+                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", className: "l-editable-input", name: "keywords", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.keywords)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.keywords).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
+
+                           <tr className="p-noneditable padding-top-25"><td className="publication-table-info-left"><label for="createdAt">Created At:</label></td><td className="publication-table-info-right">{createdAt}</td></tr>
+                           <tr className="p-noneditable"><td className="publication-table-info-left"><label for="updatedAt">Updated At:</label></td><td className="publication-table-info-right">{updatedAt}</td></tr>
+                        </tbody>
+                    </table>
                     </div>
-                    <div>
-                        <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons"/></a>
-                        <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-big-icons"/></a>
+                </div>
+                <div className="item-panel">
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Author(s)</h3>
+                    <div className="item-authors-div">
+                        <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-small-image"/></a>
+                        <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-small-image"/></a>
                     </div>
-                    </div>
+                </div>
+
               {/*}
                     <div className="item-panel contain-panel-big">
                     <div>
@@ -256,7 +301,4 @@ var Model = React.createClass ({
     }
 });
 
-ReactDOM.render(<Model
-    groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
-    keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,
-    document.getElementById('content'));
+ReactDOM.render(<Model/>, document.getElementById('content'));

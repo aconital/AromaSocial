@@ -11,7 +11,7 @@ var Publication = React.createClass ({
         description: description,
 
         filename: filename,
-        publicationDate: year,
+        publicationDate: publication_date,
         publicationCode: publication_code,
         license: license,
 
@@ -22,7 +22,7 @@ var Publication = React.createClass ({
         this.setState({[e.target.name]:e.target.value});
     },
     submitChange: function() {
-        var dataForm = {title: this.state.title, description: this.state.description, filename: this.state.filename, year: this.state.publicationDate, publication_code: this.state.publicationCode, license: this.state.license};
+        var dataForm = {title: this.state.title, description: this.state.description, filename: this.state.filename, publication_date: this.state.publicationDate, publication_code: this.state.publicationCode, license: this.state.license};
 
         $.ajax({
             url: path + "/update",
@@ -71,12 +71,13 @@ var Publication = React.createClass ({
         <div className="content-wrap-item-page">
             <div className="content-wrap-item-page-100">
                 <div className="item-panel">
-                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
+                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
                     <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>
-                    {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
+                    {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-non-editable-bottom-wrap">{description}</p>}
                 </div>
                 <div className="item-panel">
                     <h3 className="no-margin h3-item-wrap h3-item-spacing">Information</h3>
+                    <div className="item-info-div">
                     <table className="item-info-table">
                         <tbody>
                            {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="filename" name="filename" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.filename}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><a href={publication_link} className="body-link">{this.state.filename}</a></td></tr>}
@@ -84,20 +85,20 @@ var Publication = React.createClass ({
                            {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><p className="no-margin"><input type="date" name="publicationDate" id="publicationDate" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.publicationDate} className="p-editable date-editable-input"/></p></td></tr> : <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><span className="no-margin">{this.state.publicationDate}</span></td></tr>}
                            {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="publicationCode">Publication Code:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" name="publicationCode" id="publicationCode" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.publicationCode}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="publicationCode">Publication Code:</label></td><td className="publication-table-info-right">{this.state.publicationCode}</td></tr>}
                            {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", className: "l-editable-input", name: "keywords", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.keywords)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.keywords).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
-                           <tr className="p-noneditable"><td className="publication-table-info-left"><label for="createdAt">Created At:</label></td><td className="publication-table-info-right"><a href={publication_link} className="body-link">{createdAt}</a></td></tr>
-                           <tr className="p-noneditable"><td className="publication-table-info-left"><label for="updatedAt">Updated At:</label></td><td className="publication-table-info-right"><a href={publication_link} className="body-link">{updatedAt}</a></td></tr>
+
+                           <tr className="p-noneditable padding-top-25"><td className="publication-table-info-left"><label for="createdAt">Created At:</label></td><td className="publication-table-info-right">{createdAt}</td></tr>
+                           <tr className="p-noneditable"><td className="publication-table-info-left"><label for="updatedAt">Updated At:</label></td><td className="publication-table-info-right">{updatedAt}</td></tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
                 <div className="item-panel">
-                    <div>
-                        <h4 className="contain-panel-big-h4">Collaborator(s)</h4>
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Author(s)</h3>
+                    <div className="item-authors-div">
+                        <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-small-image"/></a>
+                        <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-small-image"/></a>
                     </div>
-                    <div>
-                        <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons"/></a>
-                        <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-big-icons"/></a>
-                    </div>
-                    </div>
+                </div>
             </div>
 
             {/*}
