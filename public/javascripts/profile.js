@@ -1616,7 +1616,7 @@ var Publications = React.createClass({
         });
         return (
             <div>
-                <PublicationForm />
+                <ResourceForm publication={true} />
                 {itemsList}
             </div>
         )
@@ -1889,14 +1889,255 @@ var ResourceForm = React.createClass({
 			 <Modal.Title>Add {this.props.fromModelTab ? 'Model' : 'Data'}</Modal.Title>
 		   </Modal.Header>
 		   <Modal.Body>
-
-			 <ResourceAddForm fromModelTab={this.props.fromModelTab} submitSuccess={this.close} list={this.list} />
-
+			 {this.props.publication ?
+			 (<PublicationAddForm submitSuccess={this.close} list={this.list} />)
+			 :
+			 (<ResourceAddForm fromModelTab={this.props.fromModelTab} submitSuccess={this.close} list={this.list} />)
+			 }
 		   </Modal.Body>
 		 </Modal>
 		</div>
      );
   }
+});
+
+var PublicationAddForm = React.createClass({
+    close: function(e) {
+        if (typeof this.props.submitSuccess === 'function') {
+            this.props.submitSuccess();
+        }
+    },
+    getInitialState: function() {
+     return {
+        fromModelTab: false,
+        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+        formFeedback: '',
+        fileFeedback: {},
+        autoFillStatus: '',
+
+        // field labels
+        labels: {title: 'Title', collaborators: 'Authors', creationDate: 'Publication Date', description: 'Abstract',
+        		 keywords: 'Keywords', url: 'URL', doi: 'DOI (Digital Object Identifier', // common
+        		 journal: 'Journal', volume: 'Journal Volume', issue: 'Issue', pages: 'Pages', // journal articles
+        		 publisher: 'Publisher' },
+
+        // form
+        type: 'journal', file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
+        creationDate: '', description: '', license: '', keywords: '', url: '', doi: '',
+        journal: '', volume: '', issue: '', pages: '', // journal articles
+        };
+    },
+
+	render: function() {
+		var autoFillBtn = (
+			<Button className="" onClick={this.fillDoi}>Auto-fill</Button>
+        );
+
+		return (
+		<div>
+			<form className="form" onSubmit={this.handleSubmitData}>
+			    <div className="well" style={this.buttonStyles}>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+                        Select Files... <input type="file" onChange={this.handleFile} />
+                    </Button>
+                  </div>
+
+				<Input type="select" placeholder name="type" onChange={this.handleChangeType} value={this.state.type} >
+					<option value="" disabled>Type:</option>
+					<option value="book">Book</option>
+					<option value="chapter">Book Chapter</option>
+					<option value="conference">Conference Proceeding</option>
+					<option value="journal" selected>Journal Article</option>
+					<option value="patent">Patent</option>
+					<option value="report">Report</option>
+					<option value="thesis">Thesis</option>
+					<option value="unpublished">Unpublished Article</option>
+				</Input>
+                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+                <Input type="text" placeholder="Authors:" name="authors" onChange={this.handleChange} value={this.state.collaborators} />
+                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="text" placeholder="Journal:" name="journal" onChange={this.handleChange} value={this.state.journal} />
+                <table width="100%"><tr>
+					<td><Input type="text" placeholder="Journal Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.volume} /></td>
+					<td><Input type="text" placeholder="Journal Issue" name="issue" required="required" onChange={this.handleChange} value={this.state.issue} /></td>
+					<td><Input type="text" placeholder="Journal Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.pages} /></td>
+				</tr></table>
+                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
+				<Input type="text" placeholder={this.state.labels.doi} name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
+				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
+
+				<Modal.Footer>
+					<Input className="btn btn-default pull-right" type="submit" value="Continue" />
+					<div className="form-feedback">{this.state.formFeedback}This is type:{this.state.type}</div>
+				</Modal.Footer>
+            </form>
+		</div>
+		);
+	},
+
+	handleChange: function(e) {
+	    var changedState = {};
+	    changedState[e.target.name] = e.target.value;
+	    this.setState( changedState );
+	},
+
+	handleChangeType: function(e) {
+		this.handleChange(e);
+		var day = '';
+		switch (e.target.value) { // TODO synchronize??
+			case "book":
+				day = "Sunday";console.log("this is" + this.state.type);
+				break;
+			case "chapter":
+				day = "Monday";console.log("this is" + this.state.type);
+				break;
+			case "conference":
+				day = "Tuesday";console.log("this is" + this.state.type);
+				break;
+			case "journal":
+				day = "Wednesday";console.log("this is" + this.state.type);
+				break;
+			case "patent":
+				day = "Thursday";console.log("this is" + this.state.type);
+				break;
+			case "report":
+				day = "Friday";console.log("this is" + this.state.type);
+				break;
+			case "thesis":
+				day = "Saturday";console.log("this is" + this.state.type);
+				break;
+			case "unpublished":
+				day = "squib";console.log("this is" + this.state.type);
+				break;
+		}
+	},
+
+	fillDoi: function(e) {
+		$.ajax({
+			url: 'http://api.crossref.org/works/' + this.state.doi,
+			type: 'GET',
+			success: function(data) {
+				console.log(data);
+				var entry = data.message
+				this.setState({
+					title: entry.title[0],
+					collaborators: (entry.hasOwnProperty('author') ? entry.author[0].given + ' ' + entry.author[0].family : ''),
+					creationDate: entry.created['date-time'].split('T')[0],//entry['published-print']['date-parts'][0],
+					journal: entry['container-title'][0],
+					volume: entry.volume,
+					issue: entry.issue,
+					pages: entry.page,
+					url: entry.URL,
+					keywords: entry.subject.join(","),
+					autoFillStatus: "",
+				});
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error('/create/organization', status, err.toString());
+				this.setState({ autoFillStatus: "DOI not found. Try again. EXAMPLE: 10.1126/science.1157784" });
+			}.bind(this)
+		});
+		this.setState({ autoFillStatus: "Fetching data..." });
+	},
+
+	handleSubmitData: function(e) {
+        e.preventDefault();
+
+        var pubForm = {file: this.state.file, picture: this.state.picture,
+        				fileType: this.state.fileType, pictureType: this.state.pictureType,
+        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
+		console.log(dataForm);
+
+        var isValidForm = this.validateForm();
+		if (isValidForm.length === 0) {
+			var endpoint = this.props.fromModelTab ? "/model" : "/data";
+
+			$.ajax({
+				url: path + endpoint,
+				dataType: 'json',
+				contentType: "application/json; charset=utf-8",
+				type: 'POST',
+				data: JSON.stringify(pubForm),
+				processData: false,
+				success: function(data) {
+					this.setState({data: data});
+					console.log("Data upload done");
+					console.log(data);
+					this.close();
+				}.bind(this),
+				error: function(xhr, status, err) {
+					console.error(path + endpoint, status, err.toString());
+				}.bind(this)
+			});
+		}
+		else {
+			var message = 'Publication could not be added:';
+			if (isValidForm.indexOf('TITLE') > -1) {
+				message += ' Title is required.';
+			}
+			if (isValidForm.indexOf('FILE') > -1) {
+				message += ' Please upload a file.';
+			}
+			if (isValidForm.indexOf('DATE') > -1) {
+				message += ' Please indicate the creation date.';
+			}
+			if (isValidForm.indexOf('KEYWORDS') > -1) {
+				message += ' Please specify at least one keyword.';
+			}
+			this.setState({formFeedback: message});
+		}
+        return;
+    },
+
+	openFileUpload() {
+	    var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+
+        this.state.file.on('fileselect', function(event, numFiles, label) {
+            console.log(numFiles);
+            console.log(label);
+            return input;
+        });
+	},
+
+	handleFile: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+          self.setState({
+            file: upload.target.result,
+            fileType: extension,
+            fileFeedback: {background: '#dff0d8'}
+          });
+        }
+        reader.readAsDataURL(file);
+    },
+
+	validateForm: function() {
+		var issues = []
+		if (!this.state.title.trim()) {
+			issues.push("TITLE");
+		}
+		if (!this.state.file) {
+			issues.push("FILE");
+		}
+		if (!this.state.creationDate) {
+			issues.push("DATE");
+		}
+		if (!this.state.keywords.trim()) {
+			issues.push("KEYWORDS");
+		}
+		return issues;
+	},
 });
 
 var ResourceAddForm = React.createClass({
@@ -1970,11 +2211,6 @@ var ResourceAddForm = React.createClass({
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
 			var endpoint = this.props.fromModelTab ? "/model" : "/data";
-			var dataFormORIG = {file: this.state.file, picture: this.state.picture,
-				fileType: this.state.fileType, pictureType: this.state.pictureType,
-				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
 
 			$.ajax({
 				url: path + endpoint,
