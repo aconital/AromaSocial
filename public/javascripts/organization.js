@@ -1,4 +1,8 @@
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+var Modal = ReactBootstrap.Modal;
+var Button = ReactBootstrap.Button;
+var Input = ReactBootstrap.Input;
+var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Organization = React.createClass ({
     getInitialState: function() {
@@ -87,11 +91,11 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
-                                <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
-                                <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                                <div className="side-panel" id="item-name"><h4>{name}</h4></div>
+                                <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-organization">
-                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -121,7 +125,7 @@ var Organization = React.createClass ({
                             <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
                         </div>
                         <div id="item-bottom-2-organization" className="item-bottom-2">
-                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models']} />
+                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Publications', 'Data', 'Models']} />
                         </div>
                     </div>
                 </div>
@@ -143,12 +147,12 @@ var OrganizationMenu = React.createClass ({
         var tabMap = {0: <About />,
                 1: <Connections  />,
                 2: <People />,
-                // 3: <NewsAndEvents/>,
+                3: <Equipments objectId={objectId}/>,
                 // 4: <Knowledge/>,
-                3: <Publications objectId={objectId}/>,
-                4: <Data objectId={objectId}/>,
-                5: <Models objectId={objectId}/>,
-                6: <Manage objectId={objectId}/>
+                4: <Publications objectId={objectId}/>,
+                5: <Data objectId={objectId}/>,
+                6: <Models objectId={objectId}/>,
+                7: <Manage objectId={objectId}/>
                 };
         return (
             <div>
@@ -183,7 +187,6 @@ var Connections = React.createClass({
         $.ajax({
             url: connectionUrl,
             success: function(data) {
-
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -265,13 +268,42 @@ var People = React.createClass({
 
 var Manage = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {
+             name: name,
+             about: about,
+             orgLocation: orgLocation,
+             organization_imgURL: organization_imgURL,
+             cover_imgURL: cover_imgURL
+        };
+    },
+    handleChange: function(e) {
+        this.setState({[e.target.name]:e.target.value});
+    },
+    submitChange: function() {
+        var dataForm = {name: this.state.name, about: this.state.about, location: this.state.orgLocation};
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
     },
     componentDidMount : function(){
         $.ajax({
             url: "/organization/"+objectId+"/pending",
             success: function(data) {
-
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -299,6 +331,26 @@ var Manage = React.createClass({
 
         return (
             <div>
+                <div className="organization-table-div">
+                    <div>
+                        <h3 className="summary-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Information</h3>
+                    </div>
+                    <table className="organization-table-info">
+                        <tr>
+                            <td><b>Name: </b></td>
+                            <td><input type="text" className="p-editable" name="name" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.name} /></td>
+                        </tr>
+                        <tr>
+                            <td><b>About: </b></td>
+                            <td><textarea rows="5" type="text" className="r-editable r-editable-full" id="about" name="about" contentEditable="true" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea></td>
+                        </tr>
+                        <tr>
+                            <td><b>Location: </b></td>
+                            <td><input type="text" className="p-editable" name="location" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgLocation} /></td>
+                        </tr>
+                    </table>
+                </div><hr/>
+                {/*}
                 <div><span className="people-title">Pending Approval</span></div>
                 {this.state.data.map(person =>
 
@@ -314,6 +366,7 @@ var Manage = React.createClass({
                             </div>
                         </div>
                 )}
+                {*/}
             </div>
 
         )
@@ -350,6 +403,86 @@ var Knowledge = React.createClass({
   }
 });
 
+var Equipments = React.createClass({
+    getInitialState: function() {
+        return { data: [], showModal: false, isAdmin: false };
+    },
+    componentWillMount : function() {
+        var equipmentsURL= "/organization/"+objectId+"/equipments_list";
+
+        $.ajax({
+            type: 'GET',
+            url: equipmentsURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Equipments!");
+            }.bind(this)
+        });
+    },
+    componentDidMount : function() {
+        var isAdminURL= "/organization/"+objectId+"/isAdmin";
+
+        $.ajax({
+            type: 'GET',
+            url: isAdminURL,
+            success: function(isAdminData) {
+                this.setState({ isAdmin: isAdminData.isAdmin });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve isAdmin!");
+            }.bind(this)
+        });
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(item) {
+            return (
+                <div className="item-box" key={item.objectId}>
+                    <div>
+                        <div className="item-box-left">
+                            <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <span className="font-15">{item.description}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+        return (
+            <div>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Equipment</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Modal.Title>To Be Determined!</Modal.Title>
+                    </Modal.Body>
+                </Modal>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tbody>
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {itemsList}
+            </div>
+        )
+    }
+});
+
 var Publications = React.createClass({
   getInitialState: function() {
     return {data: []};
@@ -372,11 +505,13 @@ var Publications = React.createClass({
     return (
       <div>
         <table id="upload-field" width="100%">
+            <tbody>
             <tr>
                 <td className="padding-right">
                 <input type="text" id="search" placeholder="Search..." className="form-control"/>
                 </td>
             </tr>
+            </tbody>
         </table>
         {this.state.data.map(function(publication){
             return (<Publication objectId={publication.objectId}
@@ -439,11 +574,13 @@ var Data = React.createClass({
     return (
       <div>
           <table id="upload-field" width="100%">
+            <tbody>
               <tr>
                   <td className="padding-right">
                   <input type="text" id="search" placeholder="Search..." className="form-control"/>
                   </td>
               </tr>
+            </tbody>
           </table>
         {this.state.data.map(function(item) {
             return (<Datum objectId={item.objectId}
@@ -521,11 +658,13 @@ var Models = React.createClass({
     return (
       <div>
           <table id="upload-field" width="100%">
+            <tbody>
               <tr>
                   <td className="padding-right">
                   <input type="text" id="search" placeholder="Search..." className="form-control"/>
                   </td>
               </tr>
+            </tbody>
           </table>
         {this.state.data.map(function(model) {
           return (<Model objectId={model.objectId}

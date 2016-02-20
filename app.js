@@ -76,6 +76,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 require('./routes/routes')(app,Parse);
 require('./routes/organization')(app,Parse);
 require('./routes/user')(app,Parse);
+require('./routes/equipment')(app,Parse);
+require('./routes/project')(app,Parse);
 require('./routes/publication')(app,Parse);
 require('./routes/data')(app,Parse);
 require('./routes/model')(app,Parse);

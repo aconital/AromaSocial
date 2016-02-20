@@ -701,7 +701,7 @@ var Equipments = React.createClass({
         return { data: [], showModal: false };
     },
     componentWillMount : function() {
-        var equipmentsURL= "/profile/"+objectId+"/equipments";
+        var equipmentsURL= "/profile/"+objectId+"/equipments_list";
 
         $.ajax({
             type: 'GET',
@@ -747,12 +747,14 @@ var Equipments = React.createClass({
                         <Modal.Title>To Be Determined!</Modal.Title>
                     </Modal.Body>
                 </Modal>
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
-                        {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                    </tr>
-                </table>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                        </tr>
+                    </table>
+                </div>
                 {itemsList}
             </div>
         )
@@ -770,7 +772,7 @@ var Projects = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var projectsURL= "/profile/"+objectId+"/projects";
+        var projectsURL= "/profile/"+objectId+"/projects_list";
 
         $.ajax({
             type: 'GET',
@@ -810,12 +812,14 @@ var Projects = React.createClass({
                         <Modal.Title>To Be Determined!</Modal.Title>
                     </Modal.Body>
                 </Modal>
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
-                        {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                    </tr>
-                </table>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                        </tr>
+                    </table>
+                </div>
                 {itemsList}
             </div>
         )
@@ -1019,13 +1023,16 @@ var PublicationForm = React.createClass({
     return (
       <div className="">
             <form id="publication-form" action="" method="" novalidate="" enctype="multipart/form-data" className="publication-form">
-                <table id="upload-field" width="100%"><tr>
-                    <td>
-                    <input type="text" id="search" placeholder="Search..." className="form-control"/>
-                    </td>
-                    {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                </tr>
-                </table>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                    <tr>
+                        <td>
+                        <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                        </td>
+                        {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                    </tr>
+                    </table>
+                </div>
                  <Modal show={this.state.showModal} onHide={this.clickClose}>
                   <Modal.Header closeButton>
                     <Modal.Title>New Publication</Modal.Title>
@@ -1573,7 +1580,7 @@ var Publications = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var publicationsURL= "/profile/"+objectId+"/publications";
+        var publicationsURL= "/profile/"+objectId+"/publications_list";
 
         $.ajax({
             type: 'GET',
@@ -1662,7 +1669,7 @@ var Models = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var modelsURL= "/profile/"+objectId+"/models";
+        var modelsURL= "/profile/"+objectId+"/models_list";
 
         $.ajax({
             type: 'GET',
@@ -1727,7 +1734,7 @@ var Data = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var dataURL= "/profile/"+objectId+"/data";
+        var dataURL= "/profile/"+objectId+"/data_list";
 
         $.ajax({
             type: 'GET',
@@ -1779,6 +1786,41 @@ var Data = React.createClass({
             </div>
         )
     }
+});
+
+var ModelsList = React.createClass({
+  mixins: [ParseReact.Mixin],
+  getInitialState: function() {
+      return {data: []};
+    },
+  observe: function() {
+      return {
+        models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
+                                                          className: "_User",
+                                                          objectId: this.props.objectId}))
+      };
+    },
+  render: function() {
+    var rows = [];
+    return (
+      <div>
+        <ResourceForm fromModelTab={true} list={this.data} />
+        {this.data.models.map(function(model) {
+            rows.push(<ModelListItem objectId={model.objectId}
+                                   collaborators={model.collaborators}
+                                   title={model.title}
+                                   image_URL={model.image_URL}
+                                   keywords={model.keywords}
+                                   number_cited={model.number_cited}
+                                   number_syncholar_factor={model.number_syncholar_factor}
+                                   license={model.license}
+                                   access={model.access}
+                                   abstract={model.abstract} />);
+        })}
+        {rows}
+      </div>
+    );
+  }
 });
 
 var ModelListItem = React.createClass({
@@ -1873,14 +1915,14 @@ var ResourceForm = React.createClass({
   render: function() {
     return (
 		<div>
-        <table id="upload-field" width="100%">
-            <tr>
-                <td className="padding-right">
-                <input type="text" id="search" placeholder="Search..." className="form-control"/>
-                </td>
-                {(currentUsername == username) ? <td className="padding-left"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
-            </tr>
-        </table>
+		<div className="item-search-div">
+            <table className="item-search-field" width="100%">
+                <tr>
+                    <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                    {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
+                </tr>
+            </table>
+        </div>
        {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}
 
 
