@@ -117,7 +117,7 @@ module.exports=function(app,Parse) {
     //Done by Hirad
     //not doing it in REACT
     //getting pending requests for People of org here and pass it to view
-    app.get('/organization/:objectId/pending', function (req, res, next) {
+    app.get('/organization/:objectId/pending_people', function (req, res, next) {
         // var currentUser = Parse.User.current();
 
         var innerQuery = new Parse.Query("Organization");
@@ -175,7 +175,6 @@ module.exports=function(app,Parse) {
 
                 }
                 res.json(people);
-
             },
             error: function(error) {
                 console.log(error);
@@ -183,42 +182,142 @@ module.exports=function(app,Parse) {
             }
         });
     });
-    app.post('/organization/:objectId/pending', function (req, res, next) {
-        var person= req.body.person;
-        var orgId= req.params.objectId;
-        var mode= req.body.mode;
 
+    app.get('/organization/:objectId/pending_organizations', function (req, res, next) {
+        // var currentUser = Parse.User.current();
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var query = new Parse.Query('RelationshipOrg');
+        query.matchesQuery("orgId1",innerQuery)
+        query.equalTo('verified',false)
+        query.include('orgId0');
+        query.find({
+            success: function(result) {
+                var organizations =[];
+                for(var i in result) {
+                    var name= result[i].attributes.name;
+                    var verified= result[i].attributes.verified;
+                    var organization= result[i].attributes.orgId0.attributes;
+
+                    var orgId= result[i].attributes.orgId0.id;
+                    var name= organization.name;
+                    var location= "N/A";
+                    var profile_imgURL= "/images/organization.png";
+
+                    if(organization.hasOwnProperty('location')){
+                        location=organization.location;
+                    }
+                    if(organization.hasOwnProperty('profile_imgURL')){
+                        profile_imgURL=organization.profile_imgURL;
+                    }
+
+                    if(!verified) {
+                        var organization = {
+                            id : orgId,
+                            name: name,
+                            location: location,
+                            profile_imgURL: profile_imgURL
+                        };
+                        organizations.push(organization);
+                    }
+                }
+                res.json(organizations);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.post('/organization/:objectId/pending_person_action/', function (req, res, next) {
+        var personId = req.body.personId;
+        var orgId = req.params.objectId;
+        var mode = req.body.mode;
 
         var innerQuery = new Parse.Query("Organization");
         innerQuery.equalTo("objectId",orgId);
-
         var innerQuery2 = new Parse.Query(Parse.User);
-        innerQuery2.equalTo("objectId",person.id);
+        innerQuery2.equalTo("objectId",personId);
 
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery)
-        query.matchesQuery("userId",innerQuery2)
-        query.equalTo('verified',false)
-        query.include('userId');
+        query.matchesQuery("orgId",innerQuery);
+        query.matchesQuery("userId",innerQuery2);
         query.first({
             success: function(result) {
-                if(mode=="approve")
-                {
+                if(mode=="admin") {
                     result.set("verified",true);
+                    result.set("isAdmin",true);
                     result.save(null, {
                         success:function(){
-                            res.json({scucess:"approved"});
+                            res.json("Accepted!");
                         },
                         error:function(error){
                             res.json({error:error});
                         }
                     });
                 }
-                else if(mode=="deny")
-                {
+                else if(mode=="accept") {
+                    result.set("verified",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="reject") {
                     result.destroy({
                         success: function(model, response){
-                            res.json({scucess:"denied"});
+                            res.json("Rejected!");
+                        },
+                        error: function(model, response){
+                            res.json({error:error});
+                        }
+                    });
+                }
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+    
+    app.post('/organization/:objectId/pending_organization_action/', function (req, res, next) {
+        var organizationId = req.body.organizationId;
+        var orgId = req.params.objectId;
+        var mode = req.body.mode;
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",orgId);
+        var innerQuery2 = new Parse.Query("Organization");
+        innerQuery2.equalTo("objectId",organizationId);
+
+        var query = new Parse.Query('RelationshipOrg');
+        query.matchesQuery("orgId1",innerQuery);
+        query.matchesQuery("orgId0",innerQuery2);
+        query.first({
+            success: function(result) {
+                if(mode=="accept") {
+                    result.set("verified",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="reject") {
+                    result.destroy({
+                        success: function(model, response){
+                            res.json("Rejected!");
                         },
                         error: function(model, response){
                             res.json({error:error});
@@ -451,7 +550,8 @@ module.exports=function(app,Parse) {
                     for (var i = 0; i < result.length; i++) {
                         var object = result[i];
                         var admin = {
-                            username: object.attributes.userId.attributes.username
+                            username: object.attributes.userId.attributes.username,
+                            imgUrl: object.attributes.userId.attributes.imgUrl
                         };
                         admins.push(admin);
                     }
@@ -623,7 +723,9 @@ module.exports=function(app,Parse) {
         queryAdmin.find({
             success: function(results) {
                 var isAdmin = false;
-                if (results[0].attributes.isAdmin) { isAdmin = results[0].attributes.isAdmin; }
+                for (var i in results) {
+                    isAdmin = results[i].attributes.isAdmin;
+                }
                 res.json({isAdmin: isAdmin});
             },
             error: function(error) {

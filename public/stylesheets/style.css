@@ -4880,11 +4880,7 @@ button.close {
 .pull-left {
   float: left !important; }
 
-.hide {
-  display: none !important; }
 
-.show {
-  display: block !important; }
 
 .invisible {
   visibility: hidden; }
@@ -5920,37 +5916,6 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     .btn-wrap {
     margin-top:10%;
     }
-    .btn-primary {
-    background-color: #569978;
-    border-color: #569978;
-    }
-    .btn-primary:hover {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
-    }
-    .btn-primary:active {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
-    }
-    .btn-search {
-    border-top-left-radius:0;
-    border-bottom-left-radius:0;
-    bottom:0px;
-    right:0px;
-    margin: 0px;
-    position:absolute;
-    z-index:1000;
-    }
-
-    .btn-comment {
-        border-top-left-radius:0;
-        border-bottom-left-radius:0;
-        bottom:0px;
-        right:0px;
-        margin: 0px;
-        position:absolute;
-        z-index:0;
-        }
 
     #tabs ul {
     list-style: none;

@@ -11,6 +11,8 @@
     margin-top: 25px;
 }
 
+.accept-reject-buttons { position: absolute; right: 10px; top:10px; width: 30%; text-align:right; }
+
 .contain-panel-big-image {
     width:100%;
     border:solid;
@@ -130,5 +132,5 @@
 
 .organization-table-div { width: 100%; }
 .organization-table-info { width: 100%; }
-.organization-table-info tr td:nth-child(1) { width: 10%; min-width: 10%; max-width: 10%; }
+.organization-table-info tr td:nth-child(1) { width: 10%; min-width: 10%; max-width: 10%; padding-left: 10px; }
 .organization-table-info tr td:nth-child(2) { width: 90%; min-width: 90%; max-width: 90%; }
