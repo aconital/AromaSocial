@@ -1,4 +1,8 @@
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+var Modal = ReactBootstrap.Modal;
+var Button = ReactBootstrap.Button;
+var Input = ReactBootstrap.Input;
+var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Organization = React.createClass ({
     getInitialState: function() {
@@ -10,7 +14,6 @@ var Organization = React.createClass ({
       $.ajax({
         url: connectURL,
         success: function(status) {
-            console.log(status);
             this.setState({status: status})
         }.bind(this),
         error: function(xhr, status, err) {
@@ -73,7 +76,6 @@ var Organization = React.createClass ({
         else if (this.state.status == "not-joined") {
              joinButton = <input onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join" />;
         }
-        else { console.log("Nothing"); }
         if(this.state.isAdmin)
             return (
                 <div>
@@ -87,11 +89,11 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
-                                <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
-                                <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                                <div className="side-panel" id="item-name"><h4>{name}</h4></div>
+                                <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-organization">
-                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -111,19 +113,17 @@ var Organization = React.createClass ({
                     </div>
                     <div className="item-bottom">
                         <div className="item-bottom-1">
-                            <div className="item-panel contain-panel" id="item-name"><h4>{name}</h4></div>
-                            <div className="item-panel contain-panel" id="item-location"><h4>{orgLocation}</h4></div>
-                        </div>
-                        <div id="item-bottom-2-organization" className="item-bottom-2">
-                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Publications', 'Data', 'Models']} />
-                        </div>
-                        <div className="item-bottom-3">
+                            <div className="side-panel" id="item-name"><h4>{name}</h4></div>
                             <div className="item-panel-empty contain-panel-empty">
                                 {joinButton}
                                 <input className="btn btn-panel" value="Follow" />
                                 {/*<input className="btn btn-panel" value="Message" />
                                  <input className="btn btn-panel" value="Ask" />*/}
                             </div>
+                            <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                        </div>
+                        <div id="item-bottom-2-organization" className="item-bottom-2">
+                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Publications', 'Data', 'Models']} />
                         </div>
                     </div>
                 </div>
@@ -145,12 +145,12 @@ var OrganizationMenu = React.createClass ({
         var tabMap = {0: <About />,
                 1: <Connections  />,
                 2: <People />,
-                // 3: <NewsAndEvents/>,
+                3: <Equipments objectId={objectId}/>,
                 // 4: <Knowledge/>,
-                3: <Publications objectId={objectId}/>,
-                4: <Data objectId={objectId}/>,
-                5: <Models objectId={objectId}/>,
-                6: <Manage objectId={objectId}/>
+                4: <Publications objectId={objectId}/>,
+                5: <Data objectId={objectId}/>,
+                6: <Models objectId={objectId}/>,
+                7: <Manage objectId={objectId}/>
                 };
         return (
             <div>
@@ -185,7 +185,6 @@ var Connections = React.createClass({
         $.ajax({
             url: connectionUrl,
             success: function(data) {
-
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -267,55 +266,197 @@ var People = React.createClass({
 
 var Manage = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {
+             name: name,
+             about: about,
+             orgLocation: orgLocation,
+             organization_imgURL: organization_imgURL,
+             cover_imgURL: cover_imgURL,
+             pendingPeople: [],
+             pendingOrganizations: [],
+             admins: []
+        };
+    },
+    handleChange: function(e) {
+        this.setState({[e.target.name]:e.target.value});
+    },
+    submitChange: function() {
+        var dataForm = {name: this.state.name, about: this.state.about, location: this.state.orgLocation};
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
     },
     componentDidMount : function(){
         $.ajax({
-            url: "/organization/"+objectId+"/pending",
-            success: function(data) {
-
-                this.setState({data: data});
+            type: 'GET',
+            url: "/organization/"+objectId+"/pending_people",
+            success: function(pendingPeopleData) {
+                this.setState({pendingPeople: pendingPeopleData});
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error("couldnt retrieve people");
+                console.error("Couldn't Retrieve People!");
+            }.bind(this)
+        }).then(this.admins);
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/pending_organizations",
+            success: function(pendingOrganizationsData) {
+                this.setState({pendingOrganizations: pendingOrganizationsData});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Organizations!");
             }.bind(this)
         });
     },
-    pending_action:function(person,action)
-    {
-            $.ajax({
-                url:"/organization/"+objectId+"/pending/" ,
-                method: "POST",
-                data:{mode:action,person:person},
-                success: function(data) {
-
-                   console.log(data);
-                }.bind(this),
-                error: function(xhr, status, err) {
-                    console.error("couldnt retrieve people");
-                }.bind(this)
-            });
-
+    admins : function(){
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/admins",
+            success: function(adminsData) {
+                this.setState({ admins: adminsData });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve isAdmin!");
+            }.bind(this)
+        });
+    },
+    pendingPersonAction: function(personId,action) {
+        var dataForm = {personId: personId, mode: action};
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(dataForm),
+            processData: false,
+            url: "/organization/"+objectId+"/pending_person_action",
+            success: function(data) {
+                var displayPerson = document.getElementById("pending_person_" + personId);
+                displayPerson.className += " hide";
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Do Action!");
+            }.bind(this)
+        }).then(this.admins);
+    },
+    pendingOrganizationAction: function(organizationId,action) {
+        var dataForm = {organizationId: organizationId, mode: action};
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(dataForm),
+            processData: false,
+            url: "/organization/"+objectId+"/pending_organization_action",
+            success: function(data) {
+                var displayOrganization = document.getElementById("pending_organization_" + organizationId);
+                displayOrganization.className += " hide";
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Do Action!");
+            }.bind(this)
+        });
     },
     render: function() {
-
+        var adminsList = $.map(this.state.admins,function(admin) {
+            return (
+                <a href={"/profile/" + admin.username} className="nostyle"><img src={admin.imgUrl} className="contain-panel-small-image"/></a>
+            );
+        });
+        var peopleList = $.map(this.state.pendingPeople,function(person) {
+            return (
+                <div className="item-box" id={"pending_person_" + person.id}>
+                    <div className="accept-reject-buttons">
+                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"admin")}>Admin</Button>
+                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"accept")}>Accept</Button>
+                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"reject")}>Reject</Button>
+                    </div>
+                    <div>
+                        <div className="item-box-left">
+                            <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname} - {person.username}</h3></a>
+                            <span className="font-15">{person.title}</span><br/>
+                            <span className="font-15">{person.workTitle} @ {person.company}</span>
+                        </div>
+                    </div>
+                </div>
+            )
+        }.bind(this));
+        var organizationsList = $.map(this.state.pendingOrganizations,function(organization) {
+            return (
+                <div className="item-box" id={"pending_organization_" + organization.id}>
+                    <div className="accept-reject-buttons">
+                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingOrganizationAction.bind(this,organization.id,"accept")}>Accept</Button>
+                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingOrganizationAction.bind(this,organization.id,"reject")}>Reject</Button>
+                    </div>
+                    <div>
+                        <div className="item-box-left">
+                            <a href={'/organization/'+organization.id}><img src={organization.profile_imgURL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/organization/'+organization.id} className="body-link"><h3 className="margin-top-bottom-5">{organization.name}</h3></a>
+                            <span className="font-15">{organization.location}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }.bind(this));
         return (
             <div>
-                <div><span className="people-title">Pending Approval</span></div>
-                {this.state.data.map(person =>
-
-                        <div key={person.username} className="row" id="people-row">
-                            <div className="col-lg-2">
-                                <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="img-circle newsfeed-profile-pic" /></a>
-                            </div>
-                            <div className="col-lg-10">
-                                <div>{person.fullname}</div>
-                                <div>{person.workTitle}</div>
-                                <div>{person.company}</div>
-                                <div><a onClick={this.pending_action.bind(this,person,"approve")} id="pending-action"><span id="pending-accept" className="glyphicon glyphicon-ok" aria-hidden="true"></span></a> <a onClick={this.pending_action.bind(this,person,"deny")}  id="pending-action"><span id="pending-deny" className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></div>
-                            </div>
-                        </div>
-                )}
+                <div className="organization-table-div">
+                    <div>
+                        <h3 className="summary-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Information</h3>
+                    </div>
+                    <table className="organization-table-info">
+                        <tbody>
+                        <tr>
+                            <td><b>Name: </b></td>
+                            <td><input type="text" className="p-editable" name="name" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.name} /></td>
+                        </tr>
+                        <tr>
+                            <td><b>About: </b></td>
+                            <td><textarea rows="5" type="text" className="r-editable r-editable-full" id="about" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea></td>
+                        </tr>
+                        <tr>
+                            <td><b>Location: </b></td>
+                            <td><input type="text" className="p-editable" name="orgLocation" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgLocation} /></td>
+                        </tr>
+                        <tr>
+                            <td><b>Admins: </b></td>
+                            <td><div className="padding-top-10">{adminsList}</div></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div><hr/>
+                <div>
+                    <h3 className="summary-margin-top"><span aria-hidden="true" className="fa fa-user-plus"></span> People - Pending Approval</h3>
+                </div>
+                <div>
+                    {peopleList}
+                </div>
+                <div className="clear"></div>
+                <hr/>
+                <div>
+                    <h3 className="summary-margin-top"><span aria-hidden="true" className="fa fa-building-o"></span> Connections - Pending Approval</h3>
+                </div>
+                <div>
+                    {organizationsList}
+                </div>
             </div>
 
         )
@@ -352,6 +493,86 @@ var Knowledge = React.createClass({
   }
 });
 
+var Equipments = React.createClass({
+    getInitialState: function() {
+        return { data: [], showModal: false, isAdmin: false };
+    },
+    componentWillMount : function() {
+        var equipmentsURL= "/organization/"+objectId+"/equipments_list";
+
+        $.ajax({
+            type: 'GET',
+            url: equipmentsURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Equipments!");
+            }.bind(this)
+        });
+    },
+    componentDidMount : function() {
+        var isAdminURL= "/organization/"+objectId+"/isAdmin";
+
+        $.ajax({
+            type: 'GET',
+            url: isAdminURL,
+            success: function(isAdminData) {
+                this.setState({ isAdmin: isAdminData.isAdmin });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve isAdmin!");
+            }.bind(this)
+        });
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(item) {
+            return (
+                <div className="item-box" key={item.objectId}>
+                    <div>
+                        <div className="item-box-left">
+                            <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <span className="font-15">{item.description}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+        return (
+            <div>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Equipment</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Modal.Title>To Be Determined!</Modal.Title>
+                    </Modal.Body>
+                </Modal>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tbody>
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {itemsList}
+            </div>
+        )
+    }
+});
+
 var Publications = React.createClass({
   getInitialState: function() {
     return {data: []};
@@ -363,7 +584,6 @@ var Publications = React.createClass({
         url: peopleUrl,
         success: function(publications) {
             this.setState({data: publications});
-            console.log(this.state.data);
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't Retrieve Publications!");
@@ -374,11 +594,13 @@ var Publications = React.createClass({
     return (
       <div>
         <table id="upload-field" width="100%">
+            <tbody>
             <tr>
                 <td className="padding-right">
                 <input type="text" id="search" placeholder="Search..." className="form-control"/>
                 </td>
             </tr>
+            </tbody>
         </table>
         {this.state.data.map(function(publication){
             return (<Publication objectId={publication.objectId}
@@ -429,7 +651,6 @@ var Data = React.createClass({
         url: peopleUrl,
         success: function(datas) {
             this.setState({data: datas});
-            console.log(this.state.data);
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't Retrieve Data!");
@@ -441,11 +662,13 @@ var Data = React.createClass({
     return (
       <div>
           <table id="upload-field" width="100%">
+            <tbody>
               <tr>
                   <td className="padding-right">
                   <input type="text" id="search" placeholder="Search..." className="form-control"/>
                   </td>
               </tr>
+            </tbody>
           </table>
         {this.state.data.map(function(item) {
             return (<Datum objectId={item.objectId}
@@ -511,7 +734,6 @@ var Models = React.createClass({
         url: peopleUrl,
         success: function(models) {
             this.setState({data: models});
-            console.log(this.state.data);
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't Retrieve Publications!");
@@ -523,11 +745,13 @@ var Models = React.createClass({
     return (
       <div>
           <table id="upload-field" width="100%">
+            <tbody>
               <tr>
                   <td className="padding-right">
                   <input type="text" id="search" placeholder="Search..." className="form-control"/>
                   </td>
               </tr>
+            </tbody>
           </table>
         {this.state.data.map(function(model) {
           return (<Model objectId={model.objectId}
@@ -586,7 +810,3 @@ var Model = React.createClass({
 
 React.render(<Organization />, document.getElementById('content'));
 
-function pending_action(action,orgId,userId)
-{
-
-}

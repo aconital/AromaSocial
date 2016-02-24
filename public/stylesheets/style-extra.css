@@ -1,0 +1,62 @@
+.clear { clear: both; }
+.hide { display: none !important; }
+.show { display: block !important; }
+
+.body-link{color: #70ab8f; }
+.body-link:hover{color: #70ab8f;}
+
+.btn-primary {
+    background-color: #569978;
+    border-color: #569978;
+    border-radius: 5px;
+} .btn-primary:hover {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    border-radius: 5px;
+} .btn-primary:active {
+    background-color: #70ab8f;
+    border-color: #70ab8f;
+    border-radius: 5px;
+} .btn-primary + .btn-primary {
+    margin-left: 2%;
+} .btn-accept-reject {
+    width: 31%;
+} .btn-search {
+    border-top-left-radius:0;
+    border-bottom-left-radius:0;
+    bottom:0px;
+    right:0px;
+    margin: 0px;
+    position:absolute;
+    z-index:1000;
+} .btn-comment {
+    border-top-left-radius:0;
+    border-bottom-left-radius:0;
+    bottom:0px;
+    right:0px;
+    margin: 0px;
+    position:absolute;
+    z-index:0;
+}
+
+.font-10 { font-size: 10px; }
+.font-15 { font-size: 15px; }
+
+.margin-top-5 { margin-top:5px; }
+.margin-top-10 { margin-top:10px; }
+.margin-top-bottom-5 { margin:5px 0px; }
+.margin-top-bottom-10 { margin:10px 0px; }
+
+.padding-left-5 { padding-left: 5px; }
+.padding-left-10 { padding-left: 10px; }
+.padding-right-5 { padding-right: 5px; }
+.padding-right-10 { padding-right: 10px; }
+.padding-top-5 { padding-top:5px; }
+.padding-top-10 { padding-top:10px; }
+.padding-top-bottom-5 { padding:5px 0px; }
+.padding-top-bottom-10 { padding:10px 0px; }
+
+.navbar-default { background-color: rgba(0, 0, 0, 0) !important; }
+.navbar-right { margin-right: 0px !important; right: 0px; }
+.navbar-collapse { padding: 0px; width: 1165px; left: 0px; }
+.navbar-wrapper { max-width: 1175px; padding: 0px; padding-left: 25px; margin: auto; }

@@ -68,7 +68,7 @@ module.exports=function(app,Parse) {
                     });
             } else {
                  res.render('error', {title: 'Not allowed to access this data', path: req.path});   
-            }
+              }
             },
             error: function(error) {
                 res.render('index', {title: 'Please Login!', path: req.path});
@@ -165,10 +165,14 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query("Data");
         query.get(req.params.objectId,{
             success: function(result) {
-                result.set("title", req.body.title);
-                result.set("description", req.body.description);
-                console.log(req.body.title);
-                console.log(req.body.description);
+                if (req.body.title) {
+                    result.set("title", req.body.title);
+                    result.set("description", req.body.description);
+                    result.set("filename", req.body.filename);
+                    result.set("license", req.body.license);
+                    result.set("publication_date", req.body.publication_date);
+                    console.log(req.body.filename);
+                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save();
             }
         });

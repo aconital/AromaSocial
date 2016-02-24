@@ -36,7 +36,8 @@ module.exports=function(app,Parse) {
                     name: result.get('name'),
                     about: result.get('about'),
                     location: result.get('location'),
-                    organization_imgURL: result.get('profile_imgURL')
+                    organization_imgURL: result.get('profile_imgURL'),
+                    cover_imgURL: result.get('cover_imgURL')
                 });
             },
             error: function(error) {
@@ -116,7 +117,7 @@ module.exports=function(app,Parse) {
     //Done by Hirad
     //not doing it in REACT
     //getting pending requests for People of org here and pass it to view
-    app.get('/organization/:objectId/pending', function (req, res, next) {
+    app.get('/organization/:objectId/pending_people', function (req, res, next) {
         // var currentUser = Parse.User.current();
 
         var innerQuery = new Parse.Query("Organization");
@@ -174,7 +175,6 @@ module.exports=function(app,Parse) {
 
                 }
                 res.json(people);
-
             },
             error: function(error) {
                 console.log(error);
@@ -182,42 +182,98 @@ module.exports=function(app,Parse) {
             }
         });
     });
-    app.post('/organization/:objectId/pending', function (req, res, next) {
-        var person= req.body.person;
-        var orgId= req.params.objectId;
-        var mode= req.body.mode;
 
+    app.get('/organization/:objectId/pending_organizations', function (req, res, next) {
+        // var currentUser = Parse.User.current();
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var query = new Parse.Query('RelationshipOrg');
+        query.matchesQuery("orgId1",innerQuery)
+        query.equalTo('verified',false)
+        query.include('orgId0');
+        query.find({
+            success: function(result) {
+                var organizations =[];
+                for(var i in result) {
+                    var name= result[i].attributes.name;
+                    var verified= result[i].attributes.verified;
+                    var organization= result[i].attributes.orgId0.attributes;
+
+                    var orgId= result[i].attributes.orgId0.id;
+                    var name= organization.name;
+                    var location= "N/A";
+                    var profile_imgURL= "/images/organization.png";
+
+                    if(organization.hasOwnProperty('location')){
+                        location=organization.location;
+                    }
+                    if(organization.hasOwnProperty('profile_imgURL')){
+                        profile_imgURL=organization.profile_imgURL;
+                    }
+
+                    if(!verified) {
+                        var organization = {
+                            id : orgId,
+                            name: name,
+                            location: location,
+                            profile_imgURL: profile_imgURL
+                        };
+                        organizations.push(organization);
+                    }
+                }
+                res.json(organizations);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.post('/organization/:objectId/pending_person_action/', function (req, res, next) {
+        var personId = req.body.personId;
+        var orgId = req.params.objectId;
+        var mode = req.body.mode;
 
         var innerQuery = new Parse.Query("Organization");
         innerQuery.equalTo("objectId",orgId);
-
         var innerQuery2 = new Parse.Query(Parse.User);
-        innerQuery2.equalTo("objectId",person.id);
+        innerQuery2.equalTo("objectId",personId);
 
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery)
-        query.matchesQuery("userId",innerQuery2)
-        query.equalTo('verified',false)
-        query.include('userId');
+        query.matchesQuery("orgId",innerQuery);
+        query.matchesQuery("userId",innerQuery2);
         query.first({
             success: function(result) {
-                if(mode=="approve")
-                {
+                if(mode=="admin") {
                     result.set("verified",true);
+                    result.set("isAdmin",true);
                     result.save(null, {
                         success:function(){
-                            res.json({scucess:"approved"});
+                            res.json("Accepted!");
                         },
                         error:function(error){
                             res.json({error:error});
                         }
                     });
                 }
-                else if(mode=="deny")
-                {
+                else if(mode=="accept") {
+                    result.set("verified",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="reject") {
                     result.destroy({
                         success: function(model, response){
-                            res.json({scucess:"denied"});
+                            res.json("Rejected!");
                         },
                         error: function(model, response){
                             res.json({error:error});
@@ -228,6 +284,63 @@ module.exports=function(app,Parse) {
             error: function(error) {
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+    
+    app.post('/organization/:objectId/pending_organization_action/', function (req, res, next) {
+        var organizationId = req.body.organizationId;
+        var orgId = req.params.objectId;
+        var mode = req.body.mode;
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",orgId);
+        var innerQuery2 = new Parse.Query("Organization");
+        innerQuery2.equalTo("objectId",organizationId);
+
+        var query = new Parse.Query('RelationshipOrg');
+        query.matchesQuery("orgId1",innerQuery);
+        query.matchesQuery("orgId0",innerQuery2);
+        query.first({
+            success: function(result) {
+                if(mode=="accept") {
+                    result.set("verified",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="reject") {
+                    result.destroy({
+                        success: function(model, response){
+                            res.json("Rejected!");
+                        },
+                        error: function(model, response){
+                            res.json({error:error});
+                        }
+                    });
+                }
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.post('/organization/:objectId/update',function(req,res,next){
+        var query = new Parse.Query("Organization");
+        query.get(req.params.objectId,{
+            success: function(result) {
+                if (req.body.name) {
+                    result.set("name", req.body.name);
+                    result.set("about", req.body.about);
+                    result.set("location", req.body.location);
+                } result.save();
             }
         });
     });
@@ -437,7 +550,8 @@ module.exports=function(app,Parse) {
                     for (var i = 0; i < result.length; i++) {
                         var object = result[i];
                         var admin = {
-                            username: object.attributes.userId.attributes.username
+                            username: object.attributes.userId.attributes.username,
+                            imgUrl: object.attributes.userId.attributes.imgUrl
                         };
                         admins.push(admin);
                     }
@@ -521,6 +635,21 @@ module.exports=function(app,Parse) {
         }
     });
 
+    app.get('/manage/organization', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            console.log(currentUser);
+            res.render('organization',
+                {layout:'home',
+                currentUsername: currentUser.attributes.username,
+                currentUserImg: currentUser.attributes.imgUrl,
+                isCreate: false,
+                isManage: true});
+        } else {
+            res.render('index', {title: 'Login failed', path: req.path});
+        }
+    });
+
     app.get('/organization/:objectId/join', function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = Parse.User.current();
@@ -550,5 +679,59 @@ module.exports=function(app,Parse) {
 
     });
 
+    app.get('/organization/:objectId/equipments_list', function (req, res, next) {
+            var innerQuery = new Parse.Query("Organization");
+            innerQuery.equalTo("objectId",req.params.objectId);
 
+            var queryEquipment = new Parse.Query('Equipment');
+            queryEquipment.matchesQuery('organization',innerQuery);
+            queryEquipment.find({
+                success: function(results) {
+                    var equipments = [];
+                    for (var i in results) {
+                        var objectId = results[i].id;
+                        var title = results[i].attributes.title;
+                        var description = results[i].attributes.description;
+                        var image_URL = results[i].attributes.image_URL;
+                        var equipment = {
+                            objectId: objectId,
+                            title: title,
+                            description: description,
+                            image_URL: image_URL
+                        }; equipments.push(equipment);
+                    }
+                    res.json(equipments);
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.render('index', {title: error, path: req.path});
+                }
+            });
+        });
+
+    app.get('/organization/:objectId/isAdmin', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        var userQuery = new Parse.Query(Parse.User);
+        userQuery.equalTo("objectId",currentUser.id);
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+
+        var queryAdmin = new Parse.Query('Relationship');
+        queryAdmin.matchesQuery('orgId',innerQuery);
+        queryAdmin.matchesQuery('userId',userQuery);
+        queryAdmin.find({
+            success: function(results) {
+                var isAdmin = false;
+                for (var i in results) {
+                    isAdmin = results[i].attributes.isAdmin;
+                }
+                res.json({isAdmin: isAdmin});
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
 };

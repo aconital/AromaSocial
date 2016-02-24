@@ -13,6 +13,20 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
+var decodeHtmlEntity = function(str) {
+  return str.replace(/&#(\d+);/g, function(match, dec) {
+    return String.fromCharCode(dec);
+  });
+};
+
+var encodeHtmlEntity = function(str) {
+  var buf = [];
+  for (var i=str.length-1;i>=0;i--) {
+    buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
+  }
+  return buf.join('');
+};
+
 module.exports=function(app,Parse) {
 
 
@@ -35,15 +49,18 @@ module.exports=function(app,Parse) {
                     currentUserImg: currentUser.attributes.imgUrl,
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
+                    title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('description'),
                     filename: result.get('filename'),
-                    title: result.get('title'),
-                    year: result.get('year'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
-                    groupies: result.get('groupies')
+                    groupies: result.get('groupies'),
+                    publication_date: result.get('year'),
+                    publication_code: result.get('publication_code'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
                 });
             },
             error: function(error) {
@@ -72,12 +89,13 @@ module.exports=function(app,Parse) {
                     var object = results[i];
                     pubs.push({
                         filename: object.attributes.filename,
-                        title:object.attributes.title,
-                        hashtags:object.attributes.hashtags,
-                        date:object.createdAt,
+                        title: object.attributes.title,
+                        hashtags: object.attributes.hashtags,
+                        date: object.createdAt,
                         year: object.attributes.year,
                         author: object.attributes.author,
                         description: object.attributes.description,
+
                         id: object.id
                     });
 
@@ -193,9 +211,10 @@ module.exports=function(app,Parse) {
                 if (req.body.title) {
                     result.set("title", req.body.title);
                     result.set("description", req.body.description);
-                    result.set("year", req.body.year);
+                    result.set("year", req.body.publication_date);
                     result.set("filename", req.body.filename);
                     result.set("license", req.body.license);
+                    result.set("publication_code", req.body.publication_code);
                 }
                 else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save();
