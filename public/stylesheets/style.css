@@ -6608,3 +6608,19 @@ textarea {
 .publication-table { margin-bottom: 15px; width: 100%; }
 .publication-table-info-right { width: 75%; }
 .publication-table-info-left { width: 25%; }
+
+.grow {
+    height: 100px; /* Original height */
+    width: 22%; /* Original width */
+    margin: 5px 1% 5px 1%; /* Just for presentation (Not required) */
+    /*float: left; /* Just for presentation (Not required) */
+    /*position: relative; /* Just for presentation (Not required) */
+    transition:height 0.5s; /* Animation time */
+    -webkit-transition:height 0.5s; /* For Safari */
+}
+.grow:hover {
+    height: 120px; /* This is the height on hover */
+}
+
+.leftClass {
+}

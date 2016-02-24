@@ -9,6 +9,7 @@ var Data = React.createClass ({
         description: description,
         objectId: objectId,
         image_URL: image_URL,
+        groupies: groupies,
 
         fromModelTab: false,
         pictureChosen: null,
@@ -100,7 +101,20 @@ var Data = React.createClass ({
 
         return;
     },
+    isUserInGroupies: function() {
+        var group = this.state.groupies.split(",");
+        for (var i = 0; i < group.length; i++) {
+            console.log(group[i]);
+            console.log(currentUsername);
+            if (currentUsername == group[i]) {
+                return true;
+            }
+        }
+        return false;
+    },
     render: function() {
+        console.log("GROUPIES: ");
+        console.log(this.state.groupies);
         return (
         <div className="content-wrap-pdm">
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -121,7 +135,7 @@ var Data = React.createClass ({
                     <div>
                         {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner">
-                            <a href={aws_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>
+                            {this.isUserInGroupies() ? <a href={aws_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>:<h4>Nodl4u</h4>}   
                         </h2>
                     </div>
                     <div>

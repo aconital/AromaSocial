@@ -42,7 +42,8 @@ module.exports=function(app,Parse) {
                     year: result.get('year'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
-                    publication_link: result.get('publication_link')
+                    publication_link: result.get('publication_link'),
+                    groupies: result.get('groupies')
                 });
             },
             error: function(error) {
@@ -115,6 +116,7 @@ module.exports=function(app,Parse) {
             pub.set('license',reqBody.license);
             pub.set('publication_link',reqBody.publication_link);
             pub.set('title',reqBody.title);
+            pub.set('groupies', reqBody.groupies);
             pub.set('year',reqBody.publishDate.substring(0,4));
 
             pub.save(null, {

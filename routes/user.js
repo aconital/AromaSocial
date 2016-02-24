@@ -15,6 +15,26 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
 
+    app.get('/allusers', function(req, res) {
+        var currentUser = Parse.User.current();
+        var q = new Parse.Query(Parse.User);
+        q.find({
+            success: function(items) {
+                var results = [];
+                for (var i = 0; i < items.length; i++) {
+                    var obj = items[i];
+                    results.push(obj);
+                }
+                console.log("RESULTS ARE: ");
+                console.log(results);
+                res.send(results);
+            },
+            error: function(error) {
+                console.log("Error while getting all users");
+            }
+        });
+    });
+
     /*******************************************
      *
      * PROFILE

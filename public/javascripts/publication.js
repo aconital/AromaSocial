@@ -14,7 +14,9 @@ var Publication = React.createClass ({
         publicationDate: year,
         license: license,
 
-        keywords: keywords
+        keywords: keywords,
+
+        groupies: groupies
         };
     },
     handleChange: function(e) {
@@ -65,6 +67,17 @@ var Publication = React.createClass ({
 
         return;
     },
+    isUserInGroupies: function() {
+        var group = this.state.groupies.split(",");
+        for (var i = 0; i < group.length; i++) {
+            console.log(group[i]);
+            console.log(currentUsername);
+            if (currentUsername == group[i]) {
+                return true;
+            }
+        }
+        return false;
+    },
     render: function() {
         return (
         <div className="content-wrap-pdm">
@@ -73,7 +86,7 @@ var Publication = React.createClass ({
                     <div>
                         {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner">
-                            <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>
+                            {this.isUserInGroupies() ? <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>:<h4> Not allowed to download. Sorry </h4>}
                         </h2>
                     </div>
                     <div>
@@ -177,7 +190,7 @@ var Publication = React.createClass ({
 });
 
 
-React.render(<Publication
+ReactDOM.render(<Publication
     groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
     keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,
     document.getElementById('content'));

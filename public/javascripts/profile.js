@@ -3,6 +3,7 @@ var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+// require('autocomplete.js').UserAutocomplete();
 
 var Profile = React.createClass ({
     getInitialState: function() {
@@ -353,7 +354,7 @@ var Publications = React.createClass({
       <div>
         <PublicationForm />
         {this.data.publications.map(function(publication) {
-            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
+            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} pubGroup={publication.pubGroup} />);
         })}
         {rows}
       </div>
@@ -756,6 +757,7 @@ var PublicationForm = React.createClass({
              txtKeywordsTags : [],
              txtURL : "",
              txtDOI : "",
+             groupies: "",
              txtTags: [],
              txtPrivacy: [] };
   },
@@ -799,6 +801,7 @@ var PublicationForm = React.createClass({
 					  license: "Testtt",
 					  publication_link: "why.jpg",
 					  file: this.state.pubFile,
+                      groupies: this.state.groupies,
 					  fileType: this.state.pubFileExt };
 
 		$.ajax({
@@ -878,6 +881,9 @@ var PublicationForm = React.createClass({
   privacy: function(e) {
     this.setState({ txtPrivacy : e })
   },
+  groups: function(e) {
+    this.setState({groupies : e.target.value})
+  },
   pubUpload: function(e) {
     console.log('hello there');
     var self = this;
@@ -907,7 +913,7 @@ var PublicationForm = React.createClass({
                              abstract={this.abstract} txtAbstract={this.state.txtAbstract}
                              keywordsTags={this.keywordsTags} txtKeywordsTags={this.state.txtKeywordsTags}
                              URL={this.URL} txtURL={this.state.txtURL}
-                             DOI={this.DOI} txtDOI={this.state.txtDOI} />,
+                             DOI={this.DOI} txtDOI={this.state.txtDOI} groupies={this.groups} />,
                    2: <Step2 tags={this.tags} txtTags={this.state.txtTags}
                              privacy={this.privacy} txtPrivacy={this.state.txtPrivacy}/>,
                    3: <Step3 title={this.state.txtTitle}
@@ -985,7 +991,7 @@ var Step1 = React.createClass({
                              abstract={this.props.abstract} txtAbstract={this.props.txtAbstract}
                              keywordsTags={this.props.keywordsTags} txtKeywordsTags={this.props.txtKeywordsTags}
                              URL={this.props.URL} txtURL={this.props.txtURL}
-                             DOI={this.props.DOI} txtDOI={this.props.txtDOI}/>
+                             DOI={this.props.DOI} txtDOI={this.props.txtDOI} groupies={this.props.groupies}/>
 
       </div>
     )
@@ -1080,7 +1086,8 @@ var PublicationType = React.createClass ({
                                                  abstract={this.props.abstract} txtAbstract={this.props.txtAbstract}
                                                  keywordsTags={this.props.keywordsTags} txtKeywordsTags={this.props.txtKeywordsTags}
                                                  URL={this.props.URL} txtURL={this.props.txtURL}
-                                                 DOI={this.props.DOI} txtDOI={this.props.txtDOI}/>,
+                                                 DOI={this.props.DOI} txtDOI={this.props.txtDOI}
+                                                 groupies={this.props.groupies}/>,
                                2: <PublicationBookChapter />,
                                3: <PublicationConferenceProceeding />,
                                4: <PublicationJournalArticle />,
@@ -1147,6 +1154,9 @@ var PublicationBook = React.createClass ({
                 </div>
                 <div id="field11-container" className="form-group">
                     <input onChange={this.props.DOI} defaultValue={this.props.txtDOI} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
+                </div>
+                <div id="field10-container" className="form-group">
+                    <input onChange={this.props.groupies} defaultValue={this.props.groupies} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Enter usernames you would like to share this Publication with (Comma separated)"/>
                 </div>
             </div>
         )
@@ -1991,7 +2001,7 @@ var ResourceAddForm = React.createClass({
 
         // form
         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: ''
+        creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: '', groupies: ''
         };
     },
 
@@ -2017,6 +2027,7 @@ var ResourceAddForm = React.createClass({
                 <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
                 <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+                <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
 
                <Modal.Footer>
                    <Input className="btn btn-default pull-right" type="submit" value="Continue" />
@@ -2040,7 +2051,7 @@ var ResourceAddForm = React.createClass({
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
         				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
         				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
+        				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
 		console.log(dataForm);
 
         var isValidForm = this.validateForm();
@@ -2050,7 +2061,7 @@ var ResourceAddForm = React.createClass({
 				fileType: this.state.fileType, pictureType: this.state.pictureType,
 				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
 				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
+				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
 
 			$.ajax({
 				url: path + endpoint,
