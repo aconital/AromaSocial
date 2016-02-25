@@ -6,7 +6,6 @@
 
   <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-  <script src="/javascripts/autocomplete.js"></script>
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -73,7 +72,7 @@
                 <form role="search" method="post" action="/searchpage" class="navbar-form navbar-right">
                     <div class="form-group form-inline" style="width:100%">
                         <div class="input-group purple" style="width:100%">
-                            <input type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar"/>
+                            <input type="text" id="auto" name="searchQuery" placeholder="Search..." class="form-control search-bar"/>
                             <button type="submit" class="btn btn-primary btn-search"><span aria-hidden="true" class="glyphicon glyphicon-search"></span></button>
                         </div>
                     </div>
@@ -114,6 +113,7 @@
     });
 </script>
 <script type="text/jsx" src="/javascripts/navbar.js"></script>
+<script src="/javascripts/autocomplete.js"></script>
 
 </body>
 
