@@ -32,26 +32,43 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query('Data');
         query.get(req.params.objectId,{
             success: function(result) {
-                res.render('data', {layout: 'home', title: 'Data', path: req.path,
-                    currentUserId: currentUser.id,
-                    currentUsername: currentUser.attributes.username,
-                    currentUserImg: currentUser.attributes.imgUrl,
-                    objectId: req.params.objectId,
-                    creatorId: result.get("user").id,
-                    access: result.get('author'),
-                    collaborators: result.get('collaborators'),
-                    description: result.get('description'),
-                    hashtags: result.get('hashtags'),
-                    keywords: result.get('title'),
-                    title: result.get('title'),
-                    license: result.get('license'),
-                    keywords: result.get('keywords'),
-                    createdAt: result.get('createdAt'),
-                    image_URL: result.get('image_URL'),
-                    aws_path: result.get('path'),
-                    publication: result.get('publication'),
-                    publication_link: result.get('publication_link')
-                });
+                var group = result.get('groupies');
+                var allowed = false;
+                if (group) {
+                    for (var i = 0; i < group.length; i++) {
+                        if (currentUser.attributes.username == group[i]) {
+                            allowed = true;
+                            break;
+                        }
+                    }
+                } else {
+                    allowed = true; // everyone allowed to access. No entry in groupies
+                }
+                if (allowed) {
+                    res.render('data', {layout: 'home', title: 'Data', path: req.path,
+                        currentUserId: currentUser.id,
+                        currentUsername: currentUser.attributes.username,
+                        currentUserImg: currentUser.attributes.imgUrl,
+                        objectId: req.params.objectId,
+                        creatorId: result.get("user").id,
+                        access: result.get('author'),
+                        collaborators: result.get('collaborators'),
+                        description: result.get('description'),
+                        hashtags: result.get('hashtags'),
+                        keywords: result.get('title'),
+                        title: result.get('title'),
+                        license: result.get('license'),
+                        keywords: result.get('keywords'),
+                        createdAt: result.get('createdAt'),
+                        groupies: result.get('groupies'),
+                        image_URL: result.get('image_URL'),
+                        aws_path: result.get('path'),
+                        publication: result.get('publication'),
+                        publication_link: result.get('publication_link')
+                    });
+            } else {
+                 res.render('error', {title: 'Not allowed to access this data', path: req.path});   
+              }
             },
             error: function(error) {
                 res.render('index', {title: 'Please Login!', path: req.path});
@@ -73,6 +90,8 @@ module.exports=function(app,Parse) {
             // send to Parse
             var keywords = reqBody.keywords.split(/\s*,\s*/g);
             var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
+            var groupies = reqBody.groupies.split(/\s*,\s*/g);
+
             var Data = Parse.Object.extend("Data");
             var data= new Data();
             console.log(keywords);
@@ -89,6 +108,7 @@ module.exports=function(app,Parse) {
 //			data.set('publication',reqBody.pubLink); // TODO takes pointer to Publication obj
             data.set('number_cited',0);
             data.set('number_syncholar_factor',0);
+            data.set('groupies', groupies);
 
             console.log(data);
 
@@ -145,10 +165,14 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query("Data");
         query.get(req.params.objectId,{
             success: function(result) {
-                result.set("title", req.body.title);
-                result.set("description", req.body.description);
-                console.log(req.body.title);
-                console.log(req.body.description);
+                if (req.body.title) {
+                    result.set("title", req.body.title);
+                    result.set("description", req.body.description);
+                    result.set("filename", req.body.filename);
+                    result.set("license", req.body.license);
+                    result.set("publication_date", req.body.publication_date);
+                    console.log(req.body.filename);
+                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save();
             }
         });

@@ -98,75 +98,99 @@ var SearchFeed = React.createClass({
     return (
         React.createElement("div", {}, 
           React.createElement("h2", {}, "Search Results"),
-          React.createElement("h3", {}, "Users: "),
-          React.createElement("ul", {}, 
-            React.createElement("div", {}, users.map(function(i){
-              obj = i["obj"]
-              link = i["link"]
-              key = i["key"]
-              return (
-                React.createElement("li", {},
-                  React.createElement("a", {href: link}, key)
+          React.createElement("h3", {className: "leftClass"}, "Users: "),
+          React.createElement("div", {className: "item-panel-newsFeed contain-panel-newsFeed grow"},
+            React.createElement("div", {className: "row"},
+              React.createElement("ul", {}, 
+                React.createElement("div", {className: "col-md-4"}, users.map(function(i){
+                  obj = i["obj"]
+                  link = i["link"]
+                  key = i["key"]
+                  return(
+                    React.createElement("li", {},
+                      React.createElement("a", {href: link}, key)
+                    )
+                  )
+                  })
                 )
               )
-            }))
+            )
           ),
-          React.createElement("h3", {}, "Data: "),
-          React.createElement("ul", {}, 
-            React.createElement("div", {}, data.map(function(i){
-              obj = i["obj"]
-              link = i["link"]
-              key = i["key"]
-              return (
-                React.createElement("li", {},
-                  React.createElement("a", {href: link}, key)
+          React.createElement("h3", {className: "leftClass"}, "Data: "),
+          React.createElement("div", {className: "item-panel-newsFeed contain-panel-newsFeed grow"},
+            React.createElement("div", {className: "row"},
+              React.createElement("ul", {}, 
+                React.createElement("div", {className: "col-md-4"}, data.map(function(i){
+                  obj = i["obj"]
+                  link = i["link"]
+                  key = i["key"]
+                  return(
+                    React.createElement("li", {},
+                      React.createElement("a", {href: link}, key)
+                    )
+                  )
+                  })
                 )
               )
-            }))
+            )
           ),
-          React.createElement("h3", {}, "Publications: "),
-          React.createElement("ul", {}, 
-            React.createElement("div", {}, publications.map(function(i){
-              obj = i["obj"]
-              link = i["link"]
-              key = i["key"]
-              return (
-                React.createElement("li", {},
-                  React.createElement("a", {href: link}, key)
+          React.createElement("h3", {className: "leftClass"}, "Publications: "),
+          React.createElement("div", {className: "item-panel-newsFeed contain-panel-newsFeed grow"},
+            React.createElement("div", {className: "row"},
+              React.createElement("ul", {}, 
+                React.createElement("div", {className: "col-xs-8"}, publications.map(function(i){
+                  obj = i["obj"]
+                  link = i["link"]
+                  key = i["key"]
+                  return(
+                    React.createElement("li", {},
+                      React.createElement("a", {href: link}, key)
+                    )
+                  )
+                  })
                 )
               )
-            }))
+            )
           ),
-          React.createElement("h3", {}, "Organizations: "),
-          React.createElement("ul", {}, 
-            React.createElement("div", {}, organizations.map(function(i){
-              obj = i["obj"]
-              link = i["link"]
-              key = i["key"]
-              return (
-                React.createElement("li", {},
-                  React.createElement("a", {href: link}, key)
+          React.createElement("h3", {className: "leftClass"}, "Organizations: "),
+          React.createElement("div", {className: "item-panel-newsFeed contain-panel-newsFeed grow"},
+            React.createElement("div", {className: "row"},
+              React.createElement("ul", {}, 
+                React.createElement("div", {className: "col-xs-8"}, organizations.map(function(i){
+                  obj = i["obj"]
+                  link = i["link"]
+                  key = i["key"]
+                  return(
+                    React.createElement("li", {},
+                      React.createElement("a", {href: link}, key)
+                    )
+                  )
+                  })
                 )
               )
-            }))
+            )
           ),
-          React.createElement("h3", {}, "Model: "),
-          React.createElement("ul", {}, 
-            React.createElement("div", {}, models.map(function(i){
-              obj = i["obj"]
-              link = i["link"]
-              key = i["key"]
-              return (
-                React.createElement("li", {},
-                  React.createElement("a", {href: link}, key)
+          React.createElement("h3", {className: "leftClass"}, "Model: "),
+          React.createElement("div", {className: "item-panel-newsFeed contain-panel-newsFeed grow"},
+            React.createElement("div", {className: "row"},
+              React.createElement("ul", {}, 
+                React.createElement("div", {className: "col-xs-8"}, models.map(function(i){
+                  obj = i["obj"]
+                  link = i["link"]
+                  key = i["key"]
+                  return(
+                    React.createElement("li", {},
+                      React.createElement("a", {href: link}, key)
+                    )
+                  )
+                  })
                 )
               )
-            }))
+            )
           )
         )
-    )
-
-    	}
+      )
+    }
 });
 
  if (isNode) {

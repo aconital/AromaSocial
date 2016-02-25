@@ -9,6 +9,7 @@ var Data = React.createClass ({
         description: description,
         objectId: objectId,
         image_URL: image_URL,
+        groupies: groupies,
 
         fromModelTab: false,
         pictureChosen: null,
@@ -48,7 +49,7 @@ var Data = React.createClass ({
       this.setState({ showModal: false});
     },
     openFileUpload() {
-	    var input = $(this),
+        var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
@@ -58,7 +59,7 @@ var Data = React.createClass ({
             console.log(label);
             return input;
         });
-	},
+    },
     handlePicture: function(e) {
         var self = this;
         var reader = new FileReader();
@@ -100,7 +101,20 @@ var Data = React.createClass ({
 
         return;
     },
+    isUserInGroupies: function() {
+        var group = this.state.groupies.split(",");
+        for (var i = 0; i < group.length; i++) {
+            console.log(group[i]);
+            console.log(currentUsername);
+            if (currentUsername == group[i]) {
+                return true;
+            }
+        }
+        return false;
+    },
     render: function() {
+        console.log("GROUPIES: ");
+        console.log(this.state.groupies);
         return (
         <div className="content-wrap-pdm">
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -121,7 +135,7 @@ var Data = React.createClass ({
                     <div>
                         {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
                         <h2 className="corner">
-                            <a href={aws_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>
+                            {this.isUserInGroupies() ? <a href={aws_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>:<h4>Nodl4u</h4>}   
                         </h2>
                     </div>
                     <div>
@@ -239,27 +253,27 @@ var Models = React.createClass({
 
   render: function() {
     return (
-		<div>
-		 <Button className="pull-right add-resource-btn" onClick={this.open}>Add Model</Button>
+        <div>
+         <Button className="pull-right add-resource-btn" onClick={this.open}>Add Model</Button>
 
-		 <div>
-		    <ModelItem title={"Some Model.xls"} author={"Me"} keywords={"help, me"} />
-		 </div>
+         <div>
+            <ModelItem title={"Some Model.xls"} author={"Me"} keywords={"help, me"} />
+         </div>
 
-		 <Modal show={this.state.showModal} onHide={this.close}>
-		   <Modal.Header closeButton>
-			 <Modal.Title>Add Model</Modal.Title>
-		   </Modal.Header>
-		   <Modal.Body>
+         <Modal show={this.state.showModal} onHide={this.close}>
+           <Modal.Header closeButton>
+             <Modal.Title>Add Model</Modal.Title>
+           </Modal.Header>
+           <Modal.Body>
 
-			 <ResourceAddForm fromModelTab={true}/>
+             <ResourceAddForm fromModelTab={true}/>
 
-		   </Modal.Body>
-		   <Modal.Footer>
-    		   <Button className="pull-right" onClick={this.close}>Continue</Button>
-		   </Modal.Footer>
-		 </Modal>
-		</div>
+           </Modal.Body>
+           <Modal.Footer>
+               <Button className="pull-right" onClick={this.close}>Continue</Button>
+           </Modal.Footer>
+         </Modal>
+        </div>
      );
   }
 });
@@ -277,22 +291,22 @@ var DataInline = React.createClass({
   },
   render: function() {
     return (
-		<div>
-		 <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>
+        <div>
+         <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>
 
-		 <DataItem title={"Some Data.csv"} author={"Me"} keywords={"help, me"} />
+         <DataItem title={"Some Data.csv"} author={"Me"} keywords={"help, me"} />
 
-		 <Modal show={this.state.showModal} onHide={this.close}>
-		   <Modal.Header closeButton>
-			 <Modal.Title>Add Data</Modal.Title>
-		   </Modal.Header>
-		   <Modal.Body>
+         <Modal show={this.state.showModal} onHide={this.close}>
+           <Modal.Header closeButton>
+             <Modal.Title>Add Data</Modal.Title>
+           </Modal.Header>
+           <Modal.Body>
 
-			 <ResourceAddForm />
+             <ResourceAddForm />
 
-		   </Modal.Body>
-		 </Modal>
-		</div>
+           </Modal.Body>
+         </Modal>
+        </div>
      );
   }
 });
@@ -311,11 +325,11 @@ var ResourceAddForm = React.createClass({
         };
     },
 
-	render: function() {
-		return (
-		<div>
-			<form className="form" onSubmit={this.handleSubmitData}>
-			    <div className="well" style={this.buttonStyles}>
+    render: function() {
+        return (
+        <div>
+            <form className="form" onSubmit={this.handleSubmitData}>
+                <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
                         Add Picture <input type="file" onChange={this.handlePicture} />
                     </Button>
@@ -336,21 +350,21 @@ var ResourceAddForm = React.createClass({
 
                 {/*<Button className="pull-right" type="submit" onClick={this.close}>Continue</Button>*/}
 
-		   <Modal.Footer>
-    		   <Input className="btn btn-default pull-right" type="submit" value="Continue" />
-		   </Modal.Footer>
+           <Modal.Footer>
+               <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+           </Modal.Footer>
               </form>
-		</div>
-		);
-	},
-	
-	handleChange: function(e) {
-	    var changedState = {};
-	    changedState[e.target.name] = e.target.value;
-	    this.setState( changedState );
-	},
+        </div>
+        );
+    },
+    
+    handleChange: function(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
 
-	handleSubmitData: function(e) {
+    handleSubmitData: function(e) {
         e.preventDefault();
         var dataForm = {title: "mytitle", description: "my descrption!!!!!", file: this.state.fileChosen,
             picture: this.state.pictureChosen, collaborators: this.state.collaborators, creationDate: this.state.creationDate,
@@ -392,15 +406,15 @@ var ResourceAddForm = React.createClass({
         });
     },
 
-	showPictureUpload(fromModel) {
-	    if (fromModel) {
+    showPictureUpload(fromModel) {
+        if (fromModel) {
             return '';
-	    }
-	    return 'none';
-	},
+        }
+        return 'none';
+    },
 
-	openFileUpload() {
-	    var input = $(this),
+    openFileUpload() {
+        var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
@@ -410,9 +424,9 @@ var ResourceAddForm = React.createClass({
             console.log(label);
             return input;
         });
-	},
+    },
 
-	handleFile: function(e) {
+    handleFile: function(e) {
         var self = this;
         var reader = new FileReader();
         var file = e.target.files[0];

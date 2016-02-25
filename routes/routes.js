@@ -11,6 +11,23 @@ var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
+
+// MIDDLEWARE REDIRECTION
+  app.use('/newsfeed', function(req, res, next) {
+    if (req.session && !req.session.user) {
+        res.render('signin', {title: 'Login', path: req.path});
+    } else {
+        next();
+    }
+  });
+
+  app.use('/profile', function(req, res, next) {
+    if (req.session && !req.session.user) {
+        res.render('signin', {title: 'Login', path: req.path});
+    } else {
+        next();
+    }
+  });
   /*******************************************
    *
    * HOME PAGE
