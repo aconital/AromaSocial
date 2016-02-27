@@ -19,7 +19,7 @@ var FriendRequest = React.createClass({
         });
     },
     componentDidMount : function(){
-       this.loadRequests();
+       setInterval( this.loadRequests, 2000);
 
     },
     pending_action:function(person,action)
@@ -41,6 +41,11 @@ var FriendRequest = React.createClass({
     },
     render: function() {
 
+        if(this.state.data.length <=0)
+            return(
+                <li><div className="empty-list">You have no request at this moment</div></li>
+            ) ;
+        else
         return (
             <li>
                 {this.state.data.map(person =>
@@ -65,4 +70,39 @@ var FriendRequest = React.createClass({
     }
 });
 
-React.render(<FriendRequest />, document.getElementById('friendrequest'));
+ReactDOM.render(<FriendRequest />, document.getElementById('friendrequest'));
+
+
+var Notification = React.createClass({
+    getInitialState: function() {
+        return {data: []};
+    },
+    loadRequests :function()
+    {
+        $.ajax({
+            url: "/friendrequest",
+            success: function(data) {
+
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
+    },
+    componentDidMount : function(){
+        setInterval( this.loadRequests, 2000);
+
+    },
+    render: function() {
+
+        if(this.state.data.length >0)
+            return <div className="notification-badge"></div>
+        else
+        return <div></div>;
+
+
+    }
+});
+
+ReactDOM.render(<Notification />, document.getElementById('notification-request'));

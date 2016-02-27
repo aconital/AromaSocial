@@ -16,7 +16,6 @@ var NewsFeed = React.createClass({
       dataType: 'json',
       cache: false,
       success: function(data) {
-        console.log(data);
         this.setState({data: data});
       }.bind(this),
       error: function(xhr, status, err) {
@@ -33,7 +32,6 @@ var NewsFeed = React.createClass({
         this.setState({groups: data});
       }.bind(this),
       error: function(xhr, status, err) {
-	    console.log()
         console.error(this.props.url, status, err.toString());
       }.bind(this)
     });
@@ -156,7 +154,6 @@ var NewsFeedList = React.createClass({
 var Update = React.createClass({
   render: function() {
 	  //var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
-  	console.log(this.props.tags);
     var date = moment(this.props.date).format("MMM D, YYYY");
     var tagString = this.props.tags.replace(/\[\"/g, "");
     tagString = tagString.replace(/\",\"/g, " ");
