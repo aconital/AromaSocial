@@ -459,7 +459,7 @@ module.exports=function(app,Parse) {
 
             relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
             relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
-            relation.set('verified', true);
+            relation.set('verified', false);
             relation.save(null,{
                 success:function(){
                     res.json({success: "Requested Successfully"});
@@ -557,7 +557,7 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query('RelationshipUser');
         query.equalTo("userId0",Parse.User.current())
         query.matchesQuery("userId1",innerQuery)
-        query.equalTo('verified',false)
+        query.equalTo('verified',true)
         query.first({
             success: function(result) {
                 if(mode=="approve")
