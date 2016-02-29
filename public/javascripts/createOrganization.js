@@ -61,7 +61,6 @@ var CreateOrganization = React.createClass({
 	},
 	handleSubmitData: function(e) {
 		e.preventDefault();
-
 		var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
 			var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType,

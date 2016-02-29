@@ -84,6 +84,7 @@ require('./routes/model')(app,Parse);
 require('./routes/newsfeed')(app,Parse);
 require('./routes/search')(app,Parse);
 require('./routes/group')(app,Parse);
+require('./routes/report')(app,Parse);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
