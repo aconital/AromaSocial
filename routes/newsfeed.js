@@ -28,7 +28,7 @@ app.get('/newsfeeddata', function (req, res, next) {
           var query = new Parse.Query(NewsFeed);
           query.include("pubId");
           query.include("modId");
-          query.include("dataId");
+          query.include("datId");
           query.include('from');
           query.descending("createdAt");
           query.find({
@@ -141,34 +141,34 @@ app.get('/newsfeeddata', function (req, res, next) {
                               });
                           }
                       }
-                      else if (type == "data") {
-                          if (object.attributes.dataId != null && object.attributes.dataId.attributes != null) {
-                              var dataItem = object.attributes.dataId.attributes;
+                      else if (type == "dat") {
+                          if (object.attributes.datId != null && object.attributes.datId.attributes != null) {
+                              var datItem = object.attributes.datId.attributes;
                               var filename ="";
                               var title ="";
                               var hashtags ="";
                               var year ="";
                               var author ="";
                               var description ="";
-                              var objectId = object.attributes.dataId;
-                              var image_URL = dataItem.image_URL;
-                              if (dataItem.filename != null) {
-                                  filename = modItem.filename;
+                              var objectId = object.attributes.datId;
+                              var image_URL = datItem.image_URL;
+                              if (datItem.filename != null) {
+                                  filename = datItem.filename;
                               }
-                              if (dataItem.title != null) {
-                                  title = modItem.title;
+                              if (datItem.title != null) {
+                                  title = datItem.title;
                               }
-                              if (dataItem.hashtags != null) {
-                                  hashtags = modItem.hashtags;
+                              if (datItem.hashtags != null) {
+                                  hashtags = datItem.hashtags;
                               }
-                              if (dataItem.year != null) {
-                                  year = modItem.year;
+                              if (datItem.year != null) {
+                                  year = datItem.year;
                               }
-                              if (dataItem.author != null) {
-                                  author = modItem.author;
+                              if (datItem.author != null) {
+                                  author = datItem.author;
                               }
-                              if (dataItem.description != null) {
-                                  description = modItem.description;
+                              if (datItem.description != null) {
+                                  description = datItem.description;
                               }
                               feeds.push({
                                   username: username,
