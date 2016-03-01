@@ -557,7 +557,7 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query('RelationshipUser');
         query.equalTo("userId0",Parse.User.current())
         query.matchesQuery("userId1",innerQuery)
-        query.equalTo('verified',true)
+        query.equalTo('verified',false)
         query.first({
             success: function(result) {
                 if(mode=="approve")
@@ -570,7 +570,7 @@ module.exports=function(app,Parse) {
 
                             relation.set('userId0',result.get("userId1"));
                             relation.set('userId1', Parse.User.current());
-                            relation.set('verified', false);
+                            relation.set('verified', true);
                             relation.save(null,{
                                 success:function(){
                                     res.json({scucess:"approved"});
