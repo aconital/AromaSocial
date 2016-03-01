@@ -5796,20 +5796,6 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
             text-align:center;
         }
 
-    .contain-panel-big {
-            width: 100%;
-            border: solid;
-            border-color: #70ab8f;
-            margin: 0%;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding:20px;
-            position:relative;
-        }
-    .contain-panel-big + .contain-panel-big {
-        margin-bottom: 20px;
-    }
-
     .contain-panel-newsFeed {
                 width: 100%;
                 border: solid;
@@ -5819,8 +5805,6 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
                 padding:15px;
                 position:relative;
             }
-.contain-panel-big-half-left{margin:0px; margin-right:2%; margin-bottom:15px;width:98%;}
-.contain-panel-big-half-right{margin:0px; margin-left:2%; margin-bottom:15px;width:98%;}
 .full{width:100%;}
 
 .contain-panel-big-h4 { margin: 5px 0px; margin-bottom:8px;}
