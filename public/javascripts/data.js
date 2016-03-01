@@ -9,20 +9,52 @@ var Data = React.createClass ({
         description: description,
         objectId: objectId,
         image_URL: image_URL,
-        groupies: groupies,
 
         fromModelTab: false,
         pictureChosen: null,
+
+        filename: filename,
+        publicationDate: publication_date,
+        license: license,
+        keywords: keywords,
 
         picture: null, pictureType: ''
         };
     },
     handleChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
-        console.log("Handled!");
     },
     submitChange: function() {
-        var dataForm = {title: this.state.title, description: this.state.description};
+        var dataForm = {title: this.state.title,
+                        description: this.state.description,
+                        filename: this.state.filename,
+                        publication_date: this.state.publicationDate,
+                        license: this.state.license};
+
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+    handleTagsInputChange: function(e) {
+        var keywordsSubmit = (JSON.stringify(e));
+        this.setState({keywords:keywordsSubmit}, function(){ console.log(this.state.keywords); this.submitArrayChange(); }.bind(this));
+    },
+    submitArrayChange: function() {
+        var dataForm = { keywords: this.state.keywords };
 
         $.ajax({
             url: path + "/update",
@@ -49,7 +81,7 @@ var Data = React.createClass ({
       this.setState({ showModal: false});
     },
     openFileUpload() {
-        var input = $(this),
+	    var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
@@ -59,7 +91,7 @@ var Data = React.createClass ({
             console.log(label);
             return input;
         });
-    },
+	},
     handlePicture: function(e) {
         var self = this;
         var reader = new FileReader();
@@ -101,22 +133,11 @@ var Data = React.createClass ({
 
         return;
     },
-    isUserInGroupies: function() {
-        var group = this.state.groupies.split(",");
-        for (var i = 0; i < group.length; i++) {
-            console.log(group[i]);
-            console.log(currentUsername);
-            if (currentUsername == group[i]) {
-                return true;
-            }
-        }
-        return false;
-    },
     render: function() {
-        console.log("GROUPIES: ");
-        console.log(this.state.groupies);
+        console.log(this.state.keywords);
         return (
-        <div className="content-wrap-pdm">
+        <div className="content-wrap-item-page">
+            <div className="content-wrap-item-page-100">
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
                   <Modal.Header closeButton>
                     <Modal.Title>Update Data Image</Modal.Title>
@@ -130,74 +151,83 @@ var Data = React.createClass ({
                     <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
                   </Modal.Footer>
                 </Modal>
-            <div className="item-bottom-big">
-                    <div className="item-panel contain-panel-big">
-                    <div>
-                        {(currentUserId == creatorId) ? <h2 className="no-margin"><textarea rows="1" className="contain-panel-big-h2 p-editable" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="contain-panel-big-h2 p-noneditable">{title}</h2>}
-                        <h2 className="corner">
-                            {this.isUserInGroupies() ? <a href={aws_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>:<h4>Nodl4u</h4>}   
-                        </h2>
+                <div className="item-panel">
+                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
+                    <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>
+                    <div className="contain-panel-big-item-image">
+                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </div>
-                    <div>
-                        {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.image_URL} className="contain-panel-big-image"/>}
-                        <div className="contain-panel-big-p">
-                            <h4>Description</h4>
-                            {(currentUserId == creatorId) ? <p className="no-margin"><textarea rows="5" type="text" className="p-editable" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-noneditable">{description}</p>}
-                        </div>
+                    <div className="contain-panel-big">
+                        <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
+                        {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="description" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-non-editable-bottom-wrap">{description}</p>}
                     </div>
-                    </div>
-                    <div className="item-panel contain-panel-big">
-                    <div>
-                        <h4 className="contain-panel-big-h4">Developer(s)</h4>
-                    </div>
-                    <div>
-                        <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons"/></a>
-                        <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-big-icons"/></a>
-                    </div>
-                    </div>
-            {/*
-                    <div className="item-panel contain-panel-big">
-                    <div>
-                        <h4 className="contain-panel-big-h4">Discussions</h4>
-                    </div>
-                    <div>
-                    <table>
-                    <tr><td className="comment-picture">
-                    <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
-                    </td><td className="comment-text">
-                    <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
-                    </td></tr>
-                    <tr><td className="comment-picture">
-                    <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
-                    </td><td className="comment-text">
-                    <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
-                    </td></tr>
-                    <tr><td className="comment-picture">
-                    <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
-                    </td><td className="comment-text">
-                    <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
-                    </td></tr>
-                    <tr><td className="comment-picture">
-                    <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
-                    </td><td className="comment-text">
-                    <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
-                    </td></tr>
+                </div>
+                <div className="item-panel">
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Information</h3>
+                    <div className="item-info-div">
+                    <table className="item-info-table">
+                        <tbody>
+                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="filename" name="filename" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.filename}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">File Name:</label></td><td className="publication-table-info-right"><a href={publication_link} className="body-link">{this.state.filename}</a></td></tr>}
+                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="license">License:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="license" name="license" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.license}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">License:</label></td><td className="publication-table-info-right">{this.state.license}</td></tr>}
+                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><p className="no-margin"><input type="date" name="publicationDate" id="publicationDate" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.publicationDate} className="p-editable date-editable-input"/></p></td></tr> : <tr><td className="publication-table-info-left"><label for="publicationDate">Publication Date:</label></td><td className="publication-table-info-right"><span className="no-margin">{this.state.publicationDate}</span></td></tr>}
+                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", className: "l-editable-input", name: "keywords", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.keywords)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.keywords).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
+
+                           <tr className="p-noneditable padding-top-25"><td className="publication-table-info-left"><label for="createdAt">Created At:</label></td><td className="publication-table-info-right">{createdAt}</td></tr>
+                           <tr className="p-noneditable"><td className="publication-table-info-left"><label for="updatedAt">Updated At:</label></td><td className="publication-table-info-right">{updatedAt}</td></tr>
+                        </tbody>
                     </table>
-                    <form role="comment" method="post" action="/comment">
-                        <div className="input-group contain-panel-big-input-group">
-                            <input type="text" placeholder="Comment..." className="form-control comment-bar"/>
-                            <button type="submit" className="btn btn-primary btn-comment">Post</button>
-                        </div>
-                    </form>
                     </div>
+                </div>
+                <div className="item-panel">
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Author(s)</h3>
+                    <div className="item-authors-div">
+                        <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-small-image"/></a>
+                        <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-small-image"/></a>
                     </div>
-            */}
+                </div>
             </div>
-            {/*
+
+            {/*}
+            <div className="item-panel contain-panel-big">
+            <div>
+                <h4 className="contain-panel-big-h4">Discussions</h4>
+            </div>
+            <div>
+            <table>
+            <tr><td className="comment-picture">
+            <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
+            </td><td className="comment-text">
+            <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
+            </td></tr>
+            <tr><td className="comment-picture">
+            <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
+            </td><td className="comment-text">
+            <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
+            </td></tr>
+            <tr><td className="comment-picture">
+            <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
+            </td><td className="comment-text">
+            <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
+            </td></tr>
+            <tr><td className="comment-picture">
+            <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-big-icons contain-panel-big-comment-icons"/></a>
+            </td><td className="comment-text">
+            <div className="float-right"><a href="/profile/saeedghaf" className="nostyle"><strong>Saeed Ghafghazi (Post-Doctoral Fellow)</strong></a>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus molestie dui ac mollis. In et justo lorem. Aenean interdum ex iaculis est cursus, eu tincidunt mauris placerat. </p></div>
+            </td></tr>
+            </table>
+            <form role="comment" method="post" action="/comment">
+                <div className="input-group contain-panel-big-input-group">
+                    <input type="text" placeholder="Comment..." className="form-control comment-bar"/>
+                    <button type="submit" className="btn btn-primary btn-comment">Post</button>
+                </div>
+            </form>
+            </div>
+            </div>
+
             <div className="item-bottom-3">
                     <div className="item-panel contain-panel-above"><h5>Publication Link</h5><br/>
                         <a href={"/publication/" + publication_link} className="body-link">Published Here!</a>
@@ -225,16 +255,14 @@ var Data = React.createClass ({
                     </div>
                 <div className="extend-bottom">&nbsp;</div>
             </div>
-            */}
+            {*/}
+
         </div>
         );
     }
 });
 
-ReactDOM.render(<Data
-    groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
-    keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,
-    document.getElementById('content'));
+ReactDOM.render(<Data />, document.getElementById('content'));
 
 
 var Models = React.createClass({
@@ -253,27 +281,27 @@ var Models = React.createClass({
 
   render: function() {
     return (
-        <div>
-         <Button className="pull-right add-resource-btn" onClick={this.open}>Add Model</Button>
+		<div>
+		 <Button className="pull-right add-resource-btn" onClick={this.open}>Add Model</Button>
 
-         <div>
-            <ModelItem title={"Some Model.xls"} author={"Me"} keywords={"help, me"} />
-         </div>
+		 <div>
+		    <ModelItem title={"Some Model.xls"} author={"Me"} keywords={"help, me"} />
+		 </div>
 
-         <Modal show={this.state.showModal} onHide={this.close}>
-           <Modal.Header closeButton>
-             <Modal.Title>Add Model</Modal.Title>
-           </Modal.Header>
-           <Modal.Body>
+		 <Modal show={this.state.showModal} onHide={this.close}>
+		   <Modal.Header closeButton>
+			 <Modal.Title>Add Model</Modal.Title>
+		   </Modal.Header>
+		   <Modal.Body>
 
-             <ResourceAddForm fromModelTab={true}/>
+			 <ResourceAddForm fromModelTab={true}/>
 
-           </Modal.Body>
-           <Modal.Footer>
-               <Button className="pull-right" onClick={this.close}>Continue</Button>
-           </Modal.Footer>
-         </Modal>
-        </div>
+		   </Modal.Body>
+		   <Modal.Footer>
+    		   <Button className="pull-right" onClick={this.close}>Continue</Button>
+		   </Modal.Footer>
+		 </Modal>
+		</div>
      );
   }
 });
@@ -291,22 +319,22 @@ var DataInline = React.createClass({
   },
   render: function() {
     return (
-        <div>
-         <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>
+		<div>
+		 <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>
 
-         <DataItem title={"Some Data.csv"} author={"Me"} keywords={"help, me"} />
+		 <DataItem title={"Some Data.csv"} author={"Me"} keywords={"help, me"} />
 
-         <Modal show={this.state.showModal} onHide={this.close}>
-           <Modal.Header closeButton>
-             <Modal.Title>Add Data</Modal.Title>
-           </Modal.Header>
-           <Modal.Body>
+		 <Modal show={this.state.showModal} onHide={this.close}>
+		   <Modal.Header closeButton>
+			 <Modal.Title>Add Data</Modal.Title>
+		   </Modal.Header>
+		   <Modal.Body>
 
-             <ResourceAddForm />
+			 <ResourceAddForm />
 
-           </Modal.Body>
-         </Modal>
-        </div>
+		   </Modal.Body>
+		 </Modal>
+		</div>
      );
   }
 });
@@ -325,11 +353,11 @@ var ResourceAddForm = React.createClass({
         };
     },
 
-    render: function() {
-        return (
-        <div>
-            <form className="form" onSubmit={this.handleSubmitData}>
-                <div className="well" style={this.buttonStyles}>
+	render: function() {
+		return (
+		<div>
+			<form className="form" onSubmit={this.handleSubmitData}>
+			    <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{display: this.showPictureUpload(this.props.fromModelTab)}}>
                         Add Picture <input type="file" onChange={this.handlePicture} />
                     </Button>
@@ -350,21 +378,21 @@ var ResourceAddForm = React.createClass({
 
                 {/*<Button className="pull-right" type="submit" onClick={this.close}>Continue</Button>*/}
 
-           <Modal.Footer>
-               <Input className="btn btn-default pull-right" type="submit" value="Continue" />
-           </Modal.Footer>
+		   <Modal.Footer>
+    		   <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+		   </Modal.Footer>
               </form>
-        </div>
-        );
-    },
-    
-    handleChange: function(e) {
-        var changedState = {};
-        changedState[e.target.name] = e.target.value;
-        this.setState( changedState );
-    },
+		</div>
+		);
+	},
+	
+	handleChange: function(e) {
+	    var changedState = {};
+	    changedState[e.target.name] = e.target.value;
+	    this.setState( changedState );
+	},
 
-    handleSubmitData: function(e) {
+	handleSubmitData: function(e) {
         e.preventDefault();
         var dataForm = {title: "mytitle", description: "my descrption!!!!!", file: this.state.fileChosen,
             picture: this.state.pictureChosen, collaborators: this.state.collaborators, creationDate: this.state.creationDate,
@@ -406,15 +434,15 @@ var ResourceAddForm = React.createClass({
         });
     },
 
-    showPictureUpload(fromModel) {
-        if (fromModel) {
+	showPictureUpload(fromModel) {
+	    if (fromModel) {
             return '';
-        }
-        return 'none';
-    },
+	    }
+	    return 'none';
+	},
 
-    openFileUpload() {
-        var input = $(this),
+	openFileUpload() {
+	    var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
@@ -424,9 +452,9 @@ var ResourceAddForm = React.createClass({
             console.log(label);
             return input;
         });
-    },
+	},
 
-    handleFile: function(e) {
+	handleFile: function(e) {
         var self = this;
         var reader = new FileReader();
         var file = e.target.files[0];
