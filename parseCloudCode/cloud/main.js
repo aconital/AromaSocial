@@ -7,11 +7,19 @@ Parse.Cloud.afterSave("Publication", function(request) {
 	var newsFeed=Parse.Object.extend("NewsFeed");
 	var newsQuery=new Parse.Query(newsFeed);
 	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
 	newsQuery.equalTo("from", userId);
 	newsQuery.equalTo("pubId", pubId);
 	newsQuery.addDescending("updatedAt");
 	newsQuery.first({
 		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "pub");
+				feed.set("modId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
 			//if found already in newsfeed  compare update times
 			var currentTime=new Date();
 			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
@@ -22,14 +30,17 @@ Parse.Cloud.afterSave("Publication", function(request) {
 				feed.set("type", "pub");
 				feed.set("pubId", pubId);
 				feed.save();
+				response.success("Added Publication Newsfeed Entry");
 			}
+			response.success("Publication Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
 			feed.set("from", userId);
-			feed.set("type", "empty pub");
+			feed.set("type", "pub");
 			feed.set("pubId", pubId);
 			feed.save();
+			response.success("Added Publication Newsfeed Entry");
 		}
 	});
 });
@@ -41,11 +52,19 @@ Parse.Cloud.afterSave("Model", function(request) {
 	var newsFeed=Parse.Object.extend("NewsFeed");
 	var newsQuery=new Parse.Query(newsFeed);
 	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
 	newsQuery.equalTo("from", userId);
 	newsQuery.equalTo("modId", modId);
 	newsQuery.addDescending("updatedAt");
 	newsQuery.first({
 		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "mod");
+				feed.set("modId", datId);
+				feed.save();
+				response.success("Added Model Newsfeed Entry");
+			}
 			//if found already in newsfeed  compare update times
 			var currentTime=new Date();
 			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
@@ -56,7 +75,9 @@ Parse.Cloud.afterSave("Model", function(request) {
 				feed.set("type", "mod");
 				feed.set("modId", modId);
 				feed.save();
+				response.success("Added Model Newsfeed Entry");
 			}
+			response.success("Model Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -64,6 +85,7 @@ Parse.Cloud.afterSave("Model", function(request) {
 			feed.set("type", "mod");
 			feed.set("modId", modId);
 			feed.save();
+			response.success("Added Model Newsfeed Entry");
 		}
 	});
 });
@@ -75,11 +97,19 @@ Parse.Cloud.afterSave("Data", function(request) {
 	var newsFeed=Parse.Object.extend("NewsFeed");
 	var newsQuery=new Parse.Query(newsFeed);
 	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
 	newsQuery.equalTo("from", userId);
 	newsQuery.equalTo("datId", datId);
 	newsQuery.addDescending("updatedAt");
 	newsQuery.first({
 		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "dat");
+				feed.set("datId", datId);
+				feed.save();
+				response.success("Added Data Newsfeed Entry");
+			}
 			//if found already in newsfeed  compare update times
 			var currentTime=new Date();
 			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
@@ -90,7 +120,9 @@ Parse.Cloud.afterSave("Data", function(request) {
 				feed.set("type", "dat");
 				feed.set("datId", datId);
 				feed.save();
+				response.success("Added Data Newsfeed Entry");
 			}
+			response.success("Data Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -98,6 +130,7 @@ Parse.Cloud.afterSave("Data", function(request) {
 			feed.set("type", "dat");
 			feed.set("datId", datId);
 			feed.save();
+			response.success("Added Data Newsfeed Entry");
 		}
 	});
 });

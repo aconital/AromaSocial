@@ -206,6 +206,24 @@ var Connections = React.createClass({
         });
         return (
             <div>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Equipment</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Modal.Title>To Be Determined!</Modal.Title>
+                    </Modal.Body>
+                </Modal>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tbody>
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 {orgList}
             </div>
         )

@@ -69,7 +69,6 @@ var CreateReport = React.createClass({
                                 </ListGroupItem>
                                 <ListGroupItem style={{textAlign:'center'}}>{this.state.createStatus}</ListGroupItem>
                             </ListGroup>
-
                         </Panel>
                     </Col>
                 </Row>
