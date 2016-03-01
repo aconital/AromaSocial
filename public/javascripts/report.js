@@ -8,7 +8,7 @@ var CreateReport = React.createClass({
         return {
             createStatus:'',
             // form
-            location: '', description: ''
+            location: '', assignTo: '', description: ''
         };
     },
     render: function() {
@@ -22,7 +22,7 @@ var CreateReport = React.createClass({
                             <ListGroup id="reportForm" fill>
                                 <ListGroupItem>
                                     <form onSubmit={this.handleSubmitData}>
-                                        <Input type="select" name="location" label="Location"  placeholder="Location" onChange={this.handleChange} value={this.state.location}>
+                                        <Input type="select" name="location" label="Location" onChange={this.handleChange} value={this.state.location}>
                                             <option value="General">General</option>
                                             <option value="Navigation bar">Navigation bar</option>
                                             <option value="Create Organization">Create Organization</option>
@@ -39,6 +39,7 @@ var CreateReport = React.createClass({
                                             <option value="Personal Profile - publications">Personal Profile - publications</option>
                                             <option value="Personal Profile - data">Personal Profile - data</option>
                                             <option value="Personal Profile - models">Personal Profile - models</option>
+                                            <option value="Organization Profile - sidebar">Organization Profile - sidebar</option>
                                             <option value="Organization Profile - about">Organization Profile - about</option>
                                             <option value="Organization Profile - connections">Organization Profile - connections</option>
                                             <option value="Organization Profile - people">Organization Profile - people</option>
@@ -52,6 +53,14 @@ var CreateReport = React.createClass({
                                             <option value="Data Profile">Data Profile</option>
                                             <option value="Equipment Profile">Equipment Profile</option>
                                             <option value="Project Profile">Project Profile</option>
+                                        </Input>
+                                        <Input type="select" name="assignTo" label="Assign to" onChange={this.handleChange} value={this.state.assignTo}>
+                                            <option value="Anyone">Anyone</option>
+                                            <option value="Saeed">Saeed</option>
+                                            <option value="Newton">Newton</option>
+                                            <option value="Lisa">Lisa</option>
+                                            <option value="Shariq">Shariq</option>
+                                            <option value="Hirad">Hirad</option>
                                         </Input>
                                         <label htmlFor="Describe">Description <Required content="*"/></label>
                                         <Input type="textarea" name="description" placeholder="Description of the problem" onChange={this.handleChange} value={this.state.description} />
@@ -78,7 +87,7 @@ var CreateReport = React.createClass({
 
         var isValidForm = this.validateForm();
         if (isValidForm.length === 0) {
-            var dataForm = {location: this.state.location, description: this.state.description};
+            var dataForm = {assignTo: this.state.assignTo, location: this.state.location, description: this.state.description};
             this.setState({createStatus: 'In progress...'});
 
             $.ajax({
