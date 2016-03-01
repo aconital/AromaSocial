@@ -459,7 +459,7 @@ module.exports=function(app,Parse) {
 
             relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
             relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
-            relation.set('verified', true);
+            relation.set('verified', false);
             relation.save(null,{
                 success:function(){
                     res.json({success: "Requested Successfully"});
@@ -570,7 +570,7 @@ module.exports=function(app,Parse) {
 
                             relation.set('userId0',result.get("userId1"));
                             relation.set('userId1', Parse.User.current());
-                            relation.set('verified', false);
+                            relation.set('verified', true);
                             relation.save(null,{
                                 success:function(){
                                     res.json({scucess:"approved"});
