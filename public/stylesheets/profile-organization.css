@@ -130,6 +130,10 @@
 .item-box-table-info tr td:nth-child(1) { vertical-align:top; width: 20%; min-width: 20%; max-width: 20%; }
 .item-box-table-info tr td:nth-child(2) { width: 80%; min-width: 80%; max-width: 80%; }
 
+.item-box-right-tags { width: 100%; overflow: hidden; }
+.item-box-right-tags tr td:nth-child(1) { vertical-align:top; width: 15%; }
+.item-box-right-tags tr td:nth-child(2) { width: 85%; }
+
 .organization-table-div { width: 100%; }
 .organization-table-info { width: 100%; }
 .organization-table-info tr td:nth-child(1) { width: 10%; min-width: 10%; max-width: 10%; padding-left: 10px; }

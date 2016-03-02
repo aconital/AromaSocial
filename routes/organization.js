@@ -679,35 +679,83 @@ module.exports=function(app,Parse) {
 
     });
 
-    app.get('/organization/:objectId/equipments_list', function (req, res, next) {
-            var innerQuery = new Parse.Query("Organization");
-            innerQuery.equalTo("objectId",req.params.objectId);
+     app.get('/organization/:objectId/equipments_list', function (req, res, next) {
+         var innerQuery = new Parse.Query("Organization");
+         innerQuery.equalTo("objectId",req.params.objectId);
 
-            var queryEquipment = new Parse.Query('Equipment');
-            queryEquipment.matchesQuery('organization',innerQuery);
-            queryEquipment.find({
-                success: function(results) {
-                    var equipments = [];
-                    for (var i in results) {
-                        var objectId = results[i].id;
-                        var title = results[i].attributes.title;
-                        var description = results[i].attributes.description;
-                        var image_URL = results[i].attributes.image_URL;
-                        var equipment = {
-                            objectId: objectId,
-                            title: title,
-                            description: description,
-                            image_URL: image_URL
-                        }; equipments.push(equipment);
-                    }
-                    res.json(equipments);
-                },
-                error: function(error) {
-                    console.log(error);
-                    res.render('index', {title: error, path: req.path});
-                }
-            });
-        });
+         var queryEquipment = new Parse.Query('Equipment');
+         queryEquipment.matchesQuery('organization',innerQuery);
+         queryEquipment.find({
+             success: function(results) {
+                 var equipments = [];
+                 for (var i in results) {
+                     var keywords = ["N/A"];
+                     var objectId = results[i].id;
+                     var title = results[i].attributes.title;
+                     var description = results[i].attributes.description;
+                     var image_URL = results[i].attributes.image_URL;
+                     if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
+                     var equipment = {
+                         objectId: objectId,
+                         title: title,
+                         description: description,
+                         image_URL: image_URL,
+                         keywords: keywords
+                     }; equipments.push(equipment);
+                 }
+                 res.json(equipments);
+             },
+             error: function(error) {
+                 console.log(error);
+                 res.render('index', {title: error, path: req.path});
+             }
+         });
+     });
+
+     app.get('/organization/:objectId/projects_list', function (req, res, next) {
+         var innerQuery = new Parse.Query("Organization");
+         innerQuery.equalTo("objectId",req.params.objectId);
+
+         var queryProject = new Parse.Query('Project');
+         queryProject.matchesQuery('organization',innerQuery);
+         queryProject.find({
+             success: function(results) {
+                 var projects = [];
+                 for (var i in results) {
+                     var authors = ["N/A"];
+                     var locations = ["N/A"];
+                     var keywords = ["N/A"];
+                     var objectId = results[i].id;
+                     var title = results[i].attributes.title;
+                     var description = results[i].attributes.description;
+                     var image_URL = results[i].attributes.image_URL;
+                     var start_date = "N/A";
+                     var end_date = "N/A";
+                     if (results[i].attributes.authors !== undefined) { authors = results[i].attributes.authors; }
+                     if (results[i].attributes.locations !== undefined) { locations = results[i].attributes.locations; }
+                     if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
+                     if (results[i].attributes.start_date !== undefined) { start_date = results[i].attributes.start_date; }
+                     if (results[i].attributes.end_date !== undefined) { keywords = results[i].attributes.end_date; }
+                     var project = {
+                         objectId: objectId,
+                         title: title,
+                         description: description,
+                         image_URL: image_URL,
+                         authors: authors,
+                         locations: locations,
+                         keywords: keywords,
+                         start_date: start_date,
+                         end_date: end_date
+                     }; projects.push(project);
+                 }
+                 res.json(projects);
+             },
+             error: function(error) {
+                 console.log(error);
+                 res.render('index', {title: error, path: req.path});
+             }
+         });
+     });
 
     app.get('/organization/:objectId/isAdmin', function (req, res, next) {
         var currentUser = Parse.User.current();

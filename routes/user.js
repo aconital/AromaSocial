@@ -617,15 +617,18 @@ module.exports=function(app,Parse) {
             success: function(results) {
                 var equipments = [];
                 for (var i in results) {
+                    var keywords = ["N/A"];
                     var objectId = results[i].id;
                     var title = results[i].attributes.title;
                     var description = results[i].attributes.description;
                     var image_URL = results[i].attributes.image_URL;
+                    if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
                     var equipment = {
                         objectId: objectId,
                         title: title,
                         description: description,
-                        image_URL: image_URL
+                        image_URL: image_URL,
+                        keywords: keywords
                     }; equipments.push(equipment);
                 }
                 res.json(equipments);
@@ -647,15 +650,30 @@ module.exports=function(app,Parse) {
             success: function(results) {
                 var projects = [];
                 for (var i in results) {
+                    var authors = ["N/A"];
+                    var locations = ["N/A"];
+                    var keywords = ["N/A"];
                     var objectId = results[i].id;
                     var title = results[i].attributes.title;
                     var description = results[i].attributes.description;
                     var image_URL = results[i].attributes.image_URL;
+                    var start_date = "N/A";
+                    var end_date = "N/A";
+                    if (results[i].attributes.authors !== undefined) { authors = results[i].attributes.authors; }
+                    if (results[i].attributes.locations !== undefined) { locations = results[i].attributes.locations; }
+                    if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
+                    if (results[i].attributes.start_date !== undefined) { start_date = results[i].attributes.start_date; }
+                    if (results[i].attributes.end_date !== undefined) { keywords = results[i].attributes.end_date; }
                     var project = {
                         objectId: objectId,
                         title: title,
                         description: description,
-                        image_URL: image_URL
+                        image_URL: image_URL,
+                        authors: authors,
+                        locations: locations,
+                        keywords: keywords,
+                        start_date: start_date,
+                        end_date: end_date
                     }; projects.push(project);
                 }
                 res.json(projects);
