@@ -109,7 +109,7 @@ var Profile = React.createClass ({
       $.ajax({
         url: connectURL,
         success: function(status) {
-            this.setState({status: "connect"});
+            this.setState({status: "not-connected"});
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't retrieve people.");
@@ -118,7 +118,7 @@ var Profile = React.createClass ({
     },
     render: function() {
         var connectButton = <input className="btn btn-panel btn-right-side" value="" />;
-        if (this.state.status == "connect") {
+        if (this.state.status == "connected") {
              connectButton = <input onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect" />;
         }
         else if (this.state.status == "pending") {

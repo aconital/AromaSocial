@@ -58,7 +58,7 @@ var Organization = React.createClass ({
       $.ajax({
         url: connectURL,
         success: function(status) {
-            this.setState({status: "left"});
+            this.setState({status: "not-joined"});
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't retrieve people.");
@@ -73,7 +73,7 @@ var Organization = React.createClass ({
         else if (this.state.status == "pending") {
              joinButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
         }
-        else if (this.state.status == "left") {
+        else if (this.state.status == "not-joined") {
              joinButton = <input onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join" />;
         }
         if(this.state.isAdmin)
