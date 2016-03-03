@@ -678,7 +678,39 @@ module.exports=function(app,Parse) {
         }
 
     });
+    app.get('/organization/:objectId/leave', function (req, res, next) {
+        var orgId= req.params.objectId;
+        var currentUser = Parse.User.current();
 
+        if(currentUser)
+        {
+            var query1 = new Parse.Query('Relationship');
+            query1.equalTo("userId",Parse.User.current());
+            query1.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: orgId});
+            query1.equalTo('verified',true);
+            query1.first({
+                success: function(result) {
+
+                   result.destroy({
+                       success: function(model, response){
+                           res.json({success: "Left Successfully"});
+                       },
+                       error: function(model, response){
+                           res.json({error:error});
+                       }
+                   });
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.render('index', {title: error, path: req.path});
+                }
+            });
+        }
+        else
+        {
+            res.json({error: "Please Sign In!"})
+        }
+    });
      app.get('/organization/:objectId/equipments_list', function (req, res, next) {
          var innerQuery = new Parse.Query("Organization");
          innerQuery.equalTo("objectId",req.params.objectId);
