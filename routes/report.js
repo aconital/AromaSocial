@@ -32,6 +32,7 @@ module.exports=function(app,Parse) {
             var report = new Report();
             report.set('user', currentUser);
             report.set('location', req.body.location);
+            report.set('assignedTo', req.body.assignTo);
             report.set('description', req.body.description);
             report.save(null).then(function(response) {
                 console.log("Report created successfully.");

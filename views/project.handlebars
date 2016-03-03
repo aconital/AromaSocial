@@ -6,10 +6,13 @@
         currentUserImg = '{{currentUserImg}}',
         creatorId = '{{creatorId}}',
         objectId = '{{objectId}}',
-        title = '{{title}}',
-        description = '{{description}}',
-        image_URL = '{{image_URL}}',
-        createdAt = '{{createdAt}}';
+        title = decodeEntities('{{title}}'),
+        description = decodeEntities('{{description}}'),
+        image_URL = decodeEntities('{{image_URL}}'),
+        authors = '{{authors}}'.replace(/&quot;/g,'"'),
+        keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
+        locations = '{{locations}}'.replace(/&quot;/g,'"'),
+        createdAt = '{{createdAt}}',
         updatedAt = '{{updatedAt}}';
 </script>
 <script type="text/jsx" src="/javascripts/project.js"></script>

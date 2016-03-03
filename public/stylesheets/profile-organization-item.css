@@ -30,6 +30,24 @@
 .item-info-table-right { width: 75%; }
 .item-info-table-left { width: 25%; }
 
+.contain-panel-big {
+    width: 100%;
+    border: solid;
+    border-color: #70ab8f;
+    margin: 0px;
+    padding:20px;
+    position:relative;
+} .contain-panel-big + .contain-panel-big {
+    margin-bottom: 20px;
+} .contain-panel-big-item-image + .contain-panel-big {
+    margin-top: 20px;
+} .contain-panel-big-two {
+    margin-top: 20px; width: 100%;
+}
+
+.contain-panel-big-half-left{margin:0px; margin-right:2%; width:98%;}
+.contain-panel-big-half-right{margin:0px; margin-left:2%; width:98%;}
+
 .no-margin{ margin: 0px; padding: 0px; }
 .padding-top-25 td { padding-top:25px; }
 
