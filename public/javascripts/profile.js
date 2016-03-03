@@ -73,19 +73,22 @@ var Profile = React.createClass ({
             $this.setState({profile_imgURL:changeImgURL});
         });
     },
-    componentWillMount: function() {
-      var connectURL= "/profile/"+objectId+"/connection-status";
+    checkConnection:function()
+    {
+        var connectURL= "/profile/"+objectId+"/connection-status";
 
-      $.ajax({
-        url: connectURL,
-        success: function(status) {
-            console.log(status);
-            this.setState({status: status})
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't retrieve people.");
-        }.bind(this)
-      });
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                this.setState({status: status})
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't retrieve people.");
+            }.bind(this)
+        });
+    },
+    componentWillMount: function() {
+        this.checkConnection();
     },
     clickConnect: function() {
       var connectURL= "/profile/"+objectId+"/connect";
@@ -115,7 +118,7 @@ var Profile = React.createClass ({
     },
     render: function() {
         var connectButton = <input className="btn btn-panel btn-right-side" value="" />;
-        if (this.state.status == "connected") {
+        if (this.state.status == "connect") {
              connectButton = <input onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect" />;
         }
         else if (this.state.status == "pending") {

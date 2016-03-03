@@ -474,6 +474,44 @@ module.exports=function(app,Parse) {
             res.json({error: "Please Sign In!"})
         }
     });
+    app.get('/profile/:objectId/disconnect', function (req, res, next) {
+        var friendId= req.params.objectId;
+        var currentUser = Parse.User.current();
+
+        if(currentUser)
+        {
+
+
+            var query1 = new Parse.Query('RelationshipUser');
+            query1.equalTo("userId1",Parse.User.current());
+            query1.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: friendId});
+            query1.equalTo('verified',true);
+
+            var query2 = new Parse.Query('RelationshipUser');
+            query2.equalTo("userId0",Parse.User.current());
+            query2.equalTo("userId1",{__type: "Pointer", className: "_User", objectId: friendId});
+            query2.equalTo('verified',true);
+
+            var mainQuery= Parse.Query.or(query1,query2);
+            mainQuery.find({
+                success: function(results) {
+                    Parse.Object.destroyAll(results).then(function(success) {
+                        res.json({success: "Requested Successfully"});
+                    }, function(error) {
+                        res.json({error:error});
+                    });
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.render('index', {title: error, path: req.path});
+                }
+            });
+        }
+        else
+        {
+            res.json({error: "Please Sign In!"})
+        }
+    });
 
     app.get('/friendrequest',function(req,res,next){
         var user= Parse.User.current();
