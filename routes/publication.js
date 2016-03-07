@@ -235,6 +235,7 @@ module.exports=function(app,Parse) {
                     result.set("filename", req.body.filename);
                     result.set("license", req.body.license);
                     result.set("publication_code", req.body.publication_code);
+                    console.log(req.body.title);
                 }
                 else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save();

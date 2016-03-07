@@ -73,19 +73,22 @@ var Profile = React.createClass ({
             $this.setState({profile_imgURL:changeImgURL});
         });
     },
-    componentWillMount: function() {
-      var connectURL= "/profile/"+objectId+"/connection-status";
+    checkConnection:function()
+    {
+        var connectURL= "/profile/"+objectId+"/connection-status";
 
-      $.ajax({
-        url: connectURL,
-        success: function(status) {
-            console.log(status);
-            this.setState({status: status})
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't retrieve people.");
-        }.bind(this)
-      });
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                this.setState({status: status})
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't retrieve people.");
+            }.bind(this)
+        });
+    },
+    componentWillMount: function() {
+        this.checkConnection();
     },
     clickConnect: function() {
       var connectURL= "/profile/"+objectId+"/connect";
@@ -106,7 +109,7 @@ var Profile = React.createClass ({
       $.ajax({
         url: connectURL,
         success: function(status) {
-            this.setState({status: "connect"});
+            this.setState({status: "not-connected"});
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't retrieve people.");
@@ -748,7 +751,6 @@ var Equipments = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
-            console.log(item);
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
@@ -757,7 +759,11 @@ var Equipments = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
-                            <span className="font-15">{item.description}</span>
+                            <span className="font-15">
+                            <table className="item-box-right-tags">
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                            </table>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -822,7 +828,12 @@ var Projects = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
-                            <span className="font-15">{item.description}</span>
+                            <table className="item-box-right-tags">
+                                <tr><td><b>Authors: </b></td><td>{item.authors.map(function(author) { return <span><a href="#" className="body-link">{author}</a> </span>;})}</td></tr>
+                                <tr><td><b>Locations: </b></td><td>{item.locations.map(function(location) { return <span><a href="#" className="body-link">{location}</a> </span>;})}</td></tr>
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                                <tr><td><b>Period: </b></td><td>{item.start_date} -  {item.end_date}</td></tr>
+                            </table>
                         </div>
                     </div>
                 </div>

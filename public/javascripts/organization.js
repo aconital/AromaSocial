@@ -58,7 +58,7 @@ var Organization = React.createClass ({
       $.ajax({
         url: connectURL,
         success: function(status) {
-            this.setState({status: "join"});
+            this.setState({status: "not-joined"});
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't retrieve people.");
@@ -93,7 +93,7 @@ var Organization = React.createClass ({
                                 <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-organization">
-                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@ var Organization = React.createClass ({
                             <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
                         </div>
                         <div id="item-bottom-2-organization" className="item-bottom-2">
-                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Publications', 'Data', 'Models']} />
+                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
                         </div>
                     </div>
                 </div>
@@ -146,11 +146,12 @@ var OrganizationMenu = React.createClass ({
                 1: <Connections  />,
                 2: <People />,
                 3: <Equipments objectId={objectId}/>,
+                4: <Projects objectId={objectId}/>,
                 // 4: <Knowledge/>,
-                4: <Publications objectId={objectId}/>,
-                5: <Data objectId={objectId}/>,
-                6: <Models objectId={objectId}/>,
-                7: <Manage objectId={objectId}/>
+                5: <Publications objectId={objectId}/>,
+                6: <Data objectId={objectId}/>,
+                7: <Models objectId={objectId}/>,
+                8: <Manage objectId={objectId}/>
                 };
         return (
             <div>
@@ -206,6 +207,24 @@ var Connections = React.createClass({
         });
         return (
             <div>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Equipment</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Modal.Title>To Be Determined!</Modal.Title>
+                    </Modal.Body>
+                </Modal>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tbody>
+                        <tr>
+                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 {orgList}
             </div>
         )
@@ -541,7 +560,11 @@ var Equipments = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
-                            <span className="font-15">{item.description}</span>
+                            <span className="font-15">
+                            <table className="item-box-right-tags">
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                            </table>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -549,23 +572,69 @@ var Equipments = React.createClass({
         });
         return (
             <div>
-                <Modal show={this.state.showModal} onHide={this.clickClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>New Equipment</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Modal.Title>To Be Determined!</Modal.Title>
-                    </Modal.Body>
-                </Modal>
                 <div className="item-search-div">
-                    <table className="item-search-field" width="100%">
-                        <tbody>
-                        <tr>
-                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
-                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
-                        </tr>
-                        </tbody>
-                    </table>
+                <table className="item-search-field" width="100%">
+                    <tr><td><input type="text" id="search" placeholder="Search..." className="form-control"/></td></tr>
+                </table>
+                </div>
+                {itemsList}
+            </div>
+        )
+    }
+});
+
+var Projects = React.createClass({
+    getInitialState: function() {
+        return { data: [], showModal: false };
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    componentWillMount : function() {
+        var projectsURL= "/organization/"+objectId+"/projects_list";
+
+        $.ajax({
+            type: 'GET',
+            url: projectsURL,
+            success: function(data) {
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Projects!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(item) {
+            console.log(item);
+            return (
+                <div className="item-box">
+                    <div key={item.objectId}>
+                        <div className="item-box-left">
+                            <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <table className="item-box-right-tags">
+                                <tr><td><b>Authors: </b></td><td>{item.authors.map(function(author) { return <span><a href="#" className="body-link">{author}</a> </span>;})}</td></tr>
+                                <tr><td><b>Locations: </b></td><td>{item.locations.map(function(location) { return <span><a href="#" className="body-link">{location}</a> </span>;})}</td></tr>
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                                <tr><td><b>Period: </b></td><td>{item.start_date} -  {item.end_date}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+        return (
+            <div>
+                <div className="item-search-div">
+                <table className="item-search-field" width="100%">
+                    <tr><td><input type="text" id="search" placeholder="Search..." className="form-control"/></td></tr>
+                </table>
                 </div>
                 {itemsList}
             </div>
@@ -593,7 +662,8 @@ var Publications = React.createClass({
   render: function() {
     return (
       <div>
-        <table id="upload-field" width="100%">
+        <div className="item-search-div">
+        <table className="item-search-field" width="100%">
             <tbody>
             <tr>
                 <td className="padding-right">
@@ -602,6 +672,7 @@ var Publications = React.createClass({
             </tr>
             </tbody>
         </table>
+        </div>
         {this.state.data.map(function(publication){
             return (<Publication objectId={publication.objectId}
                                  author={publication.author}
@@ -619,7 +690,7 @@ var Publication = React.createClass({
         if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
         else { var title = this.props.title; }
         return (
-                <div className="publication-box">
+                <div className="item-box">
                 <div className="publication-box-left publication-box-left-full">
                     <a href={"/publication/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
@@ -639,6 +710,8 @@ var Publication = React.createClass({
         )
     }
 });
+
+
 
 var Data = React.createClass({
   getInitialState: function() {
@@ -661,7 +734,8 @@ var Data = React.createClass({
     var rows = [];
     return (
       <div>
-          <table id="upload-field" width="100%">
+        <div className="item-search-div">
+          <table className="item-search-field" width="100%">
             <tbody>
               <tr>
                   <td className="padding-right">
@@ -670,6 +744,7 @@ var Data = React.createClass({
               </tr>
             </tbody>
           </table>
+        </div>
         {this.state.data.map(function(item) {
             return (<Datum objectId={item.objectId}
                                     collaborators={item.collaborators}
@@ -692,7 +767,7 @@ var Datum = React.createClass({
         if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
         else { var title = this.props.title; }
         return (
-                <div className="model-box">
+                <div className="item-box">
                 <div className="model-box-image">
                     <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>
@@ -744,7 +819,8 @@ var Models = React.createClass({
     var rows = [];
     return (
       <div>
-          <table id="upload-field" width="100%">
+        <div className="item-search-div">
+          <table className="item-search-field" width="100%">
             <tbody>
               <tr>
                   <td className="padding-right">
@@ -753,6 +829,7 @@ var Models = React.createClass({
               </tr>
             </tbody>
           </table>
+        </div>
         {this.state.data.map(function(model) {
           return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
@@ -776,7 +853,7 @@ var Model = React.createClass({
         if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
         else { var title = this.props.title; }
         return (
-                <div className="model-box">
+                <div className="item-box">
                 <div className="model-box-image">
                     <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
                 </div>

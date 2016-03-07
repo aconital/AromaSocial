@@ -1,6 +1,6 @@
 <div id="content"></div>
 <script type="text/javascript">
-    var title = '{{title}}',
+    var title = decodeEntities('{{title}}'),
         path = '{{path}}',
         currentUserId = '{{currentUserId}}',
         currentUsername = '{{currentUsername}}',
@@ -9,16 +9,16 @@
         collaborators = '{{collaborators}}',
         objectId = '{{objectId}}',
         creatorId = '{{creatorId}}',
-        description = '{{description}}',
-        image_URL = '{{image_URL}}',
-        aws_path = '{{aws_path}}',
-        filename = '{{filename}}',
+        description = decodeEntities('{{description}}'),
+        image_URL = decodeEntities('{{image_URL}}'),
+        aws_path = decodeEntities('{{aws_path}}'),
+        filename = decodeEntities('{{filename}}'),
         keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
-        license = '{{license}}',
+        license = decodeEntities('{{license}}'),
         publication_link = '{{publication_link}}',
         groupies = '{{groupies}}',
         publication_date = '{{publication_date}}',
-        publication_code = '{{publication_code}}',
+        publication_code = decodeEntities('{{publication_code}}'),
         createdAt = '{{createdAt}}',
         updatedAt = '{{updatedAt}}';
 </script>

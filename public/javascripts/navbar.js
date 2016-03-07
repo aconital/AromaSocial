@@ -5,7 +5,8 @@ var FriendRequest = React.createClass({
     getInitialState: function() {
         return {data: []};
     },
-    componentDidMount : function(){
+    loadRequests :function()
+    {
         $.ajax({
             url: "/friendrequest",
             success: function(data) {
@@ -17,6 +18,10 @@ var FriendRequest = React.createClass({
             }.bind(this)
         });
     },
+    componentDidMount : function(){
+       setInterval( this.loadRequests, 2000);
+
+    },
     pending_action:function(person,action)
     {
         $.ajax({
@@ -25,7 +30,8 @@ var FriendRequest = React.createClass({
             data:{mode:action,person:person},
             success: function(data) {
 
-                console.log(data);
+                this.loadRequests();
+
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve people");
@@ -35,10 +41,15 @@ var FriendRequest = React.createClass({
     },
     render: function() {
 
+        if(this.state.data.length <=0)
+            return(
+                <li><div className="empty-list">You have no request at this moment</div></li>
+            ) ;
+        else
         return (
             <li>
                 {this.state.data.map(person =>
-                        <div className="row friendrequest">
+                        <div id={person.username} className="row friendrequest">
                             <div className="col-lg-3">
                                 <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="friendrequest-pic" /></a>
                             </div>
@@ -59,4 +70,39 @@ var FriendRequest = React.createClass({
     }
 });
 
-React.render(<FriendRequest />, document.getElementById('friendrequest'));
+ReactDOM.render(<FriendRequest />, document.getElementById('friendrequest'));
+
+
+var Notification = React.createClass({
+    getInitialState: function() {
+        return {data: []};
+    },
+    loadRequests :function()
+    {
+        $.ajax({
+            url: "/friendrequest",
+            success: function(data) {
+
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
+    },
+    componentDidMount : function(){
+        setInterval( this.loadRequests, 2000);
+
+    },
+    render: function() {
+
+        if(this.state.data.length >0)
+            return <div className="notification-badge"></div>
+        else
+        return <div></div>;
+
+
+    }
+});
+
+ReactDOM.render(<Notification />, document.getElementById('notification-request'));

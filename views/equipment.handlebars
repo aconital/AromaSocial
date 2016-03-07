@@ -6,10 +6,11 @@
         currentUserImg = '{{currentUserImg}}',
         creatorId = '{{creatorId}}',
         objectId = '{{objectId}}',
-        title = '{{title}}',
-        description = '{{description}}',
-        image_URL = '{{image_URL}}',
-        createdAt = '{{createdAt}}';
+        title = decodeEntities('{{title}}'),
+        description = decodeEntities('{{description}}'),
+        image_URL = decodeEntities('{{image_URL}}'),
+        keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
+        createdAt = '{{createdAt}}',
         updatedAt = '{{updatedAt}}';
 </script>
 <script type="text/jsx" src="/javascripts/equipment.js"></script>

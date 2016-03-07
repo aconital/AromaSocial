@@ -45,7 +45,7 @@ module.exports=function(app,Parse) {
                     allowed = true; // everyone allowed to access. No entry in groupies
                 }
                 if (allowed) {
-                    res.render('data', {layout: 'home', title: 'Data', path: req.path,
+                    res.render('data', {layout: 'home', path: req.path,
                         currentUserId: currentUser.id,
                         currentUsername: currentUser.attributes.username,
                         currentUserImg: currentUser.attributes.imgUrl,
@@ -55,10 +55,10 @@ module.exports=function(app,Parse) {
                         collaborators: result.get('collaborators'),
                         description: result.get('description'),
                         hashtags: result.get('hashtags'),
-                        keywords: result.get('title'),
                         title: result.get('title'),
                         license: result.get('license'),
-                        keywords: result.get('keywords'),
+                        filename: result.get('filename'),
+                        keywords: JSON.stringify(result.get('keywords')),
                         createdAt: result.get('createdAt'),
                         groupies: result.get('groupies'),
                         image_URL: result.get('image_URL'),
@@ -67,7 +67,7 @@ module.exports=function(app,Parse) {
                         publication_link: result.get('publication_link')
                     });
             } else {
-                 res.render('error', {title: 'Not allowed to access this data', path: req.path});   
+                 res.render('error', {title: 'Not allowed to access this data', path: req.path});
               }
             },
             error: function(error) {
