@@ -47,6 +47,7 @@ module.exports=function(app,Parse) {
   app.get('/searchfeeddata', function(req, res, next){
 
             res.send(searchResults);
+            searchResults = [];
 
   });
 
