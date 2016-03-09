@@ -678,10 +678,42 @@ module.exports=function(app,Parse) {
         }
 
     });
+    app.get('/organization/:objectId/delete', function (req, res, next) {
+        var orgId= req.params.objectId;
+        var currentUser = Parse.User.current();
+        if(currentUser) {
+            var query = new Parse.Query('Relationship');
+            query.equalTo("userId", currentUser);
+            query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: orgId});
+            query.equalTo('verified', true);
+            query.equalTo('isAdmin', true);
+            query.first().then(
+                function (result) {
+                    if (result==undefined) {
+                        return Parse.Promise.error("Organization delete failed");
+                    }
+                    else {
+                        var deleteOrg = new Parse.Query('Organization');
+                        return deleteOrg.get(orgId);
+                    }
+                }).then(function (result) {
+                    if (result==undefined){
+                        console.log("Nothing to delete");
+                    }
+                    result.destroy({});
+                    res.json({success: "Organization deleted"});
+                    console.log("DELETED");
+                }, function (error) {
+                    res.json({error: error});
+                });
+        }
+        else{
+            res.json({error: "Please Sign In!"})
+        }
+    });
     app.get('/organization/:objectId/leave', function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = Parse.User.current();
-
         if(currentUser)
         {
             var query1 = new Parse.Query('Relationship');
@@ -711,6 +743,54 @@ module.exports=function(app,Parse) {
             res.json({error: "Please Sign In!"})
         }
     });
+
+    app.post('/organization/:objectId/connect', function (req, res, next) {
+        var createConnection = Parse.Object.extend("RelationshipOrg");
+
+        var currentUser = Parse.User.current();
+        if(currentUser) {
+            var orgId0= req.params.objectId;
+            var orgId1= req.body.orgId;
+            //check the connection one way
+            var query = new Parse.Query("RelationshipOrg");
+            query.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId0});
+            query.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId1});
+            query.first().then(
+                function(result){
+                    //if a result is returned then skip connection creation
+                    if (!result==undefined){
+                        return Parse.Promise.error("This connection already exists.");
+                    }
+                    //flip it check the connection from the other way
+                    var query1 = new Parse.query("RelationshipOrg");
+                    query1.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId0});
+                    query1.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId1});
+                    return query1.first();
+                }).then(function(result) {
+                    //if a result is returned then skip connection creation
+                    if (!result==undefined){
+                        return Parse.Promise.error("This connection already exists.");
+                    }
+                }).then(function(result) {
+                    //no connection, therefore add connection
+                    var connection = new createConnection();
+                    connection.set('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId0});
+                    connection.set('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
+                    connection.set('type', req.body.type);
+                    connection.set('verified', false);
+                    return connection.save(null);
+                }).then(function(response) {
+                    console.log("Connection request created successfully.");
+                    res.status(200).json({status:"OK", location: response.objectId});
+                }, function(error) {
+                    res.status(500).json({status: "Creating connection failed. " + error.message});
+            });
+        }
+        else{
+            res.json({error: "Please Sign In!"})
+        }
+    });
+
      app.get('/organization/:objectId/equipments_list', function (req, res, next) {
          var innerQuery = new Parse.Query("Organization");
          innerQuery.equalTo("objectId",req.params.objectId);
@@ -745,7 +825,7 @@ module.exports=function(app,Parse) {
      });
 
      app.get('/organization/:objectId/projects_list', function (req, res, next) {
-         var innerQuery = new Parse.Query("Organization");
+         var innerQuery = new Parse.Query("Organizatnion");
          innerQuery.equalTo("objectId",req.params.objectId);
 
          var queryProject = new Parse.Query('Project');
