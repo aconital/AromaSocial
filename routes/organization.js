@@ -15,6 +15,26 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
 
+        app.get('/allorganizations', function(req, res, next) {
+        var currentUser = Parse.User.current();
+        var query = new Parse.Query('Organization');
+        query.find({
+            success: function(items) {
+                var results = [];
+                for (var i = 0; i < items.length; i++) {
+                    var obj = items[i];
+                    results.push(obj);
+                }
+                console.log("RESULTS ARE: ");
+                console.log(results);
+                res.send(results);
+            },
+            error: function(error) {
+                console.log("Error while getting all organizations");
+            }
+        });
+    });
+
 
     /*******************************************
      *

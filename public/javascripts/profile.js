@@ -2178,10 +2178,48 @@ var ResourceAddForm = React.createClass({
         creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: '', groupies: ''
         };
     },
-
+    componentDidMount: function() {
+        var eCode = <script>
+                        $(function() {
+                            $('.auto').autocomplete({
+                                    source: function(req, res) {
+                                        $.ajax({
+                                          url: '/allusers',
+                                          dataType: 'JSON',
+                                          cache: false,
+                                          success: function(data) {
+                                            console.log("SUCCESS!!!!!!!");
+                                            console.log(data);
+                                            var arr = $.grep(data, function(item){
+                                              return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                                            });
+                                            res($.map(arr, function(item){
+                                              return {
+                                                label: item.fullname,
+                                                value: item.username
+                                              };
+                                            }));
+                                          },
+                                          error: function(xhr) {
+                                            console.log("ERROR WTF!!!");
+                                            console.log(xhr.status);
+                                          }
+                                        });
+                                    },
+                                    messages: {
+                                      noResults: '',
+                                      results: function() {}
+                                    }
+                            })
+                        });
+                    </script>
+        //var eCode = <script src="/javascripts/autocomplete.js"></script>
+        $("#scriptContainer").append(eCode);
+    },
 	render: function() {
 		return (
 		<div>
+            <div id="scriptContainer"></div>
 			<form className="form" onSubmit={this.handleSubmitData}>
 			    <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
@@ -2194,7 +2232,7 @@ var ResourceAddForm = React.createClass({
                   </div>
 
                 <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleChange} value={this.state.collaborators} />
+                <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />

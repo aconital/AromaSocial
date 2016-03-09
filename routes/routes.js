@@ -8,7 +8,36 @@ var _= require('underscore');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
+var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
+var nodemailer = require('nodemailer');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+
+var transporter = nodemailer.createTransport("SMTP",{
+        service: "Gmail",
+        auth: {
+            user: "shariqazz15@gmail.com",
+            pass: "University@1"
+        }
+    });
+
+// setup e-mail data with unicode symbols 
+var mailOptions = {
+    from: 'Syncholar 👥 <foo@blurdybloop.com>', // sender address 
+    to: 'shariqazz15@gmail.com', // list of receivers 
+    subject: 'Syncholar Test Invite', // Subject line 
+    text: 'Testing nodemailer', // plaintext body 
+    html: '<h2>You just got invited! 🐴</h2>' // html body 
+};
+
+function sendEmail ( _name, _email, _subject, _message) {
+  // send mail with defined transport object 
+  transporter.sendMail(mailOptions, function(error, info){
+      if(error){
+          return console.log(error);
+      }
+      console.log('Message sent: ' + info.response);
+  });
+}
 
 module.exports=function(app,Parse) {
 
@@ -27,6 +56,23 @@ module.exports=function(app,Parse) {
     } else {
         next();
     }
+  });
+
+  // EMAIL API
+  app.post('/sendemail', function(req, res, next){
+    var name = req.body.name;
+    var email = req.body.email;
+    var subject = req.body.subject;
+    var msg = req.body.message;
+
+    // checks go here
+    console.log("SENDING EMAIL!!");
+    sendEmail(name, email, subject, msg);
+    next();
+  });
+
+  app.get('/invite', function(req, res){
+    res.render('invite');
   });
   /*******************************************
    *
