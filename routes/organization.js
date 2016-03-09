@@ -845,7 +845,7 @@ module.exports=function(app,Parse) {
      });
 
      app.get('/organization/:objectId/projects_list', function (req, res, next) {
-         var innerQuery = new Parse.Query("Organizatnion");
+         var innerQuery = new Parse.Query("Organization");
          innerQuery.equalTo("objectId",req.params.objectId);
 
          var queryProject = new Parse.Query('Project');
