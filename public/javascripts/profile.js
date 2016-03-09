@@ -179,7 +179,7 @@ var Profile = React.createClass ({
                     */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                     <ProfileMenu tabs={['About','Connections','Organizations', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                     <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
                     {/*<input className="btn btn-panel" value="Message" />
@@ -218,10 +218,9 @@ var ProfileMenu = React.createClass ({
         var tabMap = {0: <About tab={this.clicked}/>,
                 1: <Connections />,
                 2: <Organizations />,
-                3: <Equipments objectId={objectId}/>,
-                4: <Projects objectId={objectId}/>,
-                5: <Publications objectId={objectId}/>,
-                6: <Data objectId={objectId}/>,
+                3: <Projects objectId={objectId}/>,
+                4: <Publications objectId={objectId}/>,
+                5: <Data objectId={objectId}/>,
                 7: <Models objectId={objectId}/>
                 // 6: <More />
                 };
@@ -723,74 +722,6 @@ var More = React.createClass({
             </div>
     )
   }
-});
-
-var Equipments = React.createClass({
-    getInitialState: function() {
-        return { data: [], showModal: false };
-    },
-    componentWillMount : function() {
-        var equipmentsURL= "/profile/"+objectId+"/equipments_list";
-
-        $.ajax({
-            type: 'GET',
-            url: equipmentsURL,
-            success: function(data) {
-                this.setState({data: data});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve Equipments!");
-            }.bind(this)
-        });
-    },
-    clickOpen() {
-        this.setState({ showModal: true });
-    },
-    clickClose() {
-        this.setState({ showModal: false });
-    },
-    render: function() {
-        var itemsList = $.map(this.state.data,function(item) {
-            return (
-                <div className="item-box">
-                    <div key={item.objectId}>
-                        <div className="item-box-left">
-                            <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
-                        </div>
-                        <div className="item-box-right">
-                            <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
-                            <span className="font-15">
-                            <table className="item-box-right-tags">
-                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
-                            </table>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            );
-        });
-        return (
-            <div>
-                <Modal show={this.state.showModal} onHide={this.clickClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>New Equipment</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Modal.Title>To Be Determined!</Modal.Title>
-                    </Modal.Body>
-                </Modal>
-                <div className="item-search-div">
-                    <table className="item-search-field" width="100%">
-                        <tr>
-                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
-                            {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
-                        </tr>
-                    </table>
-                </div>
-                {itemsList}
-            </div>
-        )
-    }
 });
 
 var Projects = React.createClass({

@@ -178,7 +178,7 @@ var OrganizationMenu = React.createClass ({
 
 var Connections = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {data: [], showModal: false };
     },
     componentDidMount : function(){
         var connectionUrl= "/organization/"+objectId+"/connections";
@@ -192,6 +192,25 @@ var Connections = React.createClass({
                 console.error("couldnt retrieve orgs");
             }.bind(this)
         });
+
+        var isAdminURL= "/organization/"+objectId+"/isAdmin";
+
+        $.ajax({
+            type: 'GET',
+            url: isAdminURL,
+            success: function(isAdminData) {
+                this.setState({ isAdmin: isAdminData.isAdmin });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve isAdmin!");
+            }.bind(this)
+        });
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
     },
     render: function() {
         var orgList = $.map(this.state.data,function(org) {
@@ -209,10 +228,10 @@ var Connections = React.createClass({
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>New Equipment</Modal.Title>
+                        <Modal.Title>Add Connection</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Modal.Title>To Be Determined!</Modal.Title>
+                        <AddConnection fromModelTab={this.props.fromModelTab} submitSuccess={this.close} list={this.list} />
                     </Modal.Body>
                 </Modal>
                 <div className="item-search-div">
@@ -229,6 +248,89 @@ var Connections = React.createClass({
             </div>
         )
     }
+});
+
+var AddConnection = React.createClass({
+    close: function(e) {
+        if (typeof this.props.submitSuccess === 'function') {
+            this.props.submitSuccess();
+        }
+    },
+    getInitialState: function() {
+        return {
+           joinOrganization: '',
+           joinType: ''
+        };
+    },
+
+    render: function() {
+        return (
+            <div>
+                <form className="form" onSubmit={this.handleSubmitData}>
+                    <Input type="text" placeholder="Organization:" name="joinOrganization" label="Organization" onChange={this.handleChange} value={this.state.organization}/>
+                    <Input type="select" name="joinType" label="Connection type" onChange={this.handleChange} value={this.state.organizationtype}>
+                        <option value=""></option>
+                        <option value="contains">We are part of this organization</option>
+                        <option value="sponsors">This organization sponsors us</option>
+                        <option value="collaberates">We collaborate with this organization</option>
+                    </Input>
+                    <Modal.Footer>
+                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                        <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
+                    </Modal.Footer>
+                </form>
+            </div>
+        );
+    },
+
+    handleChange: function(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
+
+    handleSubmitData: function(e) {
+        e.preventDefault();
+
+        var isValidForm = this.validateForm();
+        var connectionURL = "/organization/"+objectId+"/connect";
+        if (isValidForm.length === 0) {
+            var dataForm = {orgId: this.state.joinOrganization, type: this.state.joinType};
+            this.setState({createStatus: 'In progress...'});
+            $.ajax({
+                url: connectionURL,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                type: 'POST',
+                data: JSON.stringify(dataForm),
+                processData: false,
+                success: function(data) {
+                    this.setState({createStatus: 'Connection request sent.'});
+                    this.close();
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    this.setState({createStatus: 'Error creating connection: ' + err.toString()});
+                }.bind(this)
+            });
+        }
+        else {
+            var message = '';
+
+            if (isValidForm.indexOf('TYPE') > -1) {
+                message += ' Please describe this connection    .';
+            }
+            this.setState({createStatus: message});
+        }
+        return;
+    },
+
+    validateForm: function() {
+        var issues = []
+        if (!this.state.joinType.trim()) {
+            issues.push("TYPE");
+        }
+        return issues;
+    },
 });
 
 var People = React.createClass({
@@ -389,6 +491,21 @@ var Manage = React.createClass({
             }.bind(this)
         });
     },
+    deleteOrganization: function() {
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            processData: false,
+            url: "/organization/"+objectId+"/delete",
+            success: function(data) {
+                window.location = '../newsfeed/';
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't delete organization.  " + err);
+            }.bind(this)
+        });
+    },
     render: function() {
         var adminsList = $.map(this.state.admins,function(admin) {
             return (
@@ -457,7 +574,10 @@ var Manage = React.createClass({
                         </tr>
                         <tr>
                             <td><b>Admins: </b></td>
-                            <td><div className="padding-top-10">{adminsList}</div></td>
+                            <td><div>{adminsList}</div></td>
+                        </tr>
+                        <tr>
+                            <td><Button onClick={this.deleteOrganization}bsStyle="primary">Delete Organization</Button></td>
                         </tr>
                         </tbody>
                     </table>

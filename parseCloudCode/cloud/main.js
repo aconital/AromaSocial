@@ -135,6 +135,50 @@ Parse.Cloud.afterSave("Data", function(request) {
 	});
 });
 
+Parse.Cloud.afterDelete("Organization", function(request) {
+	Parse.Cloud.useMasterKey();
+	var orgId = request.object;
+	var Relationship = Parse.Object.extend("Relationship");
+	var query = new Parse.Query(Relationship);
+	query.equalTo("orgId", orgId);
+	query.find({
+		success: function(objects){
+			for (var i = 0; i < objects.length; i+=1) {
+				objects[i].destroy({});
+			}
+		},
+		error: function(error){
+			alert("Error: " + error.code + " " + error.message);
+		}
+	})
+	var RelationshipOrg = Parse.Object.extend("RelationshipOrg");
+	var query1 = new Parse.Query(RelationshipOrg);
+	query1.equalTo("orgId0", orgId);
+	//query1.equalTo("orgId0", {__type: "Pointer", className: "Organization", objectId: orgId});
+	query1.find({
+		success: function(objects){
+			for (var i = 0; i < objects.length; i+=1) {
+				objects[i].destroy({});
+			}
+		},
+		error: function(error){
+			alert("Error: " + error.code + " " + error.message);
+		}
+	})
+	var query2 = new Parse.Query(RelationshipOrg);
+	query2.equalTo("orgId1", orgId);
+	query2.find({
+		success: function(objects){
+			for (var i = 0; i < results.length; i+=1) {
+				objects[i].destroy({});
+			}
+		},
+		error: function(error){
+			alert("Error: " + error.code + " " + error.message);
+		}
+	})
+});
+
 Parse.Cloud.afterDelete("Publication", function(request) {
 	Parse.Cloud.useMasterKey();
 	var pubId= request.object;

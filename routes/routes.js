@@ -11,6 +11,7 @@ var awsUtils = require('../utils/awsUtils');
 var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
 var nodemailer = require('nodemailer');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
 
 var transporter = nodemailer.createTransport("SMTP",{
         service: "Gmail",
@@ -26,7 +27,7 @@ var mailOptions = {
     to: 'shariqazz15@gmail.com', // list of receivers 
     subject: 'Syncholar Test Invite', // Subject line 
     text: 'Testing nodemailer', // plaintext body 
-    html: '<h2>You just got invited! üê¥</h2>' // html body 
+    html: '<h2>You just got invited! ü?¥</h2>' // html body 
 };
 
 function sendEmail ( _name, _email, _subject, _message) {
@@ -157,6 +158,39 @@ app.get('/signout', function (req, res, next) {
     Parse.User.logOut();
     req.session.destroy();
     res.render('home', {title: 'Come back again!', path: req.path});
+});
+
+
+
+/*******************************************
+ *
+ * THIRD PARTY OAUTH
+ *
+ ********************************************/
+app.get('/oauth/linkedin', function(req, res) {
+    // This will ask for permisssions etc and redirect to callback url.
+    var scope = ['r_basicprofile', 'r_emailaddress'];
+    Linkedin.auth.authorize(res, scope);
+});
+app.get('/auth/linkedin/callback',function(req,res){
+    console.log("aa");
+    Linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results) {
+        if ( err )
+            return console.error(err);
+
+        var token= results.access_token;
+        var linkedin = Linkedin.init(token);
+        linkedin.people.me(function(err, $in) {
+            var email= $in.emailAddress;
+            var name= $in.formattedName;
+            var about=$in.headline;
+            var pictureUrl=$in.pictureUrl;
+
+            console.log($in.positions.values[0].company);
+        });
+
+        return res.redirect('/');
+    });
 });
 
 };
