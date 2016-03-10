@@ -26,10 +26,13 @@ var Loading = require('react-loading');
 var exphbs = require('express-handlebars');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
+var  passport = require('passport');
+var  LocalStrategy = require('passport-local');
+
 var app = express();
 
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
-Parse.User.enableUnsafeCurrentUser();
+
 
 // just to check that s3 is connected. remove when deploying
 s3.listBuckets(function(err, data) {
@@ -71,7 +74,9 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 require('./routes/routes')(app,Parse);
 require('./routes/organization')(app,Parse);
@@ -85,6 +90,100 @@ require('./routes/newsfeed')(app,Parse);
 require('./routes/search')(app,Parse);
 require('./routes/group')(app,Parse);
 require('./routes/report')(app,Parse);
+
+//===============PASSPORT=================
+// Use the LocalStrategy within Passport to login/”signin” users.
+passport.use(new LocalStrategy(function(username, password, done) {
+
+    var query = new Parse.Query(Parse.User);
+    query.equalTo("username", username);
+    query.first({
+        success: function (user) {
+            if(user === null)
+            {
+                return done(null, false, {message: 'Invalid username or password'});
+            }
+            else {
+                Parse.User.logIn(username, password, {
+                    success: function(user) {
+
+                        return done(null, user.attributes.username);
+                    },
+                    error: function(user, error) {
+                        // Show the error message somewhere and let the user try again.
+                        return done(null, false, {message: 'Invalid username or password'});
+                    }
+                });
+            }
+
+        },
+        error: function(user,error){
+            console.log(error.message);
+        }
+    });
+
+}));
+
+passport.serializeUser(function(user, done) {
+
+    done(null, user);
+});
+
+passport.deserializeUser(function(username, done) {
+
+    var query = new Parse.Query(Parse.User);
+    query.equalTo("username", username);
+    query.first({
+        success: function (user)
+        {
+            var jsonUser={
+                id: user.id,
+                username: user.attributes.username,
+                cover_imgURL:user.attributes.cover_imgURL,
+                educations: user.attributes.educations,
+                email: user.attributes.email,
+                emailVerified: user.attributes.emailVerified,
+                expertise:user.attributes.expertise,
+                fullname:user.attributes.fullname,
+                imgUrl:user.attributes.imgUrl,
+                inerests:user.attributes.interests,
+                projects:user.attributes.projects,
+                summary:user.attributes.summary,
+                about:user.attributes.about,
+                linkedin_id:user.attributes.linkedin_id,
+                location:user.attributes.location,
+                position:user.attributes.position
+            };
+            done(null, jsonUser);
+        }
+        ,error:function(user,error)
+        {
+            console.log("Error in deserialize user: "+error.message);
+        }
+    });
+});
+
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function(req, res, next){
+    var err = req.session.error,
+        msg = req.session.notice,
+        success = req.session.success;
+
+    delete req.session.error;
+    delete req.session.success;
+    delete req.session.notice;
+
+    if (err) res.locals.error = err;
+    if (msg) res.locals.notice = msg;
+    if (success) res.locals.success = success;
+
+    next();
+});
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -6,6 +6,7 @@ var moment = require('moment');
 var path = require('path');
 var _= require('underscore');
 var aws = require('aws-sdk');
+var passport = require('passport');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
@@ -42,14 +43,7 @@ function sendEmail ( _name, _email, _subject, _message) {
 
 module.exports=function(app,Parse) {
 
-// MIDDLEWARE REDIRECTION
-  app.use('/newsfeed', function(req, res, next) {
-    if (req.session && !req.session.user) {
-        res.render('signin', {title: 'Login', path: req.path});
-    } else {
-        next();
-    }
-  });
+
 
   app.use('/profile', function(req, res, next) {
     if (req.session && !req.session.user) {
@@ -81,10 +75,10 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/', function(req, res, next) {
-        if (req.session && req.session.user) {
-        	res.redirect('/newsfeed');
+      if(!req.isAuthenticated()) {
+        	res.render('home');
         } else {
-       		res.render('home', {user: req.user});
+       		res.render('newsfeed', { user: req.user});
         }
   });
 
@@ -111,7 +105,7 @@ module.exports=function(app,Parse) {
      user.signUp(null, {
        success: function (user) {
            console.log("sucessful signup");
-           res.render('newsfeed', {layout:'home',title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
+           res.redirect('/newsfeed');
        },
        error: function (user, error) {
          // Show the error message somewhere and let the user try again.
@@ -135,16 +129,23 @@ module.exports=function(app,Parse) {
   });
 
   app.post('/signin', function (req, res, next) {
-    Parse.User.logIn(req.body.username, req.body.password, {
-      success: function(user) {
-      	  req.session.user = user;
-          res.redirect('/newsfeed');
-      },
-      error: function(user, error) {
-          // Show the error message somewhere and let the user try again.
-          res.render('signin', {Error: error.message, path: req.path});
-      }
-    });
+      passport.authenticate('local', { successRedirect: '/',
+          failureRedirect: '/signin'}, function(err, user, info) {
+          if(err) {
+              return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+          }
+
+          if(!user) {
+              return res.render('signin', {page:'login',title: 'Sign In', errorMessage: info.message});
+          }
+          return req.logIn(user, function(err) {
+              if(err) {
+                  return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+              } else {
+                  return res.redirect('/');
+              }
+          });
+      })(req, res, next);
 
   });
 
@@ -155,9 +156,13 @@ module.exports=function(app,Parse) {
  ********************************************/
 
 app.get('/signout', function (req, res, next) {
-    Parse.User.logOut();
-    req.session.destroy();
-    res.render('home', {title: 'Come back again!', path: req.path});
+    if(!req.isAuthenticated()) {
+        notFound404(req, res, next);
+    } else {
+        Parse.User.logOut();
+        req.logout();
+        res.redirect('/');
+    }
 });
 
 
@@ -181,16 +186,104 @@ app.get('/auth/linkedin/callback',function(req,res){
         var token= results.access_token;
         var linkedin = Linkedin.init(token);
         linkedin.people.me(function(err, $in) {
+            var linkedin_ID= $in.id;
             var email= $in.emailAddress;
             var name= $in.formattedName;
             var about=$in.headline;
             var pictureUrl=$in.pictureUrl;
 
-            console.log($in.positions.values[0].company);
+            var companyObject= $in.positions.values[0].company;
+
+            console.log($in);
+
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("linkedin_id", linkedin_ID);
+            query.find({
+                success: function(results) {
+                    //user with this linkedin ID exists
+                    if(results.length > 0)
+                    {
+                        user=results[0];
+                        Parse.User.logIn(user.username, user.password, {
+                            success: function(user) {
+                                req.session.user = user;
+                                res.redirect('/newsfeed');
+                            },
+                            error: function(user, error) {
+                                // Show the error message somewhere and let the user try again.
+                                res.render('signin', {Error: error.message, path: req.path});
+                            }
+                        });
+
+                    }
+                    //no user with this linkedin id in db
+                    else
+                    {
+                        //check to see if user with this email already exists
+                        var query = new Parse.Query(Parse.User);
+                        query.equalTo("email", email);
+                        query.find({
+                            success: function (results) {
+                              if(results.length >0)
+                              {   //TODO user exists so he should verify
+                                  res.render('signin', {Error: "user with this email exists, is it you? verify", path: req.path});
+                              }
+                                else
+                              {
+                                  var user = new Parse.User();
+                                  user.set("fullname", name);
+                                  user.set("username",linkedin_ID);
+                                  //TODO FIX THIS
+                                  user.set("password","123456");
+                                  user.set("linkedin_id",linkedin_ID);
+                                  user.set("email", email);
+                                  user.set("imgUrl", "/images/user.png");
+                                  user.set("about",about)
+                                  user.signUp(null,
+                                      {
+                                      success: function (user) {
+                                          Parse.User.logIn(linkedin_ID, "123456", {
+                                              success: function(user) {
+                                                  req.session.user = user;
+                                                  res.redirect('/newsfeed');
+                                              },
+                                              error: function(user, error) {
+                                                  // Show the error message somewhere and let the user try again.
+                                                  res.render('signin', {Error: error.message, path: req.path});
+                                              }
+                                          });
+                                      },//signup sucess
+                                      error: function (user, error) {
+                                          // Show the error message somewhere and let the user try again.
+                                          res.render('signin', {Error: error.message, path: req.path});
+                                      }
+                                  });
+                              }
+
+                            }
+                        });
+
+                    }
+                },
+                error: function (user, error) {
+                    // Show the error message somewhere and let the user try again.
+                    res.render('signin', {Error: error.message, path: req.path});
+                }
+            });
         });
 
-        return res.redirect('/');
     });
 });
 
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
+
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else {
+            next();
+        }
+    };
 };

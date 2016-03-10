@@ -1,9 +1,9 @@
 <div id="content"></div>
 <script>
     var getNewsFeedUrl = "/newsfeeddata";
-    var userName = '{{currentUsername}}';
-    var userImg = '{{currentUserImg}}';
-    var userId = '{{currentUserId}}';
+    var userName = '{{user.username}}';
+    var userImg = '{{user.imgUrl}}';
+    var userId = '{{user.id}}';
 </script>
 
 <script type="text/jsx" src="/javascripts/newsfeed.js"></script>

@@ -20,9 +20,9 @@ module.exports=function(app,Parse) {
      * NEWS FEED
      *
      ********************************************/
-app.get('/newsfeeddata', function (req, res, next) {
-      var currentUser = Parse.User.current();
-      if (currentUser) {
+app.get('/newsfeeddata', is_auth,function (req, res, next) {
+    
+
           var NewsFeed = Parse.Object.extend("NewsFeed");
           // pub query
           var query = new Parse.Query(NewsFeed);
@@ -194,28 +194,11 @@ app.get('/newsfeeddata', function (req, res, next) {
                   console.log("Error: " + error.code + " " + error.message);
               }
           });
-      }
-      else {
-          res.render('index', {title: 'Login failed', path: req.path});
-      }
+
+
     });
 
-    app.get('/newsfeed', function (req, res, next) {
-        var currentUser = Parse.User.current();
-        if (currentUser) {
-            console.log(currentUser);
-            res.render('newsfeed', {
-                layout: 'home',
-                title: 'Website',
-                currentUserId: currentUser.id,
-                currentUsername: currentUser.attributes.username,
-                currentUserImg: currentUser.attributes.imgUrl
-            });
-        }
-        else {
-            res.render('index', {title: 'Login failed', path: req.path});
-        }
-    });
+
 
     app.post('/newsfeed', function (req, res, next) {
         var currentUser = Parse.User.current();
@@ -245,4 +228,16 @@ app.get('/newsfeeddata', function (req, res, next) {
             res.render('index', {title: 'Login failed', path: req.path});
         }
     });
+
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
+
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else {
+            next();
+        }
+    };
 };
