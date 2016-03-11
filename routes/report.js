@@ -11,18 +11,16 @@ var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
-    app.get('/report', function (req, res, next) {
-        var currentUser = Parse.User.current();
-        if (currentUser) {
+    app.get('/report',is_auth, function (req, res, next) {
+        var currentUser = req.user;
+
             console.log(currentUser);
             res.render('report',
-                {
-                    layout: 'home', currentUsername: currentUser.attributes.username,
-                    currentUserImg: currentUser.attributes.imgUrl
+                {   user: req.user,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl
                 });
-        } else {
-            res.render('index', {title: 'Login failed', path: req.path});
-        }
+
     });
 
     app.post('/report', function (req, res, next) {
@@ -46,5 +44,17 @@ module.exports=function(app,Parse) {
             res.status(403).json({status:"Please login!"});
         }
     });
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
+
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else {
+
+            next();
+        }
+    };
 
 }

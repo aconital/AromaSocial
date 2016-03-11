@@ -21,7 +21,6 @@ module.exports=function(app,Parse) {
      *
      ********************************************/
 app.get('/newsfeeddata', is_auth,function (req, res, next) {
-    
 
           var NewsFeed = Parse.Object.extend("NewsFeed");
           // pub query
@@ -237,6 +236,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
         if (!req.isAuthenticated()) {
             res.redirect('/');
         } else {
+            res.locals.user = req.user;
             next();
         }
     };
