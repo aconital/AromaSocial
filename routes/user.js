@@ -89,8 +89,8 @@ module.exports=function(app,Parse) {
                 query.first({
                     success: function(result) {
                         res.render('profile', { title: 'Profile', path: req.path,
-                            currentUsername: currentUser.attributes.username,
-                            currentUserImg: currentUser.attributes.imgUrl,
+                            currentUsername: currentUser.username,
+                            currentUserImg: currentUser.imgUrl,
                             username: result.attributes.username,
                             objectId: result.id,
                             email: result.attributes.email,
