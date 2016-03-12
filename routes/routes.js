@@ -81,10 +81,10 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/signup', function (req, res, next) {
-	if (req.session && !req.session.user) {
+	if (!req.isAuthenticated()) {
        res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
 	} else {
-		res.redirect('/newsfeed');
+		res.redirect('/');
 	}
    });
      app.post('/signup', function (req, res, next) {
@@ -98,7 +98,7 @@ module.exports=function(app,Parse) {
      user.signUp(null, {
        success: function (user) {
            console.log("sucessful signup");
-           res.redirect('/newsfeed');
+           res.redirect('/');
        },
        error: function (user, error) {
          // Show the error message somewhere and let the user try again.
@@ -114,10 +114,10 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/signin', function (req, res, next) {
-	if (req.session && !req.session.user) {
+	if (!req.isAuthenticated()) {
     	res.render('signin', {title: 'Login', path: req.path});
 	} else {
-		res.redirect('/newsfeed');
+		res.redirect('/');
 	}
   });
 
@@ -149,13 +149,14 @@ module.exports=function(app,Parse) {
  ********************************************/
 
 app.get('/signout', function (req, res, next) {
-    if(!req.isAuthenticated()) {
-        notFound404(req, res, next);
-    } else {
-        Parse.User.logOut();
-        req.logout();
-        res.redirect('/');
+
+    if(req.user) {
+        req.session.destroy(function (err) {
+            res.redirect('/'); //Inside a callback… bulletproof!
+        });
     }
+    else
+        res.redirect('/');
 });
 
 
@@ -166,12 +167,18 @@ app.get('/signout', function (req, res, next) {
  *
  ********************************************/
 app.get('/oauth/linkedin', function(req, res) {
-    // This will ask for permisssions etc and redirect to callback url.
-    var scope = ['r_basicprofile', 'r_emailaddress'];
-    Linkedin.auth.authorize(res, scope);
+    if(!req.isAuthenticated()) {
+        // This will ask for permisssions etc and redirect to callback url.
+        var scope = ['r_basicprofile', 'r_emailaddress'];
+        Linkedin.auth.authorize(res, scope);
+    }
+    else
+    {
+        res.redirect('/');
+    }
 });
 app.get('/auth/linkedin/callback',function(req,res){
-    console.log("aa");
+
     Linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results) {
         if ( err )
             return console.error(err);
@@ -187,27 +194,19 @@ app.get('/auth/linkedin/callback',function(req,res){
 
             var companyObject= $in.positions.values[0].company;
 
-            console.log($in);
+            //console.log($in);
 
             var query = new Parse.Query(Parse.User);
             query.equalTo("linkedin_id", linkedin_ID);
-            query.find({
-                success: function(results) {
+            query.first({
+                success: function(user) {
                     //user with this linkedin ID exists
-                    if(results.length > 0)
-                    {
-                        user=results[0];
-                        Parse.User.logIn(user.username, user.password, {
-                            success: function(user) {
-                                req.session.user = user;
-                                res.redirect('/newsfeed');
-                            },
-                            error: function(user, error) {
-                                // Show the error message somewhere and let the user try again.
-                                res.render('signin', {Error: error.message, path: req.path});
-                            }
+                    if(user)
+                    {   //login the user
+                        req.login(user.attributes.username, function(err){
+                            if(err) res.redirect('/');
+                            res.redirect('/');
                         });
-
                     }
                     //no user with this linkedin id in db
                     else
@@ -215,19 +214,22 @@ app.get('/auth/linkedin/callback',function(req,res){
                         //check to see if user with this email already exists
                         var query = new Parse.Query(Parse.User);
                         query.equalTo("email", email);
-                        query.find({
-                            success: function (results) {
-                              if(results.length >0)
+                        query.first({
+                            success: function (result) {
+                              if(result)
                               {   //TODO user exists so he should verify
                                   res.render('signin', {Error: "user with this email exists, is it you? verify", path: req.path});
                               }
                                 else
                               {
+
                                   var user = new Parse.User();
+                                  var randomPass= randomString(5);
+                                  console.log(randomPass);
                                   user.set("fullname", name);
                                   user.set("username",linkedin_ID);
                                   //TODO FIX THIS
-                                  user.set("password","123456");
+                                  user.set("password",randomPass);
                                   user.set("linkedin_id",linkedin_ID);
                                   user.set("email", email);
                                   user.set("imgUrl", "/images/user.png");
@@ -238,7 +240,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                           Parse.User.logIn(linkedin_ID, "123456", {
                                               success: function(user) {
                                                   req.session.user = user;
-                                                  res.redirect('/newsfeed');
+                                                  res.redirect('/');
                                               },
                                               error: function(user, error) {
                                                   // Show the error message somewhere and let the user try again.
@@ -279,5 +281,14 @@ app.get('/auth/linkedin/callback',function(req,res){
             res.locals.user = req.user;
             next();
         }
+    };
+    function randomString(len, charSet) {
+        charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var randomString = '';
+        for (var i = 0; i < len; i++) {
+            var randomPoz = Math.floor(Math.random() * charSet.length);
+            randomString += charSet.substring(randomPoz,randomPoz+1);
+        }
+        return randomString;
     };
 };

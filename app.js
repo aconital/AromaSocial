@@ -154,7 +154,7 @@ passport.deserializeUser(function(username, done) {
                 location:user.attributes.location,
                 position:user.attributes.position
             };
-            done(null, jsonUser);
+              done(null, jsonUser);
         }
         ,error:function(user,error)
         {
