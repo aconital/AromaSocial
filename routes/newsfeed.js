@@ -21,7 +21,6 @@ module.exports=function(app,Parse) {
      *
      ********************************************/
 app.get('/newsfeeddata', is_auth,function (req, res, next) {
-
           var NewsFeed = Parse.Object.extend("NewsFeed");
           // pub query
           var query = new Parse.Query(NewsFeed);
@@ -199,33 +198,27 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
 
 
 
-    app.post('/newsfeed', function (req, res, next) {
-        var currentUser = Parse.User.current();
-        if (currentUser) {
-            var NewsFeed = Parse.Object.extend("NewsFeed");
-            var newsFeed = new NewsFeed();
-            newsFeed.set('from', currentUser);
-            newsFeed.set('content', req.body.content);
-            newsFeed.save(null, {
-                success: function (newsfeed) {
-                    // Execute any logic that should take place after the object is saved.
-                    res.render('newsfeed', {
-                        title: 'NewsFeed', userId: currentUser.id,
-                        username: currentUser.attributes.username,
-                        currentUserImg: currentUser.attributes.imgUrl
-                    });
-                },
-                error: function (newsfeed, error) {
-                    // Execute any logic that should take place if the save fails.
-                    // error is a Parse.Error with an error code and message.
-                    alert('Failed to create new object, with error code: ' + error.message);
-                    res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
-                }
-            });
-        }
-        else {
-            res.render('index', {title: 'Login failed', path: req.path});
-        }
+    app.post('/newsfeed', is_auth,function (req, res, next) {
+        var NewsFeed = Parse.Object.extend("NewsFeed");
+        var newsFeed = new NewsFeed();
+        newsFeed.set('from', currentUser);
+        newsFeed.set('content', req.body.content);
+        newsFeed.save(null, {
+            success: function (newsfeed) {
+                // Execute any logic that should take place after the object is saved.
+                res.render('newsfeed', {
+                    title: 'NewsFeed', userId: currentUser.id,
+                    username: currentUser.attributes.username,
+                    currentUserImg: currentUser.attributes.imgUrl
+                });
+            },
+            error: function (newsfeed, error) {
+                // Execute any logic that should take place if the save fails.
+                // error is a Parse.Error with an error code and message.
+                alert('Failed to create new object, with error code: ' + error.message);
+                res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
+            }
+        });
     });
 
     /************************************

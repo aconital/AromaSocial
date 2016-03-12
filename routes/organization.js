@@ -766,7 +766,6 @@ module.exports=function(app,Parse) {
 
     app.post('/organization/:objectId/connect', function (req, res, next) {
         var createConnection = Parse.Object.extend("RelationshipOrg");
-
         var currentUser = Parse.User.current();
         if(currentUser) {
             var orgId0= req.params.objectId;
@@ -778,31 +777,35 @@ module.exports=function(app,Parse) {
             query.first().then(
                 function(result){
                     //if a result is returned then skip connection creation
-                    if (!result==undefined){
-                        return Parse.Promise.error("This connection already exists.");
+                    if (result==undefined){
+                        //flip it check the connection from the other way
+                        console.log("Couldnt find result first way");
+                        var query1 = new Parse.query("RelationshipOrg");
+                        query1.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId0});
+                        query1.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId1});
+                        return query1.first();
                     }
-                    //flip it check the connection from the other way
-                    var query1 = new Parse.query("RelationshipOrg");
-                    query1.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId0});
-                    query1.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId1});
-                    return query1.first();
+                    console.log("Connection exist first way");
+                    return Parse.Promise.error("This connection already exists.");
                 }).then(function(result) {
                     //if a result is returned then skip connection creation
-                    if (!result==undefined){
-                        return Parse.Promise.error("This connection already exists.");
+                    if (result==undefined){
+                        //no connection, therefore add connection
+                        console.log("Couldnt find result second way, adding connection");
+                        var connection = new createConnection();
+                        connection.set('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId0});
+                        connection.set('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
+                        connection.set('type', req.body.type);
+                        connection.set('verified', false);
+                        return connection.save(null);
                     }
-                }).then(function(result) {
-                    //no connection, therefore add connection
-                    var connection = new createConnection();
-                    connection.set('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId0});
-                    connection.set('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
-                    connection.set('type', req.body.type);
-                    connection.set('verified', false);
-                    return connection.save(null);
+                    console.log("Connection exist second way");
+                    return Parse.Promise.error("This connection already exists.");
                 }).then(function(response) {
                     console.log("Connection request created successfully.");
                     res.status(200).json({status:"OK", location: response.objectId});
                 }, function(error) {
+                    console.log("Creating connection failed. " + error.message)
                     res.status(500).json({status: "Creating connection failed. " + error.message});
             });
         }

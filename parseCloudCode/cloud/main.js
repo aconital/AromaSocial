@@ -135,7 +135,7 @@ Parse.Cloud.afterSave("Data", function(request) {
 	});
 });
 
-Parse.Cloud.afterDelete("Organization", function(request) {
+Parse.Cloud.beforeDelete("Organization", function(request) {
 	Parse.Cloud.useMasterKey();
 	var orgId = request.object;
 	var Relationship = Parse.Object.extend("Relationship");
