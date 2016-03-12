@@ -76,10 +76,10 @@ module.exports=function(app,Parse) {
    ********************************************/
   app.get('/', function(req, res, next) {
       if(!req.isAuthenticated()) {
-        	res.render('home');
-        } else {
-       		res.render('newsfeed', { user: req.user});
-        }
+          res.render('home');
+      } else {
+          res.render('newsfeed', { user: req.user});
+      }
   });
 
   /*******************************************
@@ -279,7 +279,6 @@ app.get('/auth/linkedin/callback',function(req,res){
      * HELPER FUNCTIONS
      *************************************/
     function is_auth(req,res,next){
-
         if (!req.isAuthenticated()) {
             res.redirect('/');
         } else {
