@@ -11,28 +11,36 @@ var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
-    app.get('/report', is_auth,function (req, res, next) {
+    app.get('/report',is_auth, function (req, res, next) {
+        var currentUser = req.user;
         res.render('report',
             {
-                layout: 'home', currentUsername: currentUser.attributes.username,
-                currentUserImg: currentUser.attributes.imgUrl
+                currentUsername: currentUser.username,
+                currentUserImg: currentUser.imgUrl
             });
+
     });
 
-    app.post('/report', is_auth, function (req, res, next) {
-        var Report = Parse.Object.extend("BugReport");
-        var report = new Report();
-        report.set('user', currentUser);
-        report.set('location', req.body.location);
-        report.set('assignedTo', req.body.assignTo);
-        report.set('description', req.body.description);
-        report.save(null).then(function(response) {
-            console.log("Report created successfully.");
-            res.status(200).json({status:"OK", location: response.objectId});
-        }, function(error) {
-            console.log('Failed to create new report, with error code: ' + error.message);
-            res.status(500).json({status: "Creating report failed. " + error.message});
-        });
+    app.post('/report', function (req, res, next) {
+        var currentUser = Parse.User.current();
+        if (currentUser) {
+            var Report = Parse.Object.extend("BugReport");
+            var report = new Report();
+            report.set('user', currentUser);
+            report.set('location', req.body.location);
+            report.set('assignedTo', req.body.assignTo);
+            report.set('description', req.body.description);
+            report.save(null).then(function(response) {
+                console.log("Report created successfully.");
+                res.status(200).json({status:"OK", location: response.objectId});
+            }, function(error) {
+                console.log('Failed to create new report, with error code: ' + error.message);
+                res.status(500).json({status: "Creating report failed. " + error.message});
+            });
+
+        } else {
+            res.status(403).json({status:"Please login!"});
+        }
     });
     /************************************
      * HELPER FUNCTIONS
@@ -42,7 +50,9 @@ module.exports=function(app,Parse) {
         if (!req.isAuthenticated()) {
             res.redirect('/');
         } else {
+            res.locals.user = req.user;
             next();
         }
     };
+
 }

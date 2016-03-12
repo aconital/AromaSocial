@@ -150,7 +150,7 @@ module.exports=function(app,Parse) {
 
 app.get('/signout', function (req, res, next) {
 
-    if(req.user) {
+    if(req.isAuthenticated()) {
         req.session.destroy(function (err) {
             res.redirect('/'); //Inside a callback… bulletproof!
         });
