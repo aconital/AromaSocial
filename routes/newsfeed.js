@@ -225,9 +225,11 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
      * HELPER FUNCTIONS
      *************************************/
     function is_auth(req,res,next){
+
         if (!req.isAuthenticated()) {
             res.redirect('/');
         } else {
+            res.locals.user = req.user;
             next();
         }
     };

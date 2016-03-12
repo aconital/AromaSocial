@@ -45,13 +45,6 @@ module.exports=function(app,Parse) {
 
 
 
-  app.use('/profile', function(req, res, next) {
-    if (req.session && !req.session.user) {
-        res.render('signin', {title: 'Login', path: req.path});
-    } else {
-        next();
-    }
-  });
 
   // EMAIL API
   app.post('/sendemail', function(req, res, next){
@@ -282,6 +275,7 @@ app.get('/auth/linkedin/callback',function(req,res){
         if (!req.isAuthenticated()) {
             res.redirect('/');
         } else {
+            res.locals.user = req.user;
             next();
         }
     };
