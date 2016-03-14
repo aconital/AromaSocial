@@ -11,18 +11,14 @@ var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
-    app.get('/report', is_auth,function (req, res, next) {
-        res.render('report',
-            {
-                layout: 'home', currentUsername: currentUser.attributes.username,
-                currentUserImg: currentUser.attributes.imgUrl
-            });
+    app.get('/report', is_auth, function (req, res, next) {
+        return res.render('report', { title: 'Report', path: req.path});
     });
 
     app.post('/report', is_auth, function (req, res, next) {
         var Report = Parse.Object.extend("BugReport");
         var report = new Report();
-        report.set('user', currentUser);
+        report.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
         report.set('location', req.body.location);
         report.set('assignedTo', req.body.assignTo);
         report.set('description', req.body.description);
@@ -38,10 +34,10 @@ module.exports=function(app,Parse) {
      * HELPER FUNCTIONS
      *************************************/
     function is_auth(req,res,next){
-
         if (!req.isAuthenticated()) {
             res.redirect('/');
         } else {
+            res.locals.user = req.user;
             next();
         }
     };

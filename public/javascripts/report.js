@@ -8,7 +8,7 @@ var CreateReport = React.createClass({
         return {
             createStatus:'',
             // form
-            location: '', assignTo: '', description: ''
+            location: 'General', assignTo: 'Anyone', description: ''
         };
     },
     render: function() {
@@ -98,7 +98,7 @@ var CreateReport = React.createClass({
                 processData: false,
                 success: function(data) {
                     this.setState({createStatus: 'Report submited! Redirecting...'});
-                    window.location = '../newsfeed/';
+                    window.location = '../';
                 }.bind(this),
                 error: function(xhr, status, err) {
                     console.error('/report', status, err.toString());
