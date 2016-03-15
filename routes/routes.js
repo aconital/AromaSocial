@@ -224,11 +224,11 @@ app.get('/auth/linkedin/callback',function(req,res){
                               {
 
                                   var user = new Parse.User();
+                                  //TODO EMAIL THIS TO USER
                                   var randomPass= randomString(5);
-                                  console.log(randomPass);
+
                                   user.set("fullname", name);
                                   user.set("username",linkedin_ID);
-                                  //TODO FIX THIS
                                   user.set("password",randomPass);
                                   user.set("linkedin_id",linkedin_ID);
                                   user.set("email", email);
@@ -237,10 +237,16 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.signUp(null,
                                       {
                                       success: function (user) {
-                                          Parse.User.logIn(linkedin_ID, "123456", {
-                                              success: function(user) {
-                                                  req.session.user = user;
-                                                  res.redirect('/');
+                                          Parse.User.logIn(linkedin_ID, randomPass, {
+                                              success: function(u) {
+
+                                                  req.login(u.attributes.username,function (err) {
+                                                      if (!err)
+                                                          res.redirect('/');
+                                                      else
+                                                          res.render('signin', {Error: err.message, path: req.path})
+                                                  });
+
                                               },
                                               error: function(user, error) {
                                                   // Show the error message somewhere and let the user try again.

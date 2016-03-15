@@ -136,6 +136,7 @@ passport.deserializeUser(function(username, done) {
     query.first({
         success: function (user)
         {
+
             var jsonUser={
                 id: user.id,
                 username: user.attributes.username,
