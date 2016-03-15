@@ -2012,14 +2012,118 @@ var PublicationAddForm = React.createClass({
         // form
         type: 'journal', file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
         creationDate: '', description: '', license: '', keywords: '', url: '', doi: '',
-        journal: '', volume: '', issue: '', pages: '', // journal articles
+        journal: '', volume: '', issue: '', pages: '', // journal articles,
+        book: {publisher: '', isbn: '', edition: '', pages: ''}, // book-specific fields
+        conf: {conf: '', volume:'', location: ''}, // conference-specific fields
+        patent: {refNum: '', location: ''}, // patent-specific fields
+        report: {publisher: '', number: '', location: ''}, // report-specific fields
+        thesis: {university: '', supervisors: '', degree: '', depart: '', pages: ''}, // thesis-specific fields
+        unpub: {location: ''}
         };
     },
 
 	render: function() {
+		var self = this;
+
 		var autoFillBtn = (
 			<Button className="" onClick={this.fillDoi}>Auto-fill</Button>
         );
+        var journalDetailFields = (
+        	<div><Input type="text" placeholder="Journal:" name="journal" onChange={this.handleChange} value={this.state.journal} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Journal Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.volume} /></td>
+				<td><Input type="text" placeholder="Journal Issue" name="issue" required="required" onChange={this.handleChange} value={this.state.issue} /></td>
+				<td><Input type="text" placeholder="Journal Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.pages} /></td>
+			</tr></table></div>
+		);
+		var bookDetailFields = (
+			<div><Input type="text" placeholder="Publisher:" name="publisher" onChange={this.handleChange} value={this.state.book.publisher} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="ISBN" name="isbn" required="required" onChange={this.handleChange} value={this.state.isbn} /></td>
+				<td><Input type="text" placeholder="Edition" name="edition" required="required" onChange={this.handleChange} value={this.state.book.edition} /></td>
+				<td><Input type="text" placeholder="Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.book.pages} /></td>
+			</tr></table></div>
+		);
+		var confDetailFields = (
+			<div><Input type="text" placeholder="Conference" name="conf" onChange={this.handleChange} value={this.state.conf.conf} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Conference Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.conf.volume} /></td>
+				<td><Input type="text" placeholder="Conference Location" name="location" required="required" onChange={this.handleChange} value={this.state.conf.edition} /></td>
+			</tr></table></div>
+		);
+		var patentDetailsFields = (
+			<div><table width="100%"><tr>
+				<td><Input type="text" placeholder="Patent Reference Number" name="volume" required="required" onChange={this.handleChange} value={this.state.conf.volume} /></td>
+				<td><Input type="text" placeholder="Patent Location" name="location" required="required" onChange={this.handleChange} value={this.state.conf.edition} /></td>
+			</tr></table></div>
+		);
+		var reportDetailsFields = (
+			<div><Input type="text" placeholder="Publisher" name="conf" onChange={this.handleChange} value={this.state.conf.conf} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Report Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.conf.volume} /></td>
+				<td><Input type="text" placeholder="Report Location" name="location" required="required" onChange={this.handleChange} value={this.state.conf.edition} /></td>
+			</tr></table></div>
+		);
+        var thesisDetailsFields = (
+			<div><Input type="text" placeholder="University" name="conf" onChange={this.handleChange} value={this.state.thesis.conf} />
+			<Input type="text" placeholder="Supervisors" name="conf" onChange={this.handleChange} value={this.state.thesis.conf} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Degree" name="volume" required="required" onChange={this.handleChange} value={this.state.thesis.volume} /></td>
+				<td><Input type="text" placeholder="Department" name="location" required="required" onChange={this.handleChange} value={this.state.thesis.edition} /></td>
+				<td><Input type="text" placeholder="Pages" name="location" required="required" onChange={this.handleChange} value={this.state.thesis.edition} /></td>
+			</tr></table></div>
+		);
+		var unpubDetailsFields = (
+			<Input type="text" placeholder="Publisher" name="conf" onChange={this.handleChange} value={this.state.unpub.location} />
+		);
+
+        {/*var Publication = function() { // todo add parameters
+        	this.title = title;
+        	this.description = abstract;
+        	this.doi = doi;
+        	this.keywords = keywords;
+        	this.url = url;
+        }
+        Publication.prototype.setState = function() {
+			for (var property in Object.getOwnPropertyNames(this)) {
+                if (this.hasOwnProperty(property)) {
+					var newState = {};
+					newState[property] = this[property];
+					self.setState(newState);
+                }
+            }
+        }*/}
+
+        var showTypeFields = function(type) {
+			switch (type) {
+				case "book":
+					console.log(this.bookDetailFields);
+					return bookDetailFields;
+					break;
+				case "chapter":
+					return bookDetailFields;
+					break;
+				case "conference":
+					return confDetailFields;
+					break;
+				case "journal":
+					console.log(journalDetailFields);
+					return journalDetailFields;
+					break;
+				case "patent":
+					return patentDetailFields;
+					break;
+				case "report":
+					return reportDetailsFields;
+					break;
+				case "thesis":
+					return thesisDetailsFields;
+					break;
+				case "unpublished":
+					return unpubDetailsFields;
+					break;
+			}
+        };
 
 		return (
 		<div>
@@ -2030,7 +2134,7 @@ var PublicationAddForm = React.createClass({
                     </Button>
                   </div>
 
-				<Input type="select" placeholder name="type" onChange={this.handleChangeType} value={this.state.type} >
+				<Input type="select" placeholder name="type" onChange={this.handleChange} value={this.state.type} >
 					<option value="" disabled>Type:</option>
 					<option value="book">Book</option>
 					<option value="chapter">Book Chapter</option>
@@ -2050,6 +2154,7 @@ var PublicationAddForm = React.createClass({
 					<td><Input type="text" placeholder="Journal Issue" name="issue" required="required" onChange={this.handleChange} value={this.state.issue} /></td>
 					<td><Input type="text" placeholder="Journal Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.pages} /></td>
 				</tr></table>
+				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
@@ -2071,12 +2176,13 @@ var PublicationAddForm = React.createClass({
 	    this.setState( changedState );
 	},
 
-	handleChangeType: function(e) {
+	handleChangeType: function(e) { // TODO remove
 		this.handleChange(e);
 		var day = '';
 		switch (e.target.value) { // TODO synchronize??
 			case "book":
 				day = "Sunday";console.log("this is" + this.state.type);
+				console.log(this.bookDetailFields);
 				break;
 			case "chapter":
 				day = "Monday";console.log("this is" + this.state.type);
@@ -2086,6 +2192,7 @@ var PublicationAddForm = React.createClass({
 				break;
 			case "journal":
 				day = "Wednesday";console.log("this is" + this.state.type);
+				console.log(journalDetailFields);
 				break;
 			case "patent":
 				day = "Thursday";console.log("this is" + this.state.type);
