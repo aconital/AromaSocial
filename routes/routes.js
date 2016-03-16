@@ -22,17 +22,17 @@ var transporter = nodemailer.createTransport("SMTP",{
         }
     });
 
-// setup e-mail data with unicode symbols 
+// setup e-mail data with unicode symbols
 var mailOptions = {
-    from: 'Syncholar ðŸ‘¥ <foo@blurdybloop.com>', // sender address 
-    to: 'shariqazz15@gmail.com', // list of receivers 
-    subject: 'Syncholar Test Invite', // Subject line 
-    text: 'Testing nodemailer', // plaintext body 
-    html: '<h2>You just got invited! ðŸ?´</h2>' // html body 
+    from: 'Syncholar ðŸ‘¥ <foo@blurdybloop.com>', // sender address
+    to: 'hiradroshandel@yahoo.com', // list of receivers
+    subject: 'Syncholar Test Invite', // Subject line
+    text: 'Testing nodemailer', // plaintext body
+    html: '<h2>You just got invited! ðŸ?´</h2>' // html body
 };
 
 function sendEmail ( _name, _email, _subject, _message) {
-  // send mail with defined transport object 
+  // send mail with defined transport object
   transporter.sendMail(mailOptions, function(error, info){
       if(error){
           return console.log(error);
@@ -217,8 +217,32 @@ app.get('/auth/linkedin/callback',function(req,res){
                         query.first({
                             success: function (result) {
                               if(result)
-                              {   //TODO user exists so he should verify
-                                  res.render('signin', {Error: "user with this email exists, is it you? verify", path: req.path});
+                              {
+
+                                  var activation_code= randomString(3)+result.id+randomString(3);
+                                  result.set("activation_code",activation_code);
+                                  result.save(null, { useMasterKey: true }).then(function() {
+                                          //TODO REFACTOR THIS
+                                          var mailOptions = {
+                                              from: 'Syncholar <no-reply@syncholar.com>', // sender address
+                                              to: result.attributes.email, // list of receivers
+                                              subject: 'Connecting Linkedin to your account', // Subject line
+                                              text: '', // plaintext body
+                                              html: '<h2><p>Hi '+result.attributes.fullname+',</p> Please click on the following link to connect your linkedin to your account:</h2>' +
+                                                    '<a href="http://127.0.0.1:3000/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://127.0.0.1:3000/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
+                                          };
+                                          transporter.sendMail(mailOptions, function(error, info){
+                                              if(error){
+                                                  res.render('signin', {Error: error.message, path: req.path})
+                                              }
+                                              res.redirect('/auth/linkedin/verify');
+                                          });
+
+                                      },function(error) {
+
+                                          res.render('signin', {Error: error.message, path: req.path})
+                                      });
+
                               }
                                 else
                               {
@@ -275,7 +299,34 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     });
 });
+    app.get("/auth/linkedin/verify",function(req,res,next){
+        res.render("verify");
+    });
+    app.get("/auth/linkedin/verify/:activation/:linkedin",function(req,res,next){
+        var code= req.params.activation;
+        var linkedin_id=req.params.linkedin;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("activation_code", code);
+        query.first({
+            success: function (user) {
+               if(user)
+               {
+                   user.set("linkedin_id",linkedin_id);
+                   user.save(null,{ useMasterKey: true }).then(function() {
+                       res.redirect("/oauth/linkedin");
+                   },function(error)
+                   {
+                       res.render('signin', {Error: error.message, path: req.path});
+                   });
 
+               }
+            },
+            error: function (error) {
+                res.render('signin', {Error: error.message, path: req.path});
+            }
+        });
+
+    });
     /************************************
      * HELPER FUNCTIONS
      *************************************/

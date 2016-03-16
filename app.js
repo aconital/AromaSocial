@@ -31,7 +31,7 @@ var  LocalStrategy = require('passport-local');
 
 var app = express();
 
-Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7","TlNU9u9xaEuQkuQMyN3UlCXX5SP87vA7sjwTNOne");
 
 
 // just to check that s3 is connected. remove when deploying
