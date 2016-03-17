@@ -1181,371 +1181,6 @@ var PublicationType = React.createClass ({
     }
 });
 
-var PublicationBook = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="pubUpload" required="required" placeholder="File" onChange={this.props.pubUpload}/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input onChange={this.props.title} defaultValue={this.props.txtTitle} className="form-control" type="text" name="title" id="field1" required="required" placeholder="Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Authors (Enter Separated)", onChange : this.props.authors, defaultValue : this.props.txtAuthors}))}
-                </div>
-                <div id="field8-container" className="form-group">
-                   {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Editors (Enter Separated)", onChange : this.props.editors, defaultValue : this.props.txtEditors}))}
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input onChange={this.props.publishPartner} defaultValue={this.props.txtPublishPartner} className="form-control" type="text" name="publisher" id="field8" required="required" placeholder="Publisher"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input onChange={this.props.publishDate} defaultValue={this.props.txtPublishDate} className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Publication Date" type="date"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input onChange={this.props.input1} defaultValue={this.props.txtInput1}  className="form-control" type="text" name="title" id="field1" required="required" placeholder="ISBN"/></td>
-                    <td className="padding-right padding-left"><input onChange={this.props.input2} defaultValue={this.props.txtInput2}  className="form-control" type="text" name="title" id="field1" required="required" placeholder="Edition"/></td>
-                    <td className="padding-left"><input onChange={this.props.input3} defaultValue={this.props.txtInput3}  className="form-control" type="text" name="title" id="field1" required="required" placeholder="Pages"/></td>
-                </tr></table>
-                <div id="field9-container" className="form-group">
-                    <input onChange={this.props.abstract} defaultValue={this.props.txtAbstract} className="form-control" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    {React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", onChange : this.props.keywordsTags, defaultValue : this.props.txtKeywordsTags}))}
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input onChange={this.props.URL} defaultValue={this.props.txtURL} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input onChange={this.props.DOI} defaultValue={this.props.txtDOI} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input onChange={this.props.groupies} defaultValue={this.props.groupies} className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Enter usernames you would like to share this Publication with (Comma separated)"/>
-                </div>
-            </div>
-        )
-    }
-});
-var PublicationBookChapter = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Book Title" />
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Chapter Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Book Authors (Comma Separated)"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Book Editors (Comma Separated)"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Publisher"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Publication Date" type="date"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="ISBN"/></td>
-                    <td className="padding-right padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Edition"/></td>
-                    <td className="padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Pages"/></td>
-                </tr></table>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control form-textarea" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Topics (Comma Separated)"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-var PublicationConferenceProceeding = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Conference Proceeding Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Authors (Comma Separated)"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Conference"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Conference Date" type="date"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Conference Volume"/></td>
-                    <td className="padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Conference Location"/></td>
-                </tr></table>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control form-textarea" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Keywords (Comma Separated)"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-var PublicationJournalArticle = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Journal Article Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Authors (Comma Separated)"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Publication Date" type="date"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Journal"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Journal Volume"/></td>
-                    <td className="padding-right padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Journal Issue"/></td>
-                    <td className="padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Journal Pages"/></td>
-                </tr></table>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control form-textarea" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Keywords (Comma Separated)"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-var PublicationPatent = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Patent Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Authors (Comma Separated)"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Patent Date" type="date"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Patent Reference Number"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Patent Reference Number"/></td>
-                    <td className="padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Patent Location"/></td>
-                </tr></table>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control form-textarea" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Keywords (Comma Separated)"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-var PublicationReport = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Report Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Authors (Comma Separated)"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Publication Date" type="date"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Report Number"/></td>
-                    <td className="padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Report Location"/></td>
-                </tr></table>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control form-textarea" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Keywords (Comma Separated)"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-
-var PublicationThesis = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Thesis Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Authors (Comma Separated)"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Publication Date" type="date"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="University"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Supervisor(s) (Comma Separated)"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Degree"/></td>
-                    <td className="padding-right padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Department"/></td>
-                    <td className="padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Pages"/></td>
-                </tr></table>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control form-textarea" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Topics (Comma Separated)"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-
-var PublicationUnpublishedArticle = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/>
-                </div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" ref="title" name="title" id="field1" required="required" placeholder="Unpublished Article Title" />
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Authors (Comma Separated)"/>
-                </div>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Place of Publication"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Publication Date" type="date"/>
-                </div>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control form-textarea" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Keywords (Comma Separated)"/>
-                </div>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="URL (Alternate Links)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-
-var PublicationJournal = React.createClass ({
-    render: function() {
-        return (
-            <div>
-                <div id="field1-container" className="form-group">
-                    <input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Journal Title"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Journal Volume"/></td>
-                    <td className="padding-right padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Journal Issue"/></td>
-                    <td className="padding-left"><input className="form-control" type="text" name="title" id="field1" required="required" placeholder="Journal Pages"/></td>
-                    </tr>
-                </table>
-                <div id="field8-container" className="form-group">
-                    <input className="form-control" type="text" name="authors" id="field8" required="required" placeholder="Authors (Comma Separated)"/>
-                </div>
-                <div id="field9-container" className="form-group">
-                    <input className="form-control" type="text" name="description" id="field9" required="required" placeholder="Abstract"/>
-                </div>
-                <div id="field3-container" className="form-group">
-                    <input className="form-control" id="field3" maxlength="524288" name="publication-date" placeholder="Date" type="date"/>
-                </div>
-                <table id="upload-field" width="100%" className="form-group"><tr>
-                    <td className="padding-right"><input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File"/></td>
-                    <td className="padding-left"><input className="form-control" type="url" name="publication-url" id="field6" required="required" placeholder="URL"/></td>
-                </tr>
-                </table>
-                <div id="field10-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Tags (Comma Separated)"/>
-                </div>
-                <div id="field11-container" className="form-group">
-                    <input className="form-control" type="text" name="tags" id="field10" required="required" placeholder="Digital Object Identifier"/>
-                </div>
-            </div>
-        )
-    }
-});
-
 var Publications = React.createClass({
     getInitialState: function() {
         return { data: [], showModal: false };
@@ -1940,17 +1575,119 @@ var PublicationAddForm = React.createClass({
         		 journal: 'Journal', volume: 'Journal Volume', issue: 'Issue', pages: 'Pages', // journal articles
         		 publisher: 'Publisher' },
 
-        // form
+        // common form fields
         type: 'journal', file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
         creationDate: '', description: '', license: '', keywords: '', url: '', doi: '',
-        journal: '', volume: '', issue: '', pages: '', // journal articles
+        // end common form fields
+        journal: '', journal_volume: '', journal_issue: '', journal_pages: '', // journal articles,
+        book_publisher: '', book_isbn: '', book_edition: '', book_pages: '', book_chapter: '', // book-specific fields
+		conf_conf: '', conf_volume:'', conf_location: '', // conference-specific fields
+		patent_refNum: '', patent_location: '', // patent-specific fields
+		report_publisher: '', report_number: '', report_location: '', // report-specific fields
+		thesis_university: '', thesis_supervisors: '', thesis_degree: '', thesis_depart: '', thesis_pages: '', // thesis-specific fields
+		unpub_location: '' //unpublished article-specific fields
         };
     },
 
 	render: function() {
+		var self = this;
+
+		var titleLabel = "Title:";
+
 		var autoFillBtn = (
 			<Button className="" onClick={this.fillDoi}>Auto-fill</Button>
         );
+        var journalDetailFields = (
+        	<div><Input type="text" placeholder="Journal:" name="journal" required onChange={this.handleChange} value={this.state.journal} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Journal Volume" name="volume" required onChange={this.handleChange} value={this.state.journal_volume} /></td>
+				<td><Input type="text" placeholder="Journal Issue" name="issue" required onChange={this.handleChange} value={this.state.journal_issue} /></td>
+				<td><Input type="text" placeholder="Journal Pages" name="pages" required onChange={this.handleChange} value={this.state.journal_pages} /></td>
+			</tr></table></div>
+		);
+		var bookChapterTitle = (
+			<Input type="text" placeholder="Chapter Title:" name="chapter" onChange={this.handleChange} value={this.state.book_chapter} />
+		);
+		var bookDetailFields = (
+			<div><Input type="text" placeholder="Publisher:" name="publisher" onChange={this.handleChange} value={this.state.book_publisher} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="ISBN" name="isbn" required="required" onChange={this.handleChange} value={this.state.book_isbn} /></td>
+				<td><Input type="text" placeholder="Edition" name="edition" required="required" onChange={this.handleChange} value={this.state.book_edition} /></td>
+				<td><Input type="text" placeholder="Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.book_pages} /></td>
+			</tr></table></div>
+		);
+		var confDetailFields = (
+			<div><Input type="text" placeholder="Conference" name="conf" onChange={this.handleChange} value={this.state.conf_conf} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Conference Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.conf_volume} /></td>
+				<td><Input type="text" placeholder="Conference Location" name="location" required="required" onChange={this.handleChange} value={this.state.conf_edition} /></td>
+			</tr></table></div>
+		);
+		var patentDetailFields = (
+			<div><table width="100%"><tr>
+				<td><Input type="text" placeholder="Patent Reference Number" name="volume" required="required" onChange={this.handleChange} value={this.state.patent_refNum} /></td>
+				<td><Input type="text" placeholder="Patent Location" name="location" required="required" onChange={this.handleChange} value={this.state.patent_location} /></td>
+			</tr></table></div>
+		);
+		var reportDetailFields = (
+			<div><Input type="text" placeholder="Publisher" name="conf" onChange={this.handleChange} value={this.state.report_publisher} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Report Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.report_number} /></td>
+				<td><Input type="text" placeholder="Report Location" name="location" required="required" onChange={this.handleChange} value={this.state.report_location} /></td>
+			</tr></table></div>
+		);
+        var thesisDetailFields = (
+			<div><Input type="text" placeholder="University" name="conf" onChange={this.handleChange} value={this.state.thesis_university} />
+			<Input type="text" placeholder="Supervisors" name="conf" onChange={this.handleChange} value={this.state.thesis_supervisors} />
+			<table width="100%"><tr>
+				<td><Input type="text" placeholder="Degree" name="volume" required="required" onChange={this.handleChange} value={this.state.thesis_degree} /></td>
+				<td><Input type="text" placeholder="Department" name="location" required="required" onChange={this.handleChange} value={this.state.thesis_depart} /></td>
+				<td><Input type="text" placeholder="Pages" name="location" required="required" onChange={this.handleChange} value={this.state.thesis_pages} /></td>
+			</tr></table></div>
+		);
+		var unpubDetailFields = (
+			<Input type="text" placeholder="Place of Publication" name="location" onChange={this.handleChange} value={this.state.unpub_location} />
+		);
+
+		var showBookChapterTitle = function(type) {
+			if (type === "Pub_Chapter") {
+				console.log("wtf");
+				titleLabel = "Book Title:";
+				return bookChapterTitle;
+			}
+		};
+
+        var showTypeFields = function(type) {
+			switch (type) {
+				case "Pub_Book":
+					console.log(this.bookDetailFields);
+					return bookDetailFields;
+					break;
+				case "Pub_Chapter":
+					showBookChapterTitle(true);
+					return bookDetailFields;
+					break;
+				case "Pub_Conference":
+					return confDetailFields;
+					break;
+				case "Pub_Journal_Article":
+					console.log(journalDetailFields);
+					return journalDetailFields;
+					break;
+				case "Pub_Patent":
+					return patentDetailFields;
+					break;
+				case "Pub_Report":
+					return reportDetailFields;
+					break;
+				case "Pub_Thesis":
+					return thesisDetailFields;
+					break;
+				case "Pub_Unpublished":
+					return unpubDetailFields;
+					break;
+			}
+        };
 
 		return (
 		<div>
@@ -1961,35 +1698,31 @@ var PublicationAddForm = React.createClass({
                     </Button>
                   </div>
 
-				<Input type="select" placeholder name="type" onChange={this.handleChangeType} value={this.state.type} >
+				<Input type="select" placeholder name="type" onChange={this.handleChange} value={this.state.type} >
 					<option value="" disabled>Type:</option>
-					<option value="book">Book</option>
-					<option value="chapter">Book Chapter</option>
-					<option value="conference">Conference Proceeding</option>
-					<option value="journal" selected>Journal Article</option>
-					<option value="patent">Patent</option>
-					<option value="report">Report</option>
-					<option value="thesis">Thesis</option>
-					<option value="unpublished">Unpublished Article</option>
+					<option value="Pub_Book">Book</option>
+					<option value="Pub_Chapter">Book Chapter</option>
+					<option value="Pub_Conference">Conference Proceeding</option>
+					<option value="Pub_Journal_Article" selected>Journal Article</option>
+					<option value="Pub_Patent">Patent</option>
+					<option value="Pub_Report">Report</option>
+					<option value="Pub_Thesis">Thesis</option>
+					<option value="Pub_Unpublished">Unpublished Article</option>
 				</Input>
-                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+				{showBookChapterTitle(this.state.type)}
+                <Input type="text" placeholder={titleLabel} name="title" onChange={this.handleChange} value={this.state.title} />
                 <Input type="text" placeholder="Authors:" name="authors" onChange={this.handleChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
-                <Input type="text" placeholder="Journal:" name="journal" onChange={this.handleChange} value={this.state.journal} />
-                <table width="100%"><tr>
-					<td><Input type="text" placeholder="Journal Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.volume} /></td>
-					<td><Input type="text" placeholder="Journal Issue" name="issue" required="required" onChange={this.handleChange} value={this.state.issue} /></td>
-					<td><Input type="text" placeholder="Journal Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.pages} /></td>
-				</tr></table>
+				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
-				<Input type="text" placeholder={this.state.labels.doi} name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
+				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
 
 				<Modal.Footer>
 					<Input className="btn btn-default pull-right" type="submit" value="Continue" />
-					<div className="form-feedback">{this.state.formFeedback}This is type:{this.state.type}</div>
+					<div className="form-feedback"></div>
 				</Modal.Footer>
             </form>
 		</div>
@@ -2002,63 +1735,99 @@ var PublicationAddForm = React.createClass({
 	    this.setState( changedState );
 	},
 
-	handleChangeType: function(e) {
-		this.handleChange(e);
-		var day = '';
-		switch (e.target.value) { // TODO synchronize??
-			case "book":
-				day = "Sunday";console.log("this is" + this.state.type);
-				break;
-			case "chapter":
-				day = "Monday";console.log("this is" + this.state.type);
-				break;
-			case "conference":
-				day = "Tuesday";console.log("this is" + this.state.type);
-				break;
-			case "journal":
-				day = "Wednesday";console.log("this is" + this.state.type);
-				break;
-			case "patent":
-				day = "Thursday";console.log("this is" + this.state.type);
-				break;
-			case "report":
-				day = "Friday";console.log("this is" + this.state.type);
-				break;
-			case "thesis":
-				day = "Saturday";console.log("this is" + this.state.type);
-				break;
-			case "unpublished":
-				day = "squib";console.log("this is" + this.state.type);
-				break;
-		}
-	},
-
 	fillDoi: function(e) {
 		$.ajax({
 			url: 'http://api.crossref.org/works/' + this.state.doi,
 			type: 'GET',
 			success: function(data) {
 				console.log(data);
-				var entry = data.message
+				var entry = data.message;
 				this.setState({
 					title: entry.title[0],
 					collaborators: (entry.hasOwnProperty('author') ? entry.author[0].given + ' ' + entry.author[0].family : ''),
 					creationDate: entry.created['date-time'].split('T')[0],//entry['published-print']['date-parts'][0],
-					journal: entry['container-title'][0],
-					volume: entry.volume,
-					issue: entry.issue,
-					pages: entry.page,
 					url: entry.URL,
-					keywords: entry.subject.join(","),
+					keywords: (entry.hasOwnProperty('subject') ? entry.subject.join(",") : ''),
 					autoFillStatus: "",
 				});
+				this.fillDetails(entry);
 			}.bind(this),
 			error: function(xhr, status, err) {
-				console.error('/create/organization', status, err.toString());
+				console.error('http://api.crossref.org/works/', status, err.toString());
 				this.setState({ autoFillStatus: "DOI not found. Try again. EXAMPLE: 10.1126/science.1157784" });
 			}.bind(this)
 		});
 		this.setState({ autoFillStatus: "Fetching data..." });
+	},
+	// each publication type has special fields. This function selects based on the type value returned from
+	// CrossRef and fills in the appropriate fields
+	fillDetails: function(entry) {
+		switch (entry.type) {
+			case "journal-article":
+				this.setState({
+					type: "Pub_Journal_Article",
+					journal: entry['container-title'][0],
+					journal_volume: entry.volume,
+					journal_issue: entry.issue,
+					journal_pages: entry.page,
+				});
+				{/*var update = ReactUpdate(this.state, {
+					type: {$set: "journal"},
+					journal: {journal: {$set: entry['container-title'][0]}},
+					journal: {volume: {$set: entry.volume}},
+					journal: {issue: {$set: entry.issue}},
+					journal: {pages: {$set: entry.pages}},
+				});*/}
+				break;
+			case "book": // 10.1007/1-4020-4466-6
+				this.setState({
+					type: "Pub_Book",
+					book_publisher: entry.publisher,
+					book_isbn: entry['isbn'][0],
+					book_edition: '',
+					book_pages: '',
+				});
+				break;
+			case "book-chapter": //10.1007/1-4020-4466-6_3
+				this.setState({
+					type: "Pub_Chapter",
+					title: entry['container-title'][0],
+					book_chapter: entry.title,
+					book_publisher: entry.publisher,
+					book_pages: entry.page,
+				});
+				break;
+			case "proceedings":
+			case "proceedings-article": //10.1109/CSEET.2012.35
+				this.setState({
+					type: "Pub_Conference",
+					conf_conf: entry['container-title'][0],
+				});
+				break;
+			case "patent":
+				this.setState({
+					type: "Pub_Patent",
+				});
+				break;
+			case "report": //10.2172/897503, 10.1037/ce100001
+				this.setState({
+					type: "Pub_Report",
+					report_publisher: entry.publisher,
+				});
+				break;
+			case "dissertation": // 10.2986/tren.009-0347
+				this.setState({
+					type: "Pub_Thesis",
+				});
+				break;
+			case "unpublished":
+				this.setState({
+					type: "Pub_Unpublished",
+				});
+				break;
+			default:
+				console.log('hi');
+		}
 	},
 
 	handleSubmitData: function(e) {
