@@ -181,9 +181,8 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     Linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results) {
         if ( err )
-            res.render('signin', {Error: error.message, path: req.path})
+            res.render('signin', {Error: err.message, path: req.path})
 
-        console.log("**** I'm in callback***");
 
         var token= results.access_token;
         var linkedin = Linkedin.init(token);
@@ -193,8 +192,9 @@ app.get('/auth/linkedin/callback',function(req,res){
             var name= $in.formattedName;
             var about=$in.headline;
             var pictureUrl=$in.pictureUrl;
-            console.log("**** got token ***");
-            var companyObject= $in.positions.values[0].company;
+            var companyObject=null;
+            if($in.positions.values != null)
+                companyObject= $in.positions.values[0].company;
 
             //console.log($in);
 
@@ -202,7 +202,6 @@ app.get('/auth/linkedin/callback',function(req,res){
             query.equalTo("linkedin_id", linkedin_ID);
             query.first({
                 success: function(user) {
-                    console.log("*** query ***");
                     //user with this linkedin ID exists
                     if(user)
                     {   //login the user
