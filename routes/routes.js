@@ -170,7 +170,7 @@ app.get('/oauth/linkedin', function(req, res) {
     if(!req.isAuthenticated()) {
         // This will ask for permisssions etc and redirect to callback url.
         var scope = ['r_basicprofile', 'r_emailaddress'];
-        Linkedin.auth.authorize(res, scope);
+        Linkedin.auth.authorize(res, scope,'state');
     }
     else
     {
@@ -181,9 +181,8 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     Linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results) {
         if ( err )
-            res.render('signin', {Error: error.message, path: req.path})
+            res.render('signin', {Error: err.message, path: req.path})
 
-        console.log("**** I'm in callback***");
 
         var token= results.access_token;
         var linkedin = Linkedin.init(token);
@@ -191,18 +190,23 @@ app.get('/auth/linkedin/callback',function(req,res){
             var linkedin_ID= $in.id;
             var email= $in.emailAddress;
             var name= $in.formattedName;
-            var about=$in.headline;
-            var pictureUrl=$in.pictureUrl;
-            console.log("**** got token ***");
-            var companyObject= $in.positions.values[0].company;
 
-            //console.log($in);
+            var about=null
+            if($in.headline !=null)
+             about=$in.headline;
+
+            var pictureUrl="/images/user.png";
+            if($in.pictureUrls.values !=null)
+                pictureUrl=$in.pictureUrls.values[0];
+
+            var companyObject=null;
+            if($in.positions.values != null)
+                companyObject= $in.positions.values[0].company;
 
             var query = new Parse.Query(Parse.User);
             query.equalTo("linkedin_id", linkedin_ID);
             query.first({
                 success: function(user) {
-                    console.log("*** query ***");
                     //user with this linkedin ID exists
                     if(user)
                     {   //login the user
@@ -259,7 +263,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("password",randomPass);
                                   user.set("linkedin_id",linkedin_ID);
                                   user.set("email", email);
-                                  user.set("imgUrl", "/images/user.png");
+                                  user.set("imgUrl", pictureUrl);
                                   user.set("about",about)
                                   user.signUp(null,
                                       {
