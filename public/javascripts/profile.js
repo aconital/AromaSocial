@@ -7,53 +7,49 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Profile = React.createClass ({
     getInitialState: function() {
-        return {
-            showModal: false,
+      return { showModal: false,
             username: [username],
             profile_imgURL: [profile_imgURL],
+
             fromModelTab: false,
             pictureChosen: null,
-            picture: null,
-            pictureType: '',
-            status: ''
-        };
-    },
 
+            picture: null, pictureType: '', status: ''
+      };
+    },
     clickOpen() {
       this.setState({ showModal: true });
     },
-
     clickClose() {
       this.setState({ showModal: false});
     },
-
     openFileUpload() {
 	    var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-            input.trigger('fileselect', [numFiles, label]);
+        input.trigger('fileselect', [numFiles, label]);
+
         this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
             console.log(numFiles);
             console.log(label);
             return input;
         });
 	},
-
     handlePicture: function(e) {
         var self = this;
         var reader = new FileReader();
         var file = e.target.files[0];
         var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
         reader.onload = function(upload) {
-            self.setState({
-                pictureChosen: upload.target.result,
-                picture: upload.target.result,
-                pictureType: extension,
-            });
+         self.setState({
+           pictureChosen: upload.target.result,
+           picture: upload.target.result,
+           pictureType: extension,
+         });
         }
         reader.readAsDataURL(file);
     },
-
     handleSubmitData: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
@@ -225,7 +221,7 @@ var ProfileMenu = React.createClass ({
                 3: <Projects objectId={objectId}/>,
                 4: <Publications objectId={objectId}/>,
                 5: <Data objectId={objectId}/>,
-                7: <Models objectId={objectId}/>
+                6: <Models objectId={objectId}/>
                 // 6: <More />
                 };
         return (
@@ -590,7 +586,7 @@ var About = React.createClass({
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEI} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {expertise_data}
                     <hr className="margin-top-bottom-5"/>
-                    {(currentUsername == username) ? <div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.interests)}))}</div> : <div>{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
+                    {(currentUsername == username) ? <div className="margin-top-20">{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, value : this.state.interests}))}</div> : <div className="margin-top-20">{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
                 <div className="clear"></div>
                 <div id="resume-education" className="div-relative"><hr/>
@@ -1006,7 +1002,7 @@ var PublicationForm = React.createClass({
                         <td>
                         <input type="text" id="search" placeholder="Search..." className="form-control"/>
                         </td>
-                        {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                        {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
                     </tr>
                     </table>
                 </div>
@@ -1900,7 +1896,7 @@ var ResourceForm = React.createClass({
             <table className="item-search-field" width="100%">
                 <tr>
                     <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
-                    {(currentUsername == username) ? <td className="padding-left-5"><input className="publication-button" onClick={this.open} type="button" value="+"/></td> : ""}
+                    {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.open} type="button" value="+"/></td> : ""}
                 </tr>
             </table>
         </div>
@@ -1937,6 +1933,7 @@ var PublicationAddForm = React.createClass({
         formFeedback: '',
         fileFeedback: {},
         autoFillStatus: '',
+
         // field labels
         labels: {title: 'Title', collaborators: 'Authors', creationDate: 'Publication Date', description: 'Abstract',
         		 keywords: 'Keywords', url: 'URL', doi: 'DOI (Digital Object Identifier', // common

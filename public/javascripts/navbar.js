@@ -49,7 +49,7 @@ var FriendRequest = React.createClass({
         return (
             <li>
                 {this.state.data.map(person =>
-                        <div id={person.username} className="row friendrequest">
+                        <div id={person.username} className="row friendrequest" key={person.username}>
                             <div className="col-lg-3">
                                 <a href={'/profile/'+person.username}> <img  src={person.userImgUrl} className="friendrequest-pic" /></a>
                             </div>

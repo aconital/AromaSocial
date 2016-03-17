@@ -91,20 +91,20 @@ module.exports=function(app,Parse) {
                     res.render('profile', { title: 'Profile', path: req.path,
                         currentUsername: currentUser.username,
                         currentUserImg: currentUser.imgUrl,
-                        username: result.attributes.username,
+                        username: result.get('username'),
                         objectId: result.id,
-                        email: result.attributes.email,
-                        fullname: result.attributes.fullname,
-                        about: result.attributes.about,
-                        position: result.attributes.position,
-                        location: result.attributes.location,
-                        summary: result.attributes.summary,
-                        expertise: JSON.stringify(result.attributes.expertise),
-                        interests: JSON.stringify(result.attributes.interests),
-                        work_experiences: JSON.stringify(result.attributes.work_experiences),
-                        educations: JSON.stringify(result.attributes.educations),
-                        projects: JSON.stringify(result.attributes.projects),
-                        profile_imgURL: result.attributes.imgUrl,
+                        email: result.get('email'),
+                        fullname: result.get('fullname'),
+                        about: result.get('about'),
+                        position: result.get('position'),
+                        location: result.get('location'),
+                        summary: result.get('summary'),
+                        expertise: JSON.stringify(result.get('expertise')),
+                        interests: JSON.stringify(result.get('interests')),
+                        work_experiences: JSON.stringify(result.get('work_experiences')),
+                        educations: JSON.stringify(result.get('educations')),
+                        projects: JSON.stringify(result.get('projects')),
+                        profile_imgURL: result.get('imgUrl'),
                         isMe: false
                     });
                 },
@@ -691,16 +691,16 @@ module.exports=function(app,Parse) {
                     var locations = ["N/A"];
                     var keywords = ["N/A"];
                     var objectId = results[i].id;
-                    var title = results[i].attributes.title;
-                    var description = results[i].attributes.description;
-                    var image_URL = results[i].attributes.image_URL;
+                    var title = results[i].get('title');
+                    var description = results[i].get('description');
+                    var image_URL = results[i].get('image_URL');
                     var start_date = "N/A";
                     var end_date = "N/A";
-                    if (results[i].attributes.authors !== undefined) { authors = results[i].attributes.authors; }
-                    if (results[i].attributes.locations !== undefined) { locations = results[i].attributes.locations; }
-                    if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
-                    if (results[i].attributes.start_date !== undefined) { start_date = results[i].attributes.start_date; }
-                    if (results[i].attributes.end_date !== undefined) { keywords = results[i].attributes.end_date; }
+                    if (results[i].get('authors') !== undefined) { authors = results[i].get('authors'); }
+                    if (results[i].get('locations') !== undefined) { locations = results[i].get('locations'); }
+                    if (results[i].get('keywords') !== undefined) { keywords = results[i].get('keywords'); }
+                    if (results[i].get('start_date') !== undefined) { start_date = results[i].get('start_date'); }
+                    if (results[i].get('end_date') !== undefined) { keywords = results[i].get('end_date'); }
                     var project = {
                         objectId: objectId,
                         title: title,
@@ -734,14 +734,14 @@ module.exports=function(app,Parse) {
                 for (var i in results) {
                     var objectId = results[i].id;
                     var title = "Untitled";
-                    var description = results[i].attributes.description;
-                    var authors = results[i].attributes.authors;
+                    var description = results[i].get('description');
+                    var authors = results[i].get('authors');
                     var publication_code = "N/A";
                     var type = "Other";
 
-                    if (results[i].attributes.title) { title = results[i].attributes.title; }
-                    if (results[i].attributes.type) { type = results[i].attributes.type; }
-                    if (results[i].attributes.publication_code) { publication_code = results[i].attributes.publication_code; }
+                    if (results[i].get('title')) { title = results[i].get('title'); }
+                    if (results[i].get('type')) { type = results[i].get('type'); }
+                    if (results[i].get('publication_code')) { publication_code = results[i].get('publication_code'); }
 
                     var publication = {
                         objectId: objectId,
@@ -774,14 +774,14 @@ module.exports=function(app,Parse) {
                 for (var i in results) {
                     var objectId = results[i].id;
                     var title = "Untitled";
-                    var description = results[i].attributes.description;
-                    var authors = results[i].attributes.collaborators;
-                    var image_URL = results[i].attributes.image_URL;
+                    var description = results[i].get('description');
+                    var authors = results[i].get('collaborators');
+                    var image_URL = results[i].get('image_URL');
                     var type = "Other";
 
-                    if (results[i].attributes.title) { title = results[i].attributes.title; }
-                    if (results[i].attributes.type) { type = results[i].attributes.type; }
-                    if (results[i].attributes.publication_code) { publication_code = results[i].attributes.publication_code; }
+                    if (results[i].get('title')) { title = results[i].get('title'); }
+                    if (results[i].get('type')) { type = results[i].get('type'); }
+                    if (results[i].get('publication_code')) { publication_code = results[i].get('publication_code'); }
 
                     var datum = {
                         objectId: objectId,
@@ -814,13 +814,13 @@ module.exports=function(app,Parse) {
                 for (var i in results) {
                     var objectId = results[i].id;
                     var title = "Untitled";
-                    var description = results[i].attributes.abstract;
-                    var authors = results[i].attributes.collaborators;
-                    var image_URL = results[i].attributes.image_URL;
+                    var description = results[i].get('abstract');
+                    var authors = results[i].get('collaborators');
+                    var image_URL = results[i].get('image_URL');
                     var type = "Other";
 
-                    if (results[i].attributes.title) { title = results[i].attributes.title; }
-                    if (results[i].attributes.type) { type = results[i].attributes.type; }
+                    if (results[i].title) { title = results[i].get('title'); }
+                    if (results[i].type) { type = results[i].get('type'); }
 
                     var model = {
                         objectId: objectId,

@@ -26,8 +26,8 @@ var Loading = require('react-loading');
 var exphbs = require('express-handlebars');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
-var  passport = require('passport');
-var  LocalStrategy = require('passport-local');
+var passport = require('passport');
+var LocalStrategy = require('passport-local');
 
 var app = express();
 
@@ -92,7 +92,7 @@ require('./routes/group')(app,Parse);
 require('./routes/report')(app,Parse);
 
 //===============PASSPORT=================
-// Use the LocalStrategy within Passport to login/”signin” users.
+// Use the LocalStrategy within Passport to login/ï¿½signinï¿½ users.
 passport.use(new LocalStrategy(function(username, password, done) {
 
     var query = new Parse.Query(Parse.User);
@@ -168,6 +168,8 @@ passport.deserializeUser(function(username, done) {
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next){
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     var err = req.session.error,
         msg = req.session.notice,
         success = req.session.success;
