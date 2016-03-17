@@ -190,13 +190,20 @@ app.get('/auth/linkedin/callback',function(req,res){
             var linkedin_ID= $in.id;
             var email= $in.emailAddress;
             var name= $in.formattedName;
-            var about=$in.headline;
-            var pictureUrl=$in.pictureUrl;
+            
+            var about=null
+            if($in.headline !=null)
+             about=$in.headline;
+
+            var pictureUrl="/images/user.png";
+            if($in.pictureUrls.values !=null)
+                pictureUrl=$in.pictureUrls.values[0];
+
             var companyObject=null;
             if($in.positions.values != null)
                 companyObject= $in.positions.values[0].company;
 
-            //console.log($in);
+            console.log($in);
 
             var query = new Parse.Query(Parse.User);
             query.equalTo("linkedin_id", linkedin_ID);
@@ -258,7 +265,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("password",randomPass);
                                   user.set("linkedin_id",linkedin_ID);
                                   user.set("email", email);
-                                  user.set("imgUrl", "/images/user.png");
+                                  user.set("imgUrl", pictureUrl);
                                   user.set("about",about)
                                   user.signUp(null,
                                       {
