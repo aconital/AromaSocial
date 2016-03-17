@@ -14,9 +14,7 @@ var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
-
     app.get('/allusers', function(req, res) {
-
         var q = new Parse.Query(Parse.User);
         q.find({
             success: function(items) {
@@ -41,79 +39,80 @@ module.exports=function(app,Parse) {
     app.get('/profile/:username',is_auth, function (req, res, next) {
         var currentUser = req.user;
         var linkUser = req.params.username;
-
-            if(currentUser.username == linkUser) {
-                var obj={ title: 'Profile', path: req.path,
-                    currentUsername: currentUser.username,
-                    objectId: currentUser.id,
-                    currentUserImg: currentUser.imgUrl,
-                    username: currentUser.username,
-                    email: currentUser.email,
-                    fullname: currentUser.fullname,
-                    about: currentUser.about,
-                    position: currentUser.position,
-                    location: currentUser.location,
-                    summary: currentUser.summary,
-                    expertise: JSON.stringify(currentUser.expertise),
-                    interests: JSON.stringify(currentUser.interests),
-                    work_experiences: JSON.stringify(currentUser.work_experiences),
-                    educations: JSON.stringify(currentUser.educations),
-                    projects: JSON.stringify(currentUser.projects),
-                    profile_imgURL: currentUser.imgUrl,
-                    'isMe': true
-                };
-                console.log(obj);
-                res.render('profile', { title: 'Profile', path: req.path,
-                    currentUsername: currentUser.username,
-                    objectId: currentUser.id,
-                    currentUserImg: currentUser.imgUrl,
-                    username: currentUser.username,
-                    email: currentUser.email,
-                    fullname: currentUser.fullname,
-                    about: currentUser.about,
-                    position: currentUser.position,
-                    location: currentUser.location,
-                    summary: currentUser.summary,
-                    expertise: JSON.stringify(currentUser.expertise),
-                    interests: JSON.stringify(currentUser.interests),
-                    work_experiences: JSON.stringify(currentUser.work_experiences),
-                    educations: JSON.stringify(currentUser.educations),
-                    projects: JSON.stringify(currentUser.projects),
-                    profile_imgURL: currentUser.imgUrl,
-                    'isMe': true
-                });
-            }
-            else {
-                var query = new Parse.Query(Parse.User);
-                query.equalTo("username",linkUser);
-                query.first({
-                    success: function(result) {
-                        res.render('profile', { title: 'Profile', path: req.path,
-                            currentUsername: currentUser.username,
-                            currentUserImg: currentUser.imgUrl,
-                            username: result.attributes.username,
-                            objectId: result.id,
-                            email: result.attributes.email,
-                            fullname: result.attributes.fullname,
-                            about: result.attributes.about,
-                            position: result.attributes.position,
-                            location: result.attributes.location,
-                            summary: result.attributes.summary,
-                            expertise: JSON.stringify(result.attributes.expertise),
-                            interests: JSON.stringify(result.attributes.interests),
-                            work_experiences: JSON.stringify(result.attributes.work_experiences),
-                            educations: JSON.stringify(result.attributes.educations),
-                            projects: JSON.stringify(result.attributes.projects),
-                            profile_imgURL: result.attributes.imgUrl,
-                            'isMe': false
-                        });
-                    },
-                    error: function(error) {
-                        res.redirect('/');
-                    }
-                });
-            }
-
+        if(currentUser.username == linkUser) {
+            var obj={
+                title: 'Profile',
+                path: req.path,
+                currentUsername: currentUser.username,
+                objectId: currentUser.id,
+                currentUserImg: currentUser.imgUrl,
+                username: currentUser.username,
+                email: currentUser.email,
+                fullname: currentUser.fullname,
+                about: currentUser.about,
+                position: currentUser.position,
+                location: currentUser.location,
+                summary: currentUser.summary,
+                expertise: JSON.stringify(currentUser.expertise),
+                interests: JSON.stringify(currentUser.interests),
+                work_experiences: JSON.stringify(currentUser.work_experiences),
+                educations: JSON.stringify(currentUser.educations),
+                projects: JSON.stringify(currentUser.projects),
+                profile_imgURL: currentUser.imgUrl,
+                isMe: true
+            };
+            res.render('profile', {
+                title: 'Profile',
+                path: req.path,
+                currentUsername: currentUser.username,
+                objectId: currentUser.id,
+                currentUserImg: currentUser.imgUrl,
+                username: currentUser.username,
+                email: currentUser.email,
+                fullname: currentUser.fullname,
+                about: currentUser.about,
+                position: currentUser.position,
+                location: currentUser.location,
+                summary: currentUser.summary,
+                expertise: JSON.stringify(currentUser.expertise),
+                interests: JSON.stringify(currentUser.interests),
+                work_experiences: JSON.stringify(currentUser.work_experiences),
+                educations: JSON.stringify(currentUser.educations),
+                projects: JSON.stringify(currentUser.projects),
+                profile_imgURL: currentUser.imgUrl,
+                isMe: true
+            });
+        }
+        else {
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("username",linkUser);
+            query.first({
+                success: function(result) {
+                    res.render('profile', { title: 'Profile', path: req.path,
+                        currentUsername: currentUser.username,
+                        currentUserImg: currentUser.imgUrl,
+                        username: result.attributes.username,
+                        objectId: result.id,
+                        email: result.attributes.email,
+                        fullname: result.attributes.fullname,
+                        about: result.attributes.about,
+                        position: result.attributes.position,
+                        location: result.attributes.location,
+                        summary: result.attributes.summary,
+                        expertise: JSON.stringify(result.attributes.expertise),
+                        interests: JSON.stringify(result.attributes.interests),
+                        work_experiences: JSON.stringify(result.attributes.work_experiences),
+                        educations: JSON.stringify(result.attributes.educations),
+                        projects: JSON.stringify(result.attributes.projects),
+                        profile_imgURL: result.attributes.imgUrl,
+                        isMe: false
+                    });
+                },
+                error: function(error) {
+                    res.redirect('/');
+                }
+            });
+        }
     });
 
     app.get('/profile/:objectId/connection-status',is_auth, function (req, res, next) {
@@ -121,7 +120,6 @@ module.exports=function(app,Parse) {
         var currentUserId = currentUser.id;
         var otherUserId = req.params.objectId;
         var status;
-
         var connectQuery1 = new Parse.Query("RelationshipUser");
         var connectQuery2 = new Parse.Query("RelationshipUser");
         connectQuery1.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: otherUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: currentUserId});
@@ -141,31 +139,24 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:objectId/connections', function (req, res, next) {
-
-
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
-
         var query = new Parse.Query('RelationshipUser');
         query.matchesQuery("userId0",innerQuery)
         query.include('userId1');
         query.find({
             success: function(result) {
                 var people =[];
-                for(var uo in result)
-                {
+                for(var uo in result) {
                     var title= result[uo].attributes.title;
                     var verified= result[uo].attributes.verified;
-
                     var user= result[uo].attributes.userId1.attributes;
-
                     var username= user.username;
                     var fullname="N/A";
                     var company= "N/A";
                     var work_title= "N/A";
                     var userImgUrl= "/images/user.png";
                     var work_experience= [];
-
                     if(user.hasOwnProperty('fullname')){
                         fullname=user.fullname;
                     }
@@ -178,10 +169,8 @@ module.exports=function(app,Parse) {
                         company= work_experience.company;
                         work_title= work_experience.title;
                     }
-
                     //only show people who are verified by admin
-                    if(verified)
-                    {
+                    if(verified) {
                         var person = {
                             username:username,
                             title: title,
@@ -191,14 +180,10 @@ module.exports=function(app,Parse) {
                             workTitle: work_title
                         };
                         people.push(person);
-
                     }
-
                 }
                 var filtered_people=  _.groupBy(people,'title');
                 res.json(filtered_people);
-
-
             },
             error: function(error) {
                 console.log(error);
@@ -206,31 +191,23 @@ module.exports=function(app,Parse) {
             }
         });
     });
+
     app.get('/profile/:objectId/organizations', function (req, res, next) {
-
-
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
-
         var query = new Parse.Query('Relationship');
         query.matchesQuery("userId",innerQuery)
         query.include('orgId');
         query.find({
             success: function(result) {
                 var orgs =[];
-                for(var uo in result)
-                {
-
+                for(var uo in result) {
                     var verified= result[uo].attributes.verified;
-
                     var connected_orgs= result[uo].attributes.orgId.attributes;
-
                     var orgId= result[uo].attributes.orgId.id;
-
                     var name= "N/A";
                     var location= "N/A";
                     var orgImgUrl= "/images/organization.png";
-
                     if(connected_orgs.hasOwnProperty('name')){
                         name=connected_orgs.name;
                     }
@@ -240,10 +217,8 @@ module.exports=function(app,Parse) {
                     if(connected_orgs.hasOwnProperty('profile_imgURL')){
                         orgImgUrl=connected_orgs.profile_imgURL;
                     }
-
                     //only show people who are verified by admin
-                    if(verified)
-                    {
+                    if(verified) {
                         var org = {
                             orgId:orgId,
                             name:name,
@@ -251,13 +226,9 @@ module.exports=function(app,Parse) {
                             orgImgUrl: orgImgUrl,
                         };
                         orgs.push(org);
-
                     }
-
                 }
-
                 res.json(orgs);
-
             },
             error: function(error) {
                 console.log(error);
@@ -271,7 +242,6 @@ module.exports=function(app,Parse) {
         if (currentUser.username == req.params.username) {
             var name;
             var email;
-
             //upload publication
             var form = new formidable.IncomingForm();
             form.parse(req, function(err, fields, files) {
@@ -279,7 +249,6 @@ module.exports=function(app,Parse) {
                 email=fields.inputemail;
             });
             form.on('end', function(fields, files) {
-
                 var query = new Parse.Query(Parse.User);
                 query.equalTo("email", currentUser.email);
                 query.first({
@@ -289,24 +258,24 @@ module.exports=function(app,Parse) {
                         if(email !=null)
                             user.set("email",email);
                         user.save();
-                        res.render('profile', {title: 'Profile', username: currentUser.username, 'isMe': true, currentUserImg:currentUser.imgUrl,
+                        res.render('profile', {title: 'Profile', username: currentUser.username, isMe: true, currentUserImg:currentUser.imgUrl,
                             userImg:currentUser.imgUrl, fullname:name, email: email});
-
                     }
                 });
-               });
-        }else {
+            });
+        }
+        else {
             res.render('profile', {Error: 'Profile Update Failed!'});
         }
     });
+
     app.post("/uploadimage/:username",is_auth, function (req, res, next){
         var currentUser = req.user;
-        if (  currentUser.username == req.params.username) {
+        if (currentUser.username == req.params.username){
             var form = new formidable.IncomingForm();
             form.parse(req, function(err, fields, files) {
                 filename=files.upload.name;
             });
-
             form.on('end', function(fields, files) {
                 // Temporary location of our uploaded file
                 var temp_path = this.openedFiles[0].path;
@@ -314,11 +283,11 @@ module.exports=function(app,Parse) {
                 var file_name = this.openedFiles[0].name;
                 // Location where we want to copy the uploaded file
                 var new_location = 'public/profilepictures/'+req.params.username+'/';
-
                 fs.copy(temp_path, new_location + file_name, function(err) {
                     if (err) {
                         console.error(err);
-                    }else{
+                    }
+                    else{
                         var query = new Parse.Query(Parse.User);
                         query.equalTo("email", currentUser.email);
                         query.first({
@@ -326,14 +295,15 @@ module.exports=function(app,Parse) {
                                 var imgUrl='/profilepictures/'+req.params.username+'/'+file_name;
                                 user.set("imgUrl",imgUrl);
                                 user.save();
-                                res.render('profile', {title: 'Profile', username: currentUser.username, 'isMe': true, currentUserImg:imgUrl,
+                                res.render('profile', {title: 'Profile', username: currentUser.username, isMe: true, currentUserImg:imgUrl,
                                     userImg: imgUrl, fullname:currentUser.fullname, email: currentUser.email});
                             }
                         });
                     }
                 });
             });
-        } else {
+        }
+        else {
             res.render('profile', {Error: 'Submit Publication Failed!'});
         }
     });
@@ -341,220 +311,212 @@ module.exports=function(app,Parse) {
     app.post('/profile/:username/picture',is_auth,function(req,res,next){
         var currentUser = req.user;
         var linkUser = req.params.username;
-
-            if(currentUser.username == linkUser) {
-                var bucket = new aws.S3();
-
-                var s3KeyP = req.params.username + "_profile_picture_" + req.body.randomNumber + "." + req.body.pictureType;
-                var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                var pictureParams = {
-                    Bucket: 'syncholar',
-                    Key: s3KeyP,
-                    Body: pictureBuff,
-                    ContentEncoding: 'base64',
-                    ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                };
-
-                bucket.putObject(pictureParams, function (err, data) {
-                    if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
-                    else {
-                        var query = new Parse.Query(Parse.User);
-                        query.equalTo("email", currentUser.email);
-                        query.first({
-                            success: function (result) {
-                                result.set("imgUrl",awsLink + s3KeyP);
-                                result.save();
-                                res.status(200).json({status: "Picture Uploaded Successfully!"});
-                            }
-                        });
-
-                    }
-                });
-            }
-
+        if(currentUser.username == linkUser) {
+            var bucket = new aws.S3();
+            var s3KeyP = req.params.username + "_profile_picture_" + req.body.randomNumber + "." + req.body.pictureType;
+            var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+            var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+            var pictureParams = {
+                Bucket: 'syncholar',
+                Key: s3KeyP,
+                Body: pictureBuff,
+                ContentEncoding: 'base64',
+                ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
+            };
+            bucket.putObject(pictureParams, function (err, data) {
+                if (err) {
+                    console.log("Profile Picture (Image) Upload Error:", err);
+                }
+                else {
+                    var query = new Parse.Query(Parse.User);
+                    query.equalTo("email", currentUser.email);
+                    query.first({
+                        success: function (result) {
+                            result.set("imgUrl",awsLink + s3KeyP);
+                            result.save();
+                            res.status(200).json({status: "Picture Uploaded Successfully!"});
+                        }
+                    });
+                }
+            });
+        }
     });
 
     app.post('/profile/:username/update',is_auth,function(req,res,next){
         var currentUser =req.user;
         var linkUser = req.params.username;
-
-        if(currentUser.username == linkUser)
-        {
-                var query = new Parse.Query(Parse.User);
-                query.equalTo("email", currentUser.email);
-                query.first({
-                    success: function(result) {
-                        if (req.body.summary) {
-                            result.set("summary", req.body.summary);
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("email", currentUser.email);
+            query.first({
+                success: function(result) {
+                    if (req.body.summary) {
+                        result.set("summary", req.body.summary);
+                        result.save();
+                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                    }
+                    else if (req.body.expertise || req.body.interests) {
+                        if (req.body.expertise)
+                            result.set("expertise", JSON.parse(req.body.expertise));
+                        if (req.body.interests)
+                            result.set("interests", JSON.parse(req.body.interests));
                             result.save();
                             res.status(200).json({status: "Info Uploaded Successfully!"});
                         }
-                        else if (req.body.expertise || req.body.interests) {
-                            if (req.body.expertise)
-                                result.set("expertise", JSON.parse(req.body.expertise));
-                            if (req.body.interests)
-                                result.set("interests", JSON.parse(req.body.interests));
-                            result.save();
-                            res.status(200).json({status: "Info Uploaded Successfully!"});
-                        }
-                        else if (req.body.work_experiences && req.body.educations && req.body.projects) {
-                            result.set("work_experiences", JSON.parse(req.body.work_experiences));
-                            result.set("educations", JSON.parse(req.body.educations));
-                            result.set("projects", JSON.parse(req.body.projects));
-                            result.save();
-                            res.status(200).json({status: "Info Uploaded Successfully!"});
-                        }
-                        else if (req.body.action && req.body.type) {
-                            if (req.body.action == "delete") {
-                                console.log("Delete");
-                                if (req.body.type == "work_experience") {
-                                    var work_experiencesTemp = currentUser.attributes.work_experiences;
-                                    for (var i = 0; i < work_experiencesTemp.length; i++) {
-                                        if (work_experiencesTemp[i].key = req.body.key) {
-                                            delete work_experiencesTemp[i];
-                                            work_experiencesTemp.splice(i, 1);
-                                        }
-                                        console.log(work_experiencesTemp);
+                    else if (req.body.work_experiences && req.body.educations && req.body.projects) {
+                        result.set("work_experiences", JSON.parse(req.body.work_experiences));
+                        result.set("educations", JSON.parse(req.body.educations));
+                        result.set("projects", JSON.parse(req.body.projects));
+                        result.save();
+                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                    }
+                    else if (req.body.action && req.body.type) {
+                        if (req.body.action == "delete") {
+                            console.log("Delete");
+                            if (req.body.type == "work_experience") {
+                                var work_experiencesTemp = currentUser.attributes.work_experiences;
+                                for (var i = 0; i < work_experiencesTemp.length; i++) {
+                                    if (work_experiencesTemp[i].key = req.body.key) {
+                                        delete work_experiencesTemp[i];
+                                        work_experiencesTemp.splice(i, 1);
                                     }
-                                    currentUser.set("work_experiences", work_experiencesTemp);
-                                    res.status(200).json({status: "Deleted Successfully!"});
-                                } else if (req.body.type == "education") {
-                                    var educationsTemp = currentUser.attributes.educations;
-                                    for (var i = 0; i < educationsTemp.length; i++) {
-                                        if (educationsTemp[i].key = req.body.key) {
-                                            delete educationsTemp[i];
-                                            educationsTemp.splice(i, 1);
-                                        }
-                                        console.log(educationsTemp);
-                                    }
-                                    currentUser.set("educations", educationsTemp);
-                                    res.status(200).json({status: "Deleted Successfully!"});
-                                } else if (req.body.type == "project") {
-                                    var projectsTemp = currentUser.attributes.projects;
-                                    for (var i = 0; i < projectsTemp.length; i++) {
-                                        if (projectsTemp[i].key = req.body.key) {
-                                            delete projectsTemp[i];
-                                            projectsTemp.splice(i, 1);
-                                        }
-                                        console.log(projectsTemp);
-                                    }
-                                    currentUser.set("projects", projectsTemp);
-                                    res.status(200).json({status: "Deleted Successfully!"});
+                                    console.log(work_experiencesTemp);
                                 }
-                                currentUser.save();
-                            } else if (req.body.action == "update") {
-                                if (req.body.type == "work_experience") {
-                                    var work_experiencesTemp = currentUser.work_experiences;
-                                    for (var i = 0; i < work_experiencesTemp.length; i++) {
-                                        if (work_experiencesTemp[i].key = req.body.key) {
-                                            var changedWE = {
-                                                key: req.body.key,
-                                                title: req.body.title,
-                                                company: req.body.company,
-                                                description: req.body.description,
-                                                start: req.body.start,
-                                                end: req.body.end
-                                            };
-                                            work_experiencesTemp[i] = changedWE;
-                                        }
-                                    }
-                                    result.set("work_experiences", work_experiencesTemp);
-                                    res.status(200).json({status: "Updated Successfully!"});
-                                } else if (req.body.type == "education") {
-                                    var educationsTemp = currentUser.educations;
-                                    for (var i = 0; i < educationsTemp.length; i++) {
-                                        if (educationsTemp[i].key = req.body.key) {
-                                            var changedWE = {
-                                                key: req.body.key,
-                                                title: req.body.title,
-                                                company: req.body.company,
-                                                description: req.body.description,
-                                                start: req.body.start,
-                                                end: req.body.end
-                                            };
-                                            educationsTemp[i] = changedWE;
-                                        }
-                                    }
-                                    result.set("educations", educationsTemp);
-                                    res.status(200).json({status: "Updated Successfully!"});
-                                } else if (req.body.type == "project") {
-                                    var projectsTemp = currentUser.projects;
-                                    for (var i = 0; i < projectsTemp.length; i++) {
-                                        if (projectsTemp[i].key = req.body.key) {
-                                            var changedWE = {
-                                                key: req.body.key,
-                                                title: req.body.title,
-                                                company: req.body.company,
-                                                description: req.body.description,
-                                                start: req.body.start,
-                                                end: req.body.end
-                                            };
-                                            projectsTemp[i] = changedWE;
-                                        }
-
-                                    }
-                                    result.set("projects", projectsTemp);
-                                    res.status(200).json({status: "Updated Successfully!"});
-                                }
-                                result.save();
+                                currentUser.set("work_experiences", work_experiencesTemp);
+                                res.status(200).json({status: "Deleted Successfully!"});
                             }
+                            else if (req.body.type == "education") {
+                                var educationsTemp = currentUser.attributes.educations;
+                                for (var i = 0; i < educationsTemp.length; i++) {
+                                    if (educationsTemp[i].key = req.body.key) {
+                                        delete educationsTemp[i];
+                                        educationsTemp.splice(i, 1);
+                                    }
+                                    console.log(educationsTemp);
+                                }
+                                currentUser.set("educations", educationsTemp);
+                                res.status(200).json({status: "Deleted Successfully!"});
+                            }
+                            else if (req.body.type == "project") {
+                                var projectsTemp = currentUser.attributes.projects;
+                                for (var i = 0; i < projectsTemp.length; i++) {
+                                    if (projectsTemp[i].key = req.body.key) {
+                                        delete projectsTemp[i];
+                                        projectsTemp.splice(i, 1);
+                                    }
+                                    console.log(projectsTemp);
+                                }
+                                currentUser.set("projects", projectsTemp);
+                                res.status(200).json({status: "Deleted Successfully!"});
+                            }
+                            currentUser.save();
                         }
-                    }//end of success
-                });//end of query
+                        else if (req.body.action == "update") {
+                            if (req.body.type == "work_experience") {
+                                var work_experiencesTemp = currentUser.work_experiences;
+                                for (var i = 0; i < work_experiencesTemp.length; i++) {
+                                    if (work_experiencesTemp[i].key = req.body.key) {
+                                        var changedWE = {
+                                            key: req.body.key,
+                                            title: req.body.title,
+                                            company: req.body.company,
+                                            description: req.body.description,
+                                            start: req.body.start,
+                                            end: req.body.end
+                                        };
+                                        work_experiencesTemp[i] = changedWE;
+                                    }
+                                }
+                                result.set("work_experiences", work_experiencesTemp);
+                                res.status(200).json({status: "Updated Successfully!"});
+                            }
+                            else if (req.body.type == "education") {
+                                var educationsTemp = currentUser.educations;
+                                for (var i = 0; i < educationsTemp.length; i++) {
+                                    if (educationsTemp[i].key = req.body.key) {
+                                        var changedWE = {
+                                            key: req.body.key,
+                                            title: req.body.title,
+                                            company: req.body.company,
+                                            description: req.body.description,
+                                            start: req.body.start,
+                                            end: req.body.end
+                                        };
+                                        educationsTemp[i] = changedWE;
+                                    }
+                                }
+                                result.set("educations", educationsTemp);
+                                res.status(200).json({status: "Updated Successfully!"});
+                            }
+                            else if (req.body.type == "project") {
+                                var projectsTemp = currentUser.projects;
+                                for (var i = 0; i < projectsTemp.length; i++) {
+                                    if (projectsTemp[i].key = req.body.key) {
+                                        var changedWE = {
+                                            key: req.body.key,
+                                            title: req.body.title,
+                                            company: req.body.company,
+                                            description: req.body.description,
+                                            start: req.body.start,
+                                            end: req.body.end
+                                        };
+                                        projectsTemp[i] = changedWE;
+                                    }
+                                }
+                                result.set("projects", projectsTemp);
+                                res.status(200).json({status: "Updated Successfully!"});
+                            }
+                            result.save();
+                        }
+                    }
+                }//end of success
+            });//end of query
         }
-
     });
 
     app.get('/profile/:objectId/connect',is_auth, function (req, res, next) {
         var userId= req.params.objectId;
         var currentUser = req.user
-
-            var Relationship = Parse.Object.extend("RelationshipUser");
-            var relation = new Relationship();
-
-            relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
-            relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
-            relation.set('verified', false);
-            relation.save(null,{
-                success:function(){
-                    res.json({success: "Requested Successfully"});
-                },
-                error:function(error){
-                    res.json({error:error});
-                }
-            });
-
+        var Relationship = Parse.Object.extend("RelationshipUser");
+        var relation = new Relationship();
+        relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
+        relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
+        relation.set('verified', false);
+        relation.save(null,{
+            success:function(){
+                res.json({success: "Requested Successfully"});
+            },
+            error:function(error){
+                res.json({error:error});
+            }
+        });
     });
+
     app.get('/profile/:objectId/disconnect',is_auth, function (req, res, next) {
         var friendId= req.params.objectId;
         var currentUser = req.user;
-
-            var query1 = new Parse.Query('RelationshipUser');
-            query1.equalTo("userId1",{__type: "Pointer", className: "_User", objectId: currentUser.id});
-            query1.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: friendId});
-            query1.equalTo('verified',true);
-
-            var query2 = new Parse.Query('RelationshipUser');
-            query2.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: currentUser.id});
-            query2.equalTo("userId1",{__type: "Pointer", className: "_User", objectId: friendId});
-            query2.equalTo('verified',true);
-
-            var mainQuery= Parse.Query.or(query1,query2);
-            mainQuery.find({
-                success: function(results) {
-                    Parse.Object.destroyAll(results).then(function(success) {
-                        res.json({success: "Requested Successfully"});
-                    }, function(error) {
-                        res.json({error:error});
-                    });
-                },
-                error: function(error) {
-                    console.log(error);
-                    res.render('index', {title: error, path: req.path});
-                }
-            });
-
+        var query1 = new Parse.Query('RelationshipUser');
+        query1.equalTo("userId1",{__type: "Pointer", className: "_User", objectId: currentUser.id});
+        query1.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: friendId});
+        query1.equalTo('verified',true);
+        var query2 = new Parse.Query('RelationshipUser');
+        query2.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: currentUser.id});
+        query2.equalTo("userId1",{__type: "Pointer", className: "_User", objectId: friendId});
+        query2.equalTo('verified',true);
+        var mainQuery= Parse.Query.or(query1,query2);
+        mainQuery.find({
+            success: function(results) {
+                Parse.Object.destroyAll(results).then(function(success) {
+                    res.json({success: "Requested Successfully"});
+                }, function(error) {
+                    res.json({error:error});
+                });
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
     });
 
     app.get('/friendrequest',is_auth,function(req,res,next){

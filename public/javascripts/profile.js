@@ -7,49 +7,53 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Profile = React.createClass ({
     getInitialState: function() {
-      return { showModal: false,
+        return {
+            showModal: false,
             username: [username],
             profile_imgURL: [profile_imgURL],
-
             fromModelTab: false,
             pictureChosen: null,
-
-            picture: null, pictureType: '', status: ''
-      };
+            picture: null,
+            pictureType: '',
+            status: ''
+        };
     },
+
     clickOpen() {
       this.setState({ showModal: true });
     },
+
     clickClose() {
       this.setState({ showModal: false});
     },
+
     openFileUpload() {
 	    var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-        input.trigger('fileselect', [numFiles, label]);
-
+            input.trigger('fileselect', [numFiles, label]);
         this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
             console.log(numFiles);
             console.log(label);
             return input;
         });
 	},
+
     handlePicture: function(e) {
         var self = this;
         var reader = new FileReader();
         var file = e.target.files[0];
         var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
-
         reader.onload = function(upload) {
-         self.setState({
-           pictureChosen: upload.target.result,
-           picture: upload.target.result,
-           pictureType: extension,
-         });
+            self.setState({
+                pictureChosen: upload.target.result,
+                picture: upload.target.result,
+                pictureType: extension,
+            });
         }
         reader.readAsDataURL(file);
     },
+
     handleSubmitData: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
@@ -1933,7 +1937,6 @@ var PublicationAddForm = React.createClass({
         formFeedback: '',
         fileFeedback: {},
         autoFillStatus: '',
-
         // field labels
         labels: {title: 'Title', collaborators: 'Authors', creationDate: 'Publication Date', description: 'Abstract',
         		 keywords: 'Keywords', url: 'URL', doi: 'DOI (Digital Object Identifier', // common

@@ -20,18 +20,20 @@ module.exports=function(app,Parse) {
      * MODEL
      *
      ********************************************/
-    app.get('/model', function (req, res, next) {
-        res.render('model', {layout: 'home', title: 'Model', path: req.path});
+    app.get('/model', is_auth, function (req, res, next) {
+        res.render('model', {title: 'Model', path: req.path});
     });
-    app.get('/model/:objectId', function (req, res, next) {
-        var currentUser = Parse.User.current();
+    app.get('/model/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
         var query = new Parse.Query('Model');
         query.get(req.params.objectId,{
             success: function(result) {
-                res.render('model', {layout: 'home', title: 'Model', path: req.path,
+                res.render('model', {
+                    title: 'Model',
+                    path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.attributes.username,
-                    currentUserImg: currentUser.attributes.imgUrl,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
                     objectId: req.params.objectId,
                     creatorId: result.get("user").id,
                     access: result.get('access'),
@@ -59,7 +61,7 @@ module.exports=function(app,Parse) {
     });
 
 
-    app.post('/model/:objectId/update',function(req,res,next){
+    app.post('/model/:objectId/update', is_auth, function(req,res,next){
         var query = new Parse.Query("Model");
         query.get(req.params.objectId,{
             success: function(result) {
@@ -71,18 +73,20 @@ module.exports=function(app,Parse) {
                     result.set("filename", req.body.filename);
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
-                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
+                }
+                else if (req.body.keywords) {
+                    result.set("keywords",JSON.parse(req.body.keywords));
+                }
                 result.save();
             }
         });
     });
 
-    app.post('/model/:objectId/picture',function(req,res,next){
+    app.post('/model/:objectId/picture', is_auth, function(req,res,next){
         var query = new Parse.Query("Model");
         query.get(req.params.objectId,{
             success: function(result) {
                 var bucket = new aws.S3();
-
                 var s3KeyP = req.params.objectId + "_model_picture_" + req.body.randomNumber + "." + req.body.pictureType;
                 var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
                 var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
@@ -93,7 +97,6 @@ module.exports=function(app,Parse) {
                     ContentEncoding: 'base64',
                     ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
                 };
-
                 bucket.putObject(pictureParams, function (err, data) {
                     if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
                     else {
@@ -107,14 +110,13 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.post('/profile/:username/model',function(req,res,next){
-        var currentUser = Parse.User.current();
-        if (currentUser && currentUser.attributes.username == req.params.username) {
+    app.post('/profile/:username/model', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        if (currentUser.username == req.params.username) {
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
             var reqBody = req.body;
-
             // send to Parse
             var keywords = reqBody.keywords.split(/\s*,\s*/g);
             var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
@@ -132,14 +134,11 @@ module.exports=function(app,Parse) {
 //			model.set('publication',reqBody.pubLink);
             model.set('number_cited',0);
             model.set('number_syncholar_factor',1);
-
             model.save(null, {
                 success: function(response) {
                     // Execute any logic that should take place after the object is saved.
                     objectId = response.id;
-
                     var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-
                     // encode file
                     if (reqBody.file != null) {
                         var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
@@ -152,13 +151,11 @@ module.exports=function(app,Parse) {
                             ContentType: (contentType ? contentType[1] : 'text/plain')
                         };
                         console.log(contentType);
-
                         // upload files to S3
                         bucket.putObject(fileParams, function (err, data) {
                             if (err) { console.log("Model Upload Error:", err); }
                             else {
                                 console.log('uploading to s3');
-
                                 // update file name in parse object
                                 model.set('image_URL', awsLink + s3Key);
                                 model.save();
@@ -166,7 +163,6 @@ module.exports=function(app,Parse) {
                         });
                     }
                     console.log(objectId);
-
                     // encode picture NOTE: Parse object currently does not differentiate between image and file.
                     // Only file (saved in image_URL) is accessible on website
                     if (reqBody.picture != null) {
@@ -198,12 +194,22 @@ module.exports=function(app,Parse) {
                     res.status(500).json({status: "Creating model object failed. " + error.message});
                 }
             });
-
         } else {
             res.render('profile', {Error: 'Model Upload Failed!'});
             res.status(500).json({status: "Model Upload Failed! " + error.message});
         }
     });
 
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
 
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else { res.locals.user = req.user;
+            res.locals.user = req.user;
+            next();
+        }
+    };
 };
