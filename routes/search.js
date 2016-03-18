@@ -82,7 +82,9 @@ module.exports=function(app,Parse) {
                 console.log(object.id);
                 matching_users[object.get('username')] = {
                   "type" : "user",
-                  "id" : object.id
+                  "id" : object.id,
+                  "img" : object.get('imgUrl'),
+                  "about" : object.get('about')
                 };
               }
             console.log("Matching users are: ");

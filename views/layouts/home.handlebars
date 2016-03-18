@@ -81,8 +81,8 @@
                 <form role="search" method="post" action="/searchpage" class="navbar-form navbar-right">
                     <div class="form-group form-inline" style="width:100%">
                         <div class="input-group purple" style="width:100%">
-                            <input type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
-                            <button type="submit" class="btn btn-primary btn-search"><span aria-hidden="true" class="glyphicon glyphicon-search"></span></button>
+                            <input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
+                            <button type="submit" class="btn btn-primary btn-search searchButton" disabled="disabled"><span aria-hidden="true" class="glyphicon glyphicon-search"></span></button>
                         </div>
                     </div>
                 </form>
@@ -146,6 +146,14 @@
       });
     }
   });
+</script>
+<script>
+    $(document).ready(function(){
+    $('.searchButton').prop('disabled',true);
+    $('#message').keyup(function(){
+        $('.searchButton').prop('disabled', this.value == "" ? true : false);     
+    })
+});
 </script>
 <script src="/javascripts/autocomplete.js"></script>
 </body>

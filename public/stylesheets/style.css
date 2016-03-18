@@ -6471,14 +6471,15 @@ textarea {
 .publication-table-info-left { width: 25%; }
 
 .grow {
-    height: 100px; /* Original height */
-    width: 22%; /* Original width */
+    display: inline-block;
+    height: auto; /* Original height */
+    width: auto; /* Original width */
     margin: 5px 1% 5px 1%;
     transition:height 0.5s; /* Animation time */
     -webkit-transition:height 0.5s; /* For Safari */
 }
 .grow:hover {
-    height: 120px; /* This is the height on hover */
+    /* height: 100%; /* This is the height on hover */
 }
 
 .ui-autocomplete {
@@ -6532,3 +6533,7 @@ textarea {
 }
 
 ul.ui-autocomplete.ui-menu { z-index: 4000; }
+
+.gap-all {
+  margin: 10px;
+}
