@@ -700,7 +700,7 @@ module.exports=function(app,Parse) {
                     if (results[i].get('locations') !== undefined) { locations = results[i].get('locations'); }
                     if (results[i].get('keywords') !== undefined) { keywords = results[i].get('keywords'); }
                     if (results[i].get('start_date') !== undefined) { start_date = results[i].get('start_date'); }
-                    if (results[i].get('end_date') !== undefined) { keywords = results[i].get('end_date'); }
+                    if (results[i].get('end_date') !== undefined) { end_date = results[i].get('end_date'); }
                     var project = {
                         objectId: objectId,
                         title: title,
@@ -840,8 +840,6 @@ module.exports=function(app,Parse) {
             }
         });
     });
-
-
 
     /************************************
      * HELPER FUNCTIONS

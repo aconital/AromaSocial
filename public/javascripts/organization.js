@@ -182,11 +182,10 @@ var Connections = React.createClass({
     },
     componentDidMount : function(){
         var connectionUrl= "/organization/"+objectId+"/connections";
-
         $.ajax({
             url: connectionUrl,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data:data});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve orgs");
@@ -194,7 +193,6 @@ var Connections = React.createClass({
         });
 
         var isAdminURL= "/organization/"+objectId+"/isAdmin";
-
         $.ajax({
             type: 'GET',
             url: isAdminURL,
@@ -216,11 +214,11 @@ var Connections = React.createClass({
         var orgList = $.map(this.state.data,function(org) {
             return (
                 <div className="item-box">
-                <div key={org.orgId} id="item-list" className="row">
-                        <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
-                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
-                        <span className="font-15">{org.location}</span>
-                </div>
+                    <div key={org.orgId} id="item-list" className="row">
+                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
+                            <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                            <span className="font-15">{org.location}</span>
+                    </div>
                 </div>
             );
         });
@@ -329,7 +327,6 @@ var AddConnection = React.createClass({
 
     handleSubmitData: function(e) {
         e.preventDefault();
-
         var isValidForm = this.validateForm();
         var connectionURL = "/organization/"+objectId+"/connect";
         if (isValidForm.length === 0) {
@@ -353,7 +350,6 @@ var AddConnection = React.createClass({
         }
         else {
             var message = '';
-
             if (isValidForm.indexOf('TYPE') > -1) {
                 message += ' Please describe this connection    .';
             }
