@@ -25,10 +25,10 @@ module.exports=function(app,Parse) {
      *
      ********************************************/
     app.get('/data', function (req, res, next) {
-        res.render('data', {layout: 'home', title: 'Data', path: req.path});
+        res.render('data', {title: 'Data', path: req.path});
     });
-    app.get('/data/:objectId', function (req, res, next) {
-        var currentUser = Parse.User.current();
+    app.get('/data/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
         var query = new Parse.Query('Data');
         query.get(req.params.objectId,{
             success: function(result) {
@@ -36,7 +36,7 @@ module.exports=function(app,Parse) {
                 var allowed = false;
                 if (group) {
                     for (var i = 0; i < group.length; i++) {
-                        if (currentUser.attributes.username == group[i]) {
+                        if (currentUser.username == group[i]) {
                             allowed = true;
                             break;
                         }
@@ -45,10 +45,12 @@ module.exports=function(app,Parse) {
                     allowed = true; // everyone allowed to access. No entry in groupies
                 }
                 if (allowed) {
-                    res.render('data', {layout: 'home', path: req.path,
+                    res.render('data', {
+                        title: 'Data',
+                        path: req.path,
                         currentUserId: currentUser.id,
-                        currentUsername: currentUser.attributes.username,
-                        currentUserImg: currentUser.attributes.imgUrl,
+                        currentUsername: currentUser.username,
+                        currentUserImg: currentUser.imgUrl,
                         objectId: req.params.objectId,
                         creatorId: result.get("user").id,
                         access: result.get('author'),
@@ -66,9 +68,10 @@ module.exports=function(app,Parse) {
                         publication: result.get('publication'),
                         publication_link: result.get('publication_link')
                     });
-            } else {
-                 res.render('error', {title: 'Not allowed to access this data', path: req.path});
-              }
+                }
+                else {
+                    res.render('error', {title: 'Not allowed to access this data', path: req.path});
+                }
             },
             error: function(error) {
                 res.render('index', {title: 'Please Login!', path: req.path});
@@ -76,22 +79,18 @@ module.exports=function(app,Parse) {
         });
     });
 
-
-    app.post('/profile/:username/data',function(req,res,next){
-        var currentUser = Parse.User.current();
-        if (currentUser && currentUser.attributes.username == req.params.username) {
+    app.post('/profile/:username/data', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        if (currentUser && currentUser.username == req.params.username) {
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
             console.log(formatted);
-
             var reqBody = req.body;
-
             // send to Parse
             var keywords = reqBody.keywords.split(/\s*,\s*/g);
             var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
             var groupies = reqBody.groupies.split(/\s*,\s*/g);
-
             var Data = Parse.Object.extend("Data");
             var data= new Data();
             console.log(keywords);
@@ -109,9 +108,7 @@ module.exports=function(app,Parse) {
             data.set('number_cited',0);
             data.set('number_syncholar_factor',0);
             data.set('groupies', groupies);
-
             console.log(data);
-
             data.save(null, {
                 success: function(response) {
                     // Execute any logic that should take place after the object is saved.
@@ -161,7 +158,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.post('/data/:objectId/update',function(req,res,next){
+    app.post('/data/:objectId/update', is_auth, function(req,res,next){
         var query = new Parse.Query("Data");
         query.get(req.params.objectId,{
             success: function(result) {
@@ -178,12 +175,11 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.post('/data/:objectId/picture',function(req,res,next){
+    app.post('/data/:objectId/picture', is_auth, function(req,res,next){
         var query = new Parse.Query("Data");
         query.get(req.params.objectId,{
             success: function(result) {
                 var bucket = new aws.S3();
-
                 var s3KeyP = req.params.objectId + "_data_picture_" + req.body.randomNumber + "." + req.body.pictureType;
                 var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
                 var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
@@ -194,7 +190,6 @@ module.exports=function(app,Parse) {
                     ContentEncoding: 'base64',
                     ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
                 };
-
                 bucket.putObject(pictureParams, function (err, data) {
                     if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
                     else {
@@ -208,4 +203,16 @@ module.exports=function(app,Parse) {
         });
     });
 
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
+
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else { res.locals.user = req.user;
+            res.locals.user = req.user;
+            next();
+        }
+    };
 };

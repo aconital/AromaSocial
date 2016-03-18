@@ -96,7 +96,7 @@
 } .item-add-button {
     color: #fff;
     background-color: #70ab8f;
-    display: inline;
+    display: inline !important;
     border: solid;
     border-color: #70ab8f;
     border-width: 1px 1px 0 1px;
@@ -108,6 +108,7 @@
 } .item-add-button:hover {
     background-color: #86B9A0;
     border-color: #86B9A0;
+    display: inline !important;
 }
 
 .item-box-image {

@@ -6,6 +6,7 @@ var moment = require('moment');
 var path = require('path');
 var _= require('underscore');
 var aws = require('aws-sdk');
+var passport = require('passport');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
@@ -21,17 +22,17 @@ var transporter = nodemailer.createTransport("SMTP",{
         }
     });
 
-// setup e-mail data with unicode symbols 
+// setup e-mail data with unicode symbols
 var mailOptions = {
-    from: 'Syncholar ðŸ‘¥ <foo@blurdybloop.com>', // sender address 
-    to: 'shariqazz15@gmail.com', // list of receivers 
-    subject: 'Syncholar Test Invite', // Subject line 
-    text: 'Testing nodemailer', // plaintext body 
-    html: '<h2>You just got invited! ðŸ?´</h2>' // html body 
+    from: 'Syncholar ðŸ‘¥ <foo@blurdybloop.com>', // sender address
+    to: 'hiradroshandel@yahoo.com', // list of receivers
+    subject: 'Syncholar Test Invite', // Subject line
+    text: 'Testing nodemailer', // plaintext body
+    html: '<h2>You just got invited! ðŸ?´</h2>' // html body
 };
 
 function sendEmail ( _name, _email, _subject, _message) {
-  // send mail with defined transport object 
+  // send mail with defined transport object
   transporter.sendMail(mailOptions, function(error, info){
       if(error){
           return console.log(error);
@@ -42,22 +43,8 @@ function sendEmail ( _name, _email, _subject, _message) {
 
 module.exports=function(app,Parse) {
 
-// MIDDLEWARE REDIRECTION
-  app.use('/newsfeed', function(req, res, next) {
-    if (req.session && !req.session.user) {
-        res.render('signin', {title: 'Login', path: req.path});
-    } else {
-        next();
-    }
-  });
 
-  app.use('/profile', function(req, res, next) {
-    if (req.session && !req.session.user) {
-        res.render('signin', {title: 'Login', path: req.path});
-    } else {
-        next();
-    }
-  });
+
 
   // EMAIL API
   app.post('/sendemail', function(req, res, next){
@@ -81,11 +68,11 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/', function(req, res, next) {
-        if (req.session && req.session.user) {
-        	res.redirect('/newsfeed');
-        } else {
-       		res.render('home', {user: req.user});
-        }
+      if(!req.isAuthenticated()) {
+          res.render('home');
+      } else {
+          res.render('newsfeed', { user: req.user});
+      }
   });
 
   /*******************************************
@@ -94,10 +81,10 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/signup', function (req, res, next) {
-	if (req.session && !req.session.user) {
+	if (!req.isAuthenticated()) {
        res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
 	} else {
-		res.redirect('/newsfeed');
+		res.redirect('/');
 	}
    });
      app.post('/signup', function (req, res, next) {
@@ -111,7 +98,7 @@ module.exports=function(app,Parse) {
      user.signUp(null, {
        success: function (user) {
            console.log("sucessful signup");
-           res.render('newsfeed', {layout:'home',title: 'Website', username: user.attributes.username, currentUserImg: user.attributes.imgUrl});
+           res.redirect('/');
        },
        error: function (user, error) {
          // Show the error message somewhere and let the user try again.
@@ -127,24 +114,31 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/signin', function (req, res, next) {
-	if (req.session && !req.session.user) {
+	if (!req.isAuthenticated()) {
     	res.render('signin', {title: 'Login', path: req.path});
 	} else {
-		res.redirect('/newsfeed');
+		res.redirect('/');
 	}
   });
 
   app.post('/signin', function (req, res, next) {
-    Parse.User.logIn(req.body.username, req.body.password, {
-      success: function(user) {
-      	  req.session.user = user;
-          res.redirect('/newsfeed');
-      },
-      error: function(user, error) {
-          // Show the error message somewhere and let the user try again.
-          res.render('signin', {Error: error.message, path: req.path});
-      }
-    });
+      passport.authenticate('local', { successRedirect: '/',
+          failureRedirect: '/signin'}, function(err, user, info) {
+          if(err) {
+              return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+          }
+
+          if(!user) {
+              return res.render('signin', {page:'login',title: 'Sign In', errorMessage: info.message});
+          }
+          return req.logIn(user, function(err) {
+              if(err) {
+                  return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+              } else {
+                  return res.redirect('/');
+              }
+          });
+      })(req, res, next);
 
   });
 
@@ -155,9 +149,14 @@ module.exports=function(app,Parse) {
  ********************************************/
 
 app.get('/signout', function (req, res, next) {
-    Parse.User.logOut();
-    req.session.destroy();
-    res.render('home', {title: 'Come back again!', path: req.path});
+
+    if(req.isAuthenticated()) {
+        req.session.destroy(function (err) {
+            res.redirect('/'); //Inside a callback… bulletproof!
+        });
+    }
+    else
+        res.redirect('/');
 });
 
 
@@ -168,29 +167,191 @@ app.get('/signout', function (req, res, next) {
  *
  ********************************************/
 app.get('/oauth/linkedin', function(req, res) {
-    // This will ask for permisssions etc and redirect to callback url.
-    var scope = ['r_basicprofile', 'r_emailaddress'];
-    Linkedin.auth.authorize(res, scope);
+    if(!req.isAuthenticated()) {
+        // This will ask for permisssions etc and redirect to callback url.
+        var scope = ['r_basicprofile', 'r_emailaddress'];
+        Linkedin.auth.authorize(res, scope,'state');
+    }
+    else
+    {
+        res.redirect('/');
+    }
 });
 app.get('/auth/linkedin/callback',function(req,res){
-    console.log("aa");
+
     Linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results) {
         if ( err )
-            return console.error(err);
+            res.render('signin', {Error: err.message, path: req.path})
+
 
         var token= results.access_token;
         var linkedin = Linkedin.init(token);
         linkedin.people.me(function(err, $in) {
+            var linkedin_ID= $in.id;
             var email= $in.emailAddress;
             var name= $in.formattedName;
-            var about=$in.headline;
-            var pictureUrl=$in.pictureUrl;
 
-            console.log($in.positions.values[0].company);
+            var about=null
+            if($in.headline !=null)
+             about=$in.headline;
+
+            var pictureUrl="/images/user.png";
+            if($in.pictureUrls.values !=null)
+                pictureUrl=$in.pictureUrls.values[0];
+
+            var companyObject=null;
+            if($in.positions.values != null)
+                companyObject= $in.positions.values[0].company;
+
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("linkedin_id", linkedin_ID);
+            query.first({
+                success: function(user) {
+                    //user with this linkedin ID exists
+                    if(user)
+                    {   //login the user
+                        req.login(user.attributes.username, function(err){
+                            if(err) res.redirect('/');
+                            res.redirect('/');
+                        });
+                    }
+                    //no user with this linkedin id in db
+                    else
+                    {
+                        //check to see if user with this email already exists
+                        var query = new Parse.Query(Parse.User);
+                        query.equalTo("email", email);
+                        query.first({
+                            success: function (result) {
+                              if(result)
+                              {
+
+                                  var activation_code= randomString(3)+result.id+randomString(3);
+                                  result.set("activation_code",activation_code);
+                                  result.save(null, { useMasterKey: true }).then(function() {
+                                          //TODO REFACTOR THIS
+                                          var mailOptions = {
+                                              from: 'Syncholar <no-reply@syncholar.com>', // sender address
+                                              to: result.attributes.email, // list of receivers
+                                              subject: 'Connecting Linkedin to your account', // Subject line
+                                              text: '', // plaintext body
+                                              html: '<h2><p>Hi '+result.attributes.fullname+',</p> Please click on the following link to connect your linkedin to your account:</h2>' +
+                                                    '<a href="http://127.0.0.1:3000/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://127.0.0.1:3000/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
+                                          };
+                                          transporter.sendMail(mailOptions, function(error, info){
+                                              if(error){
+                                                  res.render('signin', {Error: error.message, path: req.path})
+                                              }
+                                              res.redirect('/auth/linkedin/verify');
+                                          });
+
+                                      },function(error) {
+
+                                          res.render('signin', {Error: error.message, path: req.path})
+                                      });
+
+                              }
+                                else
+                              {
+
+                                  var user = new Parse.User();
+                                  //TODO EMAIL THIS TO USER
+                                  var randomPass= randomString(5);
+
+                                  user.set("fullname", name);
+                                  user.set("username",linkedin_ID);
+                                  user.set("password",randomPass);
+                                  user.set("linkedin_id",linkedin_ID);
+                                  user.set("email", email);
+                                  user.set("imgUrl", pictureUrl);
+                                  user.set("about",about)
+                                  user.signUp(null,
+                                      {
+                                      success: function (user) {
+                                          Parse.User.logIn(linkedin_ID, randomPass, {
+                                              success: function(u) {
+
+                                                  req.login(u.attributes.username,function (err) {
+                                                      if (!err)
+                                                          res.redirect('/');
+                                                      else
+                                                          res.render('signin', {Error: err.message, path: req.path})
+                                                  });
+
+                                              },
+                                              error: function(user, error) {
+                                                  // Show the error message somewhere and let the user try again.
+                                                  res.render('signin', {Error: error.message, path: req.path});
+                                              }
+                                          });
+                                      },//signup sucess
+                                      error: function (user, error) {
+                                          // Show the error message somewhere and let the user try again.
+                                          res.render('signin', {Error: error.message, path: req.path});
+                                      }
+                                  });
+                              }
+
+                            }
+                        });
+
+                    }
+                },
+                error: function (user, error) {
+                    // Show the error message somewhere and let the user try again.
+                    res.render('signin', {Error: error.message, path: req.path});
+                }
+            });
         });
 
-        return res.redirect('/');
     });
 });
+    app.get("/auth/linkedin/verify",function(req,res,next){
+        res.render("verify");
+    });
+    app.get("/auth/linkedin/verify/:activation/:linkedin",function(req,res,next){
+        var code= req.params.activation;
+        var linkedin_id=req.params.linkedin;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("activation_code", code);
+        query.first({
+            success: function (user) {
+               if(user)
+               {
+                   user.set("linkedin_id",linkedin_id);
+                   user.save(null,{ useMasterKey: true }).then(function() {
+                       res.redirect("/oauth/linkedin");
+                   },function(error)
+                   {
+                       res.render('signin', {Error: error.message, path: req.path});
+                   });
 
+               }
+            },
+            error: function (error) {
+                res.render('signin', {Error: error.message, path: req.path});
+            }
+        });
+
+    });
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else {
+            res.locals.user = req.user;
+            next();
+        }
+    };
+    function randomString(len, charSet) {
+        charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var randomString = '';
+        for (var i = 0; i < len; i++) {
+            var randomPoz = Math.floor(Math.random() * charSet.length);
+            randomString += charSet.substring(randomPoz,randomPoz+1);
+        }
+        return randomString;
+    };
 };

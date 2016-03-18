@@ -20,9 +20,7 @@ module.exports=function(app,Parse) {
      * NEWS FEED
      *
      ********************************************/
-app.get('/newsfeeddata', function (req, res, next) {
-      var currentUser = Parse.User.current();
-      if (currentUser) {
+app.get('/newsfeeddata', is_auth,function (req, res, next) {
           var NewsFeed = Parse.Object.extend("NewsFeed");
           // pub query
           var query = new Parse.Query(NewsFeed);
@@ -194,55 +192,45 @@ app.get('/newsfeeddata', function (req, res, next) {
                   console.log("Error: " + error.code + " " + error.message);
               }
           });
-      }
-      else {
-          res.render('index', {title: 'Login failed', path: req.path});
-      }
+
+
     });
 
-    app.get('/newsfeed', function (req, res, next) {
-        var currentUser = Parse.User.current();
-        if (currentUser) {
-            console.log(currentUser);
-            res.render('newsfeed', {
-                layout: 'home',
-                title: 'Website',
-                currentUserId: currentUser.id,
-                currentUsername: currentUser.attributes.username,
-                currentUserImg: currentUser.attributes.imgUrl
-            });
-        }
-        else {
-            res.render('index', {title: 'Login failed', path: req.path});
-        }
+
+
+    app.post('/newsfeed', is_auth,function (req, res, next) {
+        var NewsFeed = Parse.Object.extend("NewsFeed");
+        var newsFeed = new NewsFeed();
+        newsFeed.set('from', currentUser);
+        newsFeed.set('content', req.body.content);
+        newsFeed.save(null, {
+            success: function (newsfeed) {
+                // Execute any logic that should take place after the object is saved.
+                res.render('newsfeed', {
+                    title: 'NewsFeed', userId: currentUser.id,
+                    username: currentUser.attributes.username,
+                    currentUserImg: currentUser.attributes.imgUrl
+                });
+            },
+            error: function (newsfeed, error) {
+                // Execute any logic that should take place if the save fails.
+                // error is a Parse.Error with an error code and message.
+                alert('Failed to create new object, with error code: ' + error.message);
+                res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
+            }
+        });
     });
 
-    app.post('/newsfeed', function (req, res, next) {
-        var currentUser = Parse.User.current();
-        if (currentUser) {
-            var NewsFeed = Parse.Object.extend("NewsFeed");
-            var newsFeed = new NewsFeed();
-            newsFeed.set('from', currentUser);
-            newsFeed.set('content', req.body.content);
-            newsFeed.save(null, {
-                success: function (newsfeed) {
-                    // Execute any logic that should take place after the object is saved.
-                    res.render('newsfeed', {
-                        title: 'NewsFeed', userId: currentUser.id,
-                        username: currentUser.attributes.username,
-                        currentUserImg: currentUser.attributes.imgUrl
-                    });
-                },
-                error: function (newsfeed, error) {
-                    // Execute any logic that should take place if the save fails.
-                    // error is a Parse.Error with an error code and message.
-                    alert('Failed to create new object, with error code: ' + error.message);
-                    res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
-                }
-            });
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
+
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else {
+            res.locals.user = req.user;
+            next();
         }
-        else {
-            res.render('index', {title: 'Login failed', path: req.path});
-        }
-    });
+    };
 };

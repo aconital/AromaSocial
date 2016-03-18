@@ -262,12 +262,50 @@ var AddConnection = React.createClass({
            joinType: ''
         };
     },
+    componentDidMount : function(){
+        var autocomplete=<script>
+        $(function() {
+            $('.auto2').autocomplete({
+                source: function(req, res) {
+                    $.ajax({
+                        url: '/allorganizations',
+                        dataType: 'json',
+                        cache: false,
+                        success: function(data) {
+                            console.log("SUCCESS!!!!!!!");
+                            console.log(data);
+                            var arr = $.grep(data, function(item){
+                                return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                            });
+                            res($.map(arr, function(item){
+                                return {
+                                    label: item.name,
+                                    value: item.objectId
+                                };
+                            }));
+                        },
+                        error: function(xhr) {
+                            console.log("ERROR WTF!!!");
+                            console.log(xhr.status);
+                        }
+                    });
+                },
+                messages: {
+                    noResults: '',
+                    results: function() {}
+                }
+            })
+        });
+        </script>
+        $("#scriptContainer").append(autocomplete);
+    },
 
     render: function() {
         return (
             <div>
+                <div id="scriptContainer"></div>
                 <form className="form" onSubmit={this.handleSubmitData}>
-                    <Input type="text" placeholder="Organization:" name="joinOrganization" label="Organization" onChange={this.handleChange} value={this.state.organization}/>
+                    <Input className="auto2" type="text" placeholder="Organization:" name="joinOrganization" label="Organization" onChange={this.handleChange} value={this.state.organization}/>
                     <Input type="select" name="joinType" label="Connection type" onChange={this.handleChange} value={this.state.organizationtype}>
                         <option value=""></option>
                         <option value="contains">We are part of this organization</option>
