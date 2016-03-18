@@ -354,48 +354,84 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/organization/:objectId/connections', function (req, res, next) {
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
-        var query = new Parse.Query('RelationshipOrg');
-        query.matchesQuery("orgId0",innerQuery)
+        var orgId = req.params.objectId;
+        var orgs =[];
+        console.log(orgId);
+        var query = new Parse.Query("RelationshipOrg");
+        query.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId});
         query.include('orgId1');
-        query.find({
-            success: function(result) {
-                var orgs =[];
-                for(var uo in result) {
-                    var verified= result[uo].attributes.verified;
-                    var connected_orgs= result[uo].attributes.orgId1.attributes;
-                    var orgId= result[uo].attributes.orgId1.id;
-                    var name= "N/A";
-                    var location= "N/A";
-                    var orgImgUrl= "/images/organization.png";
-                    if(connected_orgs.hasOwnProperty('name')){
-                        name=connected_orgs.name;
+        query.find().then(function(results) {
+            for (var uo in results) {
+                var verified = results[uo].attributes.verified;
+                var connected_orgs = results[uo].attributes.orgId1.attributes;
+                var orgId = results[uo].attributes.orgId1.id;
+                var name = "N/A";
+                var location = "N/A";
+                var orgImgUrl = "/images/organization.png";
+                if (connected_orgs.hasOwnProperty('name')) {
+                    name = connected_orgs.name;
+                }
+                if (connected_orgs.hasOwnProperty('location')) {
+                    location = connected_orgs.location;
+                }
+                if (connected_orgs.hasOwnProperty('profile_imgURL')) {
+                    orgImgUrl = connected_orgs.profile_imgURL;
+                }
+                var org = {
+                    orgId: orgId,
+                    name: name,
+                    location: location,
+                    orgImgUrl: orgImgUrl,
+                };
+                //only orgs that are verified
+                if (verified) {
+                    var org = {
+                        orgId: orgId,
+                        name: name,
+                        location: location,
+                        orgImgUrl: orgImgUrl,
+                    };
+                    orgs.push(org);
+                }
+            }
+        }).then(function(results){
+            var query1 = new Parse.Query("RelationshipOrg");
+            query1.equalTo('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId});
+            query1.include('orgId0');
+            query1.find().then(function(results) {
+                for (var uo in results) {
+                    var verified = results[uo].attributes.verified;
+                    var connected_orgs = results[uo].attributes.orgId0.attributes;
+                    var orgId = results[uo].attributes.orgId0.id;
+                    var name = "N/A";
+                    var location = "N/A";
+                    var orgImgUrl = "/images/organization.png";
+                    if (connected_orgs.hasOwnProperty('name')) {
+                        name = connected_orgs.name;
                     }
-                    if(connected_orgs.hasOwnProperty('location')){
-                        location=connected_orgs.location;
+                    if (connected_orgs.hasOwnProperty('location')) {
+                        location = connected_orgs.location;
                     }
-                    if(connected_orgs.hasOwnProperty('profile_imgURL')){
-                        orgImgUrl=connected_orgs.profile_imgURL;
+                    if (connected_orgs.hasOwnProperty('profile_imgURL')) {
+                        orgImgUrl = connected_orgs.profile_imgURL;
                     }
-                    //only show people who are verified by admin
-                    if(verified){
+                    //only orgs that are verified
+                    if (verified) {
                         var org = {
-                            orgId:orgId,
-                            name:name,
+                            orgId: orgId,
+                            name: name,
                             location: location,
                             orgImgUrl: orgImgUrl,
                         };
+                        console.log(org);
                         orgs.push(org);
                     }
                 }
+            }).then(function(results){
+                console.log(orgs);
                 res.json(orgs);
-            },
-            error: function(error) {
-                console.log(error);
-                res.render('index', {title: error, path: req.path});
-            }
-        });
+            })
+        })
     });
 
     app.get('/organization/:objectId/publications', function (req, res, next) {
@@ -516,8 +552,7 @@ module.exports=function(app,Parse) {
         query.include('userId');
         query.find({
             success: function (result) {
-                if(result!=null)
-                {
+                if(result!=null){
                     for (var i = 0; i < result.length; i++) {
                         var object = result[i];
                         var admin = {
@@ -716,52 +751,39 @@ module.exports=function(app,Parse) {
 
     app.post('/organization/:objectId/connect', is_auth, function (req, res, next) {
         var createConnection = Parse.Object.extend("RelationshipOrg");
-        var currentUser = req.user;
-        if(currentUser) {
-            var orgId0= req.params.objectId;
-            var orgId1= req.body.orgId;
-            //check the connection one way
-            var query = new Parse.Query("RelationshipOrg");
-            query.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId0});
-            query.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId1});
-            query.first().then(
-                function(result){
-                    //if a result is returned then skip connection creation
-                    if (result==undefined){
-                        //flip it check the connection from the other way
-                        console.log("Couldnt find result first way");
-                        var query1 = new Parse.query("RelationshipOrg");
-                        query1.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId0});
-                        query1.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId1});
-                        return query1.first();
-                    }
-                    console.log("Connection exist first way");
-                    return Parse.Promise.error("This connection already exists.");
-                }).then(function(result) {
-                    //if a result is returned then skip connection creation
-                    if (result==undefined){
-                        //no connection, therefore add connection
-                        console.log("Couldnt find result second way, adding connection");
-                        var connection = new createConnection();
-                        connection.set('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId0});
-                        connection.set('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
-                        connection.set('type', req.body.type);
-                        connection.set('verified', false);
-                        return connection.save(null);
-                    }
-                    console.log("Connection exist second way");
-                    return Parse.Promise.error("This connection already exists.");
-                }).then(function(response) {
-                    console.log("Connection request created successfully.");
-                    res.status(200).json({status:"OK", location: response.objectId});
-                }, function(error) {
-                    console.log("Creating connection failed. " + error.message)
-                    res.status(500).json({status: "Creating connection failed. " + error.message});
-            });
-        }
-        else{
-            res.json({error: "Please Sign In!"})
-        }
+        var orgId0= req.params.objectId;
+        var orgId1= req.body.orgId;
+        //check the connection one way
+        var query = new Parse.Query("RelationshipOrg");
+        query.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId0});
+        query.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId1});
+        //check the connection other way
+        var query1 = new Parse.Query("RelationshipOrg");
+        query1.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId0});
+        query1.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId1});
+        //combine both queries
+        var orQuery =  new Parse.Query.or(query, query1)
+        orQuery.first(function(result){
+            //if a result is returned then skip connection creation
+            if (result==undefined){
+                //no connection, therefore add connection
+                console.log("Couldnt find connection, adding connection");
+                var connection = new createConnection();
+                connection.set('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId0});
+                connection.set('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
+                connection.set('type', req.body.type);
+                connection.set('verified', false);
+                return connection.save(null);
+            }
+            console.log("Connection Exists");
+            return Parse.Promise.error("This connection already exists.");
+        }).then(function(response) {
+            console.log("Connection request created successfully.");
+            res.status(200).json({status: "OK"});
+        }, function(error) {
+            console.log("Creating connection failed. " + error.message)
+            res.status(500).json({status: "Creating connection failed. " + error.message});
+        });
     });
 
      app.get('/organization/:objectId/equipments_list', is_auth, function (req, res, next) {
@@ -842,20 +864,14 @@ module.exports=function(app,Parse) {
 
     app.get('/organization/:objectId/isAdmin', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var userQuery = new Parse.Query(Parse.User);
-        userQuery.equalTo("objectId",currentUser.id);
-
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
-
-        var queryAdmin = new Parse.Query('Relationship');
-        queryAdmin.matchesQuery('orgId',innerQuery);
-        queryAdmin.matchesQuery('userId',userQuery);
-        queryAdmin.find({
-            success: function(results) {
-                var isAdmin = false;
-                for (var i in results) {
-                    isAdmin = results[i].attributes.isAdmin;
+        var adminQuery = new Parse.Query("Relationship");
+        adminQuery.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        adminQuery.equalTo("userId", { __type: "Pointer", className: "_User", objectId: currentUser.id});
+        adminQuery.first({
+            success: function(result) {
+                var isAdmin=true;
+                if (result==undefined){
+                    var isAdmin=false;
                 }
                 res.json({isAdmin: isAdmin});
             },
