@@ -23,14 +23,14 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/project/:objectId', is_auth, function (req, res, next) {
-        var currentUser = Parse.User.current();
+        var currentUser = req.user;
         var query = new Parse.Query('Project');
         query.get(req.params.objectId,{
             success: function(result) {
                 res.render('project', {layout: 'home', title: 'Project', path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.attributes.username,
-                    currentUserImg: currentUser.attributes.imgUrl,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
                     objectId: req.params.objectId,
                     creatorId: result.get("user").id,
                     title: result.get('title'),

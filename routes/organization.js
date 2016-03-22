@@ -840,7 +840,7 @@ module.exports=function(app,Parse) {
                      if (results[i].attributes.locations !== undefined) { locations = results[i].attributes.locations; }
                      if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
                      if (results[i].attributes.start_date !== undefined) { start_date = results[i].attributes.start_date; }
-                     if (results[i].attributes.end_date !== undefined) { keywords = results[i].attributes.end_date; }
+                     if (results[i].attributes.end_date !== undefined) { end_date = results[i].attributes.end_date; }
                      var project = {
                          objectId: objectId,
                          title: title,
