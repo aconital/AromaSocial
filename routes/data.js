@@ -27,6 +27,7 @@ module.exports=function(app,Parse) {
     app.get('/data', function (req, res, next) {
         res.render('data', {title: 'Data', path: req.path});
     });
+
     app.get('/data/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Data');
@@ -46,7 +47,6 @@ module.exports=function(app,Parse) {
                 }
                 if (allowed) {
                     res.render('data', {
-                        title: 'Data',
                         path: req.path,
                         currentUserId: currentUser.id,
                         currentUsername: currentUser.username,

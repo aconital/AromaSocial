@@ -11,7 +11,7 @@ var WrapperComponent = React.createClass({
 		return (
 			React.createElement("html", null, 
 				React.createElement("head", null,
-					React.createElement("title", null, "Search Wrapper")
+					React.createElement("title", null, "Search")
 				),
 				React.createElement("body", null,
 					React.createElement("div", { id: "reactSearchContainer",
