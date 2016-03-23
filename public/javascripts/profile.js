@@ -281,11 +281,15 @@ var Connections = React.createClass({
             return (
                 <div id="item-list">
                     {plist.map(person =>
-                    <div className="item-box">
-                        <div key={person.username} id="item-list" className="row">
-                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="contain-icons" /></a>
-                                <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                                <span className="font-15">{person.workTitle} @ {person.company}</span>
+                    <div className="item-box" key={person.username} id="item-list">
+                        <div className="item-box-left">
+                            <div className="item-box-image-outside">
+                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image" /></a>
+                            </div>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <span className="font-15">{person.workTitle} @ {person.company}</span>
                         </div>
                     </div>
                     )}
@@ -323,9 +327,13 @@ var Organizations = React.createClass({
         var orgList = $.map(this.state.data,function(org) {
 
             return (
-                <div className="item-box">
-                    <div key={org.orgId} id="item-list" className="row">
-                        <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
+                <div className="item-box" key={org.orgId} id="item-list">
+                    <div className="item-box-left">
+                        <div className="item-box-image-outside">
+                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                        </div>
+                    </div>
+                    <div className="item-box-right">
                         <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
                         <span className="font-15">{org.location}</span>
                     </div>
@@ -756,7 +764,9 @@ var Projects = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -926,7 +936,9 @@ var Models = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/model/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/model/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/model/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -991,7 +1003,9 @@ var Data = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/data/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/data/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/data/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>

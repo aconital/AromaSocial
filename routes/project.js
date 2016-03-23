@@ -27,7 +27,10 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query('Project');
         query.get(req.params.objectId,{
             success: function(result) {
-                res.render('project', {layout: 'home', title: 'Project', path: req.path,
+                console.log("PASSED!");
+                res.render('project', {
+                    title: 'Project',
+                    path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
@@ -35,6 +38,9 @@ module.exports=function(app,Parse) {
                     creatorId: result.get("user").id,
                     title: result.get('title'),
                     description: result.get('description'),
+                    authors: result.get('authors'),
+                    locations: result.get('locations'),
+                    keywords: result.get('keywords'),
                     image_URL: result.get('image_URL'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')

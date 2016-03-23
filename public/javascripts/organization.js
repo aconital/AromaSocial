@@ -215,10 +215,14 @@ var Connections = React.createClass({
         var orgList = $.map(this.state.data,function(org) {
             return (
                 <div className="item-box">
-                    <div key={org.orgId} id="item-list" className="row">
-                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
-                            <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
-                            <span className="font-15">{org.location}</span>
+                    <div className="item-box-left">
+                        <div className="item-box-image-outside">
+                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                        </div>
+                    </div>
+                    <div className="item-box-right">
+                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <span className="font-15">{org.location}</span>
                     </div>
                 </div>
             );
@@ -401,12 +405,16 @@ var People = React.createClass({
                     <div><h2 className="margin-top-bottom-5">{role}</h2></div>
                     <div className="clear"></div>
                     {plist.map(person =>
-                        <div className="item-box">
-                        <div key={person.username} id="item-list" className="row">
-                            <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="contain-icons" /></a>
-                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                            <span className="font-15">{person.workTitle} @ {person.company}</span>
-                        </div>
+                        <div className="item-box" key={person.username} id="item-list">
+                            <div className="item-box-left">
+                                <div className="item-box-image-outside">
+                                    <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image" /></a>
+                                </div>
+                            </div>
+                            <div className="item-box-right">
+                                <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                                <span className="font-15">{person.workTitle} @ {person.company}</span>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -557,7 +565,9 @@ var Manage = React.createClass({
                     </div>
                     <div>
                         <div className="item-box-left">
-                            <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname} - {person.username}</h3></a>
@@ -577,7 +587,9 @@ var Manage = React.createClass({
                     </div>
                     <div>
                         <div className="item-box-left">
-                            <a href={'/organization/'+organization.id}><img src={organization.profile_imgURL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/organization/'+organization.id}><img src={organization.profile_imgURL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/organization/'+organization.id} className="body-link"><h3 className="margin-top-bottom-5">{organization.name}</h3></a>
@@ -712,7 +724,9 @@ var Equipments = React.createClass({
                 <div className="item-box" key={item.objectId}>
                     <div>
                         <div className="item-box-left">
-                            <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -1013,7 +1027,9 @@ var Projects = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -1167,10 +1183,12 @@ var Datum = React.createClass({
         else { var title = this.props.title; }
         return (
                 <div className="item-box">
-                <div className="model-box-image">
-                    <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
+                <div className="item-box-left">
+                    <div className="item-box-image-outside">
+                        <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="item-box-image" /></a>
+                    </div>
                 </div>
-                <div className="model-box-left model-box-left-full">
+                <div className="item-box-right">
                     <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -1253,10 +1271,12 @@ var Model = React.createClass({
         else { var title = this.props.title; }
         return (
                 <div className="item-box">
-                <div className="model-box-image">
-                    <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
+                <div className="item-box-left">
+                    <div className="item-box-image-outside">
+                        <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="item-box-image" /></a>
+                    </div>
                 </div>
-                <div className="model-box-left model-box-left-full">
+                <div className="item-box-right">
                     <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
