@@ -1022,7 +1022,7 @@ var Model = React.createClass({
                     <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
-                {/*}
+                /*}
                 <div className="model-box-right">
                     <h5>Information</h5><br/>
                     {this.props.number_syncholar_factor} Syncholar Factor<br/>
