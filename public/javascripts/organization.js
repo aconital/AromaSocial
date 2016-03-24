@@ -345,6 +345,7 @@ var AddConnection = React.createClass({
                 }.bind(this),
                 error: function(xhr, status, err) {
                     this.setState({createStatus: 'Error creating connection: ' + err.toString()});
+                    this.close();
                 }.bind(this)
             });
         }
@@ -533,7 +534,7 @@ var Manage = React.createClass({
             processData: false,
             url: "/organization/"+objectId+"/delete",
             success: function(data) {
-                window.location = '../newsfeed/';
+                window.location = '../';
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't delete organization.  " + err);

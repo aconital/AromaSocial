@@ -57,7 +57,6 @@ module.exports=function(app,Parse) {
         var pubs_done = false;
         var orgs_done = false;
         //var searchResults = [];
-        var currentUser = req.current;
         // Search User
         var User = Parse.Object.extend("User");
         var uquery = new Parse.Query(User);

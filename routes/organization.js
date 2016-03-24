@@ -185,17 +185,17 @@ module.exports=function(app,Parse) {
         var innerQuery = new Parse.Query("Organization");
         innerQuery.equalTo("objectId",req.params.objectId);
         var query = new Parse.Query('RelationshipOrg');
-        query.matchesQuery("orgId1",innerQuery)
+        query.matchesQuery("orgId0",innerQuery)
         query.equalTo('verified',false)
-        query.include('orgId0');
+        query.include('orgId1');
         query.find({
             success: function(result) {
                 var organizations =[];
                 for(var i in result) {
                     var name= result[i].attributes.name;
                     var verified= result[i].attributes.verified;
-                    var organization= result[i].attributes.orgId0.attributes;
-                    var orgId= result[i].attributes.orgId0.id;
+                    var organization= result[i].attributes.orgId1.attributes;
+                    var orgId= result[i].attributes.orgId1.id;
                     var name= organization.name;
                     var location= "N/A";
                     var profile_imgURL= "/images/organization.png";
@@ -287,8 +287,8 @@ module.exports=function(app,Parse) {
         var innerQuery2 = new Parse.Query("Organization");
         innerQuery2.equalTo("objectId",organizationId);
         var query = new Parse.Query('RelationshipOrg');
-        query.matchesQuery("orgId1",innerQuery);
-        query.matchesQuery("orgId0",innerQuery2);
+        query.matchesQuery("orgId0",innerQuery);
+        query.matchesQuery("orgId1",innerQuery2);
         query.first({
             success: function(result) {
                 if(mode=="accept") {
@@ -356,7 +356,6 @@ module.exports=function(app,Parse) {
     app.get('/organization/:objectId/connections', function (req, res, next) {
         var orgId = req.params.objectId;
         var orgs =[];
-        console.log(orgId);
         var query = new Parse.Query("RelationshipOrg");
         query.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId});
         query.include('orgId1');
@@ -575,7 +574,7 @@ module.exports=function(app,Parse) {
         var currentUser = req.user;
         if (currentUser) {
             res.render('organization',
-                {layout:'home', currentUsername: currentUser.username,
+                {currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl, isCreate: true});
         } else {
             res.render('index', {title: 'Login failed', path: req.path});
@@ -619,13 +618,11 @@ module.exports=function(app,Parse) {
                 console.log('Object ID retrieved/path name updated successfully');
                 var Relationship = Parse.Object.extend("Relationship");
                 var relation = new Relationship();
-
-                relation.set('userId', currentUser);
+                relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id});
                 relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: response.objectId });
                 relation.set('isAdmin', true);
                 relation.set('verified', true);
                 relation.set('title', 'TODO');
-
                 return {objectId: response.objectId, data: relation.save(null)};
             }).then(function(response) {
                 console.log("Organization created successfully.");
@@ -688,30 +685,31 @@ module.exports=function(app,Parse) {
         var orgId= req.params.objectId;
         var currentUser = req.user;
         if(currentUser) {
-            var query = new Parse.Query('Relationship');
-            query.equalTo("userId", currentUser);
+            var query = new Parse.Query("Relationship");
+            query.equalTo("userId", {__type: "Pointer", className: "_User", objectId: currentUser.id});
             query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: orgId});
             query.equalTo('verified', true);
             query.equalTo('isAdmin', true);
-            query.first().then(
-                function (result) {
-                    if (result==undefined) {
-                        return Parse.Promise.error("Organization delete failed");
-                    }
-                    else {
-                        var deleteOrg = new Parse.Query('Organization');
-                        return deleteOrg.get(orgId);
-                    }
-                }).then(function (result) {
-                    if (result==undefined){
-                        console.log("Nothing to delete");
-                    }
-                    result.destroy({});
-                    res.json({success: "Organization deleted"});
-                    console.log("DELETED");
-                }, function (error) {
-                    res.json({error: error});
-                });
+            query.first().then(function (result) {
+                if (result==undefined) {
+                    console.log("Cant find user relationship");
+                    return Parse.Promise.error("Organization delete failed");
+                }
+                else {
+                    console.log("Finding organization to delete");
+                    var deleteOrg = new Parse.Query("Organization");
+                    return deleteOrg.get(orgId);
+                }
+            }).then(function (result) {
+                if (result==undefined){
+                    console.log("Nothing to delete");
+                }
+                result.destroy({});
+                res.json({success: "Organization deleted"});
+                console.log("DELETED");
+            }, function (error) {
+                res.json({error: error});
+            });
         }
         else{
             res.json({error: "Please Sign In!"})
@@ -751,16 +749,16 @@ module.exports=function(app,Parse) {
 
     app.post('/organization/:objectId/connect', is_auth, function (req, res, next) {
         var createConnection = Parse.Object.extend("RelationshipOrg");
-        var orgId0= req.params.objectId;
-        var orgId1= req.body.orgId;
+        var orgId0= req.body.orgId;
+        var orgId1= req.params.objectId;
         //check the connection one way
         var query = new Parse.Query("RelationshipOrg");
-        query.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId0});
-        query.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId1});
+        query.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId0});
+        query.equalTo('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
         //check the connection other way
         var query1 = new Parse.Query("RelationshipOrg");
-        query1.equalTo(orgId1, { __type: "Pointer", className: "Organization", objectId: orgId0});
-        query1.equalTo(orgId0, { __type: "Pointer", className: "Organization", objectId: orgId1});
+        query1.equalTo('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId0});
+        query1.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId1});
         //combine both queries
         var orQuery =  new Parse.Query.or(query, query1)
         orQuery.first(function(result){
@@ -775,8 +773,7 @@ module.exports=function(app,Parse) {
                 connection.set('verified', false);
                 return connection.save(null);
             }
-            console.log("Connection Exists");
-            return Parse.Promise.error("This connection already exists.");
+            return Parse.Promise.error({message: "This connection already exists."});
         }).then(function(response) {
             console.log("Connection request created successfully.");
             res.status(200).json({status: "OK"});
@@ -894,4 +891,10 @@ module.exports=function(app,Parse) {
             next();
         }
     };
+/*
+    function connectedOrg(req,res,next){
+
+        .json()
+        next();
+    };*/
 };
