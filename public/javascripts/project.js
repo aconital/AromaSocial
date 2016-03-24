@@ -125,4 +125,4 @@ var Project = React.createClass ({
     }
 });
 
-ReactDOM.render(<Project />,document.getElementById('content'));
+ReactDOM.render(<Project/>,document.getElementById('content'));

@@ -2637,8 +2637,10 @@ input[type="search"] {
   .input-group-lg > .input-group-btn > input[type="month"].btn, .input-group-lg
   input[type="month"] {
     line-height: 46px; } }
+.form-group {
+  margin-top: 10px; margin-bottom:0px; }
 .form-group + .form-group {
-  margin-top: 10px; }
+  margin-top: 10px; margin-bottom:0px; }
 
 .radio,
 .checkbox {
@@ -3620,7 +3622,7 @@ a.thumbnail.active {
 
 .alert {
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   border: 1px solid transparent;
   border-radius: 4px; }
   .alert h4 {
@@ -4291,9 +4293,9 @@ button.list-group-item-danger {
   padding-bottom: 75%; }
 
 .well {
-  min-height: 20px;
+  min-height: 10px;
   padding: 19px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   background-color: #f5f5f5;
   border: 1px solid #e3e3e3;
   border-radius: 4px;
@@ -6471,14 +6473,15 @@ textarea {
 .publication-table-info-left { width: 25%; }
 
 .grow {
-    height: 100px; /* Original height */
-    width: 22%; /* Original width */
+    display: inline-block;
+    height: auto; /* Original height */
+    width: auto; /* Original width */
     margin: 5px 1% 5px 1%;
     transition:height 0.5s; /* Animation time */
     -webkit-transition:height 0.5s; /* For Safari */
 }
 .grow:hover {
-    height: 120px; /* This is the height on hover */
+    /* height: 100%; /* This is the height on hover */
 }
 
 .ui-autocomplete {
@@ -6532,3 +6535,7 @@ textarea {
 }
 
 ul.ui-autocomplete.ui-menu { z-index: 4000; }
+
+.gap-all {
+  margin: 10px;
+}

@@ -1,13 +1,15 @@
 <div id="content"></div>
 <script type="text/javascript">
-    var path = '{{path}}',
-        currentUserId = '{{currentUserId}}',
+    var currentUserId = '{{currentUserId}}',
         currentUsername = '{{currentUsername}}',
         currentUserImg = '{{currentUserImg}}',
         creatorId = '{{creatorId}}',
         objectId = '{{objectId}}',
         title = decodeEntities('{{title}}'),
         description = decodeEntities('{{description}}'),
+        instructions = decodeEntities('{{instructions}}'),
+        model = decodeEntities('{{model}}'),
+        model_year = decodeEntities('{{model_year}}'),
         image_URL = decodeEntities('{{image_URL}}'),
         keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
         createdAt = '{{createdAt}}',

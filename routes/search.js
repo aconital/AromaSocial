@@ -57,25 +57,30 @@ module.exports=function(app,Parse) {
         var pubs_done = false;
         var orgs_done = false;
         //var searchResults = [];
+        //var currentUser = req.current;
         // Search User
         var User = Parse.Object.extend("User");
         var uquery = new Parse.Query(User);
         uquery.equalTo("username", searchQ);
         uquery.find({
             success: function (results) {
-                for (var i = 0; i < results.length; i++) {
-                    var object = results[i];
-                    console.log(object.id);
-                    matching_users[object.get('username')] = {
-                        "type" : "user",
-                        "id" : object.id
-                    };
-                }
-                users_done = true;
-                searchResults.push(matching_users);
-                if (users_done && models_done && data_done && pubs_done && orgs_done) {
-                    sendSearchFeed(res, searchResults);
-                }
+              for (var i = 0; i < results.length; i++) {
+                var object = results[i];
+                console.log(object.id);
+                matching_users[object.get('username')] = {
+                  "type" : "user",
+                  "id" : object.id,
+                  "img" : object.get('imgUrl'),
+                  "about" : object.get('about')
+                };
+              }
+            console.log("Matching users are: ");
+            console.log(matching_users);
+            users_done = true;
+            searchResults.push(matching_users);
+            if (users_done && models_done && data_done && pubs_done && orgs_done) {
+                sendSearchFeed(res, searchResults);
+              }
             },
             error: function(error) {
                 console.log("Error in searching");

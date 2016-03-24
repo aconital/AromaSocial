@@ -2,6 +2,7 @@ Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQ
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
+var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Organization = React.createClass ({
@@ -214,10 +215,14 @@ var Connections = React.createClass({
         var orgList = $.map(this.state.data,function(org) {
             return (
                 <div className="item-box">
-                    <div key={org.orgId} id="item-list" className="row">
-                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
-                            <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
-                            <span className="font-15">{org.location}</span>
+                    <div className="item-box-left">
+                        <div className="item-box-image-outside">
+                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                        </div>
+                    </div>
+                    <div className="item-box-right">
+                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <span className="font-15">{org.location}</span>
                     </div>
                 </div>
             );
@@ -401,12 +406,16 @@ var People = React.createClass({
                     <div><h2 className="margin-top-bottom-5">{role}</h2></div>
                     <div className="clear"></div>
                     {plist.map(person =>
-                        <div className="item-box">
-                        <div key={person.username} id="item-list" className="row">
-                            <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="contain-icons" /></a>
-                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                            <span className="font-15">{person.workTitle} @ {person.company}</span>
-                        </div>
+                        <div className="item-box" key={person.username} id="item-list">
+                            <div className="item-box-left">
+                                <div className="item-box-image-outside">
+                                    <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image" /></a>
+                                </div>
+                            </div>
+                            <div className="item-box-right">
+                                <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                                <span className="font-15">{person.workTitle} @ {person.company}</span>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -557,7 +566,9 @@ var Manage = React.createClass({
                     </div>
                     <div>
                         <div className="item-box-left">
-                            <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname} - {person.username}</h3></a>
@@ -577,7 +588,9 @@ var Manage = React.createClass({
                     </div>
                     <div>
                         <div className="item-box-left">
-                            <a href={'/organization/'+organization.id}><img src={organization.profile_imgURL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/organization/'+organization.id}><img src={organization.profile_imgURL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/organization/'+organization.id} className="body-link"><h3 className="margin-top-bottom-5">{organization.name}</h3></a>
@@ -693,6 +706,7 @@ var Equipments = React.createClass({
             url: isAdminURL,
             success: function(isAdminData) {
                 this.setState({ isAdmin: isAdminData.isAdmin });
+                console.log(isAdminData.isAdmin);
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve isAdmin!");
@@ -711,7 +725,9 @@ var Equipments = React.createClass({
                 <div className="item-box" key={item.objectId}>
                     <div>
                         <div className="item-box-left">
-                            <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -727,15 +743,258 @@ var Equipments = React.createClass({
         });
         return (
             <div>
+                <Modal show={this.state.showModal} onHide={this.clickClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Equipment</Modal.Title>
+                    </Modal.Header>
+                    <EquipmentAddForm submitSuccess={this.clickClose} />
+                </Modal>
                 <div className="item-search-div">
                 <table className="item-search-field" width="100%">
-                    <tr><td><input type="text" id="search" placeholder="Search..." className="form-control"/></td></tr>
+                    <tr>
+                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                        {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                    </tr>
                 </table>
                 </div>
                 {itemsList}
             </div>
         )
     }
+});
+
+var EquipmentAddForm = React.createClass({
+    close: function(e) {
+        this.props.submitSuccess();
+    },
+    getInitialState: function() {
+     return {
+        alertVisible: false,
+        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+        formFeedback: '',
+        fileFeedback: {},
+        pictureFeedback: '',
+
+        // form
+        picture: null, file: null, pictureType: '', fileType: '', title: '', keywords: '',
+        description: '', instructions: '', model: '', model_year: '', organizationId: objectId
+        };
+    },
+    componentDidMount: function() {
+        var eCode = <script>
+                        $(function() {
+                            $('.auto').autocomplete({
+                                    source: function(req, res) {
+                                        $.ajax({
+                                          url: '/allusers',
+                                          dataType: 'JSON',
+                                          cache: false,
+                                          success: function(data) {
+                                            console.log("SUCCESS!!!!!!!");
+                                            console.log(data);
+                                            var arr = $.grep(data, function(item){
+                                              return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                                            });
+                                            res($.map(arr, function(item){
+                                              return {
+                                                label: item.fullname,
+                                                value: item.username
+                                              };
+                                            }));
+                                          },
+                                          error: function(xhr) {
+                                            console.log("ERROR WTF!!!");
+                                            console.log(xhr.status);
+                                          }
+                                        });
+                                    },
+                                    messages: {
+                                      noResults: '',
+                                      results: function() {}
+                                    }
+                            })
+                        });
+                    </script>
+        //var eCode = <script src="/javascripts/autocomplete.js"></script>
+        $("#scriptContainer").append(eCode);
+    },
+	render: function() {
+	    if (this.state.alertVisible) {
+	        var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
+	    } else {var alert = "";}
+		return (
+		<div>
+            <div id="scriptContainer"></div>
+			<form className="form" onSubmit={this.handleSubmitData}>
+			    <Modal.Body>
+			    {alert}
+			    <div className="well" style={this.buttonStyles}>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
+                    	style={{background: this.state.pictureFeedback}}>
+                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                    </Button>
+                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+                        Select Files... <input type="file" onChange={this.handleFile} />
+                    </Button>
+                  </div>
+
+                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                <Input type="textarea" placeholder="Instructions:" name="instructions" onChange={this.handleChange} value={this.state.instructions} />
+                <Input type="text" placeholder="Model:" name="model" onChange={this.handleChange} value={this.state.model} />
+                <Input type="text" placeholder="Model Year:" name="model_year" onChange={this.handleChange} value={this.state.model_year} />
+                <Input type="text" placeholder="Keywords (Comma Separated Tags):" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <input className="full-button" type="submit" value="Submit"/>
+                </Modal.Footer>
+            </form>
+		</div>
+		);
+	},
+    handleAlertDismiss() {
+        this.setState({alertVisible: false});
+    },
+    handleAlertShow() {
+        this.setState({alertVisible: true});
+    },
+	handleChange: function(e) {
+	    var changedState = {};
+	    changedState[e.target.name] = e.target.value;
+	    this.setState( changedState );
+	},
+	handleSubmitData: function(e) {
+        e.preventDefault();
+
+        var dataForm = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
+        				fileType: this.state.fileType, pictureType: this.state.pictureType,
+        				description: this.state.description, instructions: this.state.instructions, model: this.state.model,
+        				model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
+		console.log(dataForm);
+
+        var isValidForm = this.validateForm();
+		if (isValidForm.length === 0) {
+			var endpoint = "/equipment";
+			var dataFormORIG = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
+				fileType: this.state.fileType, pictureType: this.state.pictureType,
+				description: this.state.description, instructions: this.state.instructions, model: this.state.model,
+				model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
+
+			$.ajax({
+				url: path + endpoint,
+				dataType: 'json',
+				contentType: "application/json; charset=utf-8",
+				type: 'POST',
+				data: JSON.stringify(dataForm),
+				processData: false,
+				success: function(data) {
+				    console.log(data);
+				    this.close();
+				}.bind(this),
+				error: function(xhr, status, err) {
+					console.error(path + endpoint, status, err.toString());
+				}.bind(this)
+			});
+		}
+		else {
+			var message = 'Project could not be added!';
+			if (isValidForm.indexOf('TITLE') > -1) {
+				message += ' Title is required.';
+			}
+			if (isValidForm.indexOf('FILE') > -1) {
+				message += ' Please upload a file.';
+			}
+            if (isValidForm.indexOf('INSTRUCTIONS') > -1) {
+				message += ' Please give usage instructions.';
+			}
+			if (isValidForm.indexOf('MODEL') > -1) {
+				message += ' Please indicate the model and model year/version.';
+			}
+			if (isValidForm.indexOf('MODEL_YEAR') > -1) {
+                message += ' Please indicate the model and model year/version.';
+            }
+			if (isValidForm.indexOf('KEYWORDS') > -1) {
+				message += ' Please specify at least one keyword.';
+			}
+			this.setState({formFeedback: message, alertVisible: true});
+		}
+        return;
+    },
+
+	showPictureUpload(fromModel) {
+	    if (fromModel) {
+            return '';
+	    }
+	    return 'none';
+	},
+
+	openFileUpload() {
+	    var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+
+        this.state.file.on('fileselect', function(event, numFiles, label) {
+            console.log(numFiles);
+            console.log(label);
+            return input;
+        });
+	},
+
+	handleFile: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+          self.setState({
+            file: upload.target.result,
+            fileType: extension,
+            fileFeedback: {background: '#dff0d8'}
+          });
+        }
+        reader.readAsDataURL(file);
+    },
+
+    handlePicture: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+         self.setState({
+           picture: upload.target.result,
+           pictureType: extension,
+           pictureFeedback: '#dff0d8'
+         });
+        }
+        reader.readAsDataURL(file);
+    },
+
+	validateForm: function() {
+		var issues = []
+		if (!this.state.title.trim()) {
+			issues.push("TITLE");
+		}
+		if (!this.state.file) {
+			issues.push("FILE");
+		}
+		if (!this.state.instructions) {
+			issues.push("INSTRUCTIONS");
+		}
+		if (!this.state.model) {
+            issues.push("MODEL");
+        }
+        if (!this.state.model_year) {
+            issues.push("MODEL_YEAR");
+        }
+		if (!this.state.keywords.trim()) {
+			issues.push("KEYWORDS");
+		}
+		return issues;
+	},
 });
 
 var Projects = React.createClass({
@@ -769,7 +1028,9 @@ var Projects = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -923,10 +1184,12 @@ var Datum = React.createClass({
         else { var title = this.props.title; }
         return (
                 <div className="item-box">
-                <div className="model-box-image">
-                    <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
+                <div className="item-box-left">
+                    <div className="item-box-image-outside">
+                        <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="item-box-image" /></a>
+                    </div>
                 </div>
-                <div className="model-box-left model-box-left-full">
+                <div className="item-box-right">
                     <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -1009,10 +1272,12 @@ var Model = React.createClass({
         else { var title = this.props.title; }
         return (
                 <div className="item-box">
-                <div className="model-box-image">
-                    <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
+                <div className="item-box-left">
+                    <div className="item-box-image-outside">
+                        <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="item-box-image" /></a>
+                    </div>
                 </div>
-                <div className="model-box-left model-box-left-full">
+                <div className="item-box-right">
                     <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     <b>Authors: </b>
                         {this.props.collaborators.map(function(item, i){
@@ -1038,6 +1303,7 @@ var Model = React.createClass({
         )
     }
 });
+
 
 
 React.render(<Organization />, document.getElementById('content'));

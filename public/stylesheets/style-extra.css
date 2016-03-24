@@ -42,12 +42,16 @@
 .font-10 { font-size: 10px; }
 .font-15 { font-size: 15px; }
 
+.no-margin { margin:0px; }
+.no-padding { padding:0px; }
+.no-margin-padding { margin:0px; padding:0px; }
 .margin-top-5 { margin-top:5px; }
 .margin-top-10 { margin-top:10px; }
 .margin-top-20 { margin-top:20px; }
 .margin-top-bottom-5 { margin:5px 0px; }
 .margin-top-bottom-10 { margin:10px 0px; }
 
+.margin-bottom-0 { margin-bottom: 0px; }
 .padding-left-5 { padding-left: 5px; }
 .padding-left-10 { padding-left: 10px; }
 .padding-right-5 { padding-right: 5px; }
@@ -61,3 +65,20 @@
 .navbar-right { margin-right: 0px !important; right: 0px; }
 .navbar-collapse { padding: 0px; width: 1165px; left: 0px; }
 .navbar-wrapper { max-width: 1175px; padding: 0px; padding-left: 25px; margin: auto; }
+
+.full-button {
+    color: #fff;
+    background-color: #70ab8f;
+    display: inline !important;
+    border: solid;
+    border-color: #70ab8f;
+    border-width: 1px 1px 0 1px;
+    padding: 6px 12px;
+    margin: 0 0.05em 0 0;
+    font-size: 14px;
+    border-radius:4px;
+    width:100%;
+} .full-button:hover {
+    background-color: #86B9A0;
+    border-color: #86B9A0;
+}
