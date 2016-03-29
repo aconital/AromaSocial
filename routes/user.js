@@ -565,7 +565,7 @@ module.exports=function(app,Parse) {
                                 fullname: fullname,
                                 userImgUrl: userImgUrl,
                                 company: company,
-                                workTitle: work_title
+                                work_title: work_title
                             };
                             people.push(person);
 

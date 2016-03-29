@@ -1,31 +1,42 @@
 .side-panel {
     position: relative;
     border: solid;
-    border-color: #70ab8f;
+    border-color: var(--foreground-color);
     border-radius: 4px;
     margin: 0% 10%; padding: 20px;
     width: 80%;
-    background-color: #FFF;
+    background-color: var(--white-color);
     text-align: center;
+    box-shadow: 0px 2px 10px #888888;
 } .side-panel + .side-panel {
     margin-top: 25px;
+    box-shadow: 0px 2px 10px #888888;
 }
 
 .accept-reject-buttons { position: absolute; right: 10px; top:10px; width: 30%; text-align:right; }
 
+.contain-image {
+    width: 80%;
+    border: solid;
+    border-radius: 4px;
+    border-color: var(--foreground-color);
+    margin: 10%;
+    margin-bottom: 25px;
+    background-color:var(--foreground-color);
+    box-shadow: 0px 2px 10px #888888; }
 .contain-panel-big-image {
     width:100%;
     border:solid;
     border-radius:4px;
-    border-color: #70ab8f;
-    background-color: #70ab8f;}
+    border-color: var(--foreground-color);
+    background-color: var(--foreground-color);}
 .contain-panel-small-image {
     width:9%;
     border: solid;
     margin-right:1%;
     border-radius: 4px;
-    border-color: #70ab8f;
-    background-color:#70ab8f;
+    border-color: var(--foreground-color);
+    background-color:var(--foreground-color);
     opacity: 1;
     -webkit-transition: .3s ease-in-out;
     transition: .3s ease-in-out; }
@@ -52,7 +63,7 @@
     border-radius: 4px;
     margin:10%;
     opacity: 0;
-    background-color: #70ab8f;
+    background-color: var(--foreground-color);
     position:absolute;
     color: white;
     -webkit-transition: all 1s ease;
@@ -70,9 +81,9 @@
 .item-box {
     float:left;
     width:100%;
-    background-color: #fff;
+    background-color: var(--white-color);
     border: solid;
-    border-color: #70ab8f;
+    border-color: var(--foreground-color);
     border-radius: 4px;
     border-width: 1px;
     padding:10px;
@@ -84,21 +95,21 @@
     margin-top:10px;
 } .item-box-left {
     float:left;
-    background-color: #fff;
+    background-color: var(--white-color);
     margin-right:2%;
     width:18%;
 } .item-box-right {
     float:left;
-    background-color: #fff;
+    background-color: var(--white-color);
     width:80%;
 } .item-search-field {
     margin: 0px;
 } .item-add-button {
-    color: #fff;
-    background-color: #70ab8f;
+    color: var(--white-color);
+    background-color: var(--foreground-color);
     display: inline !important;
     border: solid;
-    border-color: #70ab8f;
+    border-color: var(--foreground-color);
     border-width: 1px 1px 0 1px;
     padding: 6px 12px;
     margin: 0 0.05em 0 0;
@@ -106,8 +117,8 @@
     border-radius:4px;
     width:100%;
 } .item-add-button:hover {
-    background-color: #86B9A0;
-    border-color: #86B9A0;
+    background-color: var(--foreground-hover-color);
+    border-color: var(--foreground-hover-color);
     display: inline !important;
 }
 
@@ -115,8 +126,8 @@
     border: solid;
     margin-right:2%;
     border-radius: 4px;
-    border-color: #70ab8f;
-    background-color:#70ab8f;
+    border-color: var(--foreground-color);
+    background-color:var(--foreground-color);
     width: 100%;
     max-height: 175px;
     overflow: hidden;

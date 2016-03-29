@@ -16,12 +16,12 @@
 .item-panel {
     position: relative;
     border: solid;
-    border-color: #70ab8f;
+    border-color: var(--foreground-color);
     border-radius: 4px;
     margin: 0px; padding: 20px;
     margin-top: 20px;
     width: 100%;
-    background-color: #FFF;
+    background-color: var(--white-color);
 }
 
 .item-authors-div { padding: 10px; }
@@ -33,7 +33,7 @@
 .contain-panel-big {
     width: 100%;
     border: solid;
-    border-color: #70ab8f;
+    border-color: var(--foreground-color);
     margin: 0px;
     padding:20px;
     position:relative;
@@ -51,8 +51,8 @@
 .no-margin{ margin: 0px; padding: 0px; }
 .padding-top-25 td { padding-top:25px; }
 
-.h2-editable { border: 1px solid #FFF; padding:10px; width:100%; max-width:100%; }
-.h2-editable:hover { border: 1px dotted #70ab8f; width:100%; }
+.h2-editable { border: 1px solid var(--white-color); padding:10px; width:100%; max-width:100%; }
+.h2-editable:hover { border: 1px dotted var(--foreground-color); width:100%; }
 .h2-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
 .h2-editable-wrap { height: 75px; }
 .h2-non-editable-wrap { padding:10px; width:100%; max-width:100%; height: 75px; margin: 0px; }
@@ -63,9 +63,9 @@
 .h4-item-inside-panel-wrap { padding: 0px; padding: 10px; }
 .h4-item-inside-panel-spacing { margin: 0px; margin-bottom: 20px; }
 
-.p-noneditable { border: 1px solid #FFF; padding:10px; }
-.p-editable { border: 1px solid #FFF; padding:10px; width:100%; max-width:100%; }
-.p-editable:hover { border: 1px dotted #70ab8f; width:100%; }
+.p-noneditable { border: 1px solid var(--white-color); padding:10px; }
+.p-editable { border: 1px solid var(--white-color); padding:10px; width:100%; max-width:100%; }
+.p-editable:hover { border: 1px dotted var(--foreground-color); width:100%; }
 .p-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
 .p-editable-bottom-spacing { margin: 0px 0px; margin-bottom:0px; }
 .p-editable-bottom-wrap { height: 117px; }
