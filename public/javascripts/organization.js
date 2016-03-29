@@ -1271,35 +1271,29 @@ var Model = React.createClass({
         if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
         else { var title = this.props.title; }
         return (
-                <div className="item-box">
+            <div className="item-box">
                 <div className="item-box-left">
                     <div className="item-box-image-outside">
                         <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="item-box-image" /></a>
                     </div>
                 </div>
-                <div className="item-box-right">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                    <b>Authors: </b>
-                        {this.props.collaborators.map(function(item, i){
-                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
-                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
-                        })}
-                    <br/>
+            <div className="item-box-right">
+                <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                <b>Authors: </b>
+                    {
+                        this.props.collaborators.map(function(item, i){
+                            if (i == 0) {
+                                return <a href="#" className="body-link">{item}</a>;
+                            }
+                            else {
+                                return <span>, <a href="#" className="body-link">{item}</a></span>;
+                            }
+                        })
+                    }
+                <br/>
                     <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                 </div>
-                /*}
-                <div className="model-box-right">
-                    <h5>Information</h5><br/>
-                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                    {this.props.number_cited} Times Cited<br/>
-                    {this.props.license}<br/>
-                    {this.props.access.map(function(item, i){
-                        if (i == 0) {return item;}
-                        else {return ", " + item;}
-                    })} <br/> Uses This
-                </div>
-                */}
-                </div>
+            </div>
         )
     }
 });
