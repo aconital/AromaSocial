@@ -1280,7 +1280,6 @@ var PublicationAddForm = React.createClass({
 
 		var showBookChapterTitle = function(type) {
 			if (type === "Pub_Chapter") {
-				console.log("wtf");
 				titleLabel = "Book Title:";
 				return bookChapterTitle;
 			}
@@ -1299,7 +1298,6 @@ var PublicationAddForm = React.createClass({
 					return confDetailFields;
 					break;
 				case "Pub_Journal_Article":
-					console.log(journalDetailFields);
 					return journalDetailFields;
 					break;
 				case "Pub_Patent":
@@ -1419,9 +1417,9 @@ var PublicationAddForm = React.createClass({
 					this.setState({
 						type: "Pub_Book",
 						book_publisher: entry.publisher,
-						book_isbn: entry.isbn[0],
-						book_edition: '',
-						book_pages: '',
+						book_isbn: entry.ISBN[0].substring(28),
+						book_edition: (entry.hasOwnProperty('edition') ? entry.edition : ''),
+						book_pages: (entry.hasOwnProperty('page') ? entry.page : ''),
 					});
 				}
 				break;
@@ -1437,9 +1435,10 @@ var PublicationAddForm = React.createClass({
 					this.setState({
 						type: "Pub_Chapter",
 						title: entry['container-title'][0],
-						book_chapter: entry.title,
+						book_chapter: entry.title[0],
+						book_isbn: entry.ISBN[0].substring(28),
 						book_publisher: entry.publisher,
-						book_pages: entry.page,
+						book_pages: (entry.hasOwnProperty('page') ? entry.page : ''),
 					});
 				}
 				break;
@@ -1472,7 +1471,7 @@ var PublicationAddForm = React.createClass({
 			case "report": //10.2172/897503, 10.1037/ce100001
 				if (pubForm != null) {
 					pubForm["report_publisher"] = this.state.report_publisher;
-					pubForm["report_number"] = this.state.report_numberr;
+					pubForm["report_number"] = this.state.report_number;
 					pubForm["report_location"] = this.state.report_location;
 				} else {
 					this.setState({
