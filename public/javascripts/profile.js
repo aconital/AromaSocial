@@ -76,7 +76,7 @@ var Profile = React.createClass ({
     },
     checkConnection:function()
     {
-        var connectURL= "/profile/"+objectId+"/connection-status";
+        var connectURL= "/profile/"+username+"/connection-status";
 
         $.ajax({
             url: connectURL,
@@ -819,7 +819,7 @@ var Publications = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var publicationsURL= "/profile/"+objectId+"/publications_list";
+        var publicationsURL= "/profile/"+username+"/publications";
 
         $.ajax({
             type: 'GET',
@@ -1207,12 +1207,12 @@ var PublicationAddForm = React.createClass({
         		 publisher: 'Publisher' },
 
         // common form fields
-        type: 'journal', file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        creationDate: '', description: '', license: '', keywords: '', url: '', doi: '',
+        type: 'journal', file: null, fileType: '', title: '', description: '', collaborators: '',
+        creationDate: '', description: '', keywords: '', url: '', doi: '',
         // end common form fields
         journal: '', journal_volume: '', journal_issue: '', journal_pages: '', // journal articles,
         book_publisher: '', book_isbn: '', book_edition: '', book_pages: '', book_chapter: '', // book-specific fields
-		conf_conf: '', conf_volume:'', conf_location: '', // conference-specific fields
+		conf: '', conf_volume:'', conf_location: '', // conference-specific fields
 		patent_refNum: '', patent_location: '', // patent-specific fields
 		report_publisher: '', report_number: '', report_location: '', // report-specific fields
 		thesis_university: '', thesis_supervisors: '', thesis_degree: '', thesis_depart: '', thesis_pages: '', // thesis-specific fields
@@ -1231,53 +1231,53 @@ var PublicationAddForm = React.createClass({
         var journalDetailFields = (
         	<div><Input type="text" placeholder="Journal:" name="journal" required onChange={this.handleChange} value={this.state.journal} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Journal Volume" name="volume" required onChange={this.handleChange} value={this.state.journal_volume} /></td>
-				<td><Input type="text" placeholder="Journal Issue" name="issue" required onChange={this.handleChange} value={this.state.journal_issue} /></td>
-				<td><Input type="text" placeholder="Journal Pages" name="pages" required onChange={this.handleChange} value={this.state.journal_pages} /></td>
+				<td><Input type="text" placeholder="Journal Volume" name="journal_volume" required onChange={this.handleChange} value={this.state.journal_volume} /></td>
+				<td><Input type="text" placeholder="Journal Issue" name="journal_issue" required onChange={this.handleChange} value={this.state.journal_issue} /></td>
+				<td><Input type="text" placeholder="Journal Pages" name="journal_pages" required onChange={this.handleChange} value={this.state.journal_pages} /></td>
 			</tr></table></div>
 		);
 		var bookChapterTitle = (
 			<Input type="text" placeholder="Chapter Title:" name="chapter" onChange={this.handleChange} value={this.state.book_chapter} />
 		);
 		var bookDetailFields = (
-			<div><Input type="text" placeholder="Publisher:" name="publisher" onChange={this.handleChange} value={this.state.book_publisher} />
+			<div><Input type="text" placeholder="Publisher:" name="book_publisher" required onChange={this.handleChange} value={this.state.book_publisher} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="ISBN" name="isbn" required="required" onChange={this.handleChange} value={this.state.book_isbn} /></td>
-				<td><Input type="text" placeholder="Edition" name="edition" required="required" onChange={this.handleChange} value={this.state.book_edition} /></td>
-				<td><Input type="text" placeholder="Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.book_pages} /></td>
+				<td><Input type="text" placeholder="ISBN" name="book_isbn" required onChange={this.handleChange} value={this.state.book_isbn} /></td>
+				<td><Input type="text" placeholder="Edition" name="book_edition" required onChange={this.handleChange} value={this.state.book_edition} /></td>
+				<td><Input type="text" placeholder="Pages" name="book_pages" required onChange={this.handleChange} value={this.state.book_pages} /></td>
 			</tr></table></div>
 		);
 		var confDetailFields = (
-			<div><Input type="text" placeholder="Conference" name="conf" onChange={this.handleChange} value={this.state.conf_conf} />
+			<div><Input type="text" placeholder="Conference" name="conf" required onChange={this.handleChange} value={this.state.conf} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Conference Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.conf_volume} /></td>
-				<td><Input type="text" placeholder="Conference Location" name="location" required="required" onChange={this.handleChange} value={this.state.conf_edition} /></td>
+				<td><Input type="text" placeholder="Conference Volume" name="conf_volume" required onChange={this.handleChange} value={this.state.conf_volume} /></td>
+				<td><Input type="text" placeholder="Conference Location" name="conf_location" required onChange={this.handleChange} value={this.state.conf_location} /></td>
 			</tr></table></div>
 		);
 		var patentDetailFields = (
 			<div><table width="100%"><tr>
-				<td><Input type="text" placeholder="Patent Reference Number" name="volume" required="required" onChange={this.handleChange} value={this.state.patent_refNum} /></td>
-				<td><Input type="text" placeholder="Patent Location" name="location" required="required" onChange={this.handleChange} value={this.state.patent_location} /></td>
+				<td><Input type="text" placeholder="Patent Reference Number" name="patent_refNum" required onChange={this.handleChange} value={this.state.patent_refNum} /></td>
+				<td><Input type="text" placeholder="Patent Location" name="patent_location" required onChange={this.handleChange} value={this.state.patent_location} /></td>
 			</tr></table></div>
 		);
 		var reportDetailFields = (
-			<div><Input type="text" placeholder="Publisher" name="conf" onChange={this.handleChange} value={this.state.report_publisher} />
+			<div><Input type="text" placeholder="Publisher" name="report_publisher" onChange={this.handleChange} value={this.state.report_publisher} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Report Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.report_number} /></td>
-				<td><Input type="text" placeholder="Report Location" name="location" required="required" onChange={this.handleChange} value={this.state.report_location} /></td>
+				<td><Input type="text" placeholder="Report Volume" name="report_number" required onChange={this.handleChange} value={this.state.report_number} /></td>
+				<td><Input type="text" placeholder="Report Location" name="report_location" required onChange={this.handleChange} value={this.state.report_location} /></td>
 			</tr></table></div>
 		);
         var thesisDetailFields = (
-			<div><Input type="text" placeholder="University" name="conf" onChange={this.handleChange} value={this.state.thesis_university} />
-			<Input type="text" placeholder="Supervisors" name="conf" onChange={this.handleChange} value={this.state.thesis_supervisors} />
+			<div><Input type="text" placeholder="University" name="thesis_university" required onChange={this.handleChange} value={this.state.thesis_university} />
+			<Input type="text" placeholder="Supervisors" name="thesis_supervisors" onChange={this.handleChange} value={this.state.thesis_supervisors} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Degree" name="volume" required="required" onChange={this.handleChange} value={this.state.thesis_degree} /></td>
-				<td><Input type="text" placeholder="Department" name="location" required="required" onChange={this.handleChange} value={this.state.thesis_depart} /></td>
-				<td><Input type="text" placeholder="Pages" name="location" required="required" onChange={this.handleChange} value={this.state.thesis_pages} /></td>
+				<td><Input type="text" placeholder="Degree" name="thesis_degree" required onChange={this.handleChange} value={this.state.thesis_degree} /></td>
+				<td><Input type="text" placeholder="Department" name="thesis_depart" required onChange={this.handleChange} value={this.state.thesis_depart} /></td>
+				<td><Input type="text" placeholder="Pages" name="thesis_pages" required onChange={this.handleChange} value={this.state.thesis_pages} /></td>
 			</tr></table></div>
 		);
 		var unpubDetailFields = (
-			<Input type="text" placeholder="Place of Publication" name="location" onChange={this.handleChange} value={this.state.unpub_location} />
+			<Input type="text" placeholder="Place of Publication" name="unpub_location" onChange={this.handleChange} value={this.state.unpub_location} />
 		);
 
 		var showBookChapterTitle = function(type) {
@@ -1291,7 +1291,6 @@ var PublicationAddForm = React.createClass({
         var showTypeFields = function(type) {
 			switch (type) {
 				case "Pub_Book":
-					console.log(this.bookDetailFields);
 					return bookDetailFields;
 					break;
 				case "Pub_Chapter":
@@ -1329,7 +1328,7 @@ var PublicationAddForm = React.createClass({
                     </Button>
                   </div>
 
-				<Input type="select" placeholder name="type" onChange={this.handleChange} value={this.state.type} >
+				<Input type="select" placeholder name="type" required onChange={this.handleChange} value={this.state.type} >
 					<option value="" disabled>Type:</option>
 					<option value="Pub_Book">Book</option>
 					<option value="Pub_Chapter">Book Chapter</option>
@@ -1341,12 +1340,12 @@ var PublicationAddForm = React.createClass({
 					<option value="Pub_Unpublished">Unpublished Article</option>
 				</Input>
 				{showBookChapterTitle(this.state.type)}
-                <Input type="text" placeholder={titleLabel} name="title" onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Authors:" name="authors" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="text" placeholder={titleLabel} name="title" required onChange={this.handleChange} value={this.state.title} />
+                <Input type="text" placeholder="Authors:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
+                <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
+                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" required onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1381,7 +1380,7 @@ var PublicationAddForm = React.createClass({
 					keywords: (entry.hasOwnProperty('subject') ? entry.subject.join(",") : ''),
 					autoFillStatus: "",
 				});
-				this.fillDetails(entry);
+				this.fillDetails(entry, null);
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('http://api.crossref.org/works/', status, err.toString());
@@ -1392,123 +1391,155 @@ var PublicationAddForm = React.createClass({
 	},
 	// each publication type has special fields. This function selects based on the type value returned from
 	// CrossRef and fills in the appropriate fields
-	fillDetails: function(entry) {
+	fillDetails: function(entry, pubForm) {
 		switch (entry.type) {
+			case "Pub_Journal_Article":
 			case "journal-article":
-				this.setState({
-					type: "Pub_Journal_Article",
-					journal: entry['container-title'][0],
-					journal_volume: entry.volume,
-					journal_issue: entry.issue,
-					journal_pages: entry.page,
-				});
-				{/*var update = ReactUpdate(this.state, {
-					type: {$set: "journal"},
-					journal: {journal: {$set: entry['container-title'][0]}},
-					journal: {volume: {$set: entry.volume}},
-					journal: {issue: {$set: entry.issue}},
-					journal: {pages: {$set: entry.pages}},
-				});*/}
+				if (pubForm != null) {
+					pubForm["journal"] = this.state.journal;
+					pubForm["journal_volume"] = this.state.journal_volume;
+					pubForm["journal_issue"] = this.state.journal_issue;
+					pubForm["journal_pages"] = this.state.journal_pages;
+				} else {
+					this.setState({
+						type: "Pub_Journal_Article",
+						journal: entry['container-title'][0],
+						journal_volume: entry.volume,
+						journal_issue: entry.issue,
+						journal_pages: entry.page,
+					});
+				}
 				break;
+			case "Pub_Book":
 			case "book": // 10.1007/1-4020-4466-6
-				this.setState({
-					type: "Pub_Book",
-					book_publisher: entry.publisher,
-					book_isbn: entry['isbn'][0],
-					book_edition: '',
-					book_pages: '',
-				});
+				if (pubForm != null) {
+					pubForm["book_publisher"] = this.state.book_publisher;
+					pubForm["book_isbn"] = this.state.book_isbn;
+					pubForm["book_edition"] = this.state.book_edition;
+					pubForm["book_pages"] = this.state.book_pages;
+				} else {
+					this.setState({
+						type: "Pub_Book",
+						book_publisher: entry.publisher,
+						book_isbn: entry.isbn[0],
+						book_edition: '',
+						book_pages: '',
+					});
+				}
 				break;
+			case "Pub_Chapter":
 			case "book-chapter": //10.1007/1-4020-4466-6_3
-				this.setState({
-					type: "Pub_Chapter",
-					title: entry['container-title'][0],
-					book_chapter: entry.title,
-					book_publisher: entry.publisher,
-					book_pages: entry.page,
-				});
+				if (pubForm != null) {
+					pubForm["book_publisher"] = this.state.book_publisher;
+					pubForm["book_isbn"] = this.state.book_isbn;
+					pubForm["book_edition"] = this.state.book_edition;
+					pubForm["book_chapter"] = this.state.book_chapter;
+					pubForm["book_pages"] = this.state.book_pages;
+				} else {
+					this.setState({
+						type: "Pub_Chapter",
+						title: entry['container-title'][0],
+						book_chapter: entry.title,
+						book_publisher: entry.publisher,
+						book_pages: entry.page,
+					});
+				}
 				break;
+			case "Pub_Conference":
 			case "proceedings":
 			case "proceedings-article": //10.1109/CSEET.2012.35
-				this.setState({
-					type: "Pub_Conference",
-					conf_conf: entry['container-title'][0],
-				});
+				if (pubForm != null) {
+					pubForm["conf"] = this.state.conf;
+					pubForm["conf_volume"] = this.state.conf_volume;
+					pubForm["conf_location"] = this.state.conf_location;
+				} else {
+					this.setState({
+						type: "Pub_Conference",
+						conf: entry['container-title'][0],
+					});
+				}
 				break;
+			case "Pub_Patent":
 			case "patent":
-				this.setState({
-					type: "Pub_Patent",
-				});
+				if (pubForm != null) {
+					pubForm["patent_refNum"] = this.state.patent_refNum;
+					pubForm["patent_location"] = this.state.patent_location;
+				} else {
+					this.setState({
+						type: "Pub_Patent",
+					});
+				}
 				break;
+			case "Pub_Report":
 			case "report": //10.2172/897503, 10.1037/ce100001
-				this.setState({
-					type: "Pub_Report",
-					report_publisher: entry.publisher,
-				});
+				if (pubForm != null) {
+					pubForm["report_publisher"] = this.state.report_publisher;
+					pubForm["report_number"] = this.state.report_numberr;
+					pubForm["report_location"] = this.state.report_location;
+				} else {
+					this.setState({
+						type: "Pub_Report",
+						report_publisher: entry.publisher,
+					});
+				}
 				break;
+			case "Pub_Thesis":
 			case "dissertation": // 10.2986/tren.009-0347
-				this.setState({
-					type: "Pub_Thesis",
-				});
+				if (pubForm != null) {
+					pubForm["thesis_university"] = this.state.thesis_university;
+					pubForm["thesis_supervisors"] = this.state.thesis_supervisors;
+					pubForm["thesis_degree"] = this.state.thesis_degree;
+					pubForm["thesis_depart"] = this.state.thesis_depart;
+					pubForm["thesis_pages"] = this.state.thesis_pages;
+				} else {
+					this.setState({
+						type: "Pub_Thesis",
+					});
+				}
 				break;
+			case "Pub_Unpublished":
 			case "unpublished":
-				this.setState({
-					type: "Pub_Unpublished",
-				});
+				if (pubForm != null) {
+					pubForm["unpub_location"] = this.state.unpub_location;
+				} else {
+					this.setState({
+						type: "Pub_Unpublished",
+					});
+				}
 				break;
 			default:
-				console.log('hi');
+				console.log('Warning: type unsupported', entry.type);
 		}
 	},
 
 	handleSubmitData: function(e) {
         e.preventDefault();
 
-        var pubForm = {file: this.state.file, picture: this.state.picture,
-        				fileType: this.state.fileType, pictureType: this.state.pictureType,
+        var pubForm = {file: this.state.file, fileType: this.state.fileType,
         				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
-		console.log(dataForm);
+        				description: this.state.description, doi: this.state.doi, url: this.state.url,
+        				keywords: this.state.keywords, title: this.state.title, type: this.state.type};
+		this.fillDetails({type:this.state.type}, pubForm);
 
-        var isValidForm = this.validateForm();
-		if (isValidForm.length === 0) {
-			var endpoint = this.props.fromModelTab ? "/model" : "/data";
+		console.log("pubForm after", pubForm);
 
-			$.ajax({
-				url: path + endpoint,
-				dataType: 'json',
-				contentType: "application/json; charset=utf-8",
-				type: 'POST',
-				data: JSON.stringify(pubForm),
-				processData: false,
-				success: function(data) {
-					this.setState({data: data});
-					console.log("Data upload done");
-					console.log(data);
-					this.close();
-				}.bind(this),
-				error: function(xhr, status, err) {
-					console.error(path + endpoint, status, err.toString());
-				}.bind(this)
-			});
-		}
-		else {
-			var message = 'Publication could not be added:';
-			if (isValidForm.indexOf('TITLE') > -1) {
-				message += ' Title is required.';
-			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
-			if (isValidForm.indexOf('DATE') > -1) {
-				message += ' Please indicate the creation date.';
-			}
-			if (isValidForm.indexOf('KEYWORDS') > -1) {
-				message += ' Please specify at least one keyword.';
-			}
-			this.setState({formFeedback: message});
-		}
+		$.ajax({
+			url: path + "/publication",
+			dataType: 'json',
+			contentType: "application/json; charset=utf-8",
+			type: 'POST',
+			data: JSON.stringify(pubForm),
+			processData: false,
+			success: function(data) {
+				console.log("Publication upload done");
+				console.log(data);
+				this.close();
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error(path + "/publication", status, err.toString());
+			}.bind(this)
+		});
+
         return;
     },
 
