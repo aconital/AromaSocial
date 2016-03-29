@@ -43,7 +43,7 @@ var FriendRequest = React.createClass({
 
         if(this.state.data.length <=0)
             return(
-                <li><div className="empty-list">You have no request at this moment!</div></li>
+                <li><a href="#" className="align-center">You have no connection requests at this moment. &nbsp;&nbsp;</a></li>
             ) ;
         else
         return (

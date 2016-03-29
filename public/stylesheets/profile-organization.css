@@ -141,6 +141,22 @@
     opacity: .75;
 }
 
+.item-bottom { position:relative; float:left; width: 100%; }
+.item-bottom-1 { float:left; width:20%; }
+.item-bottom-2 { margin-top:6px; float:left; width:80%; }
+.item-bottom-2-profile { position:relative; }
+
+.h1-title { padding-top: 25px !important; }
+.h3-title { padding-bottom: 25px !important; }
+.interact-buttons-wrap {
+    position:absolute;
+    border-radius: 4px;
+    border: solid;
+    border-color: var(--foreground-color);
+    box-shadow: 0px 2px 10px #888888;
+    top: 25px; right: 0px;
+    width: 200px; }
+
 .item-box-table-info { width: 100%; overflow: hidden; }
 .item-box-table-info tr { width: 100%; overflow: hidden; }
 .item-box-table-info tr td:nth-child(1) { vertical-align:top; width: 20%; min-width: 20%; max-width: 20%; }

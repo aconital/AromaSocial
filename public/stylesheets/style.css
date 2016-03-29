@@ -1651,6 +1651,9 @@ pre {
 .col-sm-5-right {
     float: right;
     text-align: right;
+    margin-top: 20px !important;
+    margin-bottom: 10px !important;
+    padding-left: 30px !important;
 }
 
 .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
@@ -5830,59 +5833,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 .deleted {display:none;}
 .comment-picture {width:9%; padding-right:1%; }
 
-    div.cover-photo {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    height: 40%;
-    z-index: 0;
-    overflow: hidden;
-    }
-    img.cover-photo {
-    top: 0px;
-    width: 100%;
-    z-index: 0;
-    }
-    .item-top {
-    position:absolute;
-    height: 220px;
-    width: 100%;
-    display: table;
-    background: -webkit-linear-gradient(left top, var(--white-color), var(--white-color)); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(bottom right, var(--white-color), var(--white-color)); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(bottom right, var(--white-color), var(--white-color)); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to bottom right, var(--white-color), var(--white-color)); /* Standard syntax */
-    background-size: 100% 85%;
-    background-repeat: no-repeat;
-    z-index: 0;
-    }
-    .item-bottom {
-    float:left;
-    width: 100%;
-    }
-    .item-top-1 {
-    float:left;
-    width: 20%;
-    }
-    .item-top-2 {
-    float:left;
-    margin-right:2.5%;
-    width:77.5%;
-    position:relative;
-    }
-    .item-bottom-1 {
-    float:left;
-    width:20%;
-    }
-    .item-bottom-2 {
-    margin-top:6px;
-    float:left;
-    width:80%;
-    }
-    .item-bottom-3 {
-        float:left;
-        width:20%;
-    }
+
     .item-bottom-organization {
         margin-top:6px;
         float:left;
@@ -5965,15 +5916,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
         -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
         box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
         }
-    .item-panel-empty {
-        margin-bottom: 20px;
-        background-color: var(--white-color);
-        border: solid;
-        border-color: var(--foreground-color);
-        border-radius: 4px;
-        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-        }
+
     .content {
     overflow:auto;
     margin-top: 2px;
@@ -5983,8 +5926,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     border-width: 2px;
     border-color: var(--foreground-color);
     border-radius: 4px;
-    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 2px 10px #888888;
     border-top-left-radius:0;
     z-index:5;
     }
