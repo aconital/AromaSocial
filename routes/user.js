@@ -39,7 +39,7 @@ module.exports=function(app,Parse) {
      * PROFILE
      *
      ********************************************/
-    app.get('/profile/:username',is_auth, function (req, res, next) {
+    app.get('/profile/:username', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var linkUser = req.params.username;
         //if (!linkUser) return;
@@ -121,7 +121,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.get('/profile/:objectId/connection-status',is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/connection-status', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var currentUserId = currentUser.id;
         var otherUserId = req.params.objectId;
@@ -144,7 +144,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/connections', function (req, res, next) {
+    app.get('/profile/:objectId/connections', is_auth, function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
         var query = new Parse.Query('RelationshipUser');
@@ -198,7 +198,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/organizations', function (req, res, next) {
+    app.get('/profile/:objectId/organizations', is_auth, function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
         var query = new Parse.Query('Relationship');
@@ -243,7 +243,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.post('/profile/:username',is_auth,function(req,res,next){
+    app.post('/profile/:username', is_auth,function(req,res,next){
         var currentUser = req.user;
         if (currentUser.username == req.params.username) {
             var name;
@@ -275,7 +275,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.post("/uploadimage/:username",is_auth, function (req, res, next){
+    app.post("/uploadimage/:username", is_auth, function (req, res, next){
         var currentUser = req.user;
         if (currentUser.username == req.params.username){
             var form = new formidable.IncomingForm();
@@ -314,7 +314,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.post('/profile/:username/picture',is_auth,function(req,res,next){
+    app.post('/profile/:username/picture', is_auth,function(req,res,next){
         var currentUser = req.user;
         var linkUser = req.params.username;
         if(currentUser.username == linkUser) {
@@ -348,7 +348,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.post('/profile/:username/update',is_auth,function(req,res,next){
+    app.post('/profile/:username/update', is_auth,function(req,res,next){
         var currentUser =req.user;
         var linkUser = req.params.username;
         if(currentUser.username == linkUser) {
@@ -480,7 +480,7 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.get('/profile/:objectId/connect',is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/connect', is_auth, function (req, res, next) {
         var userId= req.params.objectId;
         var currentUser = req.user
         var Relationship = Parse.Object.extend("RelationshipUser");
@@ -498,7 +498,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/disconnect',is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/disconnect', is_auth, function (req, res, next) {
         var friendId= req.params.objectId;
         var currentUser = req.user;
         var query1 = new Parse.Query('RelationshipUser');
@@ -525,7 +525,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/friendrequest',is_auth,function(req,res,next){
+    app.get('/friendrequest', is_auth, function(req,res,next){
         var currentUser= req.user;
 
             var query = new Parse.Query('RelationshipUser');
@@ -571,7 +571,7 @@ module.exports=function(app,Parse) {
                                 fullname: fullname,
                                 userImgUrl: userImgUrl,
                                 company: company,
-                                workTitle: work_title
+                                work_title: work_title
                             };
                             people.push(person);
 
@@ -589,7 +589,7 @@ module.exports=function(app,Parse) {
             });
     });
 
-    app.post('/friendrequest/',is_auth, function (req, res, next) {
+    app.post('/friendrequest/', is_auth, function (req, res, next) {
         var person= req.body.person;
         var mode= req.body.mode;
         var friendusername= person.username;
@@ -650,7 +650,7 @@ module.exports=function(app,Parse) {
 
     });
 
-    app.get('/profile/:objectId/equipments_list', function (req, res, next) {
+    app.get('/profile/:objectId/equipments_list', is_auth, function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -683,7 +683,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/projects_list', function (req, res, next) {
+    app.get('/profile/:objectId/projects_list', is_auth, function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -705,6 +705,7 @@ module.exports=function(app,Parse) {
                     if (results[i].get('authors') !== undefined) { authors = results[i].get('authors'); }
                     if (results[i].get('locations') !== undefined) { locations = results[i].get('locations'); }
                     if (results[i].get('keywords') !== undefined) { keywords = results[i].get('keywords'); }
+                    console.log(results[i].get('keywords'));
                     if (results[i].get('start_date') !== undefined) { start_date = results[i].get('start_date'); }
                     if (results[i].get('end_date') !== undefined) { end_date = results[i].get('end_date'); }
                     var project = {
@@ -728,7 +729,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/publications_list', function (req, res, next) {
+    app.get('/profile/:objectId/publications_list', is_auth, function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -768,7 +769,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/data_list', function (req, res, next) {
+    app.get('/profile/:objectId/data_list', is_auth, function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -808,7 +809,7 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.get('/profile/:objectId/models_list', function (req, res, next) {
+    app.get('/profile/:objectId/models_list', is_auth, function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 

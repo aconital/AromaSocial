@@ -2,6 +2,7 @@ Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQ
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
+var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 // require('autocomplete.js').UserAutocomplete();
 
@@ -75,7 +76,7 @@ var Profile = React.createClass ({
     },
     checkConnection:function()
     {
-        var connectURL= "/profile/"+objectId+"/connection-status";
+        var connectURL= "/profile/"+username+"/connection-status";
 
         $.ajax({
             url: connectURL,
@@ -143,18 +144,13 @@ var Profile = React.createClass ({
                     <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
                   </Modal.Footer>
                 </Modal>
-        <div className="item-top item-top-container">
-        </div>
         <div className="content-wrap">
-            <div>
-                <div className="item-top-1 col" id="overlay">
-                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
-                </div>
-            </div>
             <div className="item-bottom">
                 <div className="item-bottom-1">
-                    <div className="side-panel"><h5>{fullname}</h5><br/>{position}</div>
-                    {(currentUsername == username) ? "" : <div className="item-panel-empty contain-panel-empty">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
+                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
+                    <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                    <div className="side-panel"><h5>RATINGS</h5></div>
+                    <div className="side-panel"><h5>OTHERS</h5></div>
                     {/*
                     <div className="item-panel contain-panel"><h5>{position} @</h5><br/>
                         {this.props.locations.map(function(listValue){
@@ -179,7 +175,10 @@ var Profile = React.createClass ({
                     */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                     <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
+                    {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
+                    <h1 className="no-margin-padding align-left h1-title">{fullname} ({username})</h1>
+                    <h3 className="no-margin-padding align-left h3-title">{position} @ {current_location}</h3>
+                    <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
                     {/*<input className="btn btn-panel" value="Message" />
@@ -280,11 +279,15 @@ var Connections = React.createClass({
             return (
                 <div id="item-list">
                     {plist.map(person =>
-                    <div className="item-box">
-                        <div key={person.username} id="item-list" className="row">
-                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="contain-icons" /></a>
-                                <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                                <span className="font-15">{person.workTitle} @ {person.company}</span>
+                    <div className="item-box" key={person.username} id="item-list">
+                        <div className="item-box-left">
+                            <div className="item-box-image-outside">
+                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image" /></a>
+                            </div>
+                        </div>
+                        <div className="item-box-right">
+                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <span className="font-15">{person.workTitle} @ {person.company}</span>
                         </div>
                     </div>
                     )}
@@ -322,9 +325,13 @@ var Organizations = React.createClass({
         var orgList = $.map(this.state.data,function(org) {
 
             return (
-                <div className="item-box">
-                    <div key={org.orgId} id="item-list" className="row">
-                        <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="contain-icons" /></a>
+                <div className="item-box" key={org.orgId} id="item-list">
+                    <div className="item-box-left">
+                        <div className="item-box-image-outside">
+                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                        </div>
+                    </div>
+                    <div className="item-box-right">
                         <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
                         <span className="font-15">{org.location}</span>
                     </div>
@@ -755,7 +762,9 @@ var Projects = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -776,9 +785,7 @@ var Projects = React.createClass({
                     <Modal.Header closeButton>
                         <Modal.Title>New Project</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
-                        <Modal.Title>To Be Determined!</Modal.Title>
-                    </Modal.Body>
+                    <ProjectAddForm submitSuccess={this.clickClose} />
                 </Modal>
                 <div className="item-search-div">
                     <table className="item-search-field" width="100%">
@@ -810,7 +817,7 @@ var Publications = React.createClass({
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
-        var publicationsURL= "/profile/"+objectId+"/publications_list";
+        var publicationsURL= "/profile/"+username+"/publications";
 
         $.ajax({
             type: 'GET',
@@ -927,7 +934,9 @@ var Models = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/model/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/model/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/model/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -992,7 +1001,9 @@ var Data = React.createClass({
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
-                            <a href={'/data/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            <div className="item-box-image-outside">
+                                <a href={'/data/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                            </div>
                         </div>
                         <div className="item-box-right">
                             <a href={'/data/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
@@ -1194,12 +1205,12 @@ var PublicationAddForm = React.createClass({
         		 publisher: 'Publisher' },
 
         // common form fields
-        type: 'journal', file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        creationDate: '', description: '', license: '', keywords: '', url: '', doi: '',
+        type: 'journal', file: null, fileType: '', title: '', description: '', collaborators: '',
+        creationDate: '', description: '', keywords: '', url: '', doi: '',
         // end common form fields
         journal: '', journal_volume: '', journal_issue: '', journal_pages: '', // journal articles,
         book_publisher: '', book_isbn: '', book_edition: '', book_pages: '', book_chapter: '', // book-specific fields
-		conf_conf: '', conf_volume:'', conf_location: '', // conference-specific fields
+		conf: '', conf_volume:'', conf_location: '', // conference-specific fields
 		patent_refNum: '', patent_location: '', // patent-specific fields
 		report_publisher: '', report_number: '', report_location: '', // report-specific fields
 		thesis_university: '', thesis_supervisors: '', thesis_degree: '', thesis_depart: '', thesis_pages: '', // thesis-specific fields
@@ -1218,58 +1229,57 @@ var PublicationAddForm = React.createClass({
         var journalDetailFields = (
         	<div><Input type="text" placeholder="Journal:" name="journal" required onChange={this.handleChange} value={this.state.journal} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Journal Volume" name="volume" required onChange={this.handleChange} value={this.state.journal_volume} /></td>
-				<td><Input type="text" placeholder="Journal Issue" name="issue" required onChange={this.handleChange} value={this.state.journal_issue} /></td>
-				<td><Input type="text" placeholder="Journal Pages" name="pages" required onChange={this.handleChange} value={this.state.journal_pages} /></td>
+				<td><Input type="text" placeholder="Journal Volume" name="journal_volume" required onChange={this.handleChange} value={this.state.journal_volume} /></td>
+				<td><Input type="text" placeholder="Journal Issue" name="journal_issue" required onChange={this.handleChange} value={this.state.journal_issue} /></td>
+				<td><Input type="text" placeholder="Journal Pages" name="journal_pages" required onChange={this.handleChange} value={this.state.journal_pages} /></td>
 			</tr></table></div>
 		);
 		var bookChapterTitle = (
 			<Input type="text" placeholder="Chapter Title:" name="chapter" onChange={this.handleChange} value={this.state.book_chapter} />
 		);
 		var bookDetailFields = (
-			<div><Input type="text" placeholder="Publisher:" name="publisher" onChange={this.handleChange} value={this.state.book_publisher} />
+			<div><Input type="text" placeholder="Publisher:" name="book_publisher" required onChange={this.handleChange} value={this.state.book_publisher} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="ISBN" name="isbn" required="required" onChange={this.handleChange} value={this.state.book_isbn} /></td>
-				<td><Input type="text" placeholder="Edition" name="edition" required="required" onChange={this.handleChange} value={this.state.book_edition} /></td>
-				<td><Input type="text" placeholder="Pages" name="pages" required="required" onChange={this.handleChange} value={this.state.book_pages} /></td>
+				<td><Input type="text" placeholder="ISBN" name="book_isbn" required onChange={this.handleChange} value={this.state.book_isbn} /></td>
+				<td><Input type="text" placeholder="Edition" name="book_edition" required onChange={this.handleChange} value={this.state.book_edition} /></td>
+				<td><Input type="text" placeholder="Pages" name="book_pages" required onChange={this.handleChange} value={this.state.book_pages} /></td>
 			</tr></table></div>
 		);
 		var confDetailFields = (
-			<div><Input type="text" placeholder="Conference" name="conf" onChange={this.handleChange} value={this.state.conf_conf} />
+			<div><Input type="text" placeholder="Conference" name="conf" required onChange={this.handleChange} value={this.state.conf} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Conference Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.conf_volume} /></td>
-				<td><Input type="text" placeholder="Conference Location" name="location" required="required" onChange={this.handleChange} value={this.state.conf_edition} /></td>
+				<td><Input type="text" placeholder="Conference Volume" name="conf_volume" required onChange={this.handleChange} value={this.state.conf_volume} /></td>
+				<td><Input type="text" placeholder="Conference Location" name="conf_location" required onChange={this.handleChange} value={this.state.conf_location} /></td>
 			</tr></table></div>
 		);
 		var patentDetailFields = (
 			<div><table width="100%"><tr>
-				<td><Input type="text" placeholder="Patent Reference Number" name="volume" required="required" onChange={this.handleChange} value={this.state.patent_refNum} /></td>
-				<td><Input type="text" placeholder="Patent Location" name="location" required="required" onChange={this.handleChange} value={this.state.patent_location} /></td>
+				<td><Input type="text" placeholder="Patent Reference Number" name="patent_refNum" required onChange={this.handleChange} value={this.state.patent_refNum} /></td>
+				<td><Input type="text" placeholder="Patent Location" name="patent_location" required onChange={this.handleChange} value={this.state.patent_location} /></td>
 			</tr></table></div>
 		);
 		var reportDetailFields = (
-			<div><Input type="text" placeholder="Publisher" name="conf" onChange={this.handleChange} value={this.state.report_publisher} />
+			<div><Input type="text" placeholder="Publisher" name="report_publisher" onChange={this.handleChange} value={this.state.report_publisher} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Report Volume" name="volume" required="required" onChange={this.handleChange} value={this.state.report_number} /></td>
-				<td><Input type="text" placeholder="Report Location" name="location" required="required" onChange={this.handleChange} value={this.state.report_location} /></td>
+				<td><Input type="text" placeholder="Report Volume" name="report_number" required onChange={this.handleChange} value={this.state.report_number} /></td>
+				<td><Input type="text" placeholder="Report Location" name="report_location" required onChange={this.handleChange} value={this.state.report_location} /></td>
 			</tr></table></div>
 		);
         var thesisDetailFields = (
-			<div><Input type="text" placeholder="University" name="conf" onChange={this.handleChange} value={this.state.thesis_university} />
-			<Input type="text" placeholder="Supervisors" name="conf" onChange={this.handleChange} value={this.state.thesis_supervisors} />
+			<div><Input type="text" placeholder="University" name="thesis_university" required onChange={this.handleChange} value={this.state.thesis_university} />
+			<Input type="text" placeholder="Supervisors" name="thesis_supervisors" onChange={this.handleChange} value={this.state.thesis_supervisors} />
 			<table width="100%"><tr>
-				<td><Input type="text" placeholder="Degree" name="volume" required="required" onChange={this.handleChange} value={this.state.thesis_degree} /></td>
-				<td><Input type="text" placeholder="Department" name="location" required="required" onChange={this.handleChange} value={this.state.thesis_depart} /></td>
-				<td><Input type="text" placeholder="Pages" name="location" required="required" onChange={this.handleChange} value={this.state.thesis_pages} /></td>
+				<td><Input type="text" placeholder="Degree" name="thesis_degree" required onChange={this.handleChange} value={this.state.thesis_degree} /></td>
+				<td><Input type="text" placeholder="Department" name="thesis_depart" required onChange={this.handleChange} value={this.state.thesis_depart} /></td>
+				<td><Input type="text" placeholder="Pages" name="thesis_pages" required onChange={this.handleChange} value={this.state.thesis_pages} /></td>
 			</tr></table></div>
 		);
 		var unpubDetailFields = (
-			<Input type="text" placeholder="Place of Publication" name="location" onChange={this.handleChange} value={this.state.unpub_location} />
+			<Input type="text" placeholder="Place of Publication" name="unpub_location" onChange={this.handleChange} value={this.state.unpub_location} />
 		);
 
 		var showBookChapterTitle = function(type) {
 			if (type === "Pub_Chapter") {
-				console.log("wtf");
 				titleLabel = "Book Title:";
 				return bookChapterTitle;
 			}
@@ -1278,7 +1288,6 @@ var PublicationAddForm = React.createClass({
         var showTypeFields = function(type) {
 			switch (type) {
 				case "Pub_Book":
-					console.log(this.bookDetailFields);
 					return bookDetailFields;
 					break;
 				case "Pub_Chapter":
@@ -1289,7 +1298,6 @@ var PublicationAddForm = React.createClass({
 					return confDetailFields;
 					break;
 				case "Pub_Journal_Article":
-					console.log(journalDetailFields);
 					return journalDetailFields;
 					break;
 				case "Pub_Patent":
@@ -1316,7 +1324,7 @@ var PublicationAddForm = React.createClass({
                     </Button>
                   </div>
 
-				<Input type="select" placeholder name="type" onChange={this.handleChange} value={this.state.type} >
+				<Input type="select" placeholder name="type" required onChange={this.handleChange} value={this.state.type} >
 					<option value="" disabled>Type:</option>
 					<option value="Pub_Book">Book</option>
 					<option value="Pub_Chapter">Book Chapter</option>
@@ -1328,12 +1336,12 @@ var PublicationAddForm = React.createClass({
 					<option value="Pub_Unpublished">Unpublished Article</option>
 				</Input>
 				{showBookChapterTitle(this.state.type)}
-                <Input type="text" placeholder={titleLabel} name="title" onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Authors:" name="authors" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="text" placeholder={titleLabel} name="title" required onChange={this.handleChange} value={this.state.title} />
+                <Input type="text" placeholder="Authors:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
+                <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
+                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" required onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1368,7 +1376,7 @@ var PublicationAddForm = React.createClass({
 					keywords: (entry.hasOwnProperty('subject') ? entry.subject.join(",") : ''),
 					autoFillStatus: "",
 				});
-				this.fillDetails(entry);
+				this.fillDetails(entry, null);
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('http://api.crossref.org/works/', status, err.toString());
@@ -1379,123 +1387,156 @@ var PublicationAddForm = React.createClass({
 	},
 	// each publication type has special fields. This function selects based on the type value returned from
 	// CrossRef and fills in the appropriate fields
-	fillDetails: function(entry) {
+	fillDetails: function(entry, pubForm) {
 		switch (entry.type) {
+			case "Pub_Journal_Article":
 			case "journal-article":
-				this.setState({
-					type: "Pub_Journal_Article",
-					journal: entry['container-title'][0],
-					journal_volume: entry.volume,
-					journal_issue: entry.issue,
-					journal_pages: entry.page,
-				});
-				{/*var update = ReactUpdate(this.state, {
-					type: {$set: "journal"},
-					journal: {journal: {$set: entry['container-title'][0]}},
-					journal: {volume: {$set: entry.volume}},
-					journal: {issue: {$set: entry.issue}},
-					journal: {pages: {$set: entry.pages}},
-				});*/}
+				if (pubForm != null) {
+					pubForm["journal"] = this.state.journal;
+					pubForm["journal_volume"] = this.state.journal_volume;
+					pubForm["journal_issue"] = this.state.journal_issue;
+					pubForm["journal_pages"] = this.state.journal_pages;
+				} else {
+					this.setState({
+						type: "Pub_Journal_Article",
+						journal: entry['container-title'][0],
+						journal_volume: entry.volume,
+						journal_issue: entry.issue,
+						journal_pages: entry.page,
+					});
+				}
 				break;
+			case "Pub_Book":
 			case "book": // 10.1007/1-4020-4466-6
-				this.setState({
-					type: "Pub_Book",
-					book_publisher: entry.publisher,
-					book_isbn: entry['isbn'][0],
-					book_edition: '',
-					book_pages: '',
-				});
+				if (pubForm != null) {
+					pubForm["book_publisher"] = this.state.book_publisher;
+					pubForm["book_isbn"] = this.state.book_isbn;
+					pubForm["book_edition"] = this.state.book_edition;
+					pubForm["book_pages"] = this.state.book_pages;
+				} else {
+					this.setState({
+						type: "Pub_Book",
+						book_publisher: entry.publisher,
+						book_isbn: entry.ISBN[0].substring(28),
+						book_edition: (entry.hasOwnProperty('edition') ? entry.edition : ''),
+						book_pages: (entry.hasOwnProperty('page') ? entry.page : ''),
+					});
+				}
 				break;
+			case "Pub_Chapter":
 			case "book-chapter": //10.1007/1-4020-4466-6_3
-				this.setState({
-					type: "Pub_Chapter",
-					title: entry['container-title'][0],
-					book_chapter: entry.title,
-					book_publisher: entry.publisher,
-					book_pages: entry.page,
-				});
+				if (pubForm != null) {
+					pubForm["book_publisher"] = this.state.book_publisher;
+					pubForm["book_isbn"] = this.state.book_isbn;
+					pubForm["book_edition"] = this.state.book_edition;
+					pubForm["book_chapter"] = this.state.book_chapter;
+					pubForm["book_pages"] = this.state.book_pages;
+				} else {
+					this.setState({
+						type: "Pub_Chapter",
+						title: entry['container-title'][0],
+						book_chapter: entry.title[0],
+						book_isbn: entry.ISBN[0].substring(28),
+						book_publisher: entry.publisher,
+						book_pages: (entry.hasOwnProperty('page') ? entry.page : ''),
+					});
+				}
 				break;
+			case "Pub_Conference":
 			case "proceedings":
 			case "proceedings-article": //10.1109/CSEET.2012.35
-				this.setState({
-					type: "Pub_Conference",
-					conf_conf: entry['container-title'][0],
-				});
+				if (pubForm != null) {
+					pubForm["conf"] = this.state.conf;
+					pubForm["conf_volume"] = this.state.conf_volume;
+					pubForm["conf_location"] = this.state.conf_location;
+				} else {
+					this.setState({
+						type: "Pub_Conference",
+						conf: entry['container-title'][0],
+					});
+				}
 				break;
+			case "Pub_Patent":
 			case "patent":
-				this.setState({
-					type: "Pub_Patent",
-				});
+				if (pubForm != null) {
+					pubForm["patent_refNum"] = this.state.patent_refNum;
+					pubForm["patent_location"] = this.state.patent_location;
+				} else {
+					this.setState({
+						type: "Pub_Patent",
+					});
+				}
 				break;
+			case "Pub_Report":
 			case "report": //10.2172/897503, 10.1037/ce100001
-				this.setState({
-					type: "Pub_Report",
-					report_publisher: entry.publisher,
-				});
+				if (pubForm != null) {
+					pubForm["report_publisher"] = this.state.report_publisher;
+					pubForm["report_number"] = this.state.report_number;
+					pubForm["report_location"] = this.state.report_location;
+				} else {
+					this.setState({
+						type: "Pub_Report",
+						report_publisher: entry.publisher,
+					});
+				}
 				break;
+			case "Pub_Thesis":
 			case "dissertation": // 10.2986/tren.009-0347
-				this.setState({
-					type: "Pub_Thesis",
-				});
+				if (pubForm != null) {
+					pubForm["thesis_university"] = this.state.thesis_university;
+					pubForm["thesis_supervisors"] = this.state.thesis_supervisors;
+					pubForm["thesis_degree"] = this.state.thesis_degree;
+					pubForm["thesis_depart"] = this.state.thesis_depart;
+					pubForm["thesis_pages"] = this.state.thesis_pages;
+				} else {
+					this.setState({
+						type: "Pub_Thesis",
+					});
+				}
 				break;
+			case "Pub_Unpublished":
 			case "unpublished":
-				this.setState({
-					type: "Pub_Unpublished",
-				});
+				if (pubForm != null) {
+					pubForm["unpub_location"] = this.state.unpub_location;
+				} else {
+					this.setState({
+						type: "Pub_Unpublished",
+					});
+				}
 				break;
 			default:
-				console.log('hi');
+				console.log('Warning: type unsupported', entry.type);
 		}
 	},
 
 	handleSubmitData: function(e) {
         e.preventDefault();
 
-        var pubForm = {file: this.state.file, picture: this.state.picture,
-        				fileType: this.state.fileType, pictureType: this.state.pictureType,
+        var pubForm = {file: this.state.file, fileType: this.state.fileType,
         				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
-		console.log(dataForm);
+        				description: this.state.description, doi: this.state.doi, url: this.state.url,
+        				keywords: this.state.keywords, title: this.state.title, type: this.state.type};
+		this.fillDetails({type:this.state.type}, pubForm);
 
-        var isValidForm = this.validateForm();
-		if (isValidForm.length === 0) {
-			var endpoint = this.props.fromModelTab ? "/model" : "/data";
+		console.log("pubForm after", pubForm);
 
-			$.ajax({
-				url: path + endpoint,
-				dataType: 'json',
-				contentType: "application/json; charset=utf-8",
-				type: 'POST',
-				data: JSON.stringify(pubForm),
-				processData: false,
-				success: function(data) {
-					this.setState({data: data});
-					console.log("Data upload done");
-					console.log(data);
-					this.close();
-				}.bind(this),
-				error: function(xhr, status, err) {
-					console.error(path + endpoint, status, err.toString());
-				}.bind(this)
-			});
-		}
-		else {
-			var message = 'Publication could not be added:';
-			if (isValidForm.indexOf('TITLE') > -1) {
-				message += ' Title is required.';
-			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
-			if (isValidForm.indexOf('DATE') > -1) {
-				message += ' Please indicate the creation date.';
-			}
-			if (isValidForm.indexOf('KEYWORDS') > -1) {
-				message += ' Please specify at least one keyword.';
-			}
-			this.setState({formFeedback: message});
-		}
+		$.ajax({
+			url: path + "/publication",
+			dataType: 'json',
+			contentType: "application/json; charset=utf-8",
+			type: 'POST',
+			data: JSON.stringify(pubForm),
+			processData: false,
+			success: function(data) {
+				console.log("Publication upload done");
+				console.log(data);
+				this.close();
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error(path + "/publication", status, err.toString());
+			}.bind(this)
+		});
+
         return;
     },
 
@@ -1546,6 +1587,230 @@ var PublicationAddForm = React.createClass({
 	},
 });
 
+// var ResourceAddForm = React.createClass({
+//     close: function(e) {
+//         if (typeof this.props.submitSuccess === 'function') {
+//             this.props.submitSuccess();
+//         }
+//     },
+//     getInitialState: function() {
+//      return {
+//         fromModelTab: false,
+//         buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+//         formFeedback: '',
+//         fileFeedback: {},
+//         pictureFeedback: '',
+
+//         // form
+//         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
+//         creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: '', groupies: ''
+//         };
+//     },
+//     componentDidMount: function() {
+//         var eCode = <script>
+//                         $(function() {
+//                             $('.auto').autocomplete({
+//                                     source: function(req, res) {
+//                                         $.ajax({
+//                                           url: '/allusers',
+//                                           dataType: 'JSON',
+//                                           cache: false,
+//                                           success: function(data) {
+//                                             console.log("SUCCESS!!!!!!!");
+//                                             console.log(data);
+//                                             var arr = $.grep(data, function(item){
+//                                               return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+//                                             });
+//                                             res($.map(arr, function(item){
+//                                               return {
+//                                                 label: item.fullname,
+//                                                 value: item.username
+//                                               };
+//                                             }));
+//                                           },
+//                                           error: function(xhr) {
+//                                             console.log("ERROR WTF!!!");
+//                                             console.log(xhr.status);
+//                                           }
+//                                         });
+//                                     },
+//                                     messages: {
+//                                       noResults: '',
+//                                       results: function() {}
+//                                     }
+//                             })
+//                         });
+//                     </script>
+//         //var eCode = <script src="/javascripts/autocomplete.js"></script>
+//         $("#scriptContainer").append(eCode);
+//     },
+// 	render: function() {
+// 		return (
+// 		<div>
+//             <div id="scriptContainer"></div>
+// 			<form className="form" onSubmit={this.handleSubmitData}>
+// 			    <div className="well" style={this.buttonStyles}>
+//                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
+//                     	style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
+//                         Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+//                     </Button>
+//                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+//                         Select Files... <input type="file" onChange={this.handleFile} />
+//                     </Button>
+//                   </div>
+
+//                 <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+//                 <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
+//                 <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+//                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+//                 <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
+//                 <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
+//                 <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+//                 <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+//                 <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
+
+//                <Modal.Footer>
+//                    <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+//                    <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
+//                </Modal.Footer>
+//             </form>
+// 		</div>
+// 		);
+// 	},
+
+// 	handleChange: function(e) {
+// 	    var changedState = {};
+// 	    changedState[e.target.name] = e.target.value;
+// 	    this.setState( changedState );
+// 	},
+
+// 	handleSubmitData: function(e) {
+//         e.preventDefault();
+
+//         var dataForm = {file: this.state.file, picture: this.state.picture,
+//         				fileType: this.state.fileType, pictureType: this.state.pictureType,
+//         				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+//         				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+//         				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
+// 		console.log(dataForm);
+
+//         var isValidForm = this.validateForm();
+// 		if (isValidForm.length === 0) {
+// 			var endpoint = this.props.fromModelTab ? "/model" : "/data";
+// 			var dataFormORIG = {file: this.state.file, picture: this.state.picture,
+// 				fileType: this.state.fileType, pictureType: this.state.pictureType,
+// 				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+// 				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
+// 				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
+
+// 			$.ajax({
+// 				url: path + endpoint,
+// 				dataType: 'json',
+// 				contentType: "application/json; charset=utf-8",
+// 				type: 'POST',
+// 				data: JSON.stringify(dataForm),
+// 				processData: false,
+// 				success: function(data) {
+// 					this.setState({data: data});
+// 					console.log("Data upload done");
+// 					console.log(data);
+// 					this.close();
+// 				}.bind(this),
+// 				error: function(xhr, status, err) {
+// 					console.error(path + endpoint, status, err.toString());
+// 				}.bind(this)
+// 			});
+// 		}
+// 		else {
+// 			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
+// 			if (isValidForm.indexOf('TITLE') > -1) {
+// 				message += ' Title is required.';
+// 			}
+// 			if (isValidForm.indexOf('FILE') > -1) {
+// 				message += ' Please upload a file.';
+// 			}
+// 			if (isValidForm.indexOf('DATE') > -1) {
+// 				message += ' Please indicate the creation date.';
+// 			}
+// 			if (isValidForm.indexOf('KEYWORDS') > -1) {
+// 				message += ' Please specify at least one keyword.';
+// 			}
+// 			this.setState({formFeedback: message});
+// 		}
+//         return;
+//     },
+
+// 	showPictureUpload(fromModel) {
+// 	    if (fromModel) {
+//             return '';
+// 	    }
+// 	    return 'none';
+// 	},
+
+// 	openFileUpload() {
+// 	    var input = $(this),
+//             numFiles = input.get(0).files ? input.get(0).files.length : 1,
+//             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+//         input.trigger('fileselect', [numFiles, label]);
+
+//         this.state.file.on('fileselect', function(event, numFiles, label) {
+//             console.log(numFiles);
+//             console.log(label);
+//             return input;
+//         });
+// 	},
+
+// 	handleFile: function(e) {
+//         var self = this;
+//         var reader = new FileReader();
+//         var file = e.target.files[0];
+//         var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+//         reader.onload = function(upload) {
+//           self.setState({
+//             file: upload.target.result,
+//             fileType: extension,
+//             fileFeedback: {background: '#dff0d8'}
+//           });
+//         }
+//         reader.readAsDataURL(file);
+//     },
+
+//     handlePicture: function(e) {
+//         var self = this;
+//         var reader = new FileReader();
+//         var file = e.target.files[0];
+//         var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+//         reader.onload = function(upload) {
+//          self.setState({
+//            picture: upload.target.result,
+//            pictureType: extension,
+//            pictureFeedback: '#dff0d8'
+//          });
+//         }
+//         reader.readAsDataURL(file);
+//     },
+
+// 	validateForm: function() {
+// 		var issues = []
+// 		if (!this.state.title.trim()) {
+// 			issues.push("TITLE");
+// 		}
+// 		if (!this.state.file) {
+// 			issues.push("FILE");
+// 		}
+// 		if (!this.state.creationDate) {
+// 			issues.push("DATE");
+// 		}
+// 		if (!this.state.keywords.trim()) {
+// 			issues.push("KEYWORDS");
+// 		}
+// 		return issues;
+// 	},
+// });
+
+// <<<<<<< HEAD
 function split(val) {
     return val.split( /,\s*/ );
 }
@@ -1555,14 +1820,15 @@ function extractLast(term) {
 }
 
 var ResourceAddForm = React.createClass({
+// =======
+// var ProjectAddForm = React.createClass({
+// >>>>>>> e7b8d2179a31785e6c2ba648da230c93d201ef1f
     close: function(e) {
-        if (typeof this.props.submitSuccess === 'function') {
-            this.props.submitSuccess();
-        }
+        this.props.submitSuccess();
     },
     getInitialState: function() {
      return {
-        fromModelTab: false,
+        alertVisible: false,
         buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
         formFeedback: '',
         fileFeedback: {},
@@ -1570,7 +1836,8 @@ var ResourceAddForm = React.createClass({
 
         // form
         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: '', groupies: ''
+        startDate: '', endDate: '', description: '', link_to_resources: '', client: '', keywords: '', url: '',
+        organizationId: 'AJgSwufvvO'
         };
     },
     componentDidMount: function() {
@@ -1628,13 +1895,18 @@ var ResourceAddForm = React.createClass({
         $("#scriptContainer").append(eCode);
     },
 	render: function() {
+	    if (this.state.alertVisible) {
+	        var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
+	    } else {var alert = "";}
 		return (
 		<div>
             <div id="scriptContainer"></div>
 			<form className="form" onSubmit={this.handleSubmitData}>
+			    <Modal.Body>
+			    {alert}
 			    <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
-                    	style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
+                    	style={{background: this.state.pictureFeedback}}>
                         Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                     </Button>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
@@ -1644,47 +1916,50 @@ var ResourceAddForm = React.createClass({
 
                 <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
                 <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                <Input type="date" placeholder="Start Date:" name="startDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
+                <Input type="date" placeholder="End Date:" name="endDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.endDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
-                <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
-                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
-                <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
-                <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
-
-               <Modal.Footer>
-                   <Input className="btn btn-default pull-right" type="submit" value="Continue" />
-                   <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
-               </Modal.Footer>
+                <Input type="text" placeholder="Client:" name="client" onChange={this.handleChange} value={this.state.client} />
+                <Input type="text" placeholder="Link to Resources:" name="link_to_resources" onChange={this.handleChange} value={this.state.link_to_resources} />
+                <Input type="text" placeholder="Keywords (Comma Separated Tags):" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                <Input type="text" placeholder="URL (Link to Patent:)" name="url" onChange={this.handleChange} value={this.state.url} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <input className="full-button" type="submit" value="Submit"/>
+                </Modal.Footer>
             </form>
 		</div>
 		);
 	},
-
+    handleAlertDismiss() {
+        this.setState({alertVisible: false});
+    },
+    handleAlertShow() {
+        this.setState({alertVisible: true});
+    },
 	handleChange: function(e) {
 	    var changedState = {};
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
-
 	handleSubmitData: function(e) {
         e.preventDefault();
 
-        var dataForm = {file: this.state.file, picture: this.state.picture,
+        var dataForm = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
-        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
+        				collaborators: this.state.collaborators, startDate: this.state.startDate, endDate: this.state.endDate,
+        				description: this.state.description, client: this.state.client, link_to_resources: this.state.link_to_resources,
+        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
 		console.log(dataForm);
 
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
-			var endpoint = this.props.fromModelTab ? "/model" : "/data";
-			var dataFormORIG = {file: this.state.file, picture: this.state.picture,
+			var endpoint = "/project";
+			var dataFormORIG = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
 				fileType: this.state.fileType, pictureType: this.state.pictureType,
-				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
+				collaborators: this.state.collaborators, startDate: this.state.startDate, endDate: this.state.endDate,
+				description: this.state.description, client: this.state.client, link_to_resources: this.state.link_to_resources,
+				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
 
 			$.ajax({
 				url: path + endpoint,
@@ -1694,10 +1969,8 @@ var ResourceAddForm = React.createClass({
 				data: JSON.stringify(dataForm),
 				processData: false,
 				success: function(data) {
-					this.setState({data: data});
-					console.log("Data upload done");
-					console.log(data);
-					this.close();
+				    console.log(data);
+				    this.close();
 				}.bind(this),
 				error: function(xhr, status, err) {
 					console.error(path + endpoint, status, err.toString());
@@ -1705,7 +1978,7 @@ var ResourceAddForm = React.createClass({
 			});
 		}
 		else {
-			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
+			var message = 'Project could not be added!';
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
@@ -1713,12 +1986,12 @@ var ResourceAddForm = React.createClass({
 				message += ' Please upload a file.';
 			}
 			if (isValidForm.indexOf('DATE') > -1) {
-				message += ' Please indicate the creation date.';
+				message += ' Please indicate the start and end date.';
 			}
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
-			this.setState({formFeedback: message});
+			this.setState({formFeedback: message, alertVisible: true});
 		}
         return;
     },
@@ -1783,9 +2056,12 @@ var ResourceAddForm = React.createClass({
 		if (!this.state.file) {
 			issues.push("FILE");
 		}
-		if (!this.state.creationDate) {
+		if (!this.state.startDate) {
 			issues.push("DATE");
 		}
+		if (!this.state.endDate) {
+            issues.push("DATE");
+        }
 		if (!this.state.keywords.trim()) {
 			issues.push("KEYWORDS");
 		}

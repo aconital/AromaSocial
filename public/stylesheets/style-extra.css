@@ -2,33 +2,25 @@
 .hide { display: none !important; }
 .show { display: block !important; }
 
-.body-link{color: #70ab8f; }
-.body-link:hover{color: #70ab8f;}
+.body-link{color: var(--foreground-color); }
+.body-link:hover{color: var(--foreground-color); }
 
 .btn-primary {
-    background-color: #569978;
-    border-color: #569978;
+    background-color: var(--foreground-color);
+    border-color: var(--foreground-color);
     border-radius: 5px;
 } .btn-primary:hover {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
+    background-color: var(--foreground-hover-color);
+    border-color: var(--foreground-color);
     border-radius: 5px;
 } .btn-primary:active {
-    background-color: #70ab8f;
-    border-color: #70ab8f;
+    background-color: var(--foreground-color);
+    border-color: var(--foreground-color);
     border-radius: 5px;
 } .btn-primary + .btn-primary {
     margin-left: 2%;
 } .btn-accept-reject {
     width: 31%;
-} .btn-search {
-    border-top-left-radius:0;
-    border-bottom-left-radius:0;
-    bottom:0px;
-    right:0px;
-    margin: 0px;
-    position:absolute;
-    z-index:1000;
 } .btn-comment {
     border-top-left-radius:0;
     border-bottom-left-radius:0;
@@ -39,15 +31,23 @@
     z-index:0;
 }
 
+.align-left { text-align: left; }
+.align-center { text-align: center; }
+.align-right { text-align: right; }
+
 .font-10 { font-size: 10px; }
 .font-15 { font-size: 15px; }
 
+.no-margin { margin:0px; }
+.no-padding { padding:0px; }
+.no-margin-padding { margin:0px; padding:0px; }
 .margin-top-5 { margin-top:5px; }
 .margin-top-10 { margin-top:10px; }
 .margin-top-20 { margin-top:20px; }
 .margin-top-bottom-5 { margin:5px 0px; }
 .margin-top-bottom-10 { margin:10px 0px; }
 
+.margin-bottom-0 { margin-bottom: 0px; }
 .padding-left-5 { padding-left: 5px; }
 .padding-left-10 { padding-left: 10px; }
 .padding-right-5 { padding-right: 5px; }
@@ -57,7 +57,110 @@
 .padding-top-bottom-5 { padding:5px 0px; }
 .padding-top-bottom-10 { padding:10px 0px; }
 
-.navbar-default { background-color: rgba(0, 0, 0, 0) !important; }
 .navbar-right { margin-right: 0px !important; right: 0px; }
+.navbar-brand {
+  padding-top: 15px !important;
+  margin-right: 15px !important;
+  background-color: var(--foreground-color); }
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  background-color: var(--foreground-hover-color) !important;
+}
+
 .navbar-collapse { padding: 0px; width: 1165px; left: 0px; }
 .navbar-wrapper { max-width: 1175px; padding: 0px; padding-left: 25px; margin: auto; }
+.navbar-default { background-color: var(--foreground-color); box-shadow: 0px -10px 10px 10px #000; height: 60px; }
+.dropdown-toggle { color: var(--white-color) !important; background-color: var(--foreground-color) !important; }
+.dropdown-toggle:hover { color: var(--white-color) !important; background-color: var(--foreground-hover-color) !important; }
+.open > .dropdown-toggle { color: var(--foreground-color) !important; background-color: var(--white-color) !important; }
+.dropdown-menu { border-color: var(--white-color) !important; padding: 0px; }
+.dropdown-menu li a { color: var(--foreground-color) !important; }
+
+.search-bar {
+    width: 100%;
+    border-radius: 4px;
+    position: absolute;
+} .search-bar-form {
+    margin: 0px 15px;
+    margin-top: -1px;
+    padding: 0px;
+} .btn-search {
+    background-color: var(--white-color);
+    color: var(--foreground-color);
+    border-radius: 4px;
+    bottom:0px;
+    right:0px;
+    margin: 0px;
+    position:absolute;
+    z-index:1000;
+    outline: none !important;
+} .btn-search:hover {
+    background-color: var(--white-color);
+    color: var(--foreground-hover-color);
+} .btn-search:active {
+    background-color: var(--white-color);
+    color: var(--foreground-hover-color);
+}
+
+.img-circle {
+  background-color: var(--background-color);
+  border: solid;
+  border-color: var(--background-color);
+  border-width: 1px;
+  border-radius: 4px;
+} .connection-button { color: var(--white-color); background-color: var(--foreground-color); font-size:25px; }
+.open > .connection-button:hover { color:var(--foreground-color); background-color: var(--white-color); font-size:25px; }
+.logout-button { color: var(--white-color); background-color: var(--foreground-color); font-size:25px; }
+.logout-button:hover { color: var(--white-color); background-color: var(--foreground-hover-color); font-size:25px; }
+.logout-button a span { color: var(--white-color); background-color: var(--foreground-color); font-size:25px; top: 2px; }
+.logout-button:hover a span { color: var(--white-color); background-color: var(--foreground-hover-color); font-size:25px; top: 2px; }
+.navbar-hover:hover{ background-color: var(--foreground-hover-color); }
+
+.friend-request-dropdown { width: 500px; }
+.friend-request-item { min-width: 500px; padding: 10px; }
+.friend-request-item + .friend-request-item { min-width: 500px; padding: 10px; border-top: solid 1px; border-color: #cccccc; }
+.friend-request-left { float:left; width: 85px; }
+.friend-request-center { float:left; width: 315px ; color: var(--foreground-color); }
+.friend-request-right { float:left; width: 80px; }
+.friend-request-image-wrap {
+  background-color: var(--foreground-color);
+  border: solid;
+  border-color: var(--foreground-color);
+  border-width: 1px;
+  border-radius: 4px;
+  width: 75px;
+  height: 75px;
+  overflow: hidden;
+  opacity: 1;
+  -webkit-transition: .3s ease-in-out;
+  transition: .3s ease-in-out;
+} .friend-request-image {
+  margin: auto;
+  height: 100%;
+  width: 100%;
+  left: -100%;
+  right: -100%;
+  top: -100%;
+  bottom: -100%;
+} .friend-request-image-wrap:hover {
+    opacity:0.75;
+} .friend-request-button {
+    width: 78px;
+}
+
+.full-button {
+    color: #fff;
+    background-color: var(--foreground-color);
+    display: inline !important;
+    border: solid;
+    border-color: var(--foreground-color);
+    border-width: 1px 1px 0 1px;
+    padding: 6px 12px;
+    margin: 0 0.05em 0 0;
+    font-size: 14px;
+    border-radius:4px;
+    width:100%;
+} .full-button:hover {
+    background-color: var(--foreground-hover-color);
+    border-color: var(--foreground-hover-color);
+}

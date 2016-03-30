@@ -132,65 +132,121 @@ module.exports=function(app,Parse) {
 
     app.post('/profile/:username/publication', function(req,res,next){
         var currentUser = req.user;
+// <<<<<<< HEAD
         if (currentUser && currentUser.username == req.params.username) {
+// =======
+// 		var linkUser = req.params.username;
+// 		if(currentUser.username == linkUser) {
+// >>>>>>> e7b8d2179a31785e6c2ba648da230c93d201ef1f
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
             console.log(formatted);
-
             var reqBody = req.body;
 
-            // send to Parse
-            var Publication = Parse.Object.extend("Publication");
-            var pub = new Publication();
+            // set correct object and send to Parse
+            var PubType = (reqBody.type == "Pub_Chapter" ? Parse.Object.extend("Pub_Book") : Parse.Object.extend(reqBody.type));
+            var pub = new PubType();
 
-            pub.set('user',currentUser);
-            pub.set('author',reqBody.author);
-            pub.set('description',reqBody.description);
+            pub.set('contributors',reqBody.collaborators.split(/\s*,\s*/g));
+            pub.set('abstract',reqBody.description);
             pub.set('filename',"");
-            pub.set('groups',reqBody.groups);
-            pub.set('hashtags',reqBody.hashtags);
-            pub.set('keywords',reqBody.keywords);
-            pub.set('license',reqBody.license);
-            pub.set('publication_link',reqBody.publication_link);
+            pub.set('keywords',reqBody.keywords.split(/\s*,\s*/g));
+            pub.set('url',reqBody.url);
             pub.set('title',reqBody.title);
-            pub.set('groupies', reqBody.groupies);
-            pub.set('year',reqBody.publishDate.substring(0,4));
+			pub.set('doi',reqBody.doi);
+			pub.set('publication_date', new Date(reqBody.creationDate));
+            pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
 
-            pub.save(null, {
-                success: function(response) {
-                    objectId = response.id;
-                    // encode file
-                    var params = awsUtils.encodeFile(req.params.username, objectId, reqBody.file, reqBody.fileType, "_pub_");
+			// add type-specific fields
+			switch (reqBody.type) {
+				case "Pub_Book":
+                	pub.set('publisher', reqBody.book_publisher);
+                	pub.set('isbn', reqBody.book_isbn);
+                	pub.set('edition', reqBody.book_edition);
+                	pub.set('page', reqBody.book_pages);
+					break;
+				case "Pub_Chapter":
+                	pub.set('publisher', reqBody.book_publisher);
+                	pub.set('isbn', reqBody.book_isbn);
+                	pub.set('edition', reqBody.book_edition);
+                	pub.set('page', reqBody.book_pages);
+				 	pub.set('chapter', reqBody.book_chapter);
+					break;
+				case "Pub_Conference":
+                    pub.set('conference', reqBody.conf);
+                    pub.set('volume', reqBody.conf_volume);
+                    pub.set('location', reqBody.conf_location);
+					break;
+				case "Pub_Journal_Article":
+                    pub.set('journal', reqBody.journal);
+                    pub.set('volume', reqBody.journal_volume);
+                    pub.set('issue', reqBody.journal_issue);
+                    pub.set('page', reqBody.journal_pages);
+					break;
+				case "Pub_Patent":
+                	pub.set('reference_number', reqBody.patent_refNum);
+                	pub.set('location', reqBody.patent_location);
+					break;
+				case "Pub_Report":
+                	pub.set('publisher', reqBody.report_publisher);
+                	pub.set('number', reqBody.report_number);
+                	pub.set('location', reqBody.report_location);
+					break;
+				case "Pub_Thesis":
+                	pub.set('university', reqBody.thesis_university);
+                	pub.set('supervisors', reqBody.thesis_supervisors.split(/\s*,\s*/g));
+                	pub.set('degree', reqBody.thesis_degree);
+                	pub.set('department', reqBody.thesis_depart);
+                	pub.set('page', reqBody.thesis_pages);
+					break;
+				case "Pub_Unpublished":
+                	pub.set('location', reqBody.unpub_location);
+					break;
+				default:
+					console.log("Warning: pub type not identified", reqBody.type);
+			}
 
-                    // upload files to S3
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    bucket.putObject(params, function (err, response) {
-                        if (err) { console.log("Data Upload Error:", err); }
-                        else {
-                            console.log('uploading to s3');
+            pub.save(null).then(function(response) {
+				objectId = response.id;
+				if (reqBody.file != null) {
+					// encode file
+					var params = awsUtils.encodeFile(req.params.username, objectId, reqBody.file, reqBody.fileType, "_pub_");
 
-                            // update file name in parse object
-                            pub.set('filename', awsLink + params.Key);
+					// upload files to S3
+					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+					bucket.putObject(params, function (err, response) {
+						if (err) { console.log("Data Upload Error:", err); }
+						else {
+							// update file name in parse object
+							pub.set('filename', awsLink + params.Key);
+							console.log("S3 uploaded successfully, saving new path.");
+							return {objectId: objectId, data: pub.save(null)};
+						}
+					});
+				}
+				console.log("Publication type saved successfully.");
+				return {objectId: response.id};
+            }).then(function(response) {
+				// add entry into superclass
+				var Publication = Parse.Object.extend("Publication");
+				var publication = new Publication();
 
-                            pub.save(null, {
-                                success: function(data) {
-                                    console.log("Path name updated successfully.");
-                                    res.status(200).json({status:"OK", query: data});
-                                },
-                                error: function(data, error) {
-                                    console.log('Failed to update new object path, with error code: ' + error.message);
-                                    res.status(500).json({status:"Uploading file failed." + error.message});
-                                }
-                            });
-                        }
-                    });
-                },
-                error: function(response, error) {
-                    console.log('Failed to create new object, with error code: ' + error.message);
-                    res.status(500).json({status: "Creating pub object failed. " + error.message});
-                }
-            });
+//				publication.set('groups',reqBody.groups);
+//				publication.set('groupies', reqBody.groupies);
+				publication.set('link', {__type: "Pointer", className: reqBody.type, objectId: response.objectId});
+				publication.set('year',reqBody.creationDate.substring(0,4));
+				publication.set('type',reqBody.type.replace("Pub_","").replace("_"," "));
+
+				console.log("Saving publication superclass.");
+				return publication.save(null);
+			}).then(function(response) {
+				console.log("Publication created successfully.");
+				res.status(200).json({status:"OK", query: response});
+			}, function(error) {
+				console.log('Failed to create new publication object, with error code: ' + error.message);
+				res.status(500).json({status: "Creating publication failed. " + error.message});
+			});
 
         } else {
             res.status(500).json({status: 'Publication upload failed!'});
