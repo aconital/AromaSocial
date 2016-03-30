@@ -53,8 +53,11 @@
                     </li>
                 </ul>
                 <form role="search" method="post" action="/searchpage" class="navbar-form navbar-left search-bar-form">
-                    <div class="form-group" style="width:100%">
-                        <input type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
+                    <div class="form-group form-inline" style="width:100%">
+                            <div class="input-group purple" style="width:100%">
+                                <input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
+                                <button type="submit" class="btn btn-primary btn-search searchButton"><span aria-hidden="true" class="glyphicon glyphicon-search"></span></button>
+                            </div>
                     </div>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
@@ -76,14 +79,6 @@
                         </ul>
                         -->
                     </li>
-                    <form role="search" method="post" action="/searchpage" class="navbar-form navbar-right">
-                        <div class="form-group form-inline" style="width:100%">
-                            <div class="input-group purple" style="width:100%">
-                                <input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
-                                <button type="submit" class="btn btn-primary btn-search searchButton"><span aria-hidden="true" class="glyphicon glyphicon-search"></span></button>
-                            </div>
-                        </div>
-                    </form>
                 {{else}}
                     <li>
                         <a href="/signin">Sign In</a>
