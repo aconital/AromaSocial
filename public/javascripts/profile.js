@@ -1546,6 +1546,14 @@ var PublicationAddForm = React.createClass({
 	},
 });
 
+function split(val) {
+    return val.split( /,\s*/ );
+}
+
+function extractLast(term) {
+    return split(term).pop();
+}
+
 var ResourceAddForm = React.createClass({
     close: function(e) {
         if (typeof this.props.submitSuccess === 'function') {
@@ -1568,7 +1576,13 @@ var ResourceAddForm = React.createClass({
     componentDidMount: function() {
         var eCode = <script>
                         $(function() {
-                            $('.auto').autocomplete({
+                            $('.auto').bind("keydown", function(event) {
+                                if ( event.keyCode === $.ui.keyCode.TAB &&
+                                    $( this ).autocomplete( "instance" ).menu.active ) {
+                                  event.preventDefault();
+                                }
+                            })
+                            .autocomplete({
                                     source: function(req, res) {
                                         $.ajax({
                                           url: '/allusers',
@@ -1580,22 +1594,32 @@ var ResourceAddForm = React.createClass({
                                             var arr = $.grep(data, function(item){
                                               return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                                             });
-                                            res($.map(arr, function(item){
+                                            res($.ui.autocomplete.filter($.map(data, function(item){
                                               return {
                                                 label: item.fullname,
                                                 value: item.username
                                               };
-                                            }));
+                                            }), extractLast(req.term)));
                                           },
                                           error: function(xhr) {
-                                            console.log("ERROR WTF!!!");
                                             console.log(xhr.status);
                                           }
                                         });
                                     },
+                                    focus: function() {
+                                        return false;
+                                    },
                                     messages: {
                                       noResults: '',
                                       results: function() {}
+                                    },
+                                    select: function(event, ui) {
+                                        var terms = split(this.value);
+                                        terms.pop();
+                                        terms.push(ui.item.value);
+                                        terms.push("");
+                                        this.value = terms.join(", ");
+                                        return false;
                                     }
                             })
                         });

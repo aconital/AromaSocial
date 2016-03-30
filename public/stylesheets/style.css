@@ -6483,6 +6483,8 @@ textarea {
 }
 
 .ui-autocomplete {
+    height: 500px;
+    overflow-y: scroll;
     position: absolute;
     top: 100%;
     left: 0;

@@ -30,7 +30,7 @@ var encodeHtmlEntity = function(str) {
 module.exports=function(app,Parse) {
 
     app.get('/allpublications', function(req, res, next) {
-        var currentUser = Parse.User.current();
+        var currentUser = req.user;
         var query = new Parse.Query('Publication');
         query.find({
             success: function(items) {
@@ -59,14 +59,14 @@ module.exports=function(app,Parse) {
         res.render('publication', {layout: 'home', title: 'Publication', path: req.path});
     });
     app.get('/publication/:objectId', function (req, res, next) {
-        var currentUser = Parse.User.current();
+        var currentUser = req.user;
         var query = new Parse.Query('Publication');
         query.get(req.params.objectId,{
             success: function(result) {
                 res.render('publication', {layout: 'home', title: 'Publication', path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.attributes.username,
-                    currentUserImg: currentUser.attributes.imgUrl,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
@@ -131,8 +131,8 @@ module.exports=function(app,Parse) {
     });
 
     app.post('/profile/:username/publication', function(req,res,next){
-        var currentUser = Parse.User.current();
-        if (currentUser && currentUser.attributes.username == req.params.username) {
+        var currentUser = req.user;
+        if (currentUser && currentUser.username == req.params.username) {
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
@@ -197,8 +197,8 @@ module.exports=function(app,Parse) {
         }
     });
     app.delete('/profile/:username/publications',function(req,res,next){
-        var currentUser = Parse.User.current();
-        if (currentUser && currentUser.attributes.username == req.params.username) {
+        var currentUser = req.user;
+        if (currentUser && currentUser.username == req.params.username) {
             var pubId=req.body.id;
             console.log("ID is: "+pubId);
             var Publication = Parse.Object.extend("Publication");
