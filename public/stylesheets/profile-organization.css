@@ -145,6 +145,8 @@
 .item-bottom-1 { float:left; width:20%; }
 .item-bottom-2 { margin-top:6px; float:left; width:80%; }
 .item-bottom-2-profile { position:relative; }
+.item-bottom-2-organization { position:relative; }
+
 
 .h1-title { padding-top: 25px !important; }
 .h3-title { padding-bottom: 25px !important; }

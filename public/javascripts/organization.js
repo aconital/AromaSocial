@@ -83,17 +83,16 @@ var Organization = React.createClass ({
                     <div className="item-top item-top-container">
                     </div>
                     <div className="content-wrap">
-                        <div>
-                            <div className="item-top-1 col">
-                                <img src={organization_imgURL} className="contain-image" />
-                            </div>
-                        </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
-                                <div className="side-panel" id="item-name"><h4>{name}</h4></div>
-                                <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                                <img src={organization_imgURL} className="contain-image" />
+                                <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                                <div className="side-panel"><h5>RATINGS</h5></div>
+                                <div className="side-panel"><h5>OTHERS</h5></div>
                             </div>
-                            <div id="item-bottom-2-organization" className="item-bottom-organization">
+                            <div id="item-bottom-2-organization" className="item-bottom-2-organization">
+                                <h1 className="no-margin-padding align-left h1-title">{name}</h1>
+                                <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                                 <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
@@ -107,23 +106,20 @@ var Organization = React.createClass ({
                 <div className="item-top item-top-container">
                 </div>
                 <div className="content-wrap">
-                    <div>
-                        <div className="item-top-1 col">
-                            <img src={organization_imgURL} className="contain-image" />
-                        </div>
-                    </div>
                     <div className="item-bottom">
                         <div className="item-bottom-1">
-                            <div className="side-panel" id="item-name"><h4>{name}</h4></div>
-                            <div className="item-panel-empty contain-panel-empty">
-                                {joinButton}
-                                <input className="btn btn-panel" value="Follow" />
-                                {/*<input className="btn btn-panel" value="Message" />
-                                 <input className="btn btn-panel" value="Ask" />*/}
-                            </div>
-                            <div className="side-panel" id="item-location"><h4>{orgLocation}</h4></div>
+                            <img src={organization_imgURL} className="contain-image" />
+                            <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                            <div className="side-panel"><h5>RATINGS</h5></div>
+                            <div className="side-panel"><h5>OTHERS</h5></div>
                         </div>
                         <div id="item-bottom-2-organization" className="item-bottom-2">
+                            <div className="interact-buttons-wrap">
+                                {joinButton}
+                                <input className="btn btn-panel" value="Follow" />
+                            </div>
+                            <h1 className="no-margin-padding align-left h1-title">{name}</h1>
+                            <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                             <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
                         </div>
                     </div>
