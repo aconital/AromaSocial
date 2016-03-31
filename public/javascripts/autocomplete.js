@@ -19,7 +19,6 @@ $(function() {
                     });
                   },
                   error: function(xhr) {
-                    console.log("ERROR WTF!!!");
                     console.log(xhr.status);
                   }
                 }),
@@ -28,17 +27,19 @@ $(function() {
                   dataType: 'json',
                   cache: false,
                   success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     var arr = $.grep(data, function(item){
+                      console.log(item.title);
                       return item.title.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });
                     $.map(arr, function(item){
-                      var dlink = "/publication/" + item.id;
+                      console.log("PUB ITEM: ");
+                      console.log(item);
+                      var dlink = "/publication/" + item.objectId;
                       r.push({label: item.title, value: item.title, category: "Publications", link: dlink});
                     });
                   },
                   error: function(xhr) {
-                    console.log("ERROR WTF!!!");
                     console.log(xhr.status);
                   }
                 }),
@@ -52,12 +53,11 @@ $(function() {
                       return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });
                     $.map(arr, function(item){
-                      var dlink = "/organization/" + item.id;
+                      var dlink = "/organization/" + item.objectId;
                       r.push({label: item.name, value: item.name, category: "Organizations", imgsrc: item.profile_imgURL, link: dlink});
                     });
                   },
                   error: function(xhr) {
-                    console.log("ERROR WTF!!!");
                     console.log(xhr.status);
                   }
                 })
@@ -69,12 +69,19 @@ $(function() {
             messages: {
               noResults: '',
               results: function() {}
+            },
+            focus: function(event, ui) {
+              $(this).val(ui.item.label);
+              return false;
+            },
+            select: function(event, ui) {
+              window.location.href = ui.item.link;
             }
-    }).data("custom-catcomplete")._renderItem = function(ul, item) {
-            return $("<li></li>").data("ui-autocomplete-item", item)
-                    .append("<a " + "href='" + item.link + "'>" + "<img height='40' width='40' src='" + item.imgsrc + "' />&nbsp" + item.label + "</a>")
-                    .appendTo(ul);
-    };   
+     }).data("custom-catcomplete")._renderItem = function(ul, item) {
+             return $("<li></li>").data("ui-autocomplete-item", item)
+                     .append("<a>" + "<img height='40' width='40' src='" + item.imgsrc + "' />&nbsp" + item.label + "</a>")
+                     .appendTo(ul);
+     };   
 });
 
 // $( "#SearchInput" ).autocomplete({ .... }).data( "autocomplete" )._renderItem = function( ul, item ) {

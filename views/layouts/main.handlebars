@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="/stylesheets/form.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/newsfeed.css">
     <link rel="stylesheet" href="/stylesheets/profile-organization.css">
     <link rel="stylesheet" href="/stylesheets/profile-organization-item.css">
     <link rel="stylesheet" href="/stylesheets/style-extra.css">
@@ -53,8 +54,7 @@
                     </li>
                 </ul>
                 <form role="search" method="post" action="/searchpage" class="navbar-form navbar-left search-bar-form">
-                    <div class="form-group" style="width:100%">
-                        <input type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
+                    <div class="form-group form-inline" style="width:100%"><input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
                     </div>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
@@ -136,5 +136,14 @@
         }
     });
 </script>
+<script>
+    $(document).ready(function(){
+    $('.searchButton').prop('disabled',true);
+    $('#message').keyup(function(){
+        $('.searchButton').prop('disabled', this.value == "" ? true : false);     
+    })
+});
+</script>
+<script src="/javascripts/autocomplete.js"></script>
 </body>
 </html>

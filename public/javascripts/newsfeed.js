@@ -48,7 +48,7 @@ var NewsFeed = React.createClass({
   },
   render: function() {
     return (
-      <div className="container-newsfeed">
+      <div className="container-newsFeed">
         <div className="row">
           <div className="col-xs-8">
             {this.state.data.map(function(item) {

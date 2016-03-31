@@ -7,10 +7,13 @@
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 
 :root {
-    --background-color: #dbe6e3;
-    --foreground-color: #5d7871;
-    --foreground-hover-color: #68867f;
-    --white-color: #FFF;
+    --background-color: #e0e0e0;
+    --foreground-color: #3d3d3d;
+    --foreground-hover-color: #525252;
+    --contrast-free-color: #f5f5f5;
+    --white-color: #fff;
+    --link-color: #0066cc;
+    --text-color: red;
 }
 
 html {
@@ -1158,82 +1161,7 @@ hr {
   cursor: pointer; }
 
 h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .var OrganizationMenu = React.createClass ({
-                    getInitialState: function() {
-                        return { focused: 0 };
-                    },
-                    clicked: function(index) {
-                        this.setState({ focused: index });
-                    },
-                    render: function() {
-                        var self = this;
-                        return (
-                            <div>
-                            <div id="tabs">
-                                <ul id="content-nav">
-                                    {this.props.tabs.map(function(tab,index){
-                                    if (self.state.focused == index) {
-                                    var style = ""
-                                        style = "selected-tab";
-                                    }
-                                    return <li id={style}>
-                                            <a href="#" onClick={self.clicked.bind(self, index)} id={style}>{tab}</a>
-                                           </li>;
-                                    })}
-                                </ul>
-                            </div>
-                            <div id="content" className="content">
-                                {self.state.focused == 0 ? <Connections/> : "" }
-                                {self.state.focused == 1 ? <People/> : "" }
-                                {self.state.focused == 2 ? <About/> : "" }
-                                {self.state.focused == 3 ? <NewsAndEvents/> : "" }
-                                {self.state.focused == 4 ? <Knowledge/> : "" }
-                            </div>
-                            </div>
-                        );
-                    }
-                });
-
-                var Connections = React.createClass({
-                  render: function() {
-                    return (
-                      <div>
-                        Connections of {objectId}
-                      </div>
-                    )
-                  }
-                });
-
-                var People = React.createClass({
-                  render: function() {
-                    return (
-                      <div>
-                        People
-                      </div>
-                    )
-                  }
-                });
-
-                var About = React.createClass({
-                mixins: [ParseReact.Mixin],
-                  render: function() {
-                    return (
-                      <div>
-                        About
-                      </div>
-                    )
-                  }
-                });
-
-                var NewsAndEvents = React.createClass({
-                  render: function() {
-                    return (
-                      <div>
-                        NewsAndEvents
-                      </div>
-                    )
-                  }
-                });, .h5, .h6 {
+.h1, .h2, .h3, .h4, .h5, .h6 {
   font-family: inherit;
   font-weight: 500;
   line-height: 1.1;
@@ -1254,7 +1182,7 @@ h1, h2, h3, h4, h5, h6,
   .h6 .small {
     font-weight: normal;
     line-height: 1;
-    color: var(--white-color); }
+    color: inherit; }
 
 h1, .h1,
 h2, .h2,
@@ -5803,6 +5731,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     .contain-panel-newsFeed {
                 width: 100%;
                 border: solid;
+                border-width: 1px;
                 border-color: var(--foreground-color);
                 margin-top: 25px;
                 margin-bottom: 25px;
@@ -5844,7 +5773,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     margin:0;
     }
     #tabs li {
-    color: var(--white-color);
+    color: var(--contrast-free-color);
     background-color: var(--foreground-color);
     display: inline;
     border: solid;
@@ -5861,9 +5790,13 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     border-color: var(--foreground-hover-color);
     }
     #tabs li a {
-    color: var(--white-color);
+    color: var(--contrast-free-color);
     text-decoration: none;
     }
+    #tabs li a:hover {
+        color: var(--white-color);
+        text-decoration: none;
+        }
     #tabs #selected-tab {
         background-color: var(--white-color);
         border-color: var(--foreground-color);
@@ -6072,11 +6005,9 @@ color: var(--white-color);
       .extend-bottom{display:block;height:60px;width:100%;}
 
 .legend-top{font-size:15px;}
-.body-link{color: var(--foreground-color); }
-.body-link:hover{color: var(--foreground-color);}
-.title-link{color: var(--foreground-color);}
-.title-link:hover{color: var(--foreground-color);}
-.image-link{color: var(--foreground-color);}
+.title-link{color: var(--link-color);}
+.title-link:hover{color: var(--link-color);}
+.image-link{color: var(--link-color);}
 .image-link:hover{color: var(--foreground-hover-color);}
 .none{display:none;}
 .form-color{color:FFF;}
@@ -6095,6 +6026,13 @@ color: var(--white-color);
         color:var(--white-color);
         width:50%;
         }
+    .btn-panel:focus {
+            background-color: var(--foreground-hover-color);
+            border-color: var(--foreground-hover-color);
+            border-radius:0px;
+            color:var(--white-color);
+            width:50%;
+            }
 .publication-box {
     float:left;
     width:100%;
@@ -6356,8 +6294,6 @@ div.react-tagsinput {
   border-color: var(--foreground-hover-color);
 }
 
- .container-newsfeed { max-width:1180px;margin:auto; }
-
 textarea {
     resize: none;
 }
@@ -6383,6 +6319,8 @@ textarea {
 }
 
 .ui-autocomplete {
+    height: 500px;
+    overflow-y: scroll;
     position: absolute;
     top: 100%;
     left: 0;

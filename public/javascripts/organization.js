@@ -109,9 +109,11 @@ var Organization = React.createClass ({
                     <div className="item-bottom">
                         <div className="item-bottom-1">
                             <img src={organization_imgURL} className="contain-image" />
+                            {/*
                             <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
                             <div className="side-panel"><h5>RATINGS</h5></div>
                             <div className="side-panel"><h5>OTHERS</h5></div>
+                            */}
                         </div>
                         <div id="item-bottom-2-organization" className="item-bottom-2">
                             <div className="interact-buttons-wrap">
