@@ -14,10 +14,12 @@ var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 module.exports=function(app,Parse) {
-    app.get('/allusers', function(req, res) {
-        var q = new Parse.Query(Parse.User);
+    app.get('/allusers', function(req, res, next) {
+        var q = new Parse.Query("User");
         q.find({
             success: function(items) {
+                console.log("ALL USERS: ")
+                console.log(items)
                 var results = [];
                 for (var i = 0; i < items.length; i++) {
                     var obj = items[i];
@@ -27,6 +29,7 @@ module.exports=function(app,Parse) {
             },
             error: function(error) {
                 console.log("Error while getting all users");
+                res.render('index', {title: error, path: req.path});
             }
         });
     });
@@ -39,6 +42,9 @@ module.exports=function(app,Parse) {
     app.get('/profile/:username', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var linkUser = req.params.username;
+        //if (!linkUser) return;
+        console.log("LINK USER IS ====>>")
+        console.log(req.params)
         if(currentUser.username == linkUser) {
             var obj={
                 title: 'Profile',
@@ -84,7 +90,7 @@ module.exports=function(app,Parse) {
             });
         }
         else {
-            var query = new Parse.Query(Parse.User);
+            var query = new Parse.Query("User");
             query.equalTo("username",linkUser);
             query.first({
                 success: function(result) {
