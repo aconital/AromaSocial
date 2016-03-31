@@ -118,15 +118,15 @@ var Profile = React.createClass ({
       });
     },
     render: function() {
-        var connectButton = <input className="btn btn-panel btn-right-side" value="" />;
+        var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "connected") {
-             connectButton = <input onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect" />;
+             connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
         }
         else if (this.state.status == "pending") {
-             connectButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
+             connectButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-connected") {
-             connectButton = <input onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect" />;
+             connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
         }
         else { console.log("Nothing"); }
         return (
@@ -148,35 +148,15 @@ var Profile = React.createClass ({
             <div className="item-bottom">
                 <div className="item-bottom-1">
                     {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
+                    {/*
                     <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
                     <div className="side-panel"><h5>RATINGS</h5></div>
                     <div className="side-panel"><h5>OTHERS</h5></div>
-                    {/*
-                    <div className="item-panel contain-panel"><h5>{position} @</h5><br/>
-                        {this.props.locations.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
-                    <div className="item-panel contain-panel"><h5>Other Roles</h5><br/>
-                        {this.props.roles.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
-                    <div className="item-panel contain-panel"><h5>Groups & Networks</h5><br/>
-                        {this.props.connections.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
-                    <div className="item-panel contain-panel"><h5>Expertise</h5><br/>
-                        {this.props.expertise.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
                     */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                    {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
-                    <h1 className="no-margin-padding align-left h1-title">{fullname} ({username})</h1>
+                    {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<button className="btn btn-panel" value="Follow">Follow</button></div> }
+                    <h1 className="no-margin-padding align-left h1-title">{fullname}</h1>
                     <h3 className="no-margin-padding align-left h3-title">{position} @ {current_location}</h3>
                     <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
                 </div>

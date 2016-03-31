@@ -1,9 +1,10 @@
+.page-content { background-color: var(--background-color); }
 .clear { clear: both; }
 .hide { display: none !important; }
 .show { display: block !important; }
 
-.body-link{color: var(--foreground-color); }
-.body-link:hover{color: var(--foreground-color); }
+.body-link{color: var(--link-color); }
+.body-link:hover{color: var(--link-color); }
 
 .btn-primary {
     background-color: var(--foreground-color);
@@ -70,7 +71,7 @@
 .navbar-collapse { padding: 0px; width: 1165px; left: 0px; }
 .navbar-wrapper { max-width: 1175px; padding: 0px; padding-left: 25px; margin: auto; }
 .navbar-default { background-color: var(--foreground-color); box-shadow: 0px -10px 10px 10px #000; height: 60px; }
-.dropdown-toggle { color: var(--white-color) !important; background-color: var(--foreground-color) !important; }
+.dropdown-toggle { color: var(--contrast-free-color) !important; background-color: var(--foreground-color) !important; }
 .dropdown-toggle:hover { color: var(--white-color) !important; background-color: var(--foreground-hover-color) !important; }
 .open > .dropdown-toggle { color: var(--foreground-color) !important; background-color: var(--white-color) !important; }
 .dropdown-menu { border-color: var(--white-color) !important; padding: 0px; }
@@ -80,6 +81,8 @@
     width: 100%;
     border-radius: 4px;
     position: absolute;
+    background-color: var(--contrast-free-color);
+    color: var(--foreground-color);
 } .search-bar-form {
     margin: 0px 15px;
     margin-top: -1px;
@@ -95,24 +98,24 @@
     z-index:1000;
     outline: none !important;
 } .btn-search:hover {
-    background-color: var(--white-color);
+    background-color: var(--contrast-free-color);
     color: var(--foreground-hover-color);
 } .btn-search:active {
-    background-color: var(--white-color);
+    background-color: var(--contrast-free-color);
     color: var(--foreground-hover-color);
 }
 
 .img-circle {
   background-color: var(--background-color);
   border: solid;
-  border-color: var(--background-color);
+  border-color: var(--contrast-free-color);
   border-width: 1px;
   border-radius: 4px;
-} .connection-button { color: var(--white-color); background-color: var(--foreground-color); font-size:25px; }
+} .connection-button { color: var(--contrast-free-color); background-color: var(--foreground-color); font-size:25px; }
 .open > .connection-button:hover { color:var(--foreground-color); background-color: var(--white-color); font-size:25px; }
-.logout-button { color: var(--white-color); background-color: var(--foreground-color); font-size:25px; }
+.logout-button { color: var(--contrast-free-color); background-color: var(--foreground-color); font-size:25px; }
 .logout-button:hover { color: var(--white-color); background-color: var(--foreground-hover-color); font-size:25px; }
-.logout-button a span { color: var(--white-color); background-color: var(--foreground-color); font-size:25px; top: 2px; }
+.logout-button a span { color: var(--contrast-free-color); background-color: var(--foreground-color); font-size:25px; top: 2px; }
 .logout-button:hover a span { color: var(--white-color); background-color: var(--foreground-hover-color); font-size:25px; top: 2px; }
 .navbar-hover:hover{ background-color: var(--foreground-hover-color); }
 
