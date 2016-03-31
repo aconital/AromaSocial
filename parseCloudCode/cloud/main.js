@@ -145,28 +145,29 @@ Parse.Cloud.afterSave("Relationship", function(request) {
 		var query = new Parse.Query("RelationshipOrg");
 		query.equalTo("orgId1", orgId);
 		query.equalTo("type", 'contains');
-		query.find().then(function (relationships) {
-			for (var i = 0; i < relationships.length; i += 1) {
-				var org = relationships[i].get("orgId0");
-				var duplicateCheck = new Parse.Query("Relationship")
-				duplicateCheck.equalTo("userId", userId);
-				duplicateCheck.equalTo("orgId", org);
-				duplicateCheck.first().then(function(duplicateRelationship){
-					if(duplicateRelationship){
-						duplicateRelationship.set("verified", true);
-						duplicateRelationship.save();
-					}
-					else{
-						var addRelationship = Parse.Object.extend("Relationship");
-						var relationship = new addRelationship();
-						relationship.set("userId", userId);
-						relationship.set("orgId", org);
-						relationship.set("verified", true);
-						relationship.set("isAdmin", false);
-						relationship.save();
-					}
-				})
-			}
+		query.each(function (relationship) {
+			var org = relationship.get("orgId0");
+			console.log("Cascade Check between org: "+ org.id +" and user: " + userId.id);
+			var duplicateCheck = new Parse.Query("Relationship")
+			duplicateCheck.equalTo("userId", userId);
+			duplicateCheck.equalTo("orgId", org);
+			duplicateCheck.first().then(function(duplicateRelationship){
+				if(duplicateRelationship){
+					console.log("Rel Cascade, Duplicate between org: "+ org.id +" and user: " + userId.id + " simply verify");
+					duplicateRelationship.set("verified", true);
+					duplicateRelationship.save();
+				}
+				else{
+					console.log("No duplicates between org: "+ org.id +" and user: " + userId.id +", add");
+					var addRelationship = Parse.Object.extend("Relationship");
+					var relationship = new addRelationship();
+					relationship.set("userId", userId);
+					relationship.set("orgId", org);
+					relationship.set("verified", true);
+					relationship.set("isAdmin", false);
+					relationship.save();
+				}
+			})
 		})
 	}
 });
@@ -188,29 +189,27 @@ Parse.Cloud.afterSave("RelationshipOrg", function(request){
 		query.equalTo("orgId", orgId1);
 		console.log("Cascade users from " + orgId1.id + " to " + orgId0.id);
 		query.equalTo("verified", true);
-		query.find().then(function(users) {
-			console.log("find users to cascade");
-			for (var i =0; i < users.length; i+=1){
-				var user = users[i].get("userId");
-				var duplicateCheck = new Parse.Query("Relationship")
-				duplicateCheck.equalTo("userId", user);
-				duplicateCheck.equalTo("orgId", orgId0);
-				duplicateCheck.first().then(function(duplicateRelationship){
-					if(duplicateRelationship){
-						duplicateRelationship.set("verified", true);
-						duplicateRelationship.save();
-					}
-					else{
-						var addRelationship = Parse.Object.extend("Relationship");
-						var relationship = new addRelationship();
-						relationship.set("userId", user);
-						relationship.set("orgId", orgId0);
-						relationship.set("verified", true);
-						relationship.set("isAdmin", false);
-						relationship.save();
-					}
-				})
-			}
+		query.each(function(user) {
+			var user = user.get("userId");
+			var duplicateCheck = new Parse.Query("Relationship")
+			duplicateCheck.equalTo("userId", user);
+			duplicateCheck.equalTo("orgId", orgId0);
+			duplicateCheck.first().then(function(duplicateRelationship){
+				if(duplicateRelationship){
+					console.log("Org Cascade, Duplicate, simply verify")
+					duplicateRelationship.set("verified", true);
+					duplicateRelationship.save();
+				}
+				else{
+					var addRelationship = Parse.Object.extend("Relationship");
+					var relationship = new addRelationship();
+					relationship.set("userId", user);
+					relationship.set("orgId", orgId0);
+					relationship.set("verified", true);
+					relationship.set("isAdmin", false);
+					relationship.save();
+				}
+			})
 		})
 	}
 });
@@ -222,25 +221,19 @@ Parse.Cloud.beforeDelete("Organization", function(request, response) {
 	var RelationshipOrg = Parse.Object.extend("RelationshipOrg");
 	var query = new Parse.Query(Relationship);
 	query.equalTo("orgId", orgId);
-	query.find().then(function(objects){
-		for (var i = 0; i < objects.length; i+=1) {
-			objects[i].destroy({});
-		}
+	query.each(function(object){
+		object.destroy({});
 	}).then(function() {
 		var query1 = new Parse.Query(RelationshipOrg);
 		query1.equalTo("orgId0", orgId);
-		query1.find().then(function (objects) {
-			for (var i = 0; i < objects.length; i += 1) {
-				objects[i].destroy({});
-			}
+		query1.each(function (object) {
+			object.destroy({});
 		})
 	}).then(function() {
 		var query2 = new Parse.Query(RelationshipOrg);
 		query2.equalTo("orgId1", orgId);
-		query2.find().then(function (objects) {
-			for (var i = 0; i < objects.length; i += 1) {
-				objects[i].destroy({});
-			}
+		query2.each(function (object) {
+			object.destroy({});
 		})
 	}).then(function(){
 		response.success("Deleted all connections to "+orgId.id);
