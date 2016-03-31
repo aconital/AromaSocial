@@ -1657,7 +1657,7 @@ var ResourceAddForm = React.createClass({
                             })
                         });
                     </script>
-        //var eCode = <script src="/javascripts/autocomplete.js"></script>
+        // var eCode = <script type="text/jsx" src="/javascripts/multac.jsx"></script>
         $("#scriptContainer").append(eCode);
     },
 	render: function() {
@@ -1853,8 +1853,62 @@ var ProjectAddForm = React.createClass({
         // form
         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
         startDate: '', endDate: '', description: '', link_to_resources: '', client: '', keywords: '', url: '',
-        organizationId: 'AJgSwufvvO'
+        organizationId: 'AJgSwufvvO', groupies: ''
         };
+    },
+    componentDidMount: function() {
+        var eCode = <script>
+                        $(function() {
+                            $('.auto').bind("keydown", function(event) {
+                                if ( event.keyCode === $.ui.keyCode.TAB &&
+                                    $( this ).autocomplete( "instance" ).menu.active ) {
+                                  event.preventDefault();
+                                }
+                            })
+                            .autocomplete({
+                                    source: function(req, res) {
+                                        $.ajax({
+                                          url: '/allusers',
+                                          dataType: 'JSON',
+                                          cache: false,
+                                          success: function(data) {
+                                            console.log("SUCCESS!!!!!!!");
+                                            console.log(data);
+                                            var arr = $.grep(data, function(item){
+                                              return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                                            });
+                                            res($.ui.autocomplete.filter($.map(data, function(item){
+                                              return {
+                                                label: item.fullname,
+                                                value: item.username
+                                              };
+                                            }), extractLast(req.term)));
+                                          },
+                                          error: function(xhr) {
+                                            console.log(xhr.status);
+                                          }
+                                        });
+                                    },
+                                    focus: function() {
+                                        return false;
+                                    },
+                                    messages: {
+                                      noResults: '',
+                                      results: function() {}
+                                    },
+                                    select: function(event, ui) {
+                                        var terms = split(this.value);
+                                        terms.pop();
+                                        terms.push(ui.item.value);
+                                        terms.push("");
+                                        this.value = terms.join(", ");
+                                        return false;
+                                    }
+                            })
+                        });
+                    </script>
+        // var eCode = <script type="text/jsx" src="/javascripts/multac.jsx"></script>
+        $("#scriptContainer").append(eCode);
     },
 	render: function() {
 	    if (this.state.alertVisible) {
@@ -1884,6 +1938,7 @@ var ProjectAddForm = React.createClass({
                 <Input type="text" placeholder="Link to Resources:" name="link_to_resources" onChange={this.handleChange} value={this.state.link_to_resources} />
                 <Input type="text" placeholder="Keywords (Comma Separated Tags):" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL (Link to Patent:)" name="url" onChange={this.handleChange} value={this.state.url} />
+                <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
                 </Modal.Body>
                 <Modal.Footer>
                     <input className="full-button" type="submit" value="Submit"/>
