@@ -29,7 +29,8 @@
     border:solid;
     border-radius:4px;
     border-color: var(--foreground-color);
-    background-color: var(--foreground-color);}
+    background-color: var(--foreground-color);
+    box-shadow: 0px 2px 10px #888888; }
 .contain-panel-small-image {
     width:9%;
     border: solid;
@@ -76,6 +77,69 @@
     margin:0px;
 } .edit-overlay-background:hover {
     opacity: 0.8;
+}
+
+.div-minus{position:absolute; right:5px; top:-5px; }
+.div-minus-expertise{position:absolute; right:5px; top:5px; }
+
+#resume-education a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} #resume-education:hover a {
+  color: var(--link-color);
+} #resume-expertise-and-interests a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} #resume-expertise-and-interests:hover a {
+  color: var(--link-color);
+} #resume-experience a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} #resume-experience:hover a {
+  color: var(--link-color);
+}
+
+.resume-item {
+    width:100%;
+    background-color: var(--white-color);
+    border: solid;
+    border-color: var(--background-color);
+    border-radius: 4px;
+    border-width: 1px;
+    padding:10px;
+    position: relative;
+    box-shadow: 0px 2px 7px #888888;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
+} .resume-item:hover {
+  background-color: var(--contrast-free-color);
+} .resume-item + .resume-item {
+  margin-top:10px;
+}
+.resume-item a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} .resume-item:hover a {
+  color: var(--link-color);
 }
 
 .item-box {
@@ -178,3 +242,4 @@
 .organization-table-info { width: 100%; }
 .organization-table-info tr td:nth-child(1) { width: 10%; min-width: 10%; max-width: 10%; padding-left: 10px; }
 .organization-table-info tr td:nth-child(2) { width: 90%; min-width: 90%; max-width: 90%; }
+

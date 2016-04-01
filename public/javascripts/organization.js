@@ -67,15 +67,15 @@ var Organization = React.createClass ({
       });
     },
     render: function() {
-        var joinButton = <input className="btn btn-panel btn-right-side" value="" />;
+        var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "joined") {
-             joinButton = <input onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave" />;
+             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
         else if (this.state.status == "pending") {
-             joinButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
+             joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-joined") {
-             joinButton = <input onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join" />;
+             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
         }
         if(this.state.isAdmin)
             return (
@@ -86,9 +86,11 @@ var Organization = React.createClass ({
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <img src={organization_imgURL} className="contain-image" />
-                                <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                                <div className="side-panel"><h5>RATINGS</h5></div>
-                                <div className="side-panel"><h5>OTHERS</h5></div>
+                            {/*
+                            <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                            <div className="side-panel"><h5>RATINGS</h5></div>
+                            <div className="side-panel"><h5>OTHERS</h5></div>
+                            */}
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2-organization">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
@@ -118,7 +120,7 @@ var Organization = React.createClass ({
                         <div id="item-bottom-2-organization" className="item-bottom-2">
                             <div className="interact-buttons-wrap">
                                 {joinButton}
-                                <input className="btn btn-panel" value="Follow" />
+                                <button className="btn btn-panel" value="Follow">Follow</button>
                             </div>
                             <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                             <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>

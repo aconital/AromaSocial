@@ -326,54 +326,19 @@ var Organizations = React.createClass({
     }
 });
 
-var Publications = React.createClass({
-  mixins: [ParseReact.Mixin],
-  getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
-                                                                      className: "_User",
-                                                                      objectId: this.props.objectId}))
-      };
-    },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <PublicationForm />
-        {this.data.publications.map(function(publication) {
-            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} pubGroup={publication.pubGroup} />);
-        })}
-        {rows}
-      </div>
-    );
-  }
-});
 var About = React.createClass({
-    mixins: [ParseReact.Mixin],
-    observe: function() {
-        return {
-            publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
-                                                                           className: "_User",
-                                                                           objectId: objectId}).limit(2)),
-            datas: (new Parse.Query('Data').equalTo("user", {__type: "Pointer",
-                                                                           className: "_User",
-                                                                           objectId: objectId}).limit(2)),
-            models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
-                                                                           className: "_User",
-                                                                           objectId: objectId}).limit(2))
-        };
-    },
     getInitialState: function() {
         return {
             summary: summary,
             work_experiences: work_experiences,
             educations: educations,
-            projects: projects,
             expertise: expertise,
-            interests: interests
+            interests: interests,
+
+            projects: "",
+            publications: "",
+            datas: "",
+            models: ""
             };
     },
     handleChange: function(e) {
@@ -484,14 +449,6 @@ var About = React.createClass({
         this.setState({educations:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
         console.log(educations);
     },
-    addP: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.projects == "") { var arrayWE = [{company:"Project Name",description:"Project Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Project Position"}]; }
-        else { var newWE = {company:"Project Name",description:"Project Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Project Position"};
-               var arrayWE = JSON.parse(this.state.projects); arrayWE.push(newWE); }
-        this.setState({projects:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
-        console.log(projects);
-    },
     tabChange: function(index) {
         this.props.tab(index);
     },
@@ -515,109 +472,78 @@ var About = React.createClass({
                 educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
-        if (this.state.projects != "") {
-            var PItems = JSON.parse(this.state.projects);
-            PItems.forEach(function(item) {
-                projects_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="project" />);
-            });
-        }
         if (this.state.expertise != "") {
             JSON.parse(this.state.expertise).map(function(item, i) {
-               expertise_data.push (<div className="div-relative">
-                        {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
-                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="1" type="text" className="r-editable r-editable-full" id={"expertise-" + i} name={"expertise-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitArrayChange}>{item}</textarea></p> : <p className="r-noneditable no-margin">{item}</p>}
+               expertise_data.push (<div className="div-relative resume-item">
+                        {(currentUsername == username) ? <p className="no-margin"><input rows="1" type="text" className="r-editable r-editable-full" id={"expertise-" + i} name={"expertise-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitArrayChange} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
+                        {(currentUsername == username) ? <div className="div-minus-expertise"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                      </div>);
             }, this)
         }
-        this.data.publications.map(function(publication) {
-            publications_data.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
-        })
-        this.data.datas.map(function(item) {
-            datas_data.push(<DatumListItem objectId={item.objectId}
-                                   collaborators={item.collaborators}
-                                   title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description} />);
-        })
-        this.data.models.map(function(model) {
-            models_data.push(<ModelListItem objectId={model.objectId}
-                                   collaborators={model.collaborators}
-                                   title={model.title}
-                                   image_URL={model.image_URL}
-                                   keywords={model.keywords}
-                                   number_cited={model.number_cited}
-                                   number_syncholar_factor={model.number_syncholar_factor}
-                                   license={model.license}
-                                   access={model.access}
-                                   abstract={model.abstract} />);
-        })
         return (
             <div id="resume">
                 <div id="resume-summary">
                 <div>
-                    <h3 className="summary-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Summary</h3>
+                    <h3 className="summary-margin-top">Summary</h3>
                 </div>
                 <div id="resume-summary-item">
-                    {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                    <div className="resume-item">
+                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                    </div>
                 </div>
                 </div>
                 <div id="resume-expertise-and-interests" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-certificate"></span> Expertise & Interests</h3>
+                        <h3 className="no-margin-top" >Expertise & Interests</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEI} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {expertise_data}
-                    <hr className="margin-top-bottom-5"/>
+                    <hr className="margin-bottom-5"/>
                     {(currentUsername == username) ? <div className="margin-top-20">{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, value : this.state.interests}))}</div> : <div className="margin-top-20">{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
                 <div className="clear"></div>
                 <div id="resume-education" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-paperclip"></span> Education</h3>
+                        <h3 className="no-margin-top" >Education</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {educations_data}
                 </div>
                 <div id="resume-experience" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-education"></span> Work Experience</h3>
+                        <h3 className="no-margin-top" >Work Experience</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {work_experiences_data}
                 </div>
                 <div id="resume-projects" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-star"></span> Projects</h3>
+                        <h3 className="no-margin-top">Projects</h3>
                     </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addP} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,3)} className="body-link">See More</a></h3></div>
                     {projects_data}
                 </div>
                 <div id="resume-publications" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-book"></span> Publications</h3>
+                        <h3 className="no-margin-top">Publications</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,4)} className="body-link">See More</a></h3></div>
                     {publications_data}
                 </div>
                 <div className="clear"></div>
                 <div id="resume-datas" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-stats"></span> Data</h3>
+                        <h3 className="no-margin-top">Data</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,6)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
                     {datas_data}
                 </div>
                 <div className="clear"></div>
                 <div id="resume-models" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-blackboard"></span> Models</h3>
+                        <h3 className="no-margin-top">Models</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,7)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,6)} className="body-link">See More</a></h3></div>
                     {models_data}
                 </div>
             </div>
@@ -682,17 +608,15 @@ var AboutTabObject = React.createClass({
         var startDate = this.props.start.replace(/-/g,'/');
         var endDate = this.props.end.replace(/-/g,'/');
         return(
-            <div className={this.state.display}>
-            <div className="resume-item div-relative">
+            <div className={"resume-item div-relative" + this.state.display}>
                 {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                 <h4 className="h4-resume-item">
                     <b>{(currentUsername == username) ? <input type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}
                      @ {(currentUsername == username) ? <input type="text" className="r-editable r-editable-50" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}
                     </b></h4>
-                    <p className="no-margin">&nbsp;(&nbsp;{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">{startDate}</span>}
-                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}&nbsp;)</p>
+                    <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
+                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
                 {(currentUsername == username) ? <p className="no-margin"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
-            </div>
             </div>
         )
     }

@@ -160,17 +160,17 @@ var Model = React.createClass ({
                     <div className="contain-panel-big-item-image">
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </div>
-                    <div className="contain-panel-big">
+                    <div className="contain-panel-big item-info">
                         <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
                         {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="description" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-non-editable-bottom-wrap">{description}</p>}
                     </div>
-                    <table className="contain-panel-big-two"><tr><td>
-                        <div className="contain-panel-big contain-panel-big-half-left">
+                    <table className="contain-panel-big-two "><tr><td>
+                        <div className="contain-panel-big contain-panel-big-half-left item-info">
                             <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Features</h4>
                             {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="feature" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.feature}</textarea></p> : <p className="p-non-editable-bottom-wrap">{feature}</p>}
                         </div>
                     </td><td>
-                        <div className="contain-panel-big contain-panel-big-half-right">
+                        <div className="contain-panel-big contain-panel-big-half-right item-info">
                             <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">More Explanation</h4>
                             {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="other" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.other}</textarea></p> : <p className="p-non-editable-bottom-wrap">{other}</p>}
                         </div>
