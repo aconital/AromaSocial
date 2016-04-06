@@ -745,7 +745,7 @@ var Equipments = React.createClass({
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>New Equipment</Modal.Title>
+                        <Modal.Title>Add Equipment</Modal.Title>
                     </Modal.Header>
                     <EquipmentAddForm submitSuccess={this.clickClose} />
                 </Modal>
@@ -768,16 +768,24 @@ var EquipmentAddForm = React.createClass({
         this.props.submitSuccess();
     },
     getInitialState: function() {
-     return {
-        alertVisible: false,
-        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
-        formFeedback: '',
-        fileFeedback: {},
-        pictureFeedback: '',
-
-        // form
-        picture: null, file: null, pictureType: '', fileType: '', title: '', keywords: '',
-        description: '', instructions: '', model: '', model_year: '', organizationId: objectId
+        return {
+            alertVisible: false,
+            buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+            formFeedback: '',
+            fileFeedback: {},
+            pictureFeedback: '',
+            // form
+            picture: null,
+            file: null,
+            pictureType: '',
+            fileType: '',
+            title: '',
+            keywords: [],
+            description: '',
+            instructions: '',
+            model: '',
+            model_year: '',
+            organizationId: objectId
         };
     },
     componentDidMount: function() {
@@ -825,31 +833,29 @@ var EquipmentAddForm = React.createClass({
 		return (
 		<div>
             <div id="scriptContainer"></div>
-			<form className="form" onSubmit={this.handleSubmitData}>
-			    <Modal.Body>
-			    {alert}
-			    <div className="well" style={this.buttonStyles}>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
-                    	style={{background: this.state.pictureFeedback}}>
-                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-                    </Button>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
-                        Select Files... <input type="file" onChange={this.handleFile} />
-                    </Button>
-                  </div>
-
-                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="textarea" placeholder="Instructions:" name="instructions" onChange={this.handleChange} value={this.state.instructions} />
-                <Input type="text" placeholder="Model:" name="model" onChange={this.handleChange} value={this.state.model} />
-                <Input type="text" placeholder="Model Year:" name="model_year" onChange={this.handleChange} value={this.state.model_year} />
-                <Input type="text" placeholder="Keywords (Comma Separated Tags):" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+            <form className="form" onSubmit={this.handleSubmitData}>
+                <Modal.Body>
+                    {alert}
+                    <div className="well" style={this.buttonStyles}>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{background: this.state.pictureFeedback}}>
+                            Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                        </Button>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+                            Select Files... <input type="file" onChange={this.handleFile} />
+                        </Button>
+                    </div>
+                    <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
+                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                    <Input type="textarea" placeholder="Instructions:" name="instructions" onChange={this.handleChange} value={this.state.instructions} />
+                    <Input type="text" placeholder="Model:" name="model" onChange={this.handleChange} value={this.state.model} />
+                    <Input type="text" placeholder="Model Year:" name="model_year" onChange={this.handleChange} value={this.state.model_year} />
+                    <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 </Modal.Body>
                 <Modal.Footer>
                     <input className="full-button" type="submit" value="Submit"/>
                 </Modal.Footer>
             </form>
-		</div>
+        </div>
 		);
 	},
     handleAlertDismiss() {
@@ -863,14 +869,26 @@ var EquipmentAddForm = React.createClass({
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
+    handleKeyChange: function(e) {
+        var changedState = {};
+        changedState['keywords'] = e;
+        this.setState(changedState);
+    },
 	handleSubmitData: function(e) {
         e.preventDefault();
 
-        var dataForm = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
-        				fileType: this.state.fileType, pictureType: this.state.pictureType,
-        				description: this.state.description, instructions: this.state.instructions, model: this.state.model,
-        				model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
-		console.log(dataForm);
+        var dataForm = {    file: this.state.file,
+                            picture: this.state.picture,
+                            organizationId: this.state.organizationId,
+        				    fileType: this.state.fileType,
+                            pictureType: this.state.pictureType,
+        				    description: this.state.description,
+                            instructions: this.state.instructions,
+                            model: this.state.model,
+        				    model_year: this.state.model_year,
+                            keywords: JSON.stringify(this.state.keywords),
+                            title: this.state.title};
+		                    console.log(dataForm);
 
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
@@ -901,18 +919,6 @@ var EquipmentAddForm = React.createClass({
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
-            if (isValidForm.indexOf('INSTRUCTIONS') > -1) {
-				message += ' Please give usage instructions.';
-			}
-			if (isValidForm.indexOf('MODEL') > -1) {
-				message += ' Please indicate the model and model year/version.';
-			}
-			if (isValidForm.indexOf('MODEL_YEAR') > -1) {
-                message += ' Please indicate the model and model year/version.';
-            }
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
@@ -978,19 +984,8 @@ var EquipmentAddForm = React.createClass({
 		if (!this.state.title.trim()) {
 			issues.push("TITLE");
 		}
-		if (!this.state.file) {
-			issues.push("FILE");
-		}
-		if (!this.state.instructions) {
-			issues.push("INSTRUCTIONS");
-		}
-		if (!this.state.model) {
-            issues.push("MODEL");
-        }
-        if (!this.state.model_year) {
-            issues.push("MODEL_YEAR");
-        }
-		if (!this.state.keywords.trim()) {
+        console.log(this.state.keywords)
+		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
 		return issues;
