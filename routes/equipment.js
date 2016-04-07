@@ -19,7 +19,7 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 module.exports=function(app,Parse) {
 
     app.get('/equipment', is_auth, function (req, res, next) {
-        res.render('equipment', {layout: 'home', title: 'Equipment', path: req.path});
+        res.render('equipment', {title: 'Equipment', path: req.path});
     });
 
     app.get('/equipment/:objectId', is_auth, function (req, res, next) {
@@ -53,18 +53,15 @@ module.exports=function(app,Parse) {
 
     app.post('/organization/:objectId/equipment', is_auth, function(req,res,next){
         var currentUser = req.user;
-        var objectId;
         var now = moment();
-        var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
         var reqBody = req.body;
-        var keywords = reqBody.keywords.split(/\s*,\s*/g);
         var Equipment = Parse.Object.extend("Equipment");
         var equipment = new Equipment();
         equipment.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
         equipment.set('organization',{ __type: "Pointer", className: "Organization", objectId: reqBody.organizationId});
         equipment.set('description', reqBody.description);
         equipment.set('title',reqBody.title);
-        equipment.set('keywords',keywords);
+        equipment.set('keywords',JSON.parse(reqBody.keywords));
         equipment.set('image_URL','/images/equipment.png');
         equipment.set('instructions',reqBody.instructions);
         equipment.set('model_year',reqBody.model_year);

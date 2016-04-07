@@ -380,12 +380,14 @@ var About = React.createClass({
         this.setState({expertise: expertiseTemp});
     },
     handleTagsInputChange: function(e) {
-        var interestsSubmit = (JSON.stringify(e));
-        this.setState({interests:interestsSubmit}, function(){ this.submitArrayChange() }.bind(this));
+        var changedState = {};
+        changedState['interests'] = e;
+        this.setState(changedState, function(){ this.submitArrayChange() }.bind(this));
     },
     submitArrayChange: function() {
-        var dataForm = { expertise: this.state.expertise, interests: this.state.interests };
-
+        var dataForm = {    expertise: this.state.expertise,
+                            interests: JSON.stringify(this.state.interests) };
+        console.log(dataForm);
         $.ajax({
             url: path + "/update",
             dataType: 'json',
@@ -494,12 +496,12 @@ var About = React.createClass({
                 </div>
                 <div id="resume-expertise-and-interests" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" >Expertise & Interests</h3>
+                        <h3 className="no-margin-top" >Interests</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEI} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {expertise_data}
                     <hr className="margin-bottom-5"/>
-                    {(currentUsername == username) ? <div className="margin-top-20">{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, value : this.state.interests}))}</div> : <div className="margin-top-20">{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
+                    {(currentUsername == username) ? <ReactTagsInput type="text" placeholder="Keywords:" name="interests" onChange={this.handleTagsInputChange} value={this.state.interests}/> : <div className="margin-top-20">{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
                 <div className="clear"></div>
                 <div id="resume-education" className="div-relative"><hr/>
@@ -1245,7 +1247,7 @@ var PublicationAddForm = React.createClass({
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" required onChange={this.handleChange} value={this.state.keywords} />
+                <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1498,16 +1500,27 @@ var ResourceAddForm = React.createClass({
         }
     },
     getInitialState: function() {
-     return {
-        fromModelTab: false,
-        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
-        formFeedback: '',
-        fileFeedback: {},
-        pictureFeedback: '',
-
-        // form
-        picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: '', groupies: ''
+        return {
+            alertVisible: false,
+            fromModelTab: false,
+            buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+            formFeedback: '',
+            fileFeedback: {},
+            pictureFeedback: '',
+            // form
+            picture: null,
+            file: null,
+            pictureType: '',
+            fileType: '',
+            title: '',
+            description: '',
+            collaborators: '',
+            creationDate: '',
+            license: '',
+            pubLink: '',
+            keywords: [],
+            url: '',
+            groupies: ''
         };
     },
     componentDidMount: function() {
@@ -1565,45 +1578,48 @@ var ResourceAddForm = React.createClass({
         $("#scriptContainer").append(eCode);
     },
 	render: function() {
-		return (
-		<div>
-            <div id="scriptContainer"></div>
-			<form className="form" onSubmit={this.handleSubmitData}>
-			    <div className="well" style={this.buttonStyles}>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
-                    	style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
-                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-                    </Button>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
-                        Select Files... <input type="file" onChange={this.handleFile} />
-                    </Button>
-                  </div>
-
-                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
-                <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
-                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
-                <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
-                <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
-
-               <Modal.Footer>
-                   <Input className="btn btn-default pull-right" type="submit" value="Continue" />
-                   <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
-               </Modal.Footer>
-            </form>
-		</div>
+        if (this.state.alertVisible) {
+            var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
+        } else {var alert = "";}
+        return (
+            <div>
+                <div id="scriptContainer"></div>
+                <form className="form" onSubmit={this.handleSubmitData}>
+                    <div className="well" style={this.buttonStyles}>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
+                            style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
+                            Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                        </Button>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+                            Select Files... <input type="file" onChange={this.handleFile} />
+                        </Button>
+                    </div>
+                    <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
+                    <Input type="text" placeholder="Collaborators:" name="collaborators" required className="auto" onChange={this.handleChange} value={this.state.collaborators} />
+                    <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                    <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
+                    <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
+                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                    <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+                    <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
+                    <Modal.Footer>
+                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                    </Modal.Footer>
+                </form>
+            </div>
 		);
 	},
-
 	handleChange: function(e) {
 	    var changedState = {};
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
-
+    handleKeyChange: function(e) {
+        var changedState = {};
+        changedState['keywords'] = e;
+        this.setState(changedState);
+    },
 	handleSubmitData: function(e) {
         e.preventDefault();
 
@@ -1611,7 +1627,7 @@ var ResourceAddForm = React.createClass({
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
         				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
         				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
+        				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title, groupies: this.state.groupies};
 		console.log(dataForm);
 
         var isValidForm = this.validateForm();
@@ -1646,16 +1662,13 @@ var ResourceAddForm = React.createClass({
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
 			if (isValidForm.indexOf('DATE') > -1) {
 				message += ' Please indicate the creation date.';
 			}
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
-			this.setState({formFeedback: message});
+            this.setState({formFeedback: message, alertVisible: true});
 		}
         return;
     },
@@ -1723,9 +1736,10 @@ var ResourceAddForm = React.createClass({
 		if (!this.state.creationDate) {
 			issues.push("DATE");
 		}
-		if (!this.state.keywords.trim()) {
+		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
+        console.log(JSON.stringify(this.state.keywords));
 		return issues;
 	},
 });
@@ -1756,7 +1770,7 @@ var ProjectAddForm = React.createClass({
 
         // form
         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        startDate: '', endDate: '', description: '', link_to_resources: '', client: '', keywords: '', url: '',
+        startDate: '', endDate: '', description: '', link_to_resources: '', client: '', keywords: [], url: '',
         organizationId: 'AJgSwufvvO', groupies: ''
         };
     },
@@ -1833,15 +1847,15 @@ var ProjectAddForm = React.createClass({
                     </Button>
                   </div>
 
-                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+                <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
                 <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Start Date:" name="startDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
+                <Input type="date" placeholder="Start Date:" name="startDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
                 <Input type="date" placeholder="End Date:" name="endDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.endDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="Client:" name="client" onChange={this.handleChange} value={this.state.client} />
                 <Input type="text" placeholder="Link to Resources:" name="link_to_resources" onChange={this.handleChange} value={this.state.link_to_resources} />
-                <Input type="text" placeholder="Keywords (Comma Separated Tags):" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
-                <Input type="text" placeholder="URL (Link to Patent:)" name="url" onChange={this.handleChange} value={this.state.url} />
+                <ReactTagsInput type="textarea" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <Input type="text" placeholder="URL:" name="url" onChange={this.handleChange} value={this.state.url} />
                 <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
                 </Modal.Body>
                 <Modal.Footer>
@@ -1862,6 +1876,11 @@ var ProjectAddForm = React.createClass({
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
+    handleKeyChange: function(e) {
+        var changedState = {};
+        changedState['keywords'] = e;
+        this.setState(changedState);
+    },
 	handleSubmitData: function(e) {
         e.preventDefault();
 
@@ -1902,10 +1921,7 @@ var ProjectAddForm = React.createClass({
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
-			if (isValidForm.indexOf('DATE') > -1) {
+            if (isValidForm.indexOf('DATE') > -1) {
 				message += ' Please indicate the start and end date.';
 			}
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
@@ -1979,10 +1995,7 @@ var ProjectAddForm = React.createClass({
 		if (!this.state.startDate) {
 			issues.push("DATE");
 		}
-		if (!this.state.endDate) {
-            issues.push("DATE");
-        }
-		if (!this.state.keywords.trim()) {
+		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
 		return issues;

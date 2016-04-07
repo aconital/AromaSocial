@@ -2479,10 +2479,10 @@ output {
 .form-control, .react-tagsinput {
   display: block;
   width: 100%;
-  height: 34px;
+  height: auto;
   padding: 6px 12px;
   font-size: 14px;
-  line-height: 1.42857;
+  line-height: 1;
   color: var(--foreground-color);
   background-color: var(--white-color);
   background-image: none;
@@ -5195,19 +5195,19 @@ p.title {
 
 .react-tagsinput {
   width: 100%;
-  padding-bottom: 5px; }
+  padding: 5px; }
 
 .react-tagsinput-input {
   background: transparent none repeat scroll 0% 0% !important;
   border: 0px none !important;
-  color: var(--white-color) !important;
+  color: var(--foreground-color) !important;
   font-family: sans-serif !important;
-  font-size: 13px !important;
+  font-size: 14px !important;
   font-weight: 400 !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 1px !important;
   margin-top: 1px !important;
   outline: medium none !important;
-  padding: 5px !important;
+  padding: 0px !important;
   width: 180px !important;
   height: auto !important;
   box-shadow: none !important; }
@@ -5760,7 +5760,9 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 .deleted {display:none;}
 .comment-picture {width:9%; padding-right:1%; }
 
-    .no-padding{ 0px; }
+    .no-padding{
+    padding:0;
+    }
     .btn-wrap {
     margin-top:10%;
     }
@@ -6088,7 +6090,7 @@ input[type="date"]:before {
     content: "";
   }
 
-  input[type="button" i] {
+  input[type="button"] {
       display:none;
     }
 
@@ -6149,8 +6151,7 @@ table.summary tr td {
     background-color: var(--foreground-color);
     border-color: var(--foreground-color);
     color: white;
-    margin:0px;
-    margin-right:4px;
+    margin:1px;
     padding:0px 4px;
 } .react-tagsinput-tag a {
     color: white;
@@ -6158,11 +6159,12 @@ table.summary tr td {
     padding: 1.5px 5px !important;
 } .react-tagsinput-input {
     padding-top:1.5px !important;
-    width:320px !important;
+    width:100px !important;
 }
 
 div.react-tagsinput {
-    padding:4px;
+    margin: 10px 0px 10px;
+    padding: 5px 12px 5px;
 }
 
 .model-box {

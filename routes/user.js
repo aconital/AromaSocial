@@ -364,10 +364,11 @@ module.exports=function(app,Parse) {
                     else if (req.body.expertise || req.body.interests) {
                         if (req.body.expertise) {
                             result.set("expertise", JSON.parse(req.body.expertise));
+                            result.save();
                         } if (req.body.interests) {
-                            result.set("interests", JSON.parse(req.body.interests));
+                            result.set('interests', JSON.parse(req.body.interests));
+                            result.save();
                         }
-                        result.save();
                         res.status(200).json({status: "Info Uploaded Successfully!"});
                     }
                     else if (req.body.work_experiences && req.body.educations && req.body.projects) {
