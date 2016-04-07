@@ -3261,6 +3261,10 @@ tbody.collapse.in {
   border-top-left-radius: 0;
   color: var(--white-color);}
 
+.dropdown-menu li {
+  background-color: var(--white-color);
+}
+
 .navbar {
   position: relative;
   min-height: 50px;
@@ -3518,7 +3522,7 @@ a.badge:hover, a.badge:focus {
     border-radius: 6px; }
   .jumbotron .container {
     max-width: 100%; }
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 1200px) {
     .jumbotron {
       padding-top: 48px;
       padding-bottom: 48px; }
@@ -5397,7 +5401,8 @@ input[type="text"]:focus {
   margin-bottom: 0px; }
 
 .navbar.center .navbar-collapse {
-  text-align: center; }
+  text-align: center;
+  }
 
 .navbar.center .navbar-collapse .nav {
   display: inline-block;
