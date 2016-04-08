@@ -61,13 +61,13 @@ module.exports=function(app,Parse) {
         // Search User
         var User = Parse.Object.extend("User");
         var uquery = new Parse.Query(User);
-        uquery.equalTo("username", searchQ);
+        uquery.equalTo("fullname", searchQ);
         uquery.find({
             success: function (results) {
               for (var i = 0; i < results.length; i++) {
                 var object = results[i];
                 console.log(object.id);
-                matching_users[object.get('username')] = {
+                matching_users[object.get('fullname')] = {
                   "type" : "user",
                   "id" : object.id,
                   "img" : object.get('imgUrl'),

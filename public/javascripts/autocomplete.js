@@ -11,11 +11,11 @@ $(function() {
                   success: function(data) {
                     console.log(data);
                     var arr = $.grep(data, function(item){
-                      return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                      return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });
                     $.map(arr, function(item){
                       var dlink = "/profile/" + item.username;
-                      r.push({label: item.fullname, value: item.username, category: "Users", imgsrc: item.imgUrl, link: dlink});
+                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.imgUrl, link: dlink});
                     });
                   },
                   error: function(xhr) {
