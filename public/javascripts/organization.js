@@ -67,15 +67,15 @@ var Organization = React.createClass ({
       });
     },
     render: function() {
-        var joinButton = <input className="btn btn-panel btn-right-side" value="" />;
+        var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "joined") {
-             joinButton = <input onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave" />;
+             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
         else if (this.state.status == "pending") {
-             joinButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
+             joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-joined") {
-             joinButton = <input onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join" />;
+             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
         }
         if(this.state.isAdmin)
             return (
@@ -86,9 +86,11 @@ var Organization = React.createClass ({
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <img src={organization_imgURL} className="contain-image" />
-                                <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                                <div className="side-panel"><h5>RATINGS</h5></div>
-                                <div className="side-panel"><h5>OTHERS</h5></div>
+                            {/*
+                            <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                            <div className="side-panel"><h5>RATINGS</h5></div>
+                            <div className="side-panel"><h5>OTHERS</h5></div>
+                            */}
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2-organization">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
@@ -109,14 +111,16 @@ var Organization = React.createClass ({
                     <div className="item-bottom">
                         <div className="item-bottom-1">
                             <img src={organization_imgURL} className="contain-image" />
+                            {/*
                             <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
                             <div className="side-panel"><h5>RATINGS</h5></div>
                             <div className="side-panel"><h5>OTHERS</h5></div>
+                            */}
                         </div>
                         <div id="item-bottom-2-organization" className="item-bottom-2">
                             <div className="interact-buttons-wrap">
                                 {joinButton}
-                                <input className="btn btn-panel" value="Follow" />
+                                <button className="btn btn-panel" value="Follow">Follow</button>
                             </div>
                             <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                             <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
@@ -741,7 +745,7 @@ var Equipments = React.createClass({
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>New Equipment</Modal.Title>
+                        <Modal.Title>Add Equipment</Modal.Title>
                     </Modal.Header>
                     <EquipmentAddForm submitSuccess={this.clickClose} />
                 </Modal>
@@ -764,16 +768,24 @@ var EquipmentAddForm = React.createClass({
         this.props.submitSuccess();
     },
     getInitialState: function() {
-     return {
-        alertVisible: false,
-        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
-        formFeedback: '',
-        fileFeedback: {},
-        pictureFeedback: '',
-
-        // form
-        picture: null, file: null, pictureType: '', fileType: '', title: '', keywords: '',
-        description: '', instructions: '', model: '', model_year: '', organizationId: objectId
+        return {
+            alertVisible: false,
+            buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+            formFeedback: '',
+            fileFeedback: {},
+            pictureFeedback: '',
+            // form
+            picture: null,
+            file: null,
+            pictureType: '',
+            fileType: '',
+            title: '',
+            keywords: [],
+            description: '',
+            instructions: '',
+            model: '',
+            model_year: '',
+            organizationId: objectId
         };
     },
     componentDidMount: function() {
@@ -821,31 +833,29 @@ var EquipmentAddForm = React.createClass({
 		return (
 		<div>
             <div id="scriptContainer"></div>
-			<form className="form" onSubmit={this.handleSubmitData}>
-			    <Modal.Body>
-			    {alert}
-			    <div className="well" style={this.buttonStyles}>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
-                    	style={{background: this.state.pictureFeedback}}>
-                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-                    </Button>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
-                        Select Files... <input type="file" onChange={this.handleFile} />
-                    </Button>
-                  </div>
-
-                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="textarea" placeholder="Instructions:" name="instructions" onChange={this.handleChange} value={this.state.instructions} />
-                <Input type="text" placeholder="Model:" name="model" onChange={this.handleChange} value={this.state.model} />
-                <Input type="text" placeholder="Model Year:" name="model_year" onChange={this.handleChange} value={this.state.model_year} />
-                <Input type="text" placeholder="Keywords (Comma Separated Tags):" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+            <form className="form" onSubmit={this.handleSubmitData}>
+                <Modal.Body>
+                    {alert}
+                    <div className="well" style={this.buttonStyles}>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{background: this.state.pictureFeedback}}>
+                            Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                        </Button>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+                            Select Files... <input type="file" onChange={this.handleFile} />
+                        </Button>
+                    </div>
+                    <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
+                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                    <Input type="textarea" placeholder="Instructions:" name="instructions" onChange={this.handleChange} value={this.state.instructions} />
+                    <Input type="text" placeholder="Model:" name="model" onChange={this.handleChange} value={this.state.model} />
+                    <Input type="text" placeholder="Model Year:" name="model_year" onChange={this.handleChange} value={this.state.model_year} />
+                    <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 </Modal.Body>
                 <Modal.Footer>
                     <input className="full-button" type="submit" value="Submit"/>
                 </Modal.Footer>
             </form>
-		</div>
+        </div>
 		);
 	},
     handleAlertDismiss() {
@@ -859,14 +869,26 @@ var EquipmentAddForm = React.createClass({
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
+    handleKeyChange: function(e) {
+        var changedState = {};
+        changedState['keywords'] = e;
+        this.setState(changedState);
+    },
 	handleSubmitData: function(e) {
         e.preventDefault();
 
-        var dataForm = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
-        				fileType: this.state.fileType, pictureType: this.state.pictureType,
-        				description: this.state.description, instructions: this.state.instructions, model: this.state.model,
-        				model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
-		console.log(dataForm);
+        var dataForm = {    file: this.state.file,
+                            picture: this.state.picture,
+                            organizationId: this.state.organizationId,
+        				    fileType: this.state.fileType,
+                            pictureType: this.state.pictureType,
+        				    description: this.state.description,
+                            instructions: this.state.instructions,
+                            model: this.state.model,
+        				    model_year: this.state.model_year,
+                            keywords: JSON.stringify(this.state.keywords),
+                            title: this.state.title};
+		                    console.log(dataForm);
 
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
@@ -897,18 +919,6 @@ var EquipmentAddForm = React.createClass({
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
-            if (isValidForm.indexOf('INSTRUCTIONS') > -1) {
-				message += ' Please give usage instructions.';
-			}
-			if (isValidForm.indexOf('MODEL') > -1) {
-				message += ' Please indicate the model and model year/version.';
-			}
-			if (isValidForm.indexOf('MODEL_YEAR') > -1) {
-                message += ' Please indicate the model and model year/version.';
-            }
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
@@ -974,19 +984,8 @@ var EquipmentAddForm = React.createClass({
 		if (!this.state.title.trim()) {
 			issues.push("TITLE");
 		}
-		if (!this.state.file) {
-			issues.push("FILE");
-		}
-		if (!this.state.instructions) {
-			issues.push("INSTRUCTIONS");
-		}
-		if (!this.state.model) {
-            issues.push("MODEL");
-        }
-        if (!this.state.model_year) {
-            issues.push("MODEL_YEAR");
-        }
-		if (!this.state.keywords.trim()) {
+        console.log(this.state.keywords)
+		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
 		return issues;

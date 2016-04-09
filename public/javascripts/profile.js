@@ -118,15 +118,15 @@ var Profile = React.createClass ({
       });
     },
     render: function() {
-        var connectButton = <input className="btn btn-panel btn-right-side" value="" />;
+        var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "connected") {
-             connectButton = <input onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect" />;
+             connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
         }
         else if (this.state.status == "pending") {
-             connectButton = <input className="btn btn-panel btn-right-side" value="Pending" />;
+             connectButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-connected") {
-             connectButton = <input onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect" />;
+             connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
         }
         else { console.log("Nothing"); }
         return (
@@ -148,35 +148,15 @@ var Profile = React.createClass ({
             <div className="item-bottom">
                 <div className="item-bottom-1">
                     {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
+                    {/*
                     <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
                     <div className="side-panel"><h5>RATINGS</h5></div>
                     <div className="side-panel"><h5>OTHERS</h5></div>
-                    {/*
-                    <div className="item-panel contain-panel"><h5>{position} @</h5><br/>
-                        {this.props.locations.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
-                    <div className="item-panel contain-panel"><h5>Other Roles</h5><br/>
-                        {this.props.roles.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
-                    <div className="item-panel contain-panel"><h5>Groups & Networks</h5><br/>
-                        {this.props.connections.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
-                    <div className="item-panel contain-panel"><h5>Expertise</h5><br/>
-                        {this.props.expertise.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
-                    </div>
                     */}
                 </div>
                 <div id="item-bottom-2-profile" className="item-bottom-2">
-                    {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<input className="btn btn-panel" value="Follow" /></div> }
-                    <h1 className="no-margin-padding align-left h1-title">{fullname} ({username})</h1>
+                    {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<button className="btn btn-panel" value="Follow">Follow</button></div> }
+                    <h1 className="no-margin-padding align-left h1-title">{fullname}</h1>
                     <h3 className="no-margin-padding align-left h3-title">{position} @ {current_location}</h3>
                     <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
                 </div>
@@ -346,54 +326,19 @@ var Organizations = React.createClass({
     }
 });
 
-var Publications = React.createClass({
-  mixins: [ParseReact.Mixin],
-  getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
-                                                                      className: "_User",
-                                                                      objectId: this.props.objectId}))
-      };
-    },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <PublicationForm />
-        {this.data.publications.map(function(publication) {
-            rows.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} pubGroup={publication.pubGroup} />);
-        })}
-        {rows}
-      </div>
-    );
-  }
-});
 var About = React.createClass({
-    mixins: [ParseReact.Mixin],
-    observe: function() {
-        return {
-            publications: (new Parse.Query('Publication').equalTo("user", {__type: "Pointer",
-                                                                           className: "_User",
-                                                                           objectId: objectId}).limit(2)),
-            datas: (new Parse.Query('Data').equalTo("user", {__type: "Pointer",
-                                                                           className: "_User",
-                                                                           objectId: objectId}).limit(2)),
-            models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
-                                                                           className: "_User",
-                                                                           objectId: objectId}).limit(2))
-        };
-    },
     getInitialState: function() {
         return {
             summary: summary,
             work_experiences: work_experiences,
             educations: educations,
-            projects: projects,
             expertise: expertise,
-            interests: interests
+            interests: interests,
+
+            projects: "",
+            publications: "",
+            datas: "",
+            models: ""
             };
     },
     handleChange: function(e) {
@@ -435,12 +380,14 @@ var About = React.createClass({
         this.setState({expertise: expertiseTemp});
     },
     handleTagsInputChange: function(e) {
-        var interestsSubmit = (JSON.stringify(e));
-        this.setState({interests:interestsSubmit}, function(){ this.submitArrayChange() }.bind(this));
+        var changedState = {};
+        changedState['interests'] = e;
+        this.setState(changedState, function(){ this.submitArrayChange() }.bind(this));
     },
     submitArrayChange: function() {
-        var dataForm = { expertise: this.state.expertise, interests: this.state.interests };
-
+        var dataForm = {    expertise: this.state.expertise,
+                            interests: JSON.stringify(this.state.interests) };
+        console.log(dataForm);
         $.ajax({
             url: path + "/update",
             dataType: 'json',
@@ -504,14 +451,6 @@ var About = React.createClass({
         this.setState({educations:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
         console.log(educations);
     },
-    addP: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.projects == "") { var arrayWE = [{company:"Project Name",description:"Project Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Project Position"}]; }
-        else { var newWE = {company:"Project Name",description:"Project Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Project Position"};
-               var arrayWE = JSON.parse(this.state.projects); arrayWE.push(newWE); }
-        this.setState({projects:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
-        console.log(projects);
-    },
     tabChange: function(index) {
         this.props.tab(index);
     },
@@ -535,109 +474,78 @@ var About = React.createClass({
                 educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
-        if (this.state.projects != "") {
-            var PItems = JSON.parse(this.state.projects);
-            PItems.forEach(function(item) {
-                projects_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="project" />);
-            });
-        }
         if (this.state.expertise != "") {
             JSON.parse(this.state.expertise).map(function(item, i) {
-               expertise_data.push (<div className="div-relative">
-                        {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
-                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="1" type="text" className="r-editable r-editable-full" id={"expertise-" + i} name={"expertise-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitArrayChange}>{item}</textarea></p> : <p className="r-noneditable no-margin">{item}</p>}
+               expertise_data.push (<div className="div-relative resume-item">
+                        {(currentUsername == username) ? <p className="no-margin"><input rows="1" type="text" className="r-editable r-editable-full" id={"expertise-" + i} name={"expertise-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitArrayChange} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
+                        {(currentUsername == username) ? <div className="div-minus-expertise"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                      </div>);
             }, this)
         }
-        this.data.publications.map(function(publication) {
-            publications_data.push(<Publication objectId={publication.objectId} author={publication.author} title={publication.title} description={publication.description} publication_code={publication.publication_code} />);
-        })
-        this.data.datas.map(function(item) {
-            datas_data.push(<DatumListItem objectId={item.objectId}
-                                   collaborators={item.collaborators}
-                                   title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description} />);
-        })
-        this.data.models.map(function(model) {
-            models_data.push(<ModelListItem objectId={model.objectId}
-                                   collaborators={model.collaborators}
-                                   title={model.title}
-                                   image_URL={model.image_URL}
-                                   keywords={model.keywords}
-                                   number_cited={model.number_cited}
-                                   number_syncholar_factor={model.number_syncholar_factor}
-                                   license={model.license}
-                                   access={model.access}
-                                   abstract={model.abstract} />);
-        })
         return (
             <div id="resume">
                 <div id="resume-summary">
                 <div>
-                    <h3 className="summary-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Summary</h3>
+                    <h3 className="summary-margin-top">Summary</h3>
                 </div>
                 <div id="resume-summary-item">
-                    {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                    <div className="resume-item">
+                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                    </div>
                 </div>
                 </div>
                 <div id="resume-expertise-and-interests" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-certificate"></span> Expertise & Interests</h3>
+                        <h3 className="no-margin-top" >Interests</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEI} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {expertise_data}
-                    <hr className="margin-top-bottom-5"/>
-                    {(currentUsername == username) ? <div className="margin-top-20">{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Interests (Enter Separated)", className: "l-editable-input", name: "interests", onChange : this.handleTagsInputChange, value : this.state.interests}))}</div> : <div className="margin-top-20">{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
+                    <hr className="margin-bottom-5"/>
+                    {(currentUsername == username) ? <ReactTagsInput type="text" placeholder="Keywords:" name="interests" onChange={this.handleTagsInputChange} value={this.state.interests}/> : <div className="margin-top-20">{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
                 <div className="clear"></div>
                 <div id="resume-education" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-paperclip"></span> Education</h3>
+                        <h3 className="no-margin-top" >Education</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {educations_data}
                 </div>
                 <div id="resume-experience" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top" ><span aria-hidden="true" className="glyphicon glyphicon-education"></span> Work Experience</h3>
+                        <h3 className="no-margin-top" >Work Experience</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {work_experiences_data}
                 </div>
                 <div id="resume-projects" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-star"></span> Projects</h3>
+                        <h3 className="no-margin-top">Projects</h3>
                     </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addP} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,3)} className="body-link">See More</a></h3></div>
                     {projects_data}
                 </div>
                 <div id="resume-publications" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-book"></span> Publications</h3>
+                        <h3 className="no-margin-top">Publications</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,4)} className="body-link">See More</a></h3></div>
                     {publications_data}
                 </div>
                 <div className="clear"></div>
                 <div id="resume-datas" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-stats"></span> Data</h3>
+                        <h3 className="no-margin-top">Data</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,6)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
                     {datas_data}
                 </div>
                 <div className="clear"></div>
                 <div id="resume-models" className="div-relative"><hr/>
                     <div>
-                        <h3 className="no-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-blackboard"></span> Models</h3>
+                        <h3 className="no-margin-top">Models</h3>
                     </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,7)} className="body-link">See More</a></h3></div>
+                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,6)} className="body-link">See More</a></h3></div>
                     {models_data}
                 </div>
             </div>
@@ -702,17 +610,15 @@ var AboutTabObject = React.createClass({
         var startDate = this.props.start.replace(/-/g,'/');
         var endDate = this.props.end.replace(/-/g,'/');
         return(
-            <div className={this.state.display}>
-            <div className="resume-item div-relative">
+            <div className={"resume-item div-relative" + this.state.display}>
                 {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                 <h4 className="h4-resume-item">
                     <b>{(currentUsername == username) ? <input type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}
                      @ {(currentUsername == username) ? <input type="text" className="r-editable r-editable-50" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}
                     </b></h4>
-                    <p className="no-margin">&nbsp;(&nbsp;{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">{startDate}</span>}
-                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}&nbsp;)</p>
+                    <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
+                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
                 {(currentUsername == username) ? <p className="no-margin"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
-            </div>
             </div>
         )
     }
@@ -1341,7 +1247,7 @@ var PublicationAddForm = React.createClass({
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" required onChange={this.handleChange} value={this.state.keywords} />
+                <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1594,16 +1500,27 @@ var ResourceAddForm = React.createClass({
         }
     },
     getInitialState: function() {
-     return {
-        fromModelTab: false,
-        buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
-        formFeedback: '',
-        fileFeedback: {},
-        pictureFeedback: '',
-
-        // form
-        picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        creationDate: '', description: '', license: '', pubLink: '', keywords: '', url: '', groupies: ''
+        return {
+            alertVisible: false,
+            fromModelTab: false,
+            buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+            formFeedback: '',
+            fileFeedback: {},
+            pictureFeedback: '',
+            // form
+            picture: null,
+            file: null,
+            pictureType: '',
+            fileType: '',
+            title: '',
+            description: '',
+            collaborators: '',
+            creationDate: '',
+            license: '',
+            pubLink: '',
+            keywords: [],
+            url: '',
+            groupies: ''
         };
     },
     componentDidMount: function() {
@@ -1661,45 +1578,48 @@ var ResourceAddForm = React.createClass({
         $("#scriptContainer").append(eCode);
     },
 	render: function() {
-		return (
-		<div>
-            <div id="scriptContainer"></div>
-			<form className="form" onSubmit={this.handleSubmitData}>
-			    <div className="well" style={this.buttonStyles}>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
-                    	style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
-                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-                    </Button>
-                    <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
-                        Select Files... <input type="file" onChange={this.handleFile} />
-                    </Button>
-                  </div>
-
-                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Creation Date:" name="creationDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
-                <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
-                <Input type="text" placeholder="Keywords (type in comma separated tags)" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
-                <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
-                <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
-
-               <Modal.Footer>
-                   <Input className="btn btn-default pull-right" type="submit" value="Continue" />
-                   <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
-               </Modal.Footer>
-            </form>
-		</div>
+        if (this.state.alertVisible) {
+            var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
+        } else {var alert = "";}
+        return (
+            <div>
+                <div id="scriptContainer"></div>
+                <form className="form" onSubmit={this.handleSubmitData}>
+                    <div className="well" style={this.buttonStyles}>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
+                            style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
+                            Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                        </Button>
+                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+                            Select Files... <input type="file" onChange={this.handleFile} />
+                        </Button>
+                    </div>
+                    <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
+                    <Input type="text" placeholder="Collaborators:" name="collaborators" required className="auto" onChange={this.handleChange} value={this.state.collaborators} />
+                    <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                    <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
+                    <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
+                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                    <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+                    <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
+                    <Modal.Footer>
+                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                    </Modal.Footer>
+                </form>
+            </div>
 		);
 	},
-
 	handleChange: function(e) {
 	    var changedState = {};
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
-
+    handleKeyChange: function(e) {
+        var changedState = {};
+        changedState['keywords'] = e;
+        this.setState(changedState);
+    },
 	handleSubmitData: function(e) {
         e.preventDefault();
 
@@ -1707,7 +1627,7 @@ var ResourceAddForm = React.createClass({
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
         				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
         				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
+        				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title, groupies: this.state.groupies};
 		console.log(dataForm);
 
         var isValidForm = this.validateForm();
@@ -1742,16 +1662,13 @@ var ResourceAddForm = React.createClass({
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
 			if (isValidForm.indexOf('DATE') > -1) {
 				message += ' Please indicate the creation date.';
 			}
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
-			this.setState({formFeedback: message});
+            this.setState({formFeedback: message, alertVisible: true});
 		}
         return;
     },
@@ -1819,9 +1736,10 @@ var ResourceAddForm = React.createClass({
 		if (!this.state.creationDate) {
 			issues.push("DATE");
 		}
-		if (!this.state.keywords.trim()) {
+		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
+        console.log(JSON.stringify(this.state.keywords));
 		return issues;
 	},
 });
@@ -1852,7 +1770,7 @@ var ProjectAddForm = React.createClass({
 
         // form
         picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        startDate: '', endDate: '', description: '', link_to_resources: '', client: '', keywords: '', url: '',
+        startDate: '', endDate: '', description: '', link_to_resources: '', client: '', keywords: [], url: '',
         organizationId: 'AJgSwufvvO', groupies: ''
         };
     },
@@ -1929,15 +1847,15 @@ var ProjectAddForm = React.createClass({
                     </Button>
                   </div>
 
-                <Input type="text" placeholder="Title:" name="title" onChange={this.handleChange} value={this.state.title} />
+                <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
                 <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
-                <Input type="date" placeholder="Start Date:" name="startDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
+                <Input type="date" placeholder="Start Date:" name="startDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
                 <Input type="date" placeholder="End Date:" name="endDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.endDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="Client:" name="client" onChange={this.handleChange} value={this.state.client} />
                 <Input type="text" placeholder="Link to Resources:" name="link_to_resources" onChange={this.handleChange} value={this.state.link_to_resources} />
-                <Input type="text" placeholder="Keywords (Comma Separated Tags):" name="keywords" onChange={this.handleChange} value={this.state.keywords} />
-                <Input type="text" placeholder="URL (Link to Patent:)" name="url" onChange={this.handleChange} value={this.state.url} />
+                <ReactTagsInput type="textarea" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <Input type="text" placeholder="URL:" name="url" onChange={this.handleChange} value={this.state.url} />
                 <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
                 </Modal.Body>
                 <Modal.Footer>
@@ -1958,6 +1876,11 @@ var ProjectAddForm = React.createClass({
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
+    handleKeyChange: function(e) {
+        var changedState = {};
+        changedState['keywords'] = e;
+        this.setState(changedState);
+    },
 	handleSubmitData: function(e) {
         e.preventDefault();
 
@@ -1998,10 +1921,7 @@ var ProjectAddForm = React.createClass({
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
-			if (isValidForm.indexOf('FILE') > -1) {
-				message += ' Please upload a file.';
-			}
-			if (isValidForm.indexOf('DATE') > -1) {
+            if (isValidForm.indexOf('DATE') > -1) {
 				message += ' Please indicate the start and end date.';
 			}
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
@@ -2075,10 +1995,7 @@ var ProjectAddForm = React.createClass({
 		if (!this.state.startDate) {
 			issues.push("DATE");
 		}
-		if (!this.state.endDate) {
-            issues.push("DATE");
-        }
-		if (!this.state.keywords.trim()) {
+		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
 		return issues;

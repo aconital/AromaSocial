@@ -29,7 +29,8 @@
     border:solid;
     border-radius:4px;
     border-color: var(--foreground-color);
-    background-color: var(--foreground-color);}
+    background-color: var(--foreground-color);
+    box-shadow: 0px 2px 10px #888888; }
 .contain-panel-small-image {
     width:9%;
     border: solid;
@@ -52,7 +53,7 @@
     font-size:80px;
     margin-top: -40px;
     margin-left: -40px;
-    background-color:
+    background-color:white
     position:absolute;
     color: white;
 } .edit-overlay-background {
@@ -78,29 +79,96 @@
     opacity: 0.8;
 }
 
+.div-minus{position:absolute; right:5px; top:-5px; }
+.div-minus-expertise{position:absolute; right:5px; top:5px; }
+
+#resume-education a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} #resume-education:hover a {
+  color: var(--link-color);
+} #resume-expertise-and-interests a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} #resume-expertise-and-interests:hover a {
+  color: var(--link-color);
+} #resume-experience a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} #resume-experience:hover a {
+  color: var(--link-color);
+}
+
+.resume-item {
+    width:100%;
+    background-color: var(--white-color);
+    border: solid;
+    border-color: var(--background-color);
+    border-radius: 4px;
+    border-width: 1px;
+    padding:10px;
+    position: relative;
+    box-shadow: 0px 2px 7px #888888;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
+} .resume-item:hover {
+  background-color: var(--contrast-free-color);
+} .resume-item + .resume-item {
+  margin-top:10px;
+}
+.resume-item a {
+  color: var(--contrast-free-color);
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+} .resume-item:hover a {
+  color: var(--link-color);
+}
+
 .item-box {
     float:left;
     width:100%;
     background-color: var(--white-color);
     border: solid;
-    border-color: var(--foreground-color);
+    border-color: var(--background-color);
     border-radius: 4px;
     border-width: 1px;
     padding:10px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0px 2px 7px #888888;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
 } .item-box + .item-box {
     margin-top:10px;
 } .item-search-div + .item-box {
     margin-top:10px;
 } .item-box-left {
     float:left;
-    background-color: var(--white-color);
     margin-right:2%;
     width:18%;
 } .item-box-right {
     float:left;
-    background-color: var(--white-color);
     width:80%;
 } .item-search-field {
     margin: 0px;
@@ -120,6 +188,8 @@
     background-color: var(--foreground-hover-color);
     border-color: var(--foreground-hover-color);
     display: inline !important;
+} .item-box:hover {
+    background-color: var(--contrast-free-color);
 }
 
 .item-box-image-outside {
@@ -143,7 +213,7 @@
 
 .item-bottom { position:relative; float:left; width: 100%; }
 .item-bottom-1 { float:left; width:20%; }
-.item-bottom-2 { margin-top:6px; float:left; width:80%; }
+.item-bottom-2 { margin-top:6px; float:left; width:78%; }
 .item-bottom-2-profile { position:relative; }
 .item-bottom-2-organization { position:relative; }
 
@@ -172,3 +242,4 @@
 .organization-table-info { width: 100%; }
 .organization-table-info tr td:nth-child(1) { width: 10%; min-width: 10%; max-width: 10%; padding-left: 10px; }
 .organization-table-info tr td:nth-child(2) { width: 90%; min-width: 90%; max-width: 90%; }
+
