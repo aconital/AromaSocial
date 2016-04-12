@@ -580,6 +580,7 @@ module.exports=function(app,Parse) {
             res.render('index', {title: 'Login failed', path: req.path});
         }
     });
+
     app.post('/create/organization', is_auth, function (req, res, next) {
         var currentUser = req.user;
         if (currentUser) {

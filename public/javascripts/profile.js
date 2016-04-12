@@ -1958,7 +1958,7 @@ var ProjectAddForm = React.createClass({
 			});
 		}
 		else {
-			var message = 'Project could not be addEducationd!';
+			var message = 'Project could not be added!';
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
