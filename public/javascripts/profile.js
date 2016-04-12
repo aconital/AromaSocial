@@ -37,6 +37,7 @@ var CustomTags = React.createClass({
 
         return {
             tags: [],
+            ids: [],
             suggestions: resultArr,
             placeholder: "Add new collaborator...",
             idMap: nameToIds
@@ -55,11 +56,17 @@ var CustomTags = React.createClass({
         });
         this.setState({tags: tags});
 
-        console.log("ID MAP ENTRY: ")
-        console.log(this.state.idMap[tag])
+        var ids = this.state.ids;
+        ids.push(this.state.idMap[tag]);
+        this.setState({ids: ids});
+        
+
+        console.log("ID MAP ENTRY: ");
+        console.log(this.state.ids);
         if (this.state.idMap[tag] != null) {
             // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
-            this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
+            // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
+            this.props.changeFunc(this.props.name, this.state.ids);
         }
     },
     handleDrag: function(tag, currPos, newPos) {
@@ -1599,69 +1606,69 @@ var ResourceAddForm = React.createClass({
             fileType: '',
             title: '',
             description: '',
-            collaborators: '',
+            collaborators: [],
             creationDate: '',
             license: '',
             pubLink: '',
             keywords: [],
             url: '',
-            groupies: ''
+            groupies: []
         };
     },
-    componentDidMount: function() {
-        var eCode = <script>
-                        $(function() {
-                            $('.auto').bind("keydown", function(event) {
-                                if ( event.keyCode === $.ui.keyCode.TAB &&
-                                    $( this ).autocomplete( "instance" ).menu.active ) {
-                                  event.preventDefault();
-                                }
-                            })
-                            .autocomplete({
-                                    source: function(req, res) {
-                                        $.ajax({
-                                          url: '/allusers',
-                                          dataType: 'JSON',
-                                          cache: false,
-                                          success: function(data) {
-                                            console.log("SUCCESS!!!!!!!");
-                                            console.log(data);
-                                            var arr = $.grep(data, function(item){
-                                              return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                                            });
-                                            res($.ui.autocomplete.filter($.map(data, function(item){
-                                              return {
-                                                label: item.fullname,
-                                                value: item.username
-                                              };
-                                            }), extractLast(req.term)));
-                                          },
-                                          error: function(xhr) {
-                                            console.log(xhr.status);
-                                          }
-                                        });
-                                    },
-                                    focus: function() {
-                                        return false;
-                                    },
-                                    messages: {
-                                      noResults: '',
-                                      results: function() {}
-                                    },
-                                    select: function(event, ui) {
-                                        var terms = split(this.value);
-                                        terms.pop();
-                                        terms.push(ui.item.value);
-                                        terms.push("");
-                                        this.value = terms.join(" ");
-                                        return false;
-                                    }
-                            })
-                        });
-                    </script>
-        // var eCode = <script type="text/jsx" src="/javascripts/multac.jsx"></script>
-        $("#scriptContainer").append(eCode);
-    },
+    // componentDidMount: function() {
+    //     var eCode = <script>
+    //                     $(function() {
+    //                         $('.auto').bind("keydown", function(event) {
+    //                             if ( event.keyCode === $.ui.keyCode.TAB &&
+    //                                 $( this ).autocomplete( "instance" ).menu.active ) {
+    //                               event.preventDefault();
+    //                             }
+    //                         })
+    //                         .autocomplete({
+    //                                 source: function(req, res) {
+    //                                     $.ajax({
+    //                                       url: '/allusers',
+    //                                       dataType: 'JSON',
+    //                                       cache: false,
+    //                                       success: function(data) {
+    //                                         console.log("SUCCESS!!!!!!!");
+    //                                         console.log(data);
+    //                                         var arr = $.grep(data, function(item){
+    //                                           return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+    //                                         });
+    //                                         res($.ui.autocomplete.filter($.map(data, function(item){
+    //                                           return {
+    //                                             label: item.fullname,
+    //                                             value: item.username
+    //                                           };
+    //                                         }), extractLast(req.term)));
+    //                                       },
+    //                                       error: function(xhr) {
+    //                                         console.log(xhr.status);
+    //                                       }
+    //                                     });
+    //                                 },
+    //                                 focus: function() {
+    //                                     return false;
+    //                                 },
+    //                                 messages: {
+    //                                   noResults: '',
+    //                                   results: function() {}
+    //                                 },
+    //                                 select: function(event, ui) {
+    //                                     var terms = split(this.value);
+    //                                     terms.pop();
+    //                                     terms.push(ui.item.value);
+    //                                     terms.push("");
+    //                                     this.value = terms.join(" ");
+    //                                     return false;
+    //                                 }
+    //                         })
+    //                     });
+    //                 </script>
+    //     // var eCode = <script type="text/jsx" src="/javascripts/multac.jsx"></script>
+    //     $("#scriptContainer").append(eCode);
+    // },
 	render: function() {
         if (this.state.alertVisible) {
             var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
@@ -1682,7 +1689,7 @@ var ResourceAddForm = React.createClass({
                     <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
 
                     <div className="rcorners6">
-                        <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Collaborators:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
+                        <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Collaborators:" name="collaborators" value={this.state.collaborators} />
                     </div>
 
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
@@ -1693,7 +1700,7 @@ var ResourceAddForm = React.createClass({
                     <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
 
                     <div className="rcorners6">
-                        <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Users to share:  " name="groupies" onChange={this.handleChange} value={this.state.collaborators} />
+                        <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Users to share:" name="groupies" value={this.state.collaborators} />
                     </div>
                     
                     <Modal.Footer>
@@ -1703,16 +1710,24 @@ var ResourceAddForm = React.createClass({
             </div>
 		);
 	},
-    handleAcTagChange: function(type, name, id) {
-        console.log("Type: ");
-        console.log(type);
-        console.log("Name: ");
-        console.log(name);
-        console.log("Recorded Id: ");
-        console.log(id);
+    handleAcTagChange: function(type, ids) {
         var changedState = {};
-        changedState[type] = id
+        changedState[type] = ids;
         this.setState(changedState);
+        // console.log("Type: ");
+        // console.log(type);
+        // console.log("Name: ");
+        // console.log(name);
+        // console.log("Recorded Id: ");
+        // console.log(id);
+        // var changedState = {};
+        // changedState[type] = id;
+        // this.setState(changedState);
+        // console.log("THIS STATE NAME: ");
+        // console.log(this.state[name]);
+        // var changedState = {};
+        // changedState[type] = id;
+        // this.setState({ collaborators: this.state[type].concat([id]) });
     },
 	handleChange: function(e) {
 	    var changedState = {};
@@ -1734,9 +1749,9 @@ var ResourceAddForm = React.createClass({
 
         var dataForm = {file: this.state.file, picture: this.state.picture,
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
-        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+        				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title, groupies: this.state.groupies};
+        				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title, groupies: JSON.stringify(this.state.groupies)};
 		console.log(dataForm);
 
         var isValidForm = this.validateForm();
