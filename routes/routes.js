@@ -81,13 +81,15 @@ module.exports=function(app,Parse) {
    *
    ********************************************/
   app.get('/signup', function (req, res, next) {
-	if (!req.isAuthenticated()) {
-       res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
-	} else {
-		res.redirect('/');
-	}
+      if (!req.isAuthenticated()) {
+          res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
+      }
+      else {
+          res.redirect('/');
+      }
    });
-     app.post('/signup', function (req, res, next) {
+
+    app.post('/signup', function (req, res, next) {
      var user = new Parse.User();
      user.set("username", req.body.username);
      user.set("password", req.body.password);

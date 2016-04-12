@@ -157,7 +157,6 @@ var Profile = React.createClass ({
                 <div id="item-bottom-2-profile" className="item-bottom-2">
                     {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<button className="btn btn-panel" value="Follow">Follow</button></div> }
                     <h1 className="no-margin-padding align-left h1-title">{fullname}</h1>
-                    <h3 className="no-margin-padding align-left h3-title">{position} @ {current_location}</h3>
                     <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
                 </div>
                 <div className="item-bottom-3">
@@ -328,157 +327,202 @@ var Organizations = React.createClass({
 
 var About = React.createClass({
     getInitialState: function() {
+        console.log(summary);
+        console.log(workExperience);
+        console.log(educations);
+        console.log(interests);
+        console.log(interestsTag);
         return {
             summary: summary,
-            work_experiences: work_experiences,
+            workExperience: workExperience,
             educations: educations,
-            expertise: expertise,
             interests: interests,
-
+            interestsTag: interestsTag,
             projects: "",
             publications: "",
             datas: "",
             models: ""
-            };
+        };
+    },
+    submitSummary: function() {
+        var dataForm = {summary: this.state.summary};
+        $.ajax({
+            url: path + "/updateSummary",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+        return;
+    },
+    submitInterests: function() {
+        var dataForm = {interests: this.state.interests};
+        $.ajax({
+            url: path + "/updateInterest",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitTags: function() {
+        var dataForm = {interestsTag: this.state.interestsTag};
+        $.ajax({
+            url: path + "/updateTags",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitExperience: function() {
+        var dataForm = {workExperience: this.state.workExperience};
+        $.ajax({
+            url: path + "/submitExperience",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitEducation: function() {
+        var dataForm = {educations: this.state.educations};
+        $.ajax({
+            url: path + "/submitEducation",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    deleteArrayChange: function(index) {
+        var interestsTemp = JSON.parse(this.state.interests);
+        delete interestsTemp[index];
+        var interestsTemp = JSON.stringify(interestsTemp).replace(',null','').replace('null,','');
+        this.setState({interests: interestsTemp}, function(){ this.submitInterests() }.bind(this));
     },
     handleChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
     },
-    submitChange: function() {
-        var dataForm = {summary: this.state.summary};
-
-        $.ajax({
-            url: path + "/update",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-
-        return;
-    },
-    deleteArrayChange: function(index) {
-        var expertiseTemp = JSON.parse(this.state.expertise);
-        delete expertiseTemp[index];
-        var expertiseTemp = JSON.stringify(expertiseTemp).replace(',null','').replace('null,','');
-        this.setState({expertise: expertiseTemp}, function(){ this.submitArrayChange() }.bind(this));
-    },
     handleArrayChange: function(index) {
-        var expertiseChange = document.getElementById("expertise-" + index).value;
-        console.log(expertiseChange);
-        var expertiseTemp = JSON.parse(this.state.expertise);
-        expertiseTemp[index] = expertiseChange;
-        var expertiseTemp = JSON.stringify(expertiseTemp);
-        this.setState({expertise: expertiseTemp});
+        var interestsChange = document.getElementById("interests-" + index).value;
+        console.log(interestsChange);
+        var interestsTemp = JSON.parse(this.state.interests);
+        interestsTemp[index] = interestsChange;
+        var interestsTemp = JSON.stringify(interestsTemp);
+        this.setState({interests: interestsTemp});
     },
     handleTagsInputChange: function(e) {
         var changedState = {};
-        changedState['interests'] = e;
-        this.setState(changedState, function(){ this.submitArrayChange() }.bind(this));
+        changedState['interestsTag'] = JSON.stringify(e);
+        this.setState(changedState, function(){ this.submitTags() }.bind(this));
     },
-    submitArrayChange: function() {
-        var dataForm = {    expertise: this.state.expertise,
-                            interests: JSON.stringify(this.state.interests) };
-        console.log(dataForm);
-        $.ajax({
-            url: path + "/update",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-
-        return;
+    addInterest: function() {
+        if (this.state.interests != "") {
+            var result = this.state.interests.substring(0,this.state.interests.length-1) + ',"Add Another interests!"]';
+        }
+        else {
+            var result = '["Add an Interest!"]';
+        }
+        this.setState({interests:result}, function(){this.submitInterests()}.bind(this));
     },
-    submitObjectChange: function() {
-        var dataForm = { work_experiences: this.state.work_experiences,
-                         educations: this.state.educations,
-                         projects: this.state.projects };
-
-        $.ajax({
-            url: path + "/update",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-
-        return;
-    },
-    addEI: function() {
-        if (this.state.expertise != "") { var result = this.state.expertise.substring(0,this.state.expertise.length-1) + ',"Add Another Expertise!"]'; }
-        else { var result = '["Add An Expertise!"]'; }
-        this.setState({expertise:result});
-        console.log(result);
-    },
-    addWE: function() {
+    addWork: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.work_experiences == "") { var arrayWE = [{company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"}]; }
-        else { var newWE = {company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"};
-               var arrayWE = JSON.parse(this.state.work_experiences); arrayWE.push(newWE); }
-        this.setState({work_experiences:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
-        console.log(work_experiences);
+        if (this.state.workExperience == "") {
+            var arrayWE = [{company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"}];
+        }
+        else {
+            var newWE = {company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"};
+            var arrayWE = JSON.parse(this.state.workExperience);
+            arrayWE.push(newWE);
+        }
+        this.setState({workExperience:JSON.stringify(arrayWE)}, function(){ this.submitExperience() }.bind(this));
+        console.log(workExperience);
     },
-    addE: function() {
+    addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
         if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"}]; }
         else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
-        this.setState({educations:JSON.stringify(arrayWE)}, function(){ this.submitObjectChange() }.bind(this));
+        this.setState({educations:JSON.stringify(arrayWE)}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
     },
     tabChange: function(index) {
         this.props.tab(index);
     },
+    tabDelete: function(index){
+        console.log("ROAR");
+    },
     render: function() {
-        var work_experiences_data = [];
+        var workExperience_data = [];
         var educations_data = [];
         var projects_data = [];
-        var expertise_data = [];
+        var interests_data = [];
         var publications_data = [];
         var datas_data = [];
         var models_data = [];
-        if (this.state.work_experiences != "") {
-            var WEItems = JSON.parse(this.state.work_experiences);
+        if (this.state.workExperience != "") {
+            var WEItems = JSON.parse(this.state.workExperience);
             WEItems.forEach(function(item) {
-                work_experiences_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="work_experience" />);
+                workExperience_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} delete={this.tabDelete} type="workExperience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
+                educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} delete={this.tabDelete} type="education" />);
             });
         }
-        if (this.state.expertise != "") {
-            JSON.parse(this.state.expertise).map(function(item, i) {
-               expertise_data.push (<div className="div-relative resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><input rows="1" type="text" className="r-editable r-editable-full" id={"expertise-" + i} name={"expertise-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitArrayChange} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
-                        {(currentUsername == username) ? <div className="div-minus-expertise"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
+        if (this.state.interests != "") {
+            JSON.parse(this.state.interests).map(function(item, i) {
+                interests_data.push (<div className="div-relative resume-item">
+                        {(currentUsername == username) ? <p className="no-margin"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
+                        {(currentUsername == username) ? <div className="div-minus-interests"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                      </div>);
             }, this)
         }
@@ -490,33 +534,33 @@ var About = React.createClass({
                 </div>
                 <div id="resume-summary-item">
                     <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
                     </div>
                 </div>
                 </div>
-                <div id="resume-expertise-and-interests" className="div-relative"><hr/>
+                <div id="resume-interests-and-interests" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top" >Interests</h3>
                     </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEI} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
-                    {expertise_data}
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addInterest} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {interests_data}
                     <hr className="margin-bottom-5"/>
-                    {(currentUsername == username) ? <ReactTagsInput type="text" placeholder="Keywords:" name="interests" onChange={this.handleTagsInputChange} value={this.state.interests}/> : <div className="margin-top-20">{JSON.parse(this.state.interests).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
+                    {(currentUsername == username) ? <ReactTagsInput type="text" placeholder="Keywords:" name="interests" onChange={this.handleTagsInputChange} onBlur={this.submitTags} value={JSON.parse(this.state.interestsTag)}/> : <div className="margin-top-20">{JSON.parse(this.state.interestsTag).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
                 <div className="clear"></div>
                 <div id="resume-education" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top" >Education</h3>
                     </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEducation} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     {educations_data}
                 </div>
                 <div id="resume-experience" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top" >Work Experience</h3>
                     </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWE} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
-                    {work_experiences_data}
+                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWork} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
+                    {workExperience_data}
                 </div>
                 <div id="resume-projects" className="div-relative"><hr/>
                     <div>
@@ -564,19 +608,18 @@ var AboutTabObject = React.createClass({
             end: this.props.end,
             data: this.props.data,
             type: this.props.type,
-            action: "",
-
-            display: ""
+            delete: this.props.delete,
+            action: ""
             };
     },
     observe: function() {
         return {
-        organization: (new Parse.Query('Organization').equalTo("name", this.state.company))
+            organization: (new Parse.Query('Organization').equalTo("name", this.state.company))
         };
     },
     deleteObjectChange: function(index) {
-        this.setState({display: "deleted"});
         this.setState({action: "delete"}, function(){ this.submitObjectChange() }.bind(this));
+        this.props.delete.bind(null, i)
     },
     handleObjectChange: function(e) {
         this.setState({[e.target.name]: e.target.value, action: "update"});
@@ -585,11 +628,8 @@ var AboutTabObject = React.createClass({
         var dataForm = {key: this.state.key, action: this.state.action, title: this.state.title,
                         company: this.state.company, description: this.state.description,
                         start: this.state.start, end: this.state.end, type: this.state.type};
-
-        console.log(dataForm);
-
         $.ajax({
-            url: path + "/update",
+            url: path + "/updateWorkEducation",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             type: 'POST',
@@ -600,7 +640,7 @@ var AboutTabObject = React.createClass({
                 console.log("Submitted!");
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
+                console.error(path + "/updateWorkEducation", status, err.toString());
             }.bind(this)
         });
 
@@ -609,17 +649,18 @@ var AboutTabObject = React.createClass({
     render: function() {
         var startDate = this.props.start.replace(/-/g,'/');
         var endDate = this.props.end.replace(/-/g,'/');
-        return(
-            <div className={"resume-item div-relative" + this.state.display}>
-                {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
-                <h4 className="h4-resume-item">
-                    <b>{(currentUsername == username) ? <input type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}
-                     @ {(currentUsername == username) ? <input type="text" className="r-editable r-editable-50" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}
-                    </b></h4>
-                    <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
-                    &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
-                {(currentUsername == username) ? <p className="no-margin"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
-            </div>
+        if (this.state.display=="");
+            return(
+                <div className={"resume-item div-relative" + this.state.display}>
+                    {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
+                    <h4 className="h4-resume-item">
+                        <b>{(currentUsername == username) ? <input type="text" className="r-editable" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}</b>
+                        <p>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-50" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</p>
+                        </h4>
+                        <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
+                        &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
+                    {(currentUsername == username) ? <p className="no-margin"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+                </div>
         )
     }
 });
@@ -1658,7 +1699,7 @@ var ResourceAddForm = React.createClass({
 			});
 		}
 		else {
-			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
+			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be addEducationd:';
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
@@ -1917,7 +1958,7 @@ var ProjectAddForm = React.createClass({
 			});
 		}
 		else {
-			var message = 'Project could not be added!';
+			var message = 'Project could not be addEducationd!';
 			if (isValidForm.indexOf('TITLE') > -1) {
 				message += ' Title is required.';
 			}
@@ -2015,5 +2056,5 @@ React.render(<Profile
     locations={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
     roles={["Treasurer At FFABNET"]}
     connections={["BiofuelNet","FFABNet","IIE","INFORMS"]}
-    expertise={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}
+    interests={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}
     news={["INFORMS","IIASA","FRESH LAB"]}/>, document.getElementById('content'));
