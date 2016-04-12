@@ -348,8 +348,8 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.post('/profile/:username/update', is_auth, function(req,res,next){
-        var currentUser = req.user;
+    app.post('/profile/:username/update', is_auth,function(req,res,next){
+        var currentUser =req.user;
         var linkUser = req.params.username;
         if(currentUser.username == linkUser) {
             var query = new Parse.Query(Parse.User);
@@ -362,18 +362,17 @@ module.exports=function(app,Parse) {
                         res.status(200).json({status: "Info Uploaded Successfully!"});
                     }
                     else if (req.body.expertise || req.body.interests) {
-                        if (req.body.expertise) {
+                        if (req.body.expertise)
                             result.set("expertise", JSON.parse(req.body.expertise));
+                        if (req.body.interests)
+                            result.set("interests", JSON.parse(req.body.interests));
                             result.save();
-                        } if (req.body.interests) {
-                            result.set('interests', JSON.parse(req.body.interests));
-                            result.save();
+                            res.status(200).json({status: "Info Uploaded Successfully!"});
                         }
-                        res.status(200).json({status: "Info Uploaded Successfully!"});
-                    }
                     else if (req.body.work_experiences && req.body.educations && req.body.projects) {
                         result.set("work_experiences", JSON.parse(req.body.work_experiences));
                         result.set("educations", JSON.parse(req.body.educations));
+                        result.set("projects", JSON.parse(req.body.projects));
                         result.save();
                         res.status(200).json({status: "Info Uploaded Successfully!"});
                     }
@@ -402,6 +401,18 @@ module.exports=function(app,Parse) {
                                     console.log(educationsTemp);
                                 }
                                 currentUser.set("educations", educationsTemp);
+                                res.status(200).json({status: "Deleted Successfully!"});
+                            }
+                            else if (req.body.type == "project") {
+                                var projectsTemp = currentUser.attributes.projects;
+                                for (var i = 0; i < projectsTemp.length; i++) {
+                                    if (projectsTemp[i].key = req.body.key) {
+                                        delete projectsTemp[i];
+                                        projectsTemp.splice(i, 1);
+                                    }
+                                    console.log(projectsTemp);
+                                }
+                                currentUser.set("projects", projectsTemp);
                                 res.status(200).json({status: "Deleted Successfully!"});
                             }
                             currentUser.save();
@@ -441,6 +452,24 @@ module.exports=function(app,Parse) {
                                     }
                                 }
                                 result.set("educations", educationsTemp);
+                                res.status(200).json({status: "Updated Successfully!"});
+                            }
+                            else if (req.body.type == "project") {
+                                var projectsTemp = currentUser.projects;
+                                for (var i = 0; i < projectsTemp.length; i++) {
+                                    if (projectsTemp[i].key = req.body.key) {
+                                        var changedWE = {
+                                            key: req.body.key,
+                                            title: req.body.title,
+                                            company: req.body.company,
+                                            description: req.body.description,
+                                            start: req.body.start,
+                                            end: req.body.end
+                                        };
+                                        projectsTemp[i] = changedWE;
+                                    }
+                                }
+                                result.set("projects", projectsTemp);
                                 res.status(200).json({status: "Updated Successfully!"});
                             }
                             result.save();

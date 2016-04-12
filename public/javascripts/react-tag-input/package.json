@@ -1,0 +1,76 @@
+{
+  "name": "react-tag-input",
+  "version": "2.2.5",
+  "description": "React tags is a fantastically simple tagging component for your React projects",
+  "main": "dist-modules/reactTags.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress --colors --port 8090",
+    "build": "webpack -p && ./node_modules/.bin/babel ./lib --out-dir dist-modules"
+  },
+  "keywords": [
+    "react",
+    "drag-drop",
+    "tags",
+    "tag input",
+    "react-component",
+    "autosuggest"
+  ],
+  "author": {
+    "name": "Prakhar Srivastav"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prakhar1989/react-tags.git"
+  },
+  "dependencies": {
+    "lodash": "^3.10.1"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0",
+    "react-dnd": "^2.0.2",
+    "react-dnd-html5-backend": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel": "^5.3.3",
+    "babel-loader": "^5.1.2",
+    "react": "^0.14.0",
+    "react-dnd": "^2.0.2",
+    "react-dnd-html5-backend": "^2.0.0",
+    "react-dom": "^0.14.0",
+    "webpack": "^1.9.4",
+    "webpack-dev-server": "^1.8.2"
+  },
+  "gitHead": "549d6662007147da530ff378f1d8b5ab30c233ea",
+  "bugs": {
+    "url": "https://github.com/prakhar1989/react-tags/issues"
+  },
+  "homepage": "https://github.com/prakhar1989/react-tags#readme",
+  "_id": "react-tag-input@2.2.5",
+  "_shasum": "707174ba183fabefbbb05620b34343d555d5163a",
+  "_from": "react-tag-input@*",
+  "_npmVersion": "3.7.3",
+  "_nodeVersion": "5.8.0",
+  "_npmUser": {
+    "name": "prakhar1989",
+    "email": "prakhar1989@gmail.com"
+  },
+  "dist": {
+    "shasum": "707174ba183fabefbbb05620b34343d555d5163a",
+    "tarball": "https://registry.npmjs.org/react-tag-input/-/react-tag-input-2.2.5.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "prakhar1989",
+      "email": "prakhar1989@gmail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/react-tag-input-2.2.5.tgz_1458974317110_0.5988400424830616"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/react-tag-input/-/react-tag-input-2.2.5.tgz"
+}

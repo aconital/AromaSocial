@@ -6,6 +6,90 @@ var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 // require('autocomplete.js').UserAutocomplete();
 
+/* TEST REACT TAGS */
+
+var ReactTags = ReactTags.WithContext;
+ 
+var CustomTags = React.createClass({
+    getInitialState: function() {
+        var resultArr = [];
+        var nameToIds = {};
+                $.ajax({
+                    url: '/allusers',
+                    dataType: 'JSON',
+                    cache: false,
+                    success: function(data) {
+                        console.log("SUCCESS!!!!!!!");
+                        console.log(data);
+                        // var arr = $.grep(data, function(item){
+                        //     return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                        // });
+                        $.map(data, function(item){
+                            resultArr.push(item.fullname)
+                            nameToIds[item.fullname] = item.objectId
+                        })
+                        console.log(resultArr)
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.status);
+                    }
+            });
+
+        return {
+            tags: [],
+            suggestions: resultArr,
+            placeholder: "Add new collaborator...",
+            idMap: nameToIds
+        }
+    },
+    handleDelete: function(i) {
+        var tags = this.state.tags;
+        tags.splice(i, 1);
+        this.setState({tags: tags});
+    },
+    handleAddition: function(tag) {
+        var tags = this.state.tags;
+        tags.push({
+            id: tags.length + 1,
+            text: tag
+        });
+        this.setState({tags: tags});
+
+        console.log("ID MAP ENTRY: ")
+        console.log(this.state.idMap[tag])
+        if (this.state.idMap[tag] != null) {
+            // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
+            this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
+        }
+    },
+    handleDrag: function(tag, currPos, newPos) {
+        var tags = this.state.tags;
+ 
+        // mutate array 
+        tags.splice(currPos, 1);
+        tags.splice(newPos, 0, tag);
+ 
+        // re-render 
+        this.setState({ tags: tags });
+    },
+    render: function() {
+        var tags = this.state.tags;
+        var suggestions = this.state.suggestions;
+        return (
+            <div>
+                <ReactTags tags={tags}
+                    suggestions={suggestions}
+                    handleDelete={this.handleDelete}
+                    handleAddition={this.handleAddition}
+                    placeholder={this.props.placeholder}
+                    handleDrag={this.handleDrag} />
+            </div>
+        )
+    }
+});
+
+/* TEST REACT TAGS END */
+
 var Profile = React.createClass ({
     getInitialState: function() {
       return { showModal: false,
@@ -1500,6 +1584,7 @@ var ResourceAddForm = React.createClass({
         }
     },
     getInitialState: function() {
+        //var resultArr = [];
         return {
             alertVisible: false,
             fromModelTab: false,
@@ -1568,7 +1653,7 @@ var ResourceAddForm = React.createClass({
                                         terms.pop();
                                         terms.push(ui.item.value);
                                         terms.push("");
-                                        this.value = terms.join(", ");
+                                        this.value = terms.join(" ");
                                         return false;
                                     }
                             })
@@ -1582,7 +1667,7 @@ var ResourceAddForm = React.createClass({
             var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
         } else {var alert = "";}
         return (
-            <div>
+            <div id="modalDiv">
                 <div id="scriptContainer"></div>
                 <form className="form" onSubmit={this.handleSubmitData}>
                     <div className="well" style={this.buttonStyles}>
@@ -1595,14 +1680,22 @@ var ResourceAddForm = React.createClass({
                         </Button>
                     </div>
                     <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
-                    <Input type="text" placeholder="Collaborators:" name="collaborators" required className="auto" onChange={this.handleChange} value={this.state.collaborators} />
+
+                    <div className="rcorners6">
+                        <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Collaborators:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
+                    </div>
+
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
                     <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                     <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
                     <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
                     <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                     <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
-                    <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
+
+                    <div className="rcorners6">
+                        <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Users to share:  " name="groupies" onChange={this.handleChange} value={this.state.collaborators} />
+                    </div>
+                    
                     <Modal.Footer>
                         <Input className="btn btn-default pull-right" type="submit" value="Continue" />
                     </Modal.Footer>
@@ -1610,6 +1703,17 @@ var ResourceAddForm = React.createClass({
             </div>
 		);
 	},
+    handleAcTagChange: function(type, name, id) {
+        console.log("Type: ");
+        console.log(type);
+        console.log("Name: ");
+        console.log(name);
+        console.log("Recorded Id: ");
+        console.log(id);
+        var changedState = {};
+        changedState[type] = id
+        this.setState(changedState);
+    },
 	handleChange: function(e) {
 	    var changedState = {};
 	    changedState[e.target.name] = e.target.value;
@@ -1618,6 +1722,11 @@ var ResourceAddForm = React.createClass({
     handleKeyChange: function(e) {
         var changedState = {};
         changedState['keywords'] = e;
+        this.setState(changedState);
+    },
+    handleCollabKeyChange: function(e) {
+        var changedState = {};
+        changedState['collaborators'] = e;
         this.setState(changedState);
     },
 	handleSubmitData: function(e) {
@@ -1753,10 +1862,7 @@ function extractLast(term) {
     return split(term).pop();
 }
 
-//var ResourceAddForm = React.createClass({
-// =======
 var ProjectAddForm = React.createClass({
-// >>>>>>> e7b8d2179a31785e6c2ba648da230c93d201ef1f
     close: function(e) {
         this.props.submitSuccess();
     },
@@ -1764,6 +1870,7 @@ var ProjectAddForm = React.createClass({
      return {
         alertVisible: false,
         buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
+        divStyle: {outline: 'black'},
         formFeedback: '',
         fileFeedback: {},
         pictureFeedback: '',

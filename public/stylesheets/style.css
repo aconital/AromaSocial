@@ -6375,3 +6375,28 @@ ul.ui-autocomplete.ui-menu { z-index: 4000; }
 .gap-all {
   margin: 10px;
 }
+
+.hlText {
+  color: white;
+  background: black;
+}
+
+.rcorners6 {
+    border: 2px solid #d6d6d6;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 2px;
+    margin-right: 2px;
+    background: white;
+    /*width: 300px;*/
+    border-radius: 5px;
+    /*overflow: auto;*/
+    /*z-index: 500;*/
+}
+
+.rcorners6:after {
+    content:"";
+    display:block;
+    clear:both;
+}
