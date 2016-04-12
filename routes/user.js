@@ -55,13 +55,10 @@ module.exports=function(app,Parse) {
                 username: currentUser.username,
                 email: currentUser.email,
                 fullname: currentUser.fullname,
-                about: currentUser.about,
-                position: currentUser.position,
-                location: currentUser.location,
                 summary: currentUser.summary,
-                expertise: JSON.stringify(currentUser.expertise),
+                interestsTag: JSON.stringify(currentUser.interestsTag),
                 interests: JSON.stringify(currentUser.interests),
-                work_experiences: JSON.stringify(currentUser.work_experiences),
+                workExperience: JSON.stringify(currentUser.workExperience),
                 educations: JSON.stringify(currentUser.educations),
                 projects: JSON.stringify(currentUser.projects),
                 profile_imgURL: currentUser.imgUrl,
@@ -76,13 +73,10 @@ module.exports=function(app,Parse) {
                 username: currentUser.username,
                 email: currentUser.email,
                 fullname: currentUser.fullname,
-                about: currentUser.about,
-                position: currentUser.position,
-                location: currentUser.location,
                 summary: currentUser.summary,
-                expertise: JSON.stringify(currentUser.expertise),
+                interestsTag: JSON.stringify(currentUser.interestsTag),
                 interests: JSON.stringify(currentUser.interests),
-                work_experiences: JSON.stringify(currentUser.work_experiences),
+                workExperience: JSON.stringify(currentUser.workExperience),
                 educations: JSON.stringify(currentUser.educations),
                 projects: JSON.stringify(currentUser.projects),
                 profile_imgURL: currentUser.imgUrl,
@@ -101,13 +95,10 @@ module.exports=function(app,Parse) {
                         objectId: result.id,
                         email: result.get('email'),
                         fullname: result.get('fullname'),
-                        about: result.get('about'),
-                        position: result.get('position'),
-                        location: result.get('location'),
                         summary: result.get('summary'),
-                        expertise: JSON.stringify(result.get('expertise')),
+                        interestsTag: JSON.stringify(result.get('interestsTag')),
                         interests: JSON.stringify(result.get('interests')),
-                        work_experiences: JSON.stringify(result.get('work_experiences')),
+                        workExperience: JSON.stringify(result.get('workExperience')),
                         educations: JSON.stringify(result.get('educations')),
                         projects: JSON.stringify(result.get('projects')),
                         profile_imgURL: result.get('imgUrl'),
@@ -162,7 +153,7 @@ module.exports=function(app,Parse) {
                     var company= "N/A";
                     var work_title= "N/A";
                     var userImgUrl= "/images/user.png";
-                    var work_experience= [];
+                    var workExperience= [];
                     if(user.hasOwnProperty('fullname')){
                         fullname=user.fullname;
                     }
@@ -170,10 +161,10 @@ module.exports=function(app,Parse) {
                         userImgUrl=user.imgUrl;
                     }
                     //getting first work experience, since there is no date on these objects
-                    if(user.hasOwnProperty('work_experiences')){
-                        var work_experience= user.work_experiences[0];
-                        company= work_experience.company;
-                        work_title= work_experience.title;
+                    if(user.hasOwnProperty('workExperience')){
+                        var workExperience= user.workExperience[0];
+                        company= workExperience.company;
+                        work_title= workExperience.title;
                     }
                     //only show people who are verified by admin
                     if(verified) {
@@ -348,80 +339,132 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.post('/profile/:username/update', is_auth,function(req,res,next){
-        var currentUser =req.user;
+    app.post('/profile/:username/updateSummary', is_auth, function(req,res,next){
+        var currentUser = req.user;
         var linkUser = req.params.username;
         if(currentUser.username == linkUser) {
             var query = new Parse.Query(Parse.User);
-            query.equalTo("email", currentUser.email);
-            query.first({
-                success: function(result) {
-                    if (req.body.summary) {
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
                         result.set("summary", req.body.summary);
-                        result.save();
+                        result.save(null, { useMasterKey: true });
                         res.status(200).json({status: "Info Uploaded Successfully!"});
                     }
-                    else if (req.body.expertise || req.body.interests) {
-                        if (req.body.expertise)
-                            result.set("expertise", JSON.parse(req.body.expertise));
-                        if (req.body.interests)
-                            result.set("interests", JSON.parse(req.body.interests));
-                            result.save();
-                            res.status(200).json({status: "Info Uploaded Successfully!"});
-                        }
-                    else if (req.body.work_experiences && req.body.educations && req.body.projects) {
-                        result.set("work_experiences", JSON.parse(req.body.work_experiences));
+                }
+            );
+        }
+    });
+
+    app.post('/profile/:username/updateInterest', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        var linkUser = req.params.username;
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        result.set("interests", JSON.parse(req.body.interests));
+                        result.save(null, { useMasterKey: true });
+                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                    }
+                }
+            );
+        }
+    })
+
+    app.post('/profile/:username/updateTags', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        var linkUser = req.params.username;
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        result.set("interestsTag", JSON.parse(req.body.interestsTag));
+                        result.save(null, { useMasterKey: true });
+                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                    }
+                }
+            );
+        }
+    });
+
+    app.post('/profile/:username/submitEducation', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        var linkUser = req.params.username;
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
                         result.set("educations", JSON.parse(req.body.educations));
-                        result.set("projects", JSON.parse(req.body.projects));
-                        result.save();
+                        result.save(null, { useMasterKey: true });
                         res.status(200).json({status: "Info Uploaded Successfully!"});
                     }
-                    else if (req.body.action && req.body.type) {
+                }
+            );
+        }
+    });
+
+    app.post('/profile/:username/submitExperience', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        var linkUser = req.params.username;
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        result.set("workExperience", JSON.parse(req.body.workExperience));
+                        result.save(null, { useMasterKey: true });
+                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                    }
+                }
+            );
+        }
+    });
+
+    app.post('/profile/:username/updateWorkEducation', is_auth, function(req,res,next) {
+        console.log("updateWorkEducation");
+        console.log(req.body.type);
+        var currentUser = req.user;
+        console.log(currentUser.id);
+        var linkUser = req.params.username;
+        if (currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        console.log("Pass user check")
                         if (req.body.action == "delete") {
                             console.log("Delete");
-                            if (req.body.type == "work_experience") {
-                                var work_experiencesTemp = currentUser.attributes.work_experiences;
-                                for (var i = 0; i < work_experiencesTemp.length; i++) {
-                                    if (work_experiencesTemp[i].key = req.body.key) {
-                                        delete work_experiencesTemp[i];
-                                        work_experiencesTemp.splice(i, 1);
+                            if (req.body.type == "workExperience") {
+                                var workExperienceTemp = currentUser.workExperience;
+                                for (var i = 0; i < workExperienceTemp.length; i++) {
+                                    if (workExperienceTemp[i].key == req.body.key) {
+                                        workExperienceTemp.splice(i, 1);
                                     }
-                                    console.log(work_experiencesTemp);
+                                    console.log(workExperienceTemp);
                                 }
-                                currentUser.set("work_experiences", work_experiencesTemp);
-                                res.status(200).json({status: "Deleted Successfully!"});
+                                result.set("workExperience", workExperienceTemp);
                             }
                             else if (req.body.type == "education") {
-                                var educationsTemp = currentUser.attributes.educations;
+                                var educationsTemp = currentUser.educations;
                                 for (var i = 0; i < educationsTemp.length; i++) {
-                                    if (educationsTemp[i].key = req.body.key) {
-                                        delete educationsTemp[i];
+                                    if (educationsTemp[i].key == req.body.key) {
                                         educationsTemp.splice(i, 1);
                                     }
-                                    console.log(educationsTemp);
                                 }
-                                currentUser.set("educations", educationsTemp);
-                                res.status(200).json({status: "Deleted Successfully!"});
+                                result.set("educations", educationsTemp);
                             }
-                            else if (req.body.type == "project") {
-                                var projectsTemp = currentUser.attributes.projects;
-                                for (var i = 0; i < projectsTemp.length; i++) {
-                                    if (projectsTemp[i].key = req.body.key) {
-                                        delete projectsTemp[i];
-                                        projectsTemp.splice(i, 1);
-                                    }
-                                    console.log(projectsTemp);
-                                }
-                                currentUser.set("projects", projectsTemp);
-                                res.status(200).json({status: "Deleted Successfully!"});
-                            }
-                            currentUser.save();
+                            result.save(null, {useMasterKey: true});
+                            res.status(200).json({status: "Deleted Successfully!"});
                         }
                         else if (req.body.action == "update") {
-                            if (req.body.type == "work_experience") {
-                                var work_experiencesTemp = currentUser.work_experiences;
-                                for (var i = 0; i < work_experiencesTemp.length; i++) {
-                                    if (work_experiencesTemp[i].key = req.body.key) {
+                            if (req.body.type == "workExperience") {
+                                var workExperienceTemp = currentUser.workExperience;
+                                for (var i = 0; i < workExperienceTemp.length; i++) {
+                                    if (workExperienceTemp[i].key == req.body.key) {
                                         var changedWE = {
                                             key: req.body.key,
                                             title: req.body.title,
@@ -430,16 +473,15 @@ module.exports=function(app,Parse) {
                                             start: req.body.start,
                                             end: req.body.end
                                         };
-                                        work_experiencesTemp[i] = changedWE;
+                                        workExperienceTemp[i] = changedWE;
                                     }
                                 }
-                                result.set("work_experiences", work_experiencesTemp);
-                                res.status(200).json({status: "Updated Successfully!"});
+                                result.set("workExperience", workExperienceTemp);
                             }
                             else if (req.body.type == "education") {
                                 var educationsTemp = currentUser.educations;
                                 for (var i = 0; i < educationsTemp.length; i++) {
-                                    if (educationsTemp[i].key = req.body.key) {
+                                    if (educationsTemp[i].key == req.body.key) {
                                         var changedWE = {
                                             key: req.body.key,
                                             title: req.body.title,
@@ -452,31 +494,12 @@ module.exports=function(app,Parse) {
                                     }
                                 }
                                 result.set("educations", educationsTemp);
-                                res.status(200).json({status: "Updated Successfully!"});
                             }
-                            else if (req.body.type == "project") {
-                                var projectsTemp = currentUser.projects;
-                                for (var i = 0; i < projectsTemp.length; i++) {
-                                    if (projectsTemp[i].key = req.body.key) {
-                                        var changedWE = {
-                                            key: req.body.key,
-                                            title: req.body.title,
-                                            company: req.body.company,
-                                            description: req.body.description,
-                                            start: req.body.start,
-                                            end: req.body.end
-                                        };
-                                        projectsTemp[i] = changedWE;
-                                    }
-                                }
-                                result.set("projects", projectsTemp);
-                                res.status(200).json({status: "Updated Successfully!"});
-                            }
-                            result.save();
+                            result.save(null, {useMasterKey: true});
+                            res.status(200).json({status: "Updated Successfully!"});
                         }
                     }
-                }//end of success
-            });//end of query
+            });
         }
     });
 
@@ -547,7 +570,7 @@ module.exports=function(app,Parse) {
                         var company= "N/A";
                         var work_title= "N/A";
                         var userImgUrl= "/images/user.png";
-                        var work_experience= [];
+                        var workExperience= [];
 
                         if(user.hasOwnProperty('fullname')){
                             fullname=user.fullname;
@@ -556,10 +579,10 @@ module.exports=function(app,Parse) {
                             userImgUrl=user.imgUrl;
                         }
                         //getting first work experience, since there is no date on these objects
-                        if(user.hasOwnProperty('work_experiences')){
-                            var work_experience= user.work_experiences[0];
-                            company= work_experience.company;
-                            work_title= work_experience.title;
+                        if(user.hasOwnProperty('workExperience')){
+                            var workExperience= user.workExperience[0];
+                            company= workExperience.company;
+                            work_title= workExperience.title;
                         }
 
                         //only show people who are verified by admin

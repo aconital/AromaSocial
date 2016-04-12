@@ -95,7 +95,7 @@ module.exports=function(app,Parse) {
             var data= new Data();
             console.log(keywords);
             console.log(collaborators);
-            // data.set('user',currentUser); TODO: BUG FIX
+//            data.set('user',currentUser);  // TODO: takes pointer to user but getting map
             data.set('access', ["UBC"]);
             data.set('collaborators',collaborators);
             data.set('description', reqBody.description);

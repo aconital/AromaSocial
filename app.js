@@ -136,26 +136,22 @@ passport.deserializeUser(function(username, done) {
     var query = new Parse.Query(Parse.User);
     query.equalTo("username", username);
     query.first({
-        success: function (user)
-        {
-
+        success: function (user) {
             var jsonUser={
                 id: user.id,
                 username: user.attributes.username,
                 cover_imgURL:user.attributes.cover_imgURL,
-                educations: user.attributes.educations,
                 email: user.attributes.email,
                 emailVerified: user.attributes.emailVerified,
-                expertise:user.attributes.expertise,
                 fullname:user.attributes.fullname,
                 imgUrl:user.attributes.imgUrl,
-                inerests:user.attributes.interests,
-                projects:user.attributes.projects,
                 summary:user.attributes.summary,
-                about:user.attributes.about,
-                linkedin_id:user.attributes.linkedin_id,
-                location:user.attributes.location,
-                position:user.attributes.position
+                interests:user.attributes.interests,
+                interestsTag:user.attributes.interestsTag,
+                educations: user.attributes.educations,
+                workExperience: user.attributes.workExperience,
+                projects:user.attributes.projects,
+                linkedin_id:user.attributes.linkedin_id
             };
               done(null, jsonUser);
         }
