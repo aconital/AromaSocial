@@ -171,7 +171,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               feeds.push({
                                   username: username,
                                   userImg: userImg,
-                                  fullname: fullname,
+                                  //fullname: fullname,
                                   type:type,
                                   date:date,
                                   filename: filename,

@@ -29,6 +29,8 @@ var s3 = new aws.S3();
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
 
+var ReactTags = require('react-tag-input').WithContext;
+
 var app = express();
 
 Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7","TlNU9u9xaEuQkuQMyN3UlCXX5SP87vA7sjwTNOne");
