@@ -7,7 +7,10 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Organization = React.createClass ({
     getInitialState: function() {
-        return {isAdmin: [], status: ''};
+        return {    isAdmin: [],
+                    status: '',
+                    organization_imgURL: [organization_imgURL],
+                    showModal: false};
     },
     componentWillMount: function() {
       var connectURL= "/organization/"+objectId+"/join-status";
@@ -21,6 +24,12 @@ var Organization = React.createClass ({
             console.error("Couldn't retrieve people.");
         }.bind(this)
       });
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false});
     },
     componentDidMount : function() {
         var peopleUrl = "/organization/" + objectId + "/admins";
@@ -80,17 +89,23 @@ var Organization = React.createClass ({
         if(this.state.isAdmin)
             return (
                 <div>
-                    <div className="item-top item-top-container">
-                    </div>
+                    <Modal show={this.state.showModal} onHide={this.clickClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Update Organization Picture</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <div id="field1-container">
+                                <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
+                            </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
+                        </Modal.Footer>
+                    </Modal>
                     <div className="content-wrap">
                         <div className="item-bottom">
                             <div className="item-bottom-1">
-                                <img src={organization_imgURL} className="contain-image" />
-                            {/*
-                            <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                            <div className="side-panel"><h5>RATINGS</h5></div>
-                            <div className="side-panel"><h5>OTHERS</h5></div>
-                            */}
+                                <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.organization_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2-organization">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
@@ -105,12 +120,10 @@ var Organization = React.createClass ({
         else
         return (
             <div>
-                <div className="item-top item-top-container">
-                </div>
                 <div className="content-wrap">
                     <div className="item-bottom">
                         <div className="item-bottom-1">
-                            <img src={organization_imgURL} className="contain-image" />
+                            <img src={this.state.organization_imgURL} className="contain-image" />
                             {/*
                             <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
                             <div className="side-panel"><h5>RATINGS</h5></div>

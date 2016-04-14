@@ -222,54 +222,54 @@ var Profile = React.createClass ({
         else { console.log("Nothing"); }
         return (
         <div>
-                <Modal show={this.state.showModal} onHide={this.clickClose}>
-                  <Modal.Header closeButton>
+            <Modal show={this.state.showModal} onHide={this.clickClose}>
+                <Modal.Header closeButton>
                     <Modal.Title>Update Profile Picture</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
+                </Modal.Header>
+                <Modal.Body>
                     <div id="field1-container">
                         <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
                     </div>
-                  </Modal.Body>
-                  <Modal.Footer>
+                </Modal.Body>
+                <Modal.Footer>
                     <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
-                  </Modal.Footer>
-                </Modal>
-        <div className="content-wrap">
-            <div className="item-bottom">
-                <div className="item-bottom-1">
-                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
-                    {/*
-                    <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                    <div className="side-panel"><h5>RATINGS</h5></div>
-                    <div className="side-panel"><h5>OTHERS</h5></div>
-                    */}
-                </div>
-                <div id="item-bottom-2-profile" className="item-bottom-2">
-                    {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<button className="btn btn-panel" value="Follow">Follow</button></div> }
-                    <h1 className="no-margin-padding align-left h1-title">{fullname}</h1>
-                    <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
-                </div>
-                <div className="item-bottom-3">
-                    {/*<input className="btn btn-panel" value="Message" />
-                    <input className="btn btn-panel" value="Ask" />*/}
-                    {/*
-                    <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
-                        48 Syncholarity Rating<br/>
-                        2000 Times Cited<br/>
-                        12000 Profile Views
+                </Modal.Footer>
+            </Modal>
+            <div className="content-wrap">
+                <div className="item-bottom">
+                    <div className="item-bottom-1">
+                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
+                        {/*
+                        <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                        <div className="side-panel"><h5>RATINGS</h5></div>
+                        <div className="side-panel"><h5>OTHERS</h5></div>
+                        */}
                     </div>
-                    <div className="item-panel contain-panel"><h5>News & Events</h5><br/>
-                        {this.props.news.map(function(listValue){
-                            return <a href="#" className="body-link">{listValue}<br/></a>;
-                        })}
+                    <div id="item-bottom-2-profile" className="item-bottom-2">
+                        {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<button className="btn btn-panel" value="Follow">Follow</button></div> }
+                        <h1 className="no-margin-padding align-left h1-title">{fullname}</h1>
+                        <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
-                    <div className="item-panel contain-panel"><h5>Adds</h5><br/>
+                    <div className="item-bottom-3">
+                        {/*<input className="btn btn-panel" value="Message" />
+                        <input className="btn btn-panel" value="Ask" />*/}
+                        {/*
+                        <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
+                            48 Syncholarity Rating<br/>
+                            2000 Times Cited<br/>
+                            12000 Profile Views
+                        </div>
+                        <div className="item-panel contain-panel"><h5>News & Events</h5><br/>
+                            {this.props.news.map(function(listValue){
+                                return <a href="#" className="body-link">{listValue}<br/></a>;
+                            })}
+                        </div>
+                        <div className="item-panel contain-panel"><h5>Adds</h5><br/>
+                        </div>
+                        */}
                     </div>
-                    */}
                 </div>
             </div>
-        </div>
         </div>
         );
     }
