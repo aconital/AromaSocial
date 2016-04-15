@@ -615,7 +615,20 @@ module.exports=function(app,Parse) {
                 var objectId = response.id;
 
                 if (req.body.file) {
-                    //
+                    // encode file
+					var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
+
+					// upload files to S3
+					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+					bucket.putObject(params, function (err, response) {
+						if (err) { console.log("S3 Upload Error:", err); }
+						else {
+							// update file path in parse object
+							org.set('profile_imgURL', awsLink + params.Key);
+							console.log("S3 uploaded successfully.");
+							return {objectId: objectId, data: org.save(null)};
+						}
+					});
                 }
                 return {objectId: objectId};
             }).then(function(response) {
