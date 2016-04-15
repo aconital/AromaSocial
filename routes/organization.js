@@ -321,14 +321,31 @@ module.exports=function(app,Parse) {
     });
 
     app.post('/organization/:objectId/update',function(req,res,next){
-        var query = new Parse.Query("Organization");
+    	var currentUser = req.user,
+    		query = new Parse.Query("Organization");
+
         query.get(req.params.objectId,{
             success: function(result) {
-                if (req.body.name) {
+                if (req.body.name && req.body.about && req.body.location) {
                     result.set("name", req.body.name);
                     result.set("about", req.body.about);
                     result.set("location", req.body.location);
-                } result.save();
+                	result.save();
+                	res.status(200).json({status: "Updated Successfully!"});
+                }
+                else if (req.body.picture && req.body.pictureType) {
+					var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_");
+
+					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+					bucket.putObject(params, function (err, response) {
+						if (err) { console.log("S3 Upload Error:", err); }
+						else {
+							result.set("profile_imgURL", awsLink + params.Key);
+							result.save();
+							res.status(200).json({status: "Picture Uploaded Successfully!"});
+						}
+					});
+                }
             }
         });
     });
@@ -598,20 +615,7 @@ module.exports=function(app,Parse) {
                 var objectId = response.id;
 
                 if (req.body.file) {
-                    // encode file
-                    var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
-
-                    // upload files to S3
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    bucket.putObject(params, function (err, response) {
-                        if (err) { console.log("S3 Upload Error:", err); }
-                        else {
-                            // update file path in parse object
-                            org.set('profile_imgURL', awsLink + params.Key);
-                            console.log("S3 uploaded successfully.");
-                            return {objectId: objectId, data: org.save(null)};
-                        }
-                    });
+                    //
                 }
                 return {objectId: objectId};
             }).then(function(response) {

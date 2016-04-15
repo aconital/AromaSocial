@@ -75,6 +75,41 @@ var Organization = React.createClass ({
         }.bind(this)
       });
     },
+    submitPicture: function() { //todo export utils
+        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log(data.status);
+				this.setState({organization_imgURL: this.state.picture});
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+	handlePicture: function(e) { //todo export utils
+		var self = this,
+			reader = new FileReader(),
+			file = e.target.files[0],
+			extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+		reader.onload = function(upload) {
+			self.setState({
+				picture: upload.target.result,
+				pictureType: extension,
+			});
+		}
+		reader.readAsDataURL(file);
+	},
+
     render: function() {
         var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "joined") {
@@ -95,17 +130,23 @@ var Organization = React.createClass ({
                         </Modal.Header>
                         <Modal.Body>
                             <div id="field1-container">
-                                <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
+                                <input className="form-control" type="file" name="publication-upload" id="picture" required="required" placeholder="File" onChange={this.handlePicture} />
                             </div>
                         </Modal.Body>
                         <Modal.Footer>
-                            <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
+                            <input className="publication-button" type="submit" value="Submit" onClick={this.submitPicture} />
                         </Modal.Footer>
                     </Modal>
                     <div className="content-wrap">
                         <div className="item-bottom">
                             <div className="item-bottom-1">
-                                <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.organization_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
+                                <a href="#" onClick={this.clickOpen}>
+									<div className="edit-overlay-div">
+										<img src={this.state.organization_imgURL} className="contain-image" />
+										<div className="edit-overlay-background">
+										<span className="glyphicon glyphicon-edit edit-overlay"></span></div>
+									</div>
+                                </a>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2-organization">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
