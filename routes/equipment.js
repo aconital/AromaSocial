@@ -52,28 +52,26 @@ module.exports=function(app,Parse) {
     });
 
     app.post('/organization/:objectId/equipment', is_auth, function(req,res,next){
-        var currentUser = req.user;
         var now = moment();
-        var reqBody = req.body;
         var Equipment = Parse.Object.extend("Equipment");
         var equipment = new Equipment();
         equipment.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
-        equipment.set('organization',{ __type: "Pointer", className: "Organization", objectId: reqBody.organizationId});
-        equipment.set('description', reqBody.description);
-        equipment.set('title',reqBody.title);
-        equipment.set('keywords',JSON.parse(reqBody.keywords));
-        equipment.set('image_URL','/images/equipment.png');
-        equipment.set('instructions',reqBody.instructions);
-        equipment.set('model_year',reqBody.model_year);
-        equipment.set('model',reqBody.model);
-        equipment.save(null, {
-            success: function(response) {
-                objectId = response.id;
+        equipment.set('organization',{ __type: "Pointer", className: "Organization", objectId: req.body.organizationId});
+        equipment.set('description', req.body.description);
+        equipment.set('title',req.body.title);
+        equipment.set('keywords',JSON.parse(req.body.keywords));
+        equipment.set('image_URL','/images/testtube.png');
+        equipment.set('instructions',req.body.instructions);
+        equipment.set('model_year',req.body.model_year);
+        equipment.set('model',req.body.model);
+        equipment.save(null).then(
+            function(response) {
+                var objectId = response.id;
                 var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                if (reqBody.picture != null) {
-                    var s3Key = req.params.organizationId + "_equipment_picture_" + objectId + "." + reqBody.fileType;
-                    var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
-                    var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                if (req.body.picture!=null) {
+                    var s3Key = req.params.organizationId + "_equipment_picture_" + objectId + "." + req.body.pictureType;
+                    var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+                    var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                     var fileParams = {
                         Key: s3Key,
                         Body: fileBuff,
@@ -88,17 +86,16 @@ module.exports=function(app,Parse) {
                         }
                     });
                 }
-                if (reqBody.file != null) {
-                    var s3KeyP = req.params.organizationId + "_equipment_file_" + objectId + "." + reqBody.pictureType;
-                    var contentTypeP = reqBody.picture.match(/^data:(\w+\/.+);base64,/);
-                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                if (req.body.file!=null) {
+                    var s3KeyP = req.params.organizationId + "_equipment_file_" + objectId + "." + req.body.fileType;
+                    var contentTypeP = req.body.file.match(/^data:(\w+\/.+);base64,/);
+                    var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                     var pictureParams = {
                         Key: s3KeyP,
                         Body: pictureBuff,
                         ContentEncoding: 'base64',
                         ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
                     };
-
                     bucket.putObject(pictureParams, function (err, data) {
                         if (err) { console.log("Equipment File Upload Error:", err); }
                         else {
@@ -109,11 +106,11 @@ module.exports=function(app,Parse) {
                 }
                 res.json({status: 'Equipment Uploaded!'});
             },
-            error: function(response, error) {
+            function(response, error) {
                 console.log('Failed to create new object, with error code: ' + error.message);
                 res.json({status: "Creating equipment object failed. " + error.message});
             }
-        });
+        );
     });
 
     app.post('/equipment/:objectId/update', is_auth, function(req,res,next){

@@ -17,7 +17,7 @@ var CreateOrganization = React.createClass({
 				<Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
 				<Row className="show-grid">
 					<Col xs={9} xsOffset={2} md={6} mdOffset={3}>
-						<Panel header="Create New Organization">
+						<Panel header="Create Research Network">
 							<p>Description and instructions go here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>

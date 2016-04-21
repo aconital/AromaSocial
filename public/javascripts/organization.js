@@ -151,7 +151,7 @@ var Organization = React.createClass ({
                             <div id="item-bottom-2-organization" className="item-bottom-2-organization">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu tabs={['About', 'Networks', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -178,7 +178,7 @@ var Organization = React.createClass ({
                             </div>
                             <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                             <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                            <OrganizationMenu tabs={['About', 'Networks', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
                         </div>
                     </div>
                 </div>
@@ -288,14 +288,14 @@ var Connections = React.createClass({
                         <Modal.Title>Add Connection</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <AddConnection fromModelTab={this.props.fromModelTab} submitSuccess={this.close} list={this.list} />
+                        <AddConnection submitSuccess={this.clickClose}/>
                     </Modal.Body>
                 </Modal>
                 <div className="item-search-div">
                     <table className="item-search-field" width="100%">
                         <tbody>
                         <tr>
-                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                             {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
                         </tr>
                         </tbody>
@@ -315,11 +315,14 @@ var AddConnection = React.createClass({
     },
     getInitialState: function() {
         return {
-           joinOrganization: '',
-           joinType: ''
-        };
+            joinOrganization: '',
+            organizationId: '',
+            joinType: '',
+            formFeedback: '',
+        }
     },
     componentDidMount : function(){
+        var component = this;
         var autocomplete=<script>
         $(function() {
             $('.auto2').autocomplete({
@@ -329,23 +332,23 @@ var AddConnection = React.createClass({
                         dataType: 'json',
                         cache: false,
                         success: function(data) {
-                            console.log("SUCCESS!!!!!!!");
-                            console.log(data);
                             var arr = $.grep(data, function(item){
                                 return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                             });
                             res($.map(arr, function(item){
                                 return {
                                     label: item.name,
-                                    value: item.objectId
+                                    id: item.objectId
                                 };
                             }));
                         },
                         error: function(xhr) {
-                            console.log("ERROR WTF!!!");
                             console.log(xhr.status);
                         }
                     });
+                },
+                select: function(event, ui){
+                    component.setState({organizationId: ui.item.id});
                 },
                 messages: {
                     noResults: '',
@@ -362,8 +365,8 @@ var AddConnection = React.createClass({
             <div>
                 <div id="scriptContainer"></div>
                 <form className="form" onSubmit={this.handleSubmitData}>
-                    <Input className="auto2" type="text" placeholder="Organization:" name="joinOrganization" label="Organization" onChange={this.handleChange} value={this.state.organization}/>
-                    <Input type="select" name="joinType" label="Connection type" onChange={this.handleChange} value={this.state.organizationtype}>
+                    <Input className="auto2" type="text" placeholder="Organization:" name="joinOrganization" label="Organization" required onChange={this.handleChange} value={this.state.organization}/>
+                    <Input type="select" name="joinType" label="Connection type" required onChange={this.handleChange} value={this.state.organizationtype}>
                         <option value=""></option>
                         <option value="contains">We are part of this organization</option>
                         <option value="sponsors">This organization sponsors us</option>
@@ -386,44 +389,26 @@ var AddConnection = React.createClass({
 
     handleSubmitData: function(e) {
         e.preventDefault();
-        var isValidForm = this.validateForm();
         var connectionURL = "/organization/"+objectId+"/connect";
-        if (isValidForm.length === 0) {
-            var dataForm = {orgId: this.state.joinOrganization, type: this.state.joinType};
-            this.setState({createStatus: 'In progress...'});
-            $.ajax({
-                url: connectionURL,
-                dataType: 'json',
-                contentType: "application/json; charset=utf-8",
-                type: 'POST',
-                data: JSON.stringify(dataForm),
-                processData: false,
-                success: function(data) {
-                    this.setState({createStatus: 'Connection request sent.'});
-                    this.close();
-                }.bind(this),
-                error: function(xhr, status, err) {
-                    this.setState({createStatus: 'Error creating connection: ' + err.toString()});
-                    this.close();
-                }.bind(this)
-            });
-        }
-        else {
-            var message = '';
-            if (isValidForm.indexOf('TYPE') > -1) {
-                message += ' Please describe this connection    .';
-            }
-            this.setState({createStatus: message});
-        }
+        var dataForm = {orgId: this.state.organizationId, type: this.state.joinType};
+        this.setState({formFeedback: 'In progress...'});
+        $.ajax({
+            url: connectionURL,
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({formFeedback: 'Connection request sent.'});
+                this.close();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                this.setState({formFeedback: 'Error creating connection: ' + err.toString()});
+                this.close();
+            }.bind(this)
+        });
         return;
-    },
-
-    validateForm: function() {
-        var issues = []
-        if (!this.state.joinType.trim()) {
-            issues.push("TYPE");
-        }
-        return issues;
     },
 });
 
@@ -806,7 +791,7 @@ var Equipments = React.createClass({
                 <div className="item-search-div">
                 <table className="item-search-field" width="100%">
                     <tr>
-                        <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                        {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                         {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
                     </tr>
                 </table>
@@ -841,44 +826,6 @@ var EquipmentAddForm = React.createClass({
             model_year: '',
             organizationId: objectId
         };
-    },
-    componentDidMount: function() {
-        var eCode = <script>
-                        $(function() {
-                            $('.auto').autocomplete({
-                                    source: function(req, res) {
-                                        $.ajax({
-                                          url: '/allusers',
-                                          dataType: 'JSON',
-                                          cache: false,
-                                          success: function(data) {
-                                            console.log("SUCCESS!!!!!!!");
-                                            console.log(data);
-                                            var arr = $.grep(data, function(item){
-                                              return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                                            });
-                                            res($.map(arr, function(item){
-                                              return {
-                                                label: item.fullname,
-                                                value: item.username
-                                              };
-                                            }));
-                                          },
-                                          error: function(xhr) {
-                                            console.log("ERROR WTF!!!");
-                                            console.log(xhr.status);
-                                          }
-                                        });
-                                    },
-                                    messages: {
-                                      noResults: '',
-                                      results: function() {}
-                                    }
-                            })
-                        });
-                    </script>
-        //var eCode = <script src="/javascripts/autocomplete.js"></script>
-        $("#scriptContainer").append(eCode);
     },
 	render: function() {
 	    if (this.state.alertVisible) {
@@ -970,9 +917,6 @@ var EquipmentAddForm = React.createClass({
 		}
 		else {
 			var message = 'Project could not be added!';
-			if (isValidForm.indexOf('TITLE') > -1) {
-				message += ' Title is required.';
-			}
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
@@ -1035,10 +979,6 @@ var EquipmentAddForm = React.createClass({
 
 	validateForm: function() {
 		var issues = []
-		if (!this.state.title.trim()) {
-			issues.push("TITLE");
-		}
-        console.log(this.state.keywords)
 		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
@@ -1098,7 +1038,7 @@ var Projects = React.createClass({
             <div>
                 <div className="item-search-div">
                 <table className="item-search-field" width="100%">
-                    <tr><td><input type="text" id="search" placeholder="Search..." className="form-control"/></td></tr>
+                    {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                 </table>
                 </div>
                 {itemsList}
@@ -1132,7 +1072,7 @@ var Publications = React.createClass({
             <tbody>
             <tr>
                 <td className="padding-right">
-                <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                    {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                 </td>
             </tr>
             </tbody>
@@ -1204,7 +1144,7 @@ var Data = React.createClass({
             <tbody>
               <tr>
                   <td className="padding-right">
-                  <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                      {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                   </td>
               </tr>
             </tbody>
@@ -1291,7 +1231,7 @@ var Models = React.createClass({
             <tbody>
               <tr>
                   <td className="padding-right">
-                  <input type="text" id="search" placeholder="Search..." className="form-control"/>
+                      {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                   </td>
               </tr>
             </tbody>

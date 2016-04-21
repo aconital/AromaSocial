@@ -53,36 +53,31 @@ module.exports=function(app,Parse) {
     });
 
     app.post('/profile/:username/project', is_auth, function(req,res,next){
-        var currentUser = req.user;
-        if (currentUser && currentUser.username == req.params.username) {
-            var objectId;
+        if (req.user.username == req.params.username) {
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
-            var reqBody = req.body;
-            var keywords = reqBody.keywords.split(/\s*,\s*/g);
-            var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
             var Project = Parse.Object.extend("Project");
             var project = new Project();
             project.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
-            project.set('organization',{ __type: "Pointer", className: "Organization", objectId: reqBody.organizationId});
-            project.set('collaborators',collaborators);
-            project.set('description', reqBody.description);
-            project.set('title',reqBody.title);
-            project.set('start_date',reqBody.startDate);
-            project.set('end_date',reqBody.endDate);
-            project.set('keywords',keywords);
-            project.set('image_URL','/images/project.png');
-            project.set('client',reqBody.client);
-            project.set('link_to_resources',reqBody.link_to_resources);
-            project.set('URL',reqBody.url);
+            //project.set('organization',{ __type: "Pointer", className: "Organization", objectId: reqBody.organizationId});
+            project.set('collaborators',JSON.parse(req.body.collaborators));
+            project.set('description', req.body.description);
+            project.set('title',req.body.title);
+            project.set('start_date',req.body.startDate);
+            project.set('end_date',req.body.endDate);
+            project.set('keywords',JSON.parse(req.body.keywords));
+            project.set('image_URL','/images/data.png');
+            project.set('client',req.body.client);
+            project.set('link_to_resources',req.body.link_to_resources);
+            project.set('URL',req.body.url);
             project.save(null, {
                 success: function(response) {
                     objectId = response.id;
                     var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    if (reqBody.picture != null) {
-                        var s3Key = req.params.username + "_project_picture_" + objectId + "." + reqBody.fileType;
-                        var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
-                        var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                    if (req.body.picture != null) {
+                        var s3Key = req.params.username + "_project_picture_" + objectId + "." + req.body.pictureType;
+                        var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+                        var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                         var fileParams = {
                             Key: s3Key,
                             Body: fileBuff,
@@ -97,10 +92,10 @@ module.exports=function(app,Parse) {
                             }
                         });
                     }
-                    if (reqBody.file != null) {
-                        var s3KeyP = req.params.username + "_project_file_" + objectId + "." + reqBody.pictureType;
-                        var contentTypeP = reqBody.picture.match(/^data:(\w+\/.+);base64,/);
-                        var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                    if (req.body.file != null) {
+                        var s3KeyP = req.params.username + "_project_file_" + objectId + "." + req.body.fileType;
+                        var contentTypeP = req.body.file.match(/^data:(\w+\/.+);base64,/);
+                        var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                         var pictureParams = {
                             Key: s3KeyP,
                             Body: pictureBuff,

@@ -321,9 +321,8 @@ module.exports=function(app,Parse) {
     });
 
     app.post('/organization/:objectId/update',function(req,res,next){
-    	var currentUser = req.user,
-    		query = new Parse.Query("Organization");
-
+    	var currentUser = req.user;
+        query = new Parse.Query("Organization");
         query.get(req.params.objectId,{
             success: function(result) {
                 if (req.body.name && req.body.about && req.body.location) {

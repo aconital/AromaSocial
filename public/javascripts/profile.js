@@ -248,7 +248,7 @@ var Profile = React.createClass ({
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<button className="btn btn-panel" value="Follow">Follow</button></div> }
                         <h1 className="no-margin-padding align-left h1-title">{fullname}</h1>
-                        <ProfileMenu tabs={['About','Connections','Organizations', 'Projects', 'Publications', 'Data', 'Models']} />
+                        <ProfileMenu tabs={['About','Connections','Networks', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
                     <div className="item-bottom-3">
                         {/*<input className="btn btn-panel" value="Message" />
@@ -828,7 +828,7 @@ var Projects = React.createClass({
                 <div className="item-search-div">
                     <table className="item-search-field" width="100%">
                         <tr>
-                            <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                            {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                             {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
                         </tr>
                     </table>
@@ -1114,7 +1114,7 @@ var ModelListItem = React.createClass({
                 <div className="model-box-left model-box-left-full">
                     <span className="font-15">
                     <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                    <b>Authors: </b>
+                    <b>Collaborators: </b>
                         {this.props.collaborators.map(function(item, i){
                             if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
                             else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
@@ -1197,7 +1197,7 @@ var ResourceForm = React.createClass({
 		<div className="item-search-div">
             <table className="item-search-field" width="100%">
                 <tr>
-                    <td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>
+                    {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                     {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.open} type="button" value="+"/></td> : ""}
                 </tr>
             </table>
@@ -1237,14 +1237,23 @@ var PublicationAddForm = React.createClass({
         autoFillStatus: '',
 
         // field labels
-        labels: {title: 'Title', collaborators: 'Authors', creationDate: 'Publication Date', description: 'Abstract',
+        labels: {title: 'Title', collaborators: 'Collaborators', creationDate: 'Publication Date', description: 'Abstract',
         		 keywords: 'Keywords', url: 'URL', doi: 'DOI (Digital Object Identifier', // common
         		 journal: 'Journal', volume: 'Journal Volume', issue: 'Issue', pages: 'Pages', // journal articles
         		 publisher: 'Publisher' },
 
         // common form fields
-        type: 'journal', file: null, fileType: '', title: '', description: '', collaborators: '',
-        creationDate: '', description: '', keywords: '', url: '', doi: '',
+        type: 'journal',
+         file: null,
+         fileType: '',
+         title: '',
+         description: '',
+         collaborators: [fullname],
+        creationDate: '',
+         description: '',
+         keywords: '',
+         url: '',
+         doi: '',
         // end common form fields
         journal: '', journal_volume: '', journal_issue: '', journal_pages: '', // journal articles,
         book_publisher: '', book_isbn: '', book_edition: '', book_pages: '', book_chapter: '', // book-specific fields
@@ -1258,9 +1267,7 @@ var PublicationAddForm = React.createClass({
 
 	render: function() {
 		var self = this;
-
 		var titleLabel = "Title:";
-
 		var autoFillBtn = (
 			<Button className="" onClick={this.fillDoi}>Auto-fill</Button>
         );
@@ -1353,6 +1360,7 @@ var PublicationAddForm = React.createClass({
 			}
         };
 
+
 		return (
 		<div>
 			<form className="form" onSubmit={this.handleSubmitData}>
@@ -1375,7 +1383,7 @@ var PublicationAddForm = React.createClass({
 				</Input>
 				{showBookChapterTitle(this.state.type)}
                 <Input type="text" placeholder={titleLabel} name="title" required onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Authors:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
+                <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
@@ -1398,6 +1406,12 @@ var PublicationAddForm = React.createClass({
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
 	},
+
+    handleCollabKeyChange: function(e) {
+        var changedState = {};
+        changedState['collaborators'] = e;
+        this.setState(changedState);
+    },
 
 	fillDoi: function(e) {
 		$.ajax({
@@ -1556,8 +1570,6 @@ var PublicationAddForm = React.createClass({
         				keywords: this.state.keywords, title: this.state.title, type: this.state.type};
 		this.fillDetails({type:this.state.type}, pubForm);
 
-		console.log("pubForm after", pubForm);
-
 		$.ajax({
 			url: path + "/publication",
 			dataType: 'json',
@@ -1609,15 +1621,6 @@ var PublicationAddForm = React.createClass({
 
 	validateForm: function() {
 		var issues = []
-		if (!this.state.title.trim()) {
-			issues.push("TITLE");
-		}
-		if (!this.state.file) {
-			issues.push("FILE");
-		}
-		if (!this.state.creationDate) {
-			issues.push("DATE");
-		}
 		if (!this.state.keywords.trim()) {
 			issues.push("KEYWORDS");
 		}
@@ -1647,13 +1650,13 @@ var ResourceAddForm = React.createClass({
             fileType: '',
             title: '',
             description: '',
-            collaborators: [],
+            collaborators: [fullname],
             creationDate: '',
             license: '',
             pubLink: '',
             keywords: [],
             url: '',
-            groupies: []
+           // groupies: []
         };
     },
     // componentDidMount: function() {
@@ -1716,11 +1719,12 @@ var ResourceAddForm = React.createClass({
         } else {var alert = "";}
         return (
             <div id="modalDiv">
+                {alert}
                 <div id="scriptContainer"></div>
                 <form className="form" onSubmit={this.handleSubmitData}>
                     <div className="well" style={this.buttonStyles}>
                         <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
-                            style={{display: this.showPictureUpload(this.props.fromModelTab), background: this.state.pictureFeedback}}>
+                            style={{background: this.state.pictureFeedback}}>
                             Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                         </Button>
                         <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
@@ -1728,22 +1732,23 @@ var ResourceAddForm = React.createClass({
                         </Button>
                     </div>
                     <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
-
+                    {/*
                     <div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Collaborators:" name="collaborators" value={this.state.collaborators} />
                     </div>
-
+*/  }
+                    <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
                     <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                     <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
                     <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
                     <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                     <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
-
+                    {/*
                     <div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Users to share:" name="groupies" value={this.state.collaborators} />
                     </div>
-                    
+  */}
                     <Modal.Footer>
                         <Input className="btn btn-default pull-right" type="submit" value="Continue" />
                     </Modal.Footer>
@@ -1793,8 +1798,6 @@ var ResourceAddForm = React.createClass({
         				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
         				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title, groupies: JSON.stringify(this.state.groupies)};
-		console.log(dataForm);
-
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
 			var endpoint = this.props.fromModelTab ? "/model" : "/data";
@@ -1823,13 +1826,7 @@ var ResourceAddForm = React.createClass({
 			});
 		}
 		else {
-			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be addEducationd:';
-			if (isValidForm.indexOf('TITLE') > -1) {
-				message += ' Title is required.';
-			}
-			if (isValidForm.indexOf('DATE') > -1) {
-				message += ' Please indicate the creation date.';
-			}
+			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
@@ -1892,19 +1889,9 @@ var ResourceAddForm = React.createClass({
 
 	validateForm: function() {
 		var issues = []
-		if (!this.state.title.trim()) {
-			issues.push("TITLE");
-		}
-		if (!this.state.file) {
-			issues.push("FILE");
-		}
-		if (!this.state.creationDate) {
-			issues.push("DATE");
-		}
 		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
-        console.log(JSON.stringify(this.state.keywords));
 		return issues;
 	},
 });
@@ -1932,9 +1919,22 @@ var ProjectAddForm = React.createClass({
         pictureFeedback: '',
 
         // form
-        picture: null, file: null, pictureType: '', fileType: '', title: '', description: '', collaborators: '',
-        startDate: '', endDate: '', description: '', link_to_resources: '', client: '', keywords: [], url: '',
-        organizationId: 'AJgSwufvvO', groupies: ''
+         picture: null,
+         file: null,
+         pictureType: '',
+         fileType: '',
+         title: '',
+         description: '',
+         collaborators: [fullname],
+        startDate: '',
+         endDate: '',
+         description: '',
+         link_to_resources: '',
+         client: '',
+         keywords: [],
+         url: '',
+        organizationId: '',
+         groupies: ''
         };
     },
     componentDidMount: function() {
@@ -2011,7 +2011,9 @@ var ProjectAddForm = React.createClass({
                   </div>
 
                 <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />
+                    <ReactTagsInput type="textarea" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
+
+                    {/* <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />*/}
                 <Input type="date" placeholder="Start Date:" name="startDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
                 <Input type="date" placeholder="End Date:" name="endDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.endDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
@@ -2019,7 +2021,7 @@ var ProjectAddForm = React.createClass({
                 <Input type="text" placeholder="Link to Resources:" name="link_to_resources" onChange={this.handleChange} value={this.state.link_to_resources} />
                 <ReactTagsInput type="textarea" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL:" name="url" onChange={this.handleChange} value={this.state.url} />
-                <Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />
+                    {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
                 </Modal.Body>
                 <Modal.Footer>
                     <input className="full-button" type="submit" value="Submit"/>
@@ -2044,14 +2046,19 @@ var ProjectAddForm = React.createClass({
         changedState['keywords'] = e;
         this.setState(changedState);
     },
+    handleCollabKeyChange: function(e) {
+        var changedState = {};
+        changedState['collaborators'] = e;
+        this.setState(changedState);
+    },
 	handleSubmitData: function(e) {
         e.preventDefault();
 
         var dataForm = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
-        				collaborators: this.state.collaborators, startDate: this.state.startDate, endDate: this.state.endDate,
+        				collaborators: JSON.stringify(this.state.collaborators), startDate: this.state.startDate, endDate: this.state.endDate,
         				description: this.state.description, client: this.state.client, link_to_resources: this.state.link_to_resources,
-        				keywords: this.state.keywords, url: this.state.url, title: this.state.title};
+        				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title};
 		console.log(dataForm);
 
         var isValidForm = this.validateForm();
@@ -2081,12 +2088,6 @@ var ProjectAddForm = React.createClass({
 		}
 		else {
 			var message = 'Project could not be added!';
-			if (isValidForm.indexOf('TITLE') > -1) {
-				message += ' Title is required.';
-			}
-            if (isValidForm.indexOf('DATE') > -1) {
-				message += ' Please indicate the start and end date.';
-			}
 			if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
@@ -2109,8 +2110,6 @@ var ProjectAddForm = React.createClass({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.file.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -2149,15 +2148,6 @@ var ProjectAddForm = React.createClass({
 
 	validateForm: function() {
 		var issues = []
-		if (!this.state.title.trim()) {
-			issues.push("TITLE");
-		}
-		if (!this.state.file) {
-			issues.push("FILE");
-		}
-		if (!this.state.startDate) {
-			issues.push("DATE");
-		}
 		if (this.state.keywords.length<1) {
 			issues.push("KEYWORDS");
 		}
