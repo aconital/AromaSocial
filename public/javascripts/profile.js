@@ -861,6 +861,7 @@ var Publications = React.createClass({
             type: 'GET',
             url: publicationsURL,
             success: function(data) {
+                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -881,11 +882,10 @@ var Publications = React.createClass({
                 <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                 {typeList.map(item =>
                 <div className="item-box">
-                    <div key={item.objectId}>
-                        <a href={'/publication/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                    <div key={item.id}>
+                        <a href={'/publication/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
-                            <tr><td><b>Authors: </b></td><td>{item.authors.map(author => <a href="" className="body-link">{author} </a>)}</td></tr>
                             <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
                             <tr><td><b>Publication Code: </b></td><td>{item.publication_code}</td></tr>
                         </table>
@@ -950,6 +950,7 @@ var Models = React.createClass({
             type: 'GET',
             url: modelsURL,
             success: function(data) {
+                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -1565,9 +1566,9 @@ var PublicationAddForm = React.createClass({
         e.preventDefault();
 
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
-        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+        				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
-        				keywords: this.state.keywords, title: this.state.title, type: this.state.type};
+        				keywords: JSON.stringify(this.state.keywords), title: this.state.title, type: this.state.type};
 		this.fillDetails({type:this.state.type}, pubForm);
 
 		$.ajax({

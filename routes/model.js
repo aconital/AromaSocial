@@ -44,7 +44,7 @@ module.exports=function(app,Parse) {
                     title: result.get('title'),
                     image: result.get('image'),
                     image_URL: result.get('image_URL'),
-                    collaborators: result.get('collaborators'),
+                    collaborators: JSON.stringify(result.get('collaborators')),
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
@@ -65,18 +65,14 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query("Model");
         query.get(req.params.objectId,{
             success: function(result) {
-                if (req.body.title) {
-                    result.set("title", req.body.title);
-                    result.set("abstract", req.body.description);
-                    result.set("feature", req.body.feature);
-                    result.set("other", req.body.other);
-                    result.set("filename", req.body.filename);
-                    result.set("license", req.body.license);
-                    result.set("publication_date", req.body.publication_date);
-                }
-                else if (req.body.keywords) {
-                    result.set("keywords",JSON.parse(req.body.keywords));
-                }
+                result.set("title", req.body.title);
+                result.set("abstract", req.body.description);
+                result.set("feature", req.body.feature);
+                result.set("other", req.body.other);
+                result.set("filename", req.body.filename);
+                result.set("license", req.body.license);
+                result.set("publication_date", req.body.publication_date);
+                result.set("keywords",JSON.parse(req.body.keywords));
                 result.save();
             }
         });
@@ -113,37 +109,41 @@ module.exports=function(app,Parse) {
     app.post('/profile/:username/model', is_auth, function(req,res,next){
         var currentUser = req.user;
         if (currentUser.username == req.params.username) {
+            console.log("1");
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
             var reqBody = req.body;
             // send to Parse
-            var keywords = reqBody.keywords.split(/\s*,\s*/g);
-            var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
             var Model = Parse.Object.extend("Model");
             var model= new Model();
-            model.set('user',currentUser);
+            console.log("2");
+            model.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
             model.set('abstract', reqBody.description);
             model.set('access', ["UBC"]);
-            model.set('collaborators',collaborators);
+            console.log("3");
+            model.set('collaborators',JSON.parse(reqBody.collaborators));
             model.set('image','/images/model.png');
             model.set('image_URL','/images/model.png');
             model.set('title',reqBody.title);
-            model.set('keywords',keywords);
+            console.log("4");
+            model.set('keywords',JSON.parse(reqBody.keywords));
+            console.log("5");
             model.set('license',reqBody.license);
 //			model.set('publication',reqBody.pubLink);
             model.set('number_cited',0);
             model.set('number_syncholar_factor',1);
             model.save(null, {
                 success: function(response) {
+                    console.log("6");
                     // Execute any logic that should take place after the object is saved.
                     objectId = response.id;
                     var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
                     // encode file
-                    if (reqBody.file != null) {
-                        var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
-                        var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
-                        var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                    if (reqBody.picture != null) {
+                        var s3Key = req.params.username + "_" + objectId + "." + reqBody.pictureType;
+                        var contentType = reqBody.picture.match(/^data:(\w+\/.+);base64,/);
+                        var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                         var fileParams = {
                             Key: s3Key,
                             Body: fileBuff,
@@ -161,21 +161,22 @@ module.exports=function(app,Parse) {
                                 model.save();
                             }
                         });
+                        console.log("7");
                     }
                     console.log(objectId);
                     // encode picture NOTE: Parse object currently does not differentiate between image and file.
                     // Only file (saved in image_URL) is accessible on website
-                    if (reqBody.picture != null) {
-                        var s3KeyP = req.params.username + "_" + objectId + "_pic." + reqBody.pictureType;
-                        var contentTypeP = reqBody.picture.match(/^data:(\w+\/.+);base64,/);
-                        var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                    if (reqBody.file != null) {
+                        var s3KeyP = req.params.username + "_" + objectId + "_pic." + reqBody.fileType;
+                        var contentTypeP = reqBody.file.match(/^data:(\w+\/.+);base64,/);
+                        var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                         var pictureParams = {
                             Key: s3KeyP,
                             Body: pictureBuff,
                             ContentEncoding: 'base64',
                             ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
                         };
-
+                        console.log("8");
                         bucket.putObject(pictureParams, function (err, data) {
                             if (err) { console.log("Model image Upload Error:", err); }
                             else {

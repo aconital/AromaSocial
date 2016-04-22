@@ -81,71 +81,69 @@ module.exports=function(app,Parse) {
 
     app.post('/profile/:username/data', is_auth, function(req,res,next){
         var currentUser = req.user;
-        if (currentUser && currentUser.username == req.params.username) {
+        if (currentUser.username == req.params.username) {
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
             console.log(formatted);
             var reqBody = req.body;
             // send to Parse
-            var keywords = reqBody.keywords.split(/\s*,\s*/g);
-            var collaborators = reqBody.collaborators.split(/\s*,\s*/g);
-            var groupies = reqBody.groupies.split(/\s*,\s*/g);
             var Data = Parse.Object.extend("Data");
             var data= new Data();
-            console.log(keywords);
-            console.log(collaborators);
-//            data.set('user',currentUser);  // TODO: takes pointer to user but getting map
-            data.set('access', ["UBC"]);
-            data.set('collaborators',collaborators);
+            data.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});  // TODO: takes pointer to user but getting map
+            data.set('collaborators', JSON.parse(reqBody.collaborators));
             data.set('description', reqBody.description);
             data.set('title',reqBody.title);
-            data.set('keywords',keywords);
+            data.set('keywords',JSON.parse(reqBody.keywords));
             data.set('image_URL','/images/data.png');
             data.set('license',reqBody.license);
             data.set('path',"TODO");
 //			data.set('publication',reqBody.pubLink); // TODO takes pointer to Publication obj
             data.set('number_cited',0);
             data.set('number_syncholar_factor',0);
-            data.set('groupies', groupies);
-            console.log(data);
+            //data.set('groupies', groupies);
             data.save(null, {
                 success: function(response) {
-                    // Execute any logic that should take place after the object is saved.
                     objectId = response.id;
-                    // encode file
-                    var s3Key = req.params.username + "_" + objectId + "." + reqBody.fileType;
-                    var contentType = reqBody.file.match(/^data:(\w+\/.+);base64,/);
-                    var fileBuff = new Buffer(reqBody.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                    var params = {
-                        Key: s3Key,
-                        Body: fileBuff,
-                        ContentEncoding: 'base64',
-                        ContentType: (contentType ? contentType[1] : 'text/plain')
-                    };
-
-                    // upload files to S3
                     var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    bucket.putObject(params, function (err, response) {
-                        if (err) { console.log("Data Upload Error:", err); }
-                        else {
-                            console.log('uploading to s3');
+                    if (req.body.picture != null) {
+                        var s3Key = req.params.username + "_project_picture_" + objectId + "." + req.body.pictureType;
+                        var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+                        var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                        var fileParams = {
+                            Key: s3Key,
+                            Body: fileBuff,
+                            ContentEncoding: 'base64',
+                            ContentType: (contentType ? contentType[1] : 'text/plain')
+                        };
+                        bucket.putObject(fileParams, function (err, data) {
+                            if (err) { console.log("Project Image Upload Error:", err); }
+                            else {
+                                data.set('image_URL', awsLink + s3Key);
+                                data.save();
+                            }
+                        });
+                    }
+                    if (req.body.file != null) {
+                        var s3KeyP = req.params.username + "_project_file_" + objectId + "." + req.body.fileType;
+                        var contentTypeP = req.body.file.match(/^data:(\w+\/.+);base64,/);
+                        var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                        var pictureParams = {
+                            Key: s3KeyP,
+                            Body: pictureBuff,
+                            ContentEncoding: 'base64',
+                            ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
+                        };
 
-                            // update file name in parse object
-                            data.set('path', awsLink + s3Key);
-
-                            data.save(null, {
-                                success: function(data) {
-                                    console.log("Path name updated successfully.");
-                                    res.status(200).json({status:"OK", query: data});
-                                },
-                                error: function(data, error) {
-                                    console.log('Failed to update new object path, with error code: ' + error.message);
-                                    res.status(500).json({status:"Uploading file failed." + error.message});
-                                }
-                            });
-                        }
-                    });
+                        bucket.putObject(pictureParams, function (err, data) {
+                            if (err) { console.log("Project File Upload Error:", err); }
+                            else {
+                                data.set('file_path', awsLink + s3KeyP);
+                                data.save();
+                            }
+                        });
+                    }
+                    res.json({status: 'Project Uploaded!'});
                 },
                 error: function(response, error) {
                     console.log('Failed to create new object, with error code: ' + error.message);
