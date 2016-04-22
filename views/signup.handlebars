@@ -1,11 +1,8 @@
-<div class="col-md-offset-4 col-md-4">
-    <div class="panel panel-default panel-signup">
-        <div class="panel-heading">Sign Up</div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="alert alert-warning" id="error" style="visibility: hidden"></div></p>
-                <p class="bg-danger">{{Error}}</p>
-            </div>
+<div class="row" xmlns="http://www.w3.org/1999/html">
+    <div class="col-md-offset-4 col-md-4">
+        <div class="panel panel-default panel-signup">
+            <div class="panel-heading">Sign up</div>
+
             <form name="form" method="post" action="/signup" novalidate="novalidate">
                 <div class="form-group">
                     <label for="username" class="control-label">Username</label>
@@ -29,6 +26,14 @@
                 </div>
                 <br>
                 <input type="submit" value="Sign Up" ng-disabled="form.$invalid" class="btn btn-primary"/>
+                <div class="form-group">
+                    <p> By clicking "Sign Up", you agree to our
+                    <a href="/terms" target="_blank"> terms of service</a>
+                         and
+                        <a href="/privacy" target="_blank"> privacy policy</a>
+                        .
+                    </p>
+                </div>
             </form>
             <div class="row" style="margin-top:20px; text-align: center">
                 <a href="/oauth/linkedin"><img src="images/Retina/Sign-In-Small---Default.png"></a>
