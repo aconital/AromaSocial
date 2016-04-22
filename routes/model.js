@@ -123,8 +123,8 @@ module.exports=function(app,Parse) {
             model.set('access', ["UBC"]);
             console.log("3");
             model.set('collaborators',JSON.parse(reqBody.collaborators));
-            model.set('image','/images/model.png');
-            model.set('image_URL','/images/model.png');
+            model.set('image','/images/data.png');
+            model.set('image_URL','/images/data.png');
             model.set('title',reqBody.title);
             console.log("4");
             model.set('keywords',JSON.parse(reqBody.keywords));

@@ -450,38 +450,44 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/organization/:objectId/publications', function (req, res, next) {
-        var count = 0;
-        var userResults =[];
-        var publicationResults =[];
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
+        var pubs =[];
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery);
-        query.include("userId");
-        query.find().then(function(users) {
-            _.each(users, function(user) {
-                var userId = user.get("userId").id;
-                userResults.push(userId);
-                console.log(userId);
-            });
-        }).then(function() {
-            _.each(userResults, function(userId, i) {
-                var queryPublications = new Parse.Query('Publication');
-                queryPublications.equalTo("user", {__type: "Pointer",
-                                                  className: "_User",
-                                                  objectId: userId });
-                queryPublications.find().then(function(publications) {
-                    _.each(publications, function(publication) {
-                        publicationResults.push(publication);
-                    });
-                }).then(function(){
-                    count++;
-                    if (userResults.length == count) {
-                        console.log(publicationResults);
-                        res.json(publicationResults);
-                    }
-                });
-            });
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
+        query.each(function(relationships) {
+            var promises = [];
+            var queryBooks = new Parse.Query('Pub_Book');
+            queryBooks.equalTo("user", relationships.get("userId"));
+            promises.push(queryBooks.each(function (books){
+                var book = JSON.stringify(books);
+                console.log("FIRST BOOK" + book);
+                book['type'] = 'book';
+                console.log("UPDATED BOOK" +book);
+                var toPush = JSON.stringify(parsedBook);
+                console.log("STRINGIFIED BOOK" + toPush);
+            }));
+            var queryConference = new Parse.Query('Pub_Conference');
+            queryConference.equalTo("user", relationships.get("userId"));
+            promises.push(queryConference.each(function (conferences){
+                conferences.type = 'conference';
+                var conference = JSON.stringify(conferences);
+
+                pubs.push(conference);
+            }));
+            var queryJournal = new Parse.Query('Pub_Journal_Article');
+            queryJournal.equalTo("user", relationships.get("userId"));
+            promises.push(queryJournal.each(function (journals){
+                journals.type = 'journal';
+                var journal = JSON.stringify(journals);
+                pubs.push(journal);
+            }));
+            return Parse.Promise.when(promises);
+        }).then(function(){
+            var filteredPubs= _.groupBy(pubs,'type');
+            console.log(filteredPubs);
+            res.json(filteredPubs);
+        }, function(error){
+            console.log('Failed to retrive publications, with error code: ' + error.message);
+            res.status(500).json({status: "Publication retrieval failed. " + error.message});
         });
     });
     

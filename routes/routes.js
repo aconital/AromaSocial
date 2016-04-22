@@ -96,11 +96,28 @@ module.exports=function(app,Parse) {
      user.set("fullname", req.body.fullname);
      user.set("email", req.body.email);
      user.set("imgUrl", "/images/user.png");
+        user.set("interestsTag", []);
      console.log(req.body.username);
      user.signUp(null, {
-       success: function (user) {
+        success: function (user) {
            console.log("sucessful signup");
-           res.redirect('/');
+           passport.authenticate('local', { successRedirect: '/',
+               failureRedirect: '/signin'}, function(err, user, info) {
+               if(err) {
+                   return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+               }
+
+               if(!user) {
+                   return res.render('signin', {page:'login',title: 'Sign In', errorMessage: info.message});
+               }
+               return req.logIn(user, function(err) {
+                   if(err) {
+                       return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+                   } else {
+                       return res.redirect('/');
+                   }
+               });
+           })(req, res, next);
        },
        error: function (user, error) {
          // Show the error message somewhere and let the user try again.
@@ -238,7 +255,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                               subject: 'Connecting Linkedin to your account', // Subject line
                                               text: '', // plaintext body
                                               html: '<h2><p>Hi '+result.attributes.fullname+',</p> Please click on the following link to connect your linkedin to your account:</h2>' +
-                                                    '<a href="http://127.0.0.1:3000/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://127.0.0.1:3000/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
+                                                    '<a href="http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
                                           };
                                           transporter.sendMail(mailOptions, function(error, info){
                                               if(error){
