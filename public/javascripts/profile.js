@@ -883,7 +883,7 @@ var Publications = React.createClass({
                 {typeList.map(item =>
                 <div className="item-box">
                     <div key={item.id}>
-                        <a href={'/publication/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <tr><td><b>Description: </b></td><td>{item.description}</td></tr>

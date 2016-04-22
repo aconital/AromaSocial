@@ -71,8 +71,10 @@ $(function() {
               results: function() {}
             },
             focus: function(event, ui) {
-              $(this).val(ui.item.label);
-              return false;
+                $(this).val(ui.item.label);
+                $(".ui-helper-hidden-accessible").hide();
+                event.preventDefault();
+                return false;
             },
             select: function(event, ui) {
               window.location.href = ui.item.link;

@@ -56,11 +56,8 @@
 
                 <ul class="nav navbar-nav navbar-nav-search">
                     <li class="nav navbar-search">
-                        <form role="search" method="post" action="/searchpage" class="navbar-left search-bar-form">
-                            <div class="form-group form-inline purple" style="width:100%;margin-top:0px;">
+                        <form type="hidden" role="search" method="post" action="/searchpage" class="navbar-left search-bar-form">
                             <input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
-                            <input id="message1" type="text" style="display:none" name="hiddenSearchQuery" value="testValue" "/>
-                            </div>
                         </form>
                     </li>
                 </ul>

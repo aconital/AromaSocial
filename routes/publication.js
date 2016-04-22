@@ -58,12 +58,192 @@ module.exports=function(app,Parse) {
     app.get('/publication', function (req, res, next) {
         res.render('publication', {layout: 'home', title: 'Publication', path: req.path});
     });
-    app.get('/publication/:objectId', function (req, res, next) {
+    app.get('/publication/book/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var query = new Parse.Query('Publication');
+        var query = new Parse.Query('Pub_Book');
         query.get(req.params.objectId,{
             success: function(result) {
-                res.render('publication', {layout: 'home', title: 'Publication', path: req.path,
+                res.render('publication', {path: req.path,
+                    currentUserId: currentUser.id,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    creatorId: result.get("user").id,
+                    objectId: req.params.objectId,
+                    title: result.get('title'),
+                    author: JSON.stringify(result.get('collaborator')),
+                    description: result.get('description'),
+                    filename: result.get('filename'),
+                    license: result.get('license'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    groupies: result.get('groupies'),
+                    publication_date: result.get('year'),
+                    publication_code: result.get('publication_code'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
+                });
+            },
+            error: function(error) {
+                res.render('index', {title: 'Please Login!', path: req.path});
+            }
+        });
+    });
+    app.get('/publication/conference/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var query = new Parse.Query('Pub_Conference');
+        query.get(req.params.objectId,{
+            success: function(result) {
+                res.render('publication', {path: req.path,
+                    currentUserId: currentUser.id,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    creatorId: result.get("user").id,
+                    objectId: req.params.objectId,
+                    title: result.get('title'),
+                    author: result.get('author'),
+                    description: result.get('description'),
+                    filename: result.get('filename'),
+                    license: result.get('license'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    groupies: result.get('groupies'),
+                    publication_date: result.get('year'),
+                    publication_code: result.get('publication_code'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
+                });
+            },
+            error: function(error) {
+                res.render('index', {title: 'Please Login!', path: req.path});
+            }
+        });
+    });
+    app.get('/publication/journal/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var query = new Parse.Query('Pub_Journal_Article');
+        query.get(req.params.objectId,{
+            success: function(result) {
+                res.render('publication', {path: req.path,
+                    currentUserId: currentUser.id,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    creatorId: result.get("user").id,
+                    objectId: req.params.objectId,
+                    title: result.get('title'),
+                    author: result.get('author'),
+                    description: result.get('description'),
+                    filename: result.get('filename'),
+                    license: result.get('license'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    groupies: result.get('groupies'),
+                    publication_date: result.get('year'),
+                    publication_code: result.get('publication_code'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
+                });
+            },
+            error: function(error) {
+                res.render('index', {title: 'Please Login!', path: req.path});
+            }
+        });
+    });
+    app.get('/publication/patent/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var query = new Parse.Query('Pub_Patent');
+        query.get(req.params.objectId,{
+            success: function(result) {
+                res.render('publication', {path: req.path,
+                    currentUserId: currentUser.id,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    creatorId: result.get("user").id,
+                    objectId: req.params.objectId,
+                    title: result.get('title'),
+                    author: result.get('author'),
+                    description: result.get('description'),
+                    filename: result.get('filename'),
+                    license: result.get('license'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    groupies: result.get('groupies'),
+                    publication_date: result.get('year'),
+                    publication_code: result.get('publication_code'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
+                });
+            },
+            error: function(error) {
+                res.render('index', {title: 'Please Login!', path: req.path});
+            }
+        });
+    });
+    app.get('/publication/report/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var query = new Parse.Query('Pub_Report');
+        query.get(req.params.objectId,{
+            success: function(result) {
+                res.render('publication', {path: req.path,
+                    currentUserId: currentUser.id,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    creatorId: result.get("user").id,
+                    objectId: req.params.objectId,
+                    title: result.get('title'),
+                    collaborators: JSON.stringify(result.get('collaborators')),
+                    description: result.get('description'),
+                    filename: result.get('filename'),
+                    license: result.get('license'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    groupies: result.get('groupies'),
+                    publication_date: result.get('year'),
+                    publication_code: result.get('publication_code'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
+                });
+            },
+            error: function(error) {
+                res.render('index', {title: 'Please Login!', path: req.path});
+            }
+        });
+    });
+    app.get('/publication/thesis/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var query = new Parse.Query('Pub_Thesis');
+        query.get(req.params.objectId,{
+            success: function(result) {
+                res.render('publication', {path: req.path,
+                    currentUserId: currentUser.id,
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    creatorId: result.get("user").id,
+                    objectId: req.params.objectId,
+                    title: result.get('title'),
+                    author: result.get('author'),
+                    description: result.get('description'),
+                    filename: result.get('filename'),
+                    license: result.get('license'),
+                    keywords: JSON.stringify(result.get('keywords')),
+                    publication_link: result.get('publication_link'),
+                    groupies: result.get('groupies'),
+                    publication_date: result.get('year'),
+                    publication_code: result.get('publication_code'),
+                    createdAt: result.get('createdAt'),
+                    updatedAt: result.get('updatedAt')
+                });
+            },
+            error: function(error) {
+                res.render('index', {title: 'Please Login!', path: req.path});
+            }
+        });
+    });
+    app.get('/publication/unpublished/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var query = new Parse.Query('Pub_Unpublished');
+        query.get(req.params.objectId,{
+            success: function(result) {
+                res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
@@ -430,4 +610,17 @@ module.exports=function(app,Parse) {
             }
         });
     });
+
+    /************************************
+     * HELPER FUNCTIONS
+     *************************************/
+    function is_auth(req,res,next){
+
+        if (!req.isAuthenticated()) {
+            res.redirect('/');
+        } else { res.locals.user = req.user;
+            res.locals.user = req.user;
+            next();
+        }
+    };
 };

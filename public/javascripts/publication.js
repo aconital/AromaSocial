@@ -9,12 +9,10 @@ var Publication = React.createClass ({
      return {
         title: title,
         description: description,
-
         filename: filename,
         publicationDate: publication_date,
         publicationCode: publication_code,
         license: license,
-
         keywords: keywords
         };
     },
@@ -100,37 +98,6 @@ var Publication = React.createClass ({
                     </div>
                 </div>
             </div>
-
-            {/*}
-            <div className="item-bottom-3">
-                <div className="item-panel contain-panel-above"><h5>Publication Link</h5><br/>
-                    <a href={publication_link} className="body-link">Published Here!</a>
-                </div>
-                <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
-                    48 Syncholarity Factor<br/>
-                    2000 Times Cited<br/>
-                    12000 Profile Views
-                </div>
-                <div className="item-panel contain-panel"><h5>Who Has Used This</h5><br/>
-                    {this.props.groups.map(function(listValue){
-                        return <a href="#" className="body-link">{listValue}<br/></a>;
-                    })}
-                </div>
-                <div className="item-panel contain-panel"><h5>License Information</h5><br/>
-                    {license}
-                </div>
-                <div className="item-panel contain-panel"><h5>Keywords</h5><br/>
-                    {this.props.keywords.map(function(listValue){
-                        return <a href="#" className="body-link">{listValue} </a>;
-                    })}
-                </div>
-                <div className="item-panel contain-panel"><h5>Date Created</h5><br/>
-                    {year}
-                </div>
-                <div className="extend-bottom">&nbsp;</div>
-            </div>
-            {*/}
-
         </div>
         );
     }
