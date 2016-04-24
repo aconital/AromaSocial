@@ -396,7 +396,7 @@ module.exports=function(app,Parse) {
                     orgId: orgId,
                     name: name,
                     location: location,
-                    orgImgUrl: orgImgUrl,
+                    orgImgUrl: orgImgUrl
                 };
                 //only orgs that are verified
                 if (verified) {
@@ -404,7 +404,7 @@ module.exports=function(app,Parse) {
                         orgId: orgId,
                         name: name,
                         location: location,
-                        orgImgUrl: orgImgUrl,
+                        orgImgUrl: orgImgUrl
                     };
                     orgs.push(org);
                 }
@@ -436,7 +436,7 @@ module.exports=function(app,Parse) {
                             orgId: orgId,
                             name: name,
                             location: location,
-                            orgImgUrl: orgImgUrl,
+                            orgImgUrl: orgImgUrl
                         };
                         console.log(org);
                         orgs.push(org);
@@ -457,28 +457,109 @@ module.exports=function(app,Parse) {
             var promises = [];
             var queryBooks = new Parse.Query('Pub_Book');
             queryBooks.equalTo("user", relationships.get("userId"));
-            promises.push(queryBooks.each(function (books){
-                var book = JSON.stringify(books);
-                console.log("FIRST BOOK" + book);
-                book['type'] = 'book';
-                console.log("UPDATED BOOK" +book);
-                var toPush = JSON.stringify(parsedBook);
-                console.log("STRINGIFIED BOOK" + toPush);
+            promises.push(queryBooks.each(function (book){
+                //var book = JSON.stringify(books);
+                pubs.push({
+                    type: "book",
+                    filename: book.attributes.filename,
+                    title: book.attributes.title,
+                    hashtags: book.attributes.hashtags,
+                    date: book.createdAt,
+                    year: book.attributes.year,
+                    author: book.attributes.author,
+                    description: book.attributes.description,
+                    id: book.id
+                });
             }));
             var queryConference = new Parse.Query('Pub_Conference');
             queryConference.equalTo("user", relationships.get("userId"));
             promises.push(queryConference.each(function (conferences){
-                conferences.type = 'conference';
-                var conference = JSON.stringify(conferences);
-
-                pubs.push(conference);
+                pubs.push({
+                    type: "conference",
+                    filename: conferences.attributes.filename,
+                    title: conferences.attributes.title,
+                    hashtags: conferences.attributes.hashtags,
+                    date: conferences.createdAt,
+                    year: conferences.attributes.year,
+                    author: conferences.attributes.author,
+                    description: conferences.attributes.description,
+                    id: conferences.id
+                });
             }));
             var queryJournal = new Parse.Query('Pub_Journal_Article');
             queryJournal.equalTo("user", relationships.get("userId"));
             promises.push(queryJournal.each(function (journals){
-                journals.type = 'journal';
-                var journal = JSON.stringify(journals);
-                pubs.push(journal);
+                pubs.push({
+                    type: "journal",
+                    filename: journals.attributes.filename,
+                    title: journals.attributes.title,
+                    hashtags: journals.attributes.hashtags,
+                    date: journals.createdAt,
+                    year: journals.attributes.year,
+                    author: journals.attributes.author,
+                    description: journals.attributes.description,
+                    id: journals.id
+                });
+            }));
+            var queryPatent = new Parse.Query('Pub_Patent');
+            queryPatent.equalTo("user", relationships.get("userId"));
+            promises.push(queryPatent.each(function (patent){
+                pubs.push({
+                    type: "patent",
+                    filename: patent.attributes.filename,
+                    title: patent.attributes.title,
+                    hashtags: patent.attributes.hashtags,
+                    date: patent.createdAt,
+                    year: patent.attributes.year,
+                    author: patent.attributes.author,
+                    description: patent.attributes.description,
+                    id: patent.id
+                });
+            }));
+            var queryReport = new Parse.Query('Pub_Report');
+            queryReport.equalTo("user", relationships.get("userId"));
+            promises.push(queryReport.each(function (report){
+                pubs.push({
+                    type: "report",
+                    filename: report.attributes.filename,
+                    title: report.attributes.title,
+                    hashtags: report.attributes.hashtags,
+                    date: report.createdAt,
+                    year: report.attributes.year,
+                    author: report.attributes.author,
+                    description: report.attributes.description,
+                    id: report.id
+                });
+            }));
+            var queryThesis = new Parse.Query('Pub_Thesis');
+            queryThesis.equalTo("user", relationships.get("userId"));
+            promises.push(queryThesis.each(function (thesis){
+                pubs.push({
+                    type: "thesis",
+                    filename: thesis.attributes.filename,
+                    title: thesis.attributes.title,
+                    hashtags: thesis.attributes.hashtags,
+                    date: thesis.createdAt,
+                    year: thesis.attributes.year,
+                    author: thesis.attributes.author,
+                    description: thesis.attributes.description,
+                    id: thesis.id
+                });
+            }));
+            var queryUnpublished = new Parse.Query('Pub_Unpublished');
+            queryUnpublished.equalTo("user", relationships.get("userId"));
+            promises.push(queryUnpublished.each(function (unpublished){
+                pubs.push({
+                    type: "unpublished",
+                    filename: unpublished.attributes.filename,
+                    title: unpublished.attributes.title,
+                    hashtags: unpublished.attributes.hashtags,
+                    date: unpublished.createdAt,
+                    year: unpublished.attributes.year,
+                    author: unpublished.attributes.author,
+                    description: unpublished.attributes.description,
+                    id: unpublished.id
+                });
             }));
             return Parse.Promise.when(promises);
         }).then(function(){
@@ -839,46 +920,56 @@ module.exports=function(app,Parse) {
      });
 
      app.get('/organization/:objectId/projects_list', is_auth, function (req, res, next) {
-         var innerQuery = new Parse.Query("Organization");
-         innerQuery.equalTo("objectId",req.params.objectId);
-         var queryProject = new Parse.Query('Project');
-         queryProject.matchesQuery('organization',innerQuery);
-         queryProject.find({
-             success: function(results) {
-                 var projects = [];
-                 for (var i in results) {
-                     var authors = ["N/A"];
-                     var locations = ["N/A"];
-                     var keywords = ["N/A"];
-                     var objectId = results[i].id;
-                     var title = results[i].attributes.title;
-                     var description = results[i].attributes.description;
-                     var image_URL = results[i].attributes.image_URL;
-                     var start_date = "N/A";
-                     var end_date = "N/A";
-                     if (results[i].attributes.authors !== undefined) { authors = results[i].attributes.authors; }
-                     if (results[i].attributes.locations !== undefined) { locations = results[i].attributes.locations; }
-                     if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
-                     if (results[i].attributes.start_date !== undefined) { start_date = results[i].attributes.start_date; }
-                     if (results[i].attributes.end_date !== undefined) { end_date = results[i].attributes.end_date; }
-                     var project = {
-                         objectId: objectId,
-                         title: title,
-                         description: description,
-                         image_URL: image_URL,
-                         authors: authors,
-                         locations: locations,
-                         keywords: keywords,
-                         start_date: start_date,
-                         end_date: end_date
-                     }; projects.push(project);
+         var projects = [];
+         var query = new Parse.Query('Relationship');
+         query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
+         query.each(function(relationships) {
+             var queryProjects = new Parse.Query('Project');
+             queryProjects.equalTo("user", relationships.get("userId"));
+             queryProjects.each(function (results) {
+                 var collaborators = ["N/A"];
+                 var locations = ["N/A"];
+                 var keywords = ["N/A"];
+                 var objectId = results.id;
+                 var title = results.attributes.title;
+                 var description = results.attributes.description;
+                 var image_URL = results.attributes.image_URL;
+                 var start_date = "N/A";
+                 var end_date = "N/A";
+                 if (results.attributes.collaborators !== undefined) {
+                     collaborators = results.attributes.collaborators;
                  }
+                 if (results.attributes.locations !== undefined) {
+                     locations = results.attributes.locations;
+                 }
+                 if (results.attributes.keywords !== undefined) {
+                     keywords = results.attributes.keywords;
+                 }
+                 if (results.attributes.start_date !== undefined) {
+                     start_date = results.attributes.start_date;
+                 }
+                 if (results.attributes.end_date !== undefined) {
+                     end_date = results.attributes.end_date;
+                 }
+                 var project = {
+                     objectId: objectId,
+                     title: title,
+                     description: description,
+                     image_URL: image_URL,
+                     collaborators: collaborators,
+                     locations: locations,
+                     keywords: keywords,
+                     start_date: start_date,
+                     end_date: end_date
+                 }
+                 projects.push(project);
+             }).then(function () {
+                 console.log(projects);
                  res.json(projects);
-             },
-             error: function(error) {
+             }, function (error) {
                  console.log(error);
                  res.render('index', {title: error, path: req.path});
-             }
+             });
          });
      });
 

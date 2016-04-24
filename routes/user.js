@@ -716,7 +716,7 @@ module.exports=function(app,Parse) {
             success: function(results) {
                 var projects = [];
                 for (var i in results) {
-                    var authors = ["N/A"];
+                    var collaborators = ["N/A"];
                     var locations = ["N/A"];
                     var keywords = ["N/A"];
                     var objectId = results[i].id;
@@ -725,7 +725,7 @@ module.exports=function(app,Parse) {
                     var image_URL = results[i].get('image_URL');
                     var start_date = "N/A";
                     var end_date = "N/A";
-                    if (results[i].get('authors') !== undefined) { authors = results[i].get('authors'); }
+                    if (results[i].get('collaborators') !== undefined) { collaborators = results[i].get('collaborators'); }
                     if (results[i].get('locations') !== undefined) { locations = results[i].get('locations'); }
                     if (results[i].get('keywords') !== undefined) { keywords = results[i].get('keywords'); }
                     console.log(results[i].get('keywords'));
@@ -736,7 +736,7 @@ module.exports=function(app,Parse) {
                         title: title,
                         description: description,
                         image_URL: image_URL,
-                        authors: authors,
+                        collaborators: collaborators,
                         locations: locations,
                         keywords: keywords,
                         start_date: start_date,
@@ -804,20 +804,23 @@ module.exports=function(app,Parse) {
                 for (var i in results) {
                     var objectId = results[i].id;
                     var title = "Untitled";
+                    var keywords = [];
                     var description = results[i].get('description');
-                    var authors = results[i].get('collaborators');
+                    var collaborators = results[i].get('collaborators');
                     var image_URL = results[i].get('image_URL');
                     var type = "Other";
 
                     if (results[i].get('title')) { title = results[i].get('title'); }
                     if (results[i].get('type')) { type = results[i].get('type'); }
                     if (results[i].get('publication_code')) { publication_code = results[i].get('publication_code'); }
+                    if (results[i].get('keywords') !== undefined) { keywords = results[i].get('keywords'); }
 
                     var datum = {
                         objectId: objectId,
                         title: title,
                         description: description,
-                        authors: authors,
+                        collaborators: collaborators,
+                        keywords: keywords,
                         image_URL: image_URL,
                         type: type
                     }; data.push(datum);
@@ -845,8 +848,9 @@ module.exports=function(app,Parse) {
                     var objectId = results[i].id;
                     var title = "Untitled";
                     var description = results[i].get('abstract');
-                    var authors = results[i].get('collaborators');
+                    var collaborators = results[i].get('collaborators');
                     var image_URL = results[i].get('image_URL');
+                    var keywords = results[i].get('keywords');
                     var type = "Other";
 
                     if (results[i].title) { title = results[i].get('title'); }
@@ -856,9 +860,10 @@ module.exports=function(app,Parse) {
                         objectId: objectId,
                         title: title,
                         description: description,
-                        authors: authors,
+                        collaborators: collaborators,
                         image_URL: image_URL,
-                        type: type
+                        type: type,
+                        keywords: keywords
                     }; models.push(model);
                 }
                 var filtered_models=  _.groupBy(models,'type');

@@ -250,7 +250,7 @@ module.exports=function(app,Parse) {
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
-                    author: result.get('author'),
+                    contributers: result.get('contributers'),
                     description: result.get('description'),
                     filename: result.get('filename'),
                     license: result.get('license'),
@@ -286,7 +286,7 @@ module.exports=function(app,Parse) {
                     hashtags: object.attributes.hashtags,
                     date: object.createdAt,
                     year: object.attributes.year,
-                    author: object.attributes.author,
+                    contributers: object.attributes.contributers,
                     description: object.attributes.description,
                     id: object.id
                 });
@@ -307,7 +307,7 @@ module.exports=function(app,Parse) {
                         hashtags: object.attributes.hashtags,
                         date: object.createdAt,
                         year: object.attributes.year,
-                        author: object.attributes.author,
+                        contributers: object.attributes.contributers,
                         description: object.attributes.description,
                         id: object.id
                     });
@@ -329,7 +329,7 @@ module.exports=function(app,Parse) {
                             hashtags: object.attributes.hashtags,
                             date: object.createdAt,
                             year: object.attributes.year,
-                            author: object.attributes.author,
+                            contributers: object.attributes.contributers,
                             description: object.attributes.description,
                             id: object.id
                         });
@@ -350,7 +350,7 @@ module.exports=function(app,Parse) {
                                 hashtags: object.attributes.hashtags,
                                 date: object.createdAt,
                                 year: object.attributes.year,
-                                author: object.attributes.author,
+                                contributers: object.attributes.contributers,
                                 description: object.attributes.description,
                                 id: object.id
                             });
@@ -371,7 +371,7 @@ module.exports=function(app,Parse) {
                                     hashtags: object.attributes.hashtags,
                                     date: object.createdAt,
                                     year: object.attributes.year,
-                                    author: object.attributes.author,
+                                    contributers: object.attributes.contributers,
                                     description: object.attributes.description,
                                     id: object.id
                                 });
@@ -392,7 +392,7 @@ module.exports=function(app,Parse) {
                                         hashtags: object.attributes.hashtags,
                                         date: object.createdAt,
                                         year: object.attributes.year,
-                                        author: object.attributes.author,
+                                        contributers: object.attributes.contributers,
                                         description: object.attributes.description,
                                         id: object.id
                                     });
@@ -413,7 +413,7 @@ module.exports=function(app,Parse) {
                                             hashtags: object.attributes.hashtags,
                                             date: object.createdAt,
                                             year: object.attributes.year,
-                                            author: object.attributes.author,
+                                            contributers: object.attributes.contributers,
                                             description: object.attributes.description,
                                             id: object.id
                                         });

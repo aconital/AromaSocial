@@ -795,7 +795,6 @@ var Projects = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
-            console.log(item);
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
@@ -807,10 +806,9 @@ var Projects = React.createClass({
                         <div className="item-box-right">
                             <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                             <table className="item-box-right-tags">
-                                <tr><td><b>Authors: </b></td><td>{item.authors.map(function(author) { return <span><a href="#" className="body-link">{author}</a> </span>;})}</td></tr>
-                                <tr><td><b>Locations: </b></td><td>{item.locations.map(function(location) { return <span><a href="#" className="body-link">{location}</a> </span>;})}</td></tr>
+                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                                <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
                                 <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
-                                <tr><td><b>Period: </b></td><td>{item.start_date} -  {item.end_date}</td></tr>
                             </table>
                         </div>
                     </div>
@@ -981,8 +979,9 @@ var Models = React.createClass({
                             <a href={'/model/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                             <span className="font-15">
                             <table className="item-box-table-info">
-                                <tr><td><b>Authors: </b></td><td>{item.authors.map(author => <a href="" className="body-link">{author} </a>)}</td></tr>
-                                <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
+                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                                <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
                             </table>
                             </span>
                         </div>
@@ -1048,8 +1047,9 @@ var Data = React.createClass({
                             <a href={'/data/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                             <span className="font-15">
                             <table className="item-box-table-info">
-                                <tr><td><b>Authors: </b></td><td>{item.authors.map(author => <a href="" className="body-link">{author} </a>)}</td></tr>
-                                <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
+                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                                <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
                             </table>
                             </span>
                         </div>

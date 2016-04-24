@@ -1012,7 +1012,6 @@ var Projects = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
-            console.log(item);
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
@@ -1024,10 +1023,9 @@ var Projects = React.createClass({
                         <div className="item-box-right">
                             <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                             <table className="item-box-right-tags">
-                                <tr><td><b>Authors: </b></td><td>{item.authors.map(function(author) { return <span><a href="#" className="body-link">{author}</a> </span>;})}</td></tr>
-                                <tr><td><b>Locations: </b></td><td>{item.locations.map(function(location) { return <span><a href="#" className="body-link">{location}</a> </span>;})}</td></tr>
+                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;})}</td></tr>
+                                <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
                                 <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
-                                <tr><td><b>Period: </b></td><td>{item.start_date} -  {item.end_date}</td></tr>
                             </table>
                         </div>
                     </div>
@@ -1065,28 +1063,37 @@ var Publications = React.createClass({
     });
   },
   render: function() {
-    return (
-      <div>
-        <div className="item-search-div">
-        <table className="item-search-field" width="100%">
-            <tbody>
-            <tr>
-                <td className="padding-right">
-                    {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        </div>
-        {this.state.data.map(function(publication){
-            return (<Publication objectId={publication.objectId}
-                                 author={publication.author}
-                                 description={publication.description}
-                                 title={publication.title}
-                                 publication_code={publication.publication_code} />);
-        })}
-      </div>
-    );
+      var itemsList = $.map(this.state.data,function(items) {
+          var type = items[0].type;
+          var typeList = [];
+          for (var i in items) {
+              var item = items[i];
+              typeList.push(item);
+          }
+          return (
+              <div>
+                  <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
+                {typeList.map(item =>
+                        <div className="item-box">
+                            <div key={item.id}>
+                                <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                                <span className="font-15">
+                                    <table className="item-box-table-info">
+                                        <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
+                                        <tr><td><b>Publication Code: </b></td><td>{item.publication_code}</td></tr>
+                                    </table>
+                                </span>
+                            </div>
+                        </div>
+                )} <div className="clear"></div>
+              </div>
+          );
+      });
+      return (
+          <div>
+                {itemsList}
+          </div>
+      )
   }
 });
 
@@ -1171,6 +1178,7 @@ var Datum = React.createClass({
     render: function() {
         if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
         else { var title = this.props.title; }
+        console.log(this.props);
         return (
                 <div className="item-box">
                 <div className="item-box-left">
@@ -1180,13 +1188,13 @@ var Datum = React.createClass({
                 </div>
                 <div className="item-box-right">
                     <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                    <b>Authors: </b>
-                        {this.props.collaborators.map(function(item, i){
-                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
-                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
-                        })}
-                    <br/>
-                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                    <span className="font-15">
+                        <table className="item-box-table-info">
+                            <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                            <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
+                            <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                        </table>
+                    </span>
                 </div>
                 {/*
                 <div className="model-box-right">
@@ -1268,19 +1276,13 @@ var Model = React.createClass({
                 </div>
             <div className="item-box-right">
                 <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                <b>Authors: </b>
-                    {
-                        this.props.collaborators.map(function(item, i){
-                            if (i == 0) {
-                                return <a href="#" className="body-link">{item}</a>;
-                            }
-                            else {
-                                return <span>, <a href="#" className="body-link">{item}</a></span>;
-                            }
-                        })
-                    }
-                <br/>
-                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
+                <span className="font-15">
+                    <table className="item-box-table-info">
+                        <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                        <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
+                        <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                    </table>
+                </span>
                 </div>
             </div>
         )

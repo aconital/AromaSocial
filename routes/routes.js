@@ -28,7 +28,7 @@ var mailOptions = {
     to: 'hiradroshandel@yahoo.com', // list of receivers
     subject: 'Syncholar Test Invite', // Subject line
     text: 'Testing nodemailer', // plaintext body
-    html: '<h2>You just got invited! ðŸ?´</h2>' // html body
+    html: '<h2>You just got invited! ï¿½?ï¿½</h2>' // html body
 };
 
 function sendEmail ( _name, _email, _subject, _message) {
@@ -90,6 +90,10 @@ module.exports=function(app,Parse) {
    });
 
     app.post('/signup', function (req, res, next) {
+        if(req.body.code!='Fom2016'){
+            return res.redirect('/');
+        }
+        console.log("is this fireing");
      var user = new Parse.User();
      user.set("username", req.body.username);
      user.set("password", req.body.password);
@@ -171,16 +175,24 @@ app.get('/signout', function (req, res, next) {
 
     if(req.isAuthenticated()) {
         req.session.destroy(function (err) {
-            res.redirect('/'); //Inside a callback… bulletproof!
+            res.redirect('/'); //Inside a callbackï¿½ bulletproof!
         });
     }
     else
         res.redirect('/');
 });
 
-
-
 /*******************************************
+ *
+ * TERMS AND CONDITIONS PAGE
+ *
+ ********************************************/
+
+app.get('/terms', function (req, res, next) {
+    res.render('terms', {title: 'Terms', path: req.path});
+});
+
+    /*******************************************
  *
  * THIRD PARTY OAUTH
  *
