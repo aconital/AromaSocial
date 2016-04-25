@@ -5023,7 +5023,7 @@ html, body {
 
 .container {
   min-height: 100%;
-  height: 100%;
+ /* height: 100%;*/
   margin: 0;
   padding: 0;
   width: 100%; }
@@ -5439,8 +5439,11 @@ input[type="text"]:focus {
   text-align: center; }
 
 .marketing {
-  padding-top: 30px; }
+  padding-top: 0px; }
 
+.marketing h1{
+  vertical-align: text-top;
+}
 .marketing .col-md-4 {
   margin-bottom: 20px;
   text-align: center; }
@@ -5455,6 +5458,11 @@ input[type="text"]:focus {
 .marketing .img-circle {
   background-color: #dedede; }
 
+.marketing .marketing-heading{
+  text-align: center;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
 .search-title {
   padding-top: 60px; }
 
@@ -6399,4 +6407,8 @@ ul.ui-autocomplete.ui-menu { z-index: 4000; }
     content:"";
     display:block;
     clear:both;
+}
+
+.footer-nav {
+  padding-top: 30px;
 }
