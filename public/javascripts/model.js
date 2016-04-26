@@ -7,14 +7,11 @@ var Model = React.createClass ({
      return {
         title: title,
         description: description,
-        feature: feature,
-        other: other,
 
         objectId: objectId,
         image_URL: image_URL,
 
         filename: filename,
-        publicationDate: publication_date,
         license: license,
         keywords: keywords,
 
@@ -33,7 +30,6 @@ var Model = React.createClass ({
                         feature: this.state.feature,
                         other: this.state.other,
                         filename: this.state.filename,
-                        publication_date: this.state.publicationDate,
                         license: this.state.license};
 
         $.ajax({

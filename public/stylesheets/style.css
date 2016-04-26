@@ -2480,7 +2480,7 @@ output {
   display: block;
   width: 100%;
   height: auto;
-  padding: 6px 12px;
+  padding: 6px 6px;
   font-size: 14px;
   line-height: 1;
   color: var(--foreground-color);
@@ -5020,10 +5020,10 @@ button.close {
     display: none !important; } }
 html, body {
   min-height: 100% !important;
-  height: 100%; }
+  height: 100%;
+  background-color: var(--background-color);}
 
 .container {
-  min-height: 100%;
  /* height: 100%;*/
   margin: 0;
   padding: 0;
@@ -5069,7 +5069,7 @@ body {
   color: var(--foreground-color);
   margin: 0;
   padding: 0;
-  background-color: #fdfdfd; }
+  background-color: var(--background-color); }
 
 h1 {
   text-align: center;
@@ -6042,21 +6042,19 @@ color: var(--white-color);
     border-color: var(--foreground-color);
     border-radius:0px;
     color:var(--white-color);
-    width:50%;
+    width:100%;
     }
     .btn-panel:hover {
         background-color: var(--foreground-hover-color);
         border-color: var(--foreground-hover-color);
         border-radius:0px;
         color:var(--white-color);
-        width:50%;
         }
     .btn-panel:focus {
             background-color: var(--foreground-hover-color);
             border-color: var(--foreground-hover-color);
             border-radius:0px;
             color:var(--white-color);
-            width:50%;
             }
 .publication-box {
     float:left;
@@ -6189,7 +6187,7 @@ table.summary tr td {
 
 div.react-tagsinput {
     margin: 10px 0px 10px;
-    padding: 5px 12px 5px;
+    padding: 5px 5px 5px;
 }
 
 .model-box {
@@ -6442,11 +6440,11 @@ hr.style13 {
 hr.style14 {
   border: 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-image: -moz-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-image: -ms-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-image: -o-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-color: white;
+  background-image: -webkit-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-image: -moz-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-image: -ms-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-image: -o-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-color: transparent;
   max-width: 1500px;
 }
 
@@ -6459,6 +6457,6 @@ hr.style15 {
   background-image: -moz-linear-gradient(left, transparent, #8c8b8b, transparent);
   background-image: -ms-linear-gradient(left, transparent, #8c8b8b, transparent);
   background-image: -o-linear-gradient(left, transparent, #8c8b8b, transparent);
-  background-color: white;
+  background-color: transparent;
   max-width: 1500px;
 }
