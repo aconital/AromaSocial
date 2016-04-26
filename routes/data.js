@@ -64,9 +64,7 @@ module.exports=function(app,Parse) {
                         createdAt: result.get('createdAt'),
                         groupies: result.get('groupies'),
                         image_URL: result.get('image_URL'),
-                        aws_path: result.get('path'),
-                        publication: result.get('publication'),
-                        publication_link: result.get('publication_link')
+                        aws_path: result.get('path')
                     });
                 }
                 else {

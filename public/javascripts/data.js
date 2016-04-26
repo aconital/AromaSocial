@@ -14,7 +14,6 @@ var Data = React.createClass ({
         pictureChosen: null,
 
         filename: filename,
-        publicationDate: publication_date,
         license: license,
         keywords: keywords,
 
@@ -28,7 +27,6 @@ var Data = React.createClass ({
         var dataForm = {title: this.state.title,
                         description: this.state.description,
                         filename: this.state.filename,
-                        publication_date: this.state.publicationDate,
                         license: this.state.license};
 
         $.ajax({

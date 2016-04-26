@@ -50,23 +50,27 @@ var CustomTags = React.createClass({
     },
     handleAddition: function(tag) {
         var tags = this.state.tags;
-        tags.push({
-            id: tags.length + 1,
-            text: tag
-        });
-        this.setState({tags: tags});
+        if ($.inArray('specialword', tags) == -1) {
+            console.log("Duplicate tag found. Not adding.");
+        } else {
+            tags.push({
+                id: tags.length + 1,
+                text: tag
+            });
+            this.setState({tags: tags});
 
-        var ids = this.state.ids;
-        ids.push(this.state.idMap[tag]);
-        this.setState({ids: ids});
-        
+            var ids = this.state.ids;
+            ids.push(this.state.idMap[tag]);
+            this.setState({ids: ids});
+            
 
-        console.log("ID MAP ENTRY: ");
-        console.log(this.state.ids);
-        if (this.state.idMap[tag] != null) {
-            // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
-            // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
-            this.props.changeFunc(this.props.name, this.state.ids);
+            console.log("ID MAP ENTRY: ");
+            console.log(this.state.ids);
+            if (this.state.idMap[tag] != null) {
+                // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
+                // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
+                this.props.changeFunc(this.props.name, this.state.ids);
+            }
         }
     },
     handleDrag: function(tag, currPos, newPos) {
