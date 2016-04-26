@@ -19,7 +19,7 @@ var FriendRequest = React.createClass({
         });
     },
     componentDidMount : function(){
-       setInterval( this.loadRequests, 2000);
+       setInterval( this.loadRequests, 5000);
 
     },
     pending_action:function(person,action)
@@ -98,7 +98,7 @@ var Notification = React.createClass({
         });
     },
     componentDidMount : function(){
-        setInterval( this.loadRequests, 2000);
+        setInterval( this.loadRequests, 5000);
 
     },
     render: function() {
