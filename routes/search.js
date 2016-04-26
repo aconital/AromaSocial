@@ -1,6 +1,3 @@
-require("babel-core").transform("code", {
-    presets: ["react"]
-});
 var React = require('react');
 var ReactDOM = require('react-dom/server');
 var components = require('../public/javascripts/searchComponents.js');

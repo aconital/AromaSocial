@@ -18,10 +18,7 @@ var Parse = require('parse/node');
 var React = require('react-dom');
 var ReactDOM = require('react-dom');
 var ReactBootstrap = require('react-bootstrap');
-var ParseReact = require('parse-react');
 var TagsInput = require('react-tagsinput');
-var TextAreaAutoSize = require('react-textarea-autosize');
-var InputAutoSize = require('react-input-autosize');
 var Loading = require('react-loading');
 var exphbs = require('express-handlebars');
 var aws = require('aws-sdk');
@@ -33,7 +30,8 @@ var ReactTags = require('react-tag-input').WithContext;
 
 var app = express();
 
-Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7","TlNU9u9xaEuQkuQMyN3UlCXX5SP87vA7sjwTNOne");
+Parse.initialize("development", "Fomsummer2014");
+Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 
 
 // just to check that s3 is connected. remove when deploying
