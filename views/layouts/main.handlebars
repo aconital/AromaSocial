@@ -92,13 +92,18 @@
         </div>
     </nav>
     {{{body}}}
+</div>
+<div class="container container-footer">
     <footer>
         <div class="container">
+            {{#if user}}
+            <hr class="style14">
+            {{else}}
+            {{/if}}
             <div class="footer-nav">
-                <hr class="style13 style13-footer">
                 <div class="row">
-                    <div class="col-sm-5-left">
-                        <p><font size="1">&copy; 2016 Syncholar.com. All rights reserved.</font> </p>
+                    <div class="col-sm-5" style="margin:auto !important;float:none;text-align:center;padding:10px;">
+                        <p><font size="2">&copy; 2016 Syncholar.com. All rights reserved.</font> </p>
                     </div>
                 </div>
             </div>
