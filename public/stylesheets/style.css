@@ -5440,7 +5440,10 @@ input[type="text"]:focus {
   text-align: center; }
 
 .marketing {
-  padding-top: 0px; }
+  padding-top: 0px;
+  max-width:1200px;
+  margin:auto;
+  background-color:transparent; }
 
 .marketing h1{
   vertical-align: text-top;
@@ -5468,7 +5471,9 @@ input[type="text"]:focus {
   margin-left: 10px; }
 
 .marketing .img-circle {
-  background-color: var(--background-color); }
+   -webkit-filter: invert(1);
+   filter: invert(1);
+  background-color: transparent; }
 
 .marketing .marketing-heading{
   text-align: center;
@@ -6429,13 +6434,18 @@ hr.style13 {
   height: 10px;
   border: 0;
   box-shadow: 0 10px 10px -10px #8c8b8b inset;
+} .style13-footer {
+    margin: 0px;
+    background-color:transparent;
 }
 
 hr.style14 {
   border: 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
-  background-image: -moz-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
-  background-image: -ms-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
-  background-image: -o-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-image: -webkit-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
+  background-image: -moz-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
+  background-image: -ms-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
+  background-image: -o-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
+  background-color: white;
+  max-width: 1500px;
 }
