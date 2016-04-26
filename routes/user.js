@@ -347,46 +347,28 @@ module.exports=function(app,Parse) {
         }
     });
 
-    // app.post('/profile/:username/updateSummary', is_auth, function(req,res,next){
-    //     var currentUser = req.user;
-    //     var linkUser = req.params.username;
-    //     if(currentUser.username == linkUser) {
-    //         var query = new Parse.Query(Parse.User);
-    //         query.get(currentUser.id).then(
-    //             function (result) {
-    //                 if (result != undefined) {
-    //                     console.log(result)
-    //                     result.set("summary", req.body.summary);
-    //                     result.save(null, { useMasterKey: true });
-    //                     res.status(200).json({status: "Info Uploaded Successfully!"});
-    //                 }
-    //             }
-    //         );
-    //     }
-    // });
-
     app.post('/profile/:username/updateSummary', is_auth, function(req,res,next){
         var currentUser = req.user;
         var linkUser = req.params.username;
         if(currentUser.username == linkUser) {
             var query = new Parse.Query(Parse.User);
-            query.equalTo('objectId', currentUser.id);
-            query.first().then(function(result){
-                console.log(currentUser);
-                currentUser.set('summary', req.body.summary);
-                currentUser.save(null, { useMasterKey: true });
-                res.status(200).json({status: "Info Uploaded Successfully!"});
-            });
-            // query.get(currentUser.id).then(
-            //     function (result) {
-            //         if (result != undefined) {
-            //             console.log(result)
-            //             result.set("summary", req.body.summary);
-            //             result.save(null, { useMasterKey: true });
-            //             res.status(200).json({status: "Info Uploaded Successfully!"});
-            //         }
-            //     }
-            // );
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        result.set("summary", req.body.summary);
+                        result.save(null, { useMasterKey: true }).then(
+                            function(){
+                                //console.log("SAVE SUCCESS");
+                                res.status(200).json({status: "Info Uploaded Successfully!"});
+                            },
+                            function(error){
+                                console.log(error);
+                                res.status(500).json({status: "Error uploading summary"})
+                            }
+                        );
+                    }
+                }
+            );
         }
     });
 

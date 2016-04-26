@@ -60,15 +60,16 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query("Model");
         query.get(req.params.objectId,{
             success: function(result) {
-                result.set("title", req.body.title);
-                result.set("abstract", req.body.description);
-                result.set("feature", req.body.feature);
-                result.set("other", req.body.other);
-                result.set("filename", req.body.filename);
-                result.set("license", req.body.license);
-                result.set("publication_date", req.body.publication_date);
-                result.set("keywords",JSON.parse(req.body.keywords));
-                result.save();
+                if (req.body.title) {
+                    result.set("title", req.body.title);
+                    result.set("abstract", req.body.description);
+                    result.set("feature", req.body.feature);
+                    result.set("other", req.body.other);
+                    result.set("filename", req.body.filename);
+                    result.set("license", req.body.license);
+                    result.set("publication_date", req.body.publication_date);
+                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
+                    result.save();
             }
         });
     });
