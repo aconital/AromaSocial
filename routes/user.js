@@ -810,6 +810,10 @@ module.exports=function(app,Parse) {
                     var image_URL = results[i].get('image_URL');
                     var type = "Other";
 
+                    var license = results[i].get('license');
+                    var creationDate = results[i].get('createdAt');
+                    var url = results[i].get('url');
+
                     if (results[i].get('title')) { title = results[i].get('title'); }
                     if (results[i].get('type')) { type = results[i].get('type'); }
                     if (results[i].get('publication_code')) { publication_code = results[i].get('publication_code'); }
@@ -822,7 +826,10 @@ module.exports=function(app,Parse) {
                         collaborators: collaborators,
                         keywords: keywords,
                         image_URL: image_URL,
-                        type: type
+                        type: type,
+                        start_date: creationDate,
+                        license: license,
+                        url: url
                     }; data.push(datum);
                 }
                 var filtered_data=  _.groupBy(data,'type');
@@ -853,6 +860,10 @@ module.exports=function(app,Parse) {
                     var keywords = results[i].get('keywords');
                     var type = "Other";
 
+                    var creationDate = results[i].get('createdAt');
+                    var license = results[i].get('license');
+                    var url = results[i].get('url');
+
                     if (results[i].title) { title = results[i].get('title'); }
                     if (results[i].type) { type = results[i].get('type'); }
 
@@ -863,7 +874,10 @@ module.exports=function(app,Parse) {
                         collaborators: collaborators,
                         image_URL: image_URL,
                         type: type,
-                        keywords: keywords
+                        keywords: keywords,
+                        start_date: creationDate,
+                        license: license,
+                        url: url
                     }; models.push(model);
                 }
                 var filtered_models=  _.groupBy(models,'type');
