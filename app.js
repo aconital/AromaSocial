@@ -30,7 +30,7 @@ var ReactTags = require('react-tag-input').WithContext;
 
 var app = express();
 
-Parse.initialize("development", "Fomsummer2014");
+Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
 Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 
 // just to check that s3 is connected. remove when deploying
