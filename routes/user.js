@@ -356,8 +356,16 @@ module.exports=function(app,Parse) {
                 function (result) {
                     if (result != undefined) {
                         result.set("summary", req.body.summary);
-                        result.save(null, { useMasterKey: true });
-                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                        result.save(null, { useMasterKey: true }).then(
+                            function(){
+                                //console.log("SAVE SUCCESS");
+                                res.status(200).json({status: "Info Uploaded Successfully!"});
+                            },
+                            function(error){
+                                console.log(error);
+                                res.status(500).json({status: "Error uploading summary"})
+                            }
+                        );
                     }
                 }
             );
