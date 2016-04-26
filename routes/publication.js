@@ -29,24 +29,150 @@ var encodeHtmlEntity = function(str) {
 
 module.exports=function(app,Parse) {
 
+    // app.get('/allpublications', function(req, res, next) {
+    //     var currentUser = req.user;
+    //     var query = new Parse.Query('Publication');
+    //     query.find({
+    //         success: function(items) {
+    //             var results = [];
+    //             for (var i = 0; i < items.length; i++) {
+    //                 var obj = items[i];
+    //                 results.push(obj);
+    //             }
+    //             console.log("RESULTS ARE: ");
+    //             console.log(results);
+    //             res.send(results);
+    //         },
+    //         error: function(error) {
+    //             console.log("Error while getting all publications");
+    //         }
+    //     });
+    // });
+
+    
     app.get('/allpublications', function(req, res, next) {
         var currentUser = req.user;
-        var query = new Parse.Query('Publication');
+        var results = [];
+
+        var query = new Parse.Query('Pub_Book');
         query.find({
             success: function(items) {
-                var results = [];
+                //var results = [];
                 for (var i = 0; i < items.length; i++) {
                     var obj = items[i];
                     results.push(obj);
                 }
                 console.log("RESULTS ARE: ");
                 console.log(results);
-                res.send(results);
+                //res.send(results);
             },
             error: function(error) {
                 console.log("Error while getting all publications");
             }
-        });
+        }).then(function() {
+            var query = new Parse.Query('Pub_Conference');
+            query.find({
+                success: function(items) {
+                    //var results = [];
+                    for (var i = 0; i < items.length; i++) {
+                        var obj = items[i];
+                        results.push(obj);
+                    }
+                    console.log("RESULTS ARE: ");
+                    console.log(results);
+                    //res.send(results);
+                },
+                error: function(error) {
+                    console.log("Error while getting all publications");
+                }
+            }).then(function() {
+                var query = new Parse.Query('Pub_Journal_Article');
+                query.find({
+                    success: function(items) {
+                        //var results = [];
+                        for (var i = 0; i < items.length; i++) {
+                            var obj = items[i];
+                            results.push(obj);
+                        }
+                        console.log("RESULTS ARE: ");
+                        console.log(results);
+                        //res.send(results);
+                    },
+                    error: function(error) {
+                        console.log("Error while getting all publications");
+                    }
+                }).then(function() {
+                    var query = new Parse.Query('Pub_Patent');
+                    query.find({
+                        success: function(items) {
+                            //var results = [];
+                            for (var i = 0; i < items.length; i++) {
+                                var obj = items[i];
+                                results.push(obj);
+                            }
+                            console.log("RESULTS ARE: ");
+                            console.log(results);
+                            //res.send(results);
+                        },
+                        error: function(error) {
+                            console.log("Error while getting all publications");
+                        }
+                    }).then(function() {
+                        var query = new Parse.Query('Pub_Report');
+                        query.find({
+                            success: function(items) {
+                                //var results = [];
+                                for (var i = 0; i < items.length; i++) {
+                                    var obj = items[i];
+                                    results.push(obj);
+                                }
+                                console.log("RESULTS ARE: ");
+                                console.log(results);
+                                //res.send(results);
+                            },
+                            error: function(error) {
+                                console.log("Error while getting all publications");
+                            }
+                        }).then(function(){             
+                            var query = new Parse.Query('Pub_Thesis');
+                            query.find({
+                                success: function(items) {
+                                    //var results = [];
+                                    for (var i = 0; i < items.length; i++) {
+                                        var obj = items[i];
+                                        results.push(obj);
+                                    }
+                                    console.log("RESULTS ARE: ");
+                                    console.log(results);
+                                    //res.send(results);
+                                },
+                                error: function(error) {
+                                    console.log("Error while getting all publications");
+                                }
+                            }).then(function() {
+                                var query = new Parse.Query('Pub_Unpublished');
+                                query.find({
+                                    success: function(items) {
+                                        //var results = [];
+                                        for (var i = 0; i < items.length; i++) {
+                                            var obj = items[i];
+                                            results.push(obj);
+                                        }
+                                        console.log("RESULTS ARE: ");
+                                        console.log(results);
+                                        res.send(results);
+                                    },
+                                    error: function(error) {
+                                        console.log("Error while getting all publications");
+                                    }
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+        //res.send(results);
     });
 
 
@@ -528,6 +654,7 @@ module.exports=function(app,Parse) {
                 	pub.set('isbn', reqBody.book_isbn);
                 	pub.set('edition', reqBody.book_edition);
                 	pub.set('page', reqBody.book_pages);
+                    pub.set('type', "book");
 					break;
 				case "Pub_Chapter":
                 	pub.set('publisher', reqBody.book_publisher);
@@ -535,26 +662,31 @@ module.exports=function(app,Parse) {
                 	pub.set('edition', reqBody.book_edition);
                 	pub.set('page', reqBody.book_pages);
 				 	pub.set('chapter', reqBody.book_chapter);
+                    pub.set('type', "chapter");
 					break;
 				case "Pub_Conference":
                     pub.set('conference', reqBody.conf);
                     pub.set('volume', reqBody.conf_volume);
                     pub.set('location', reqBody.conf_location);
+                    pub.set('type', "conference");
 					break;
 				case "Pub_Journal_Article":
                     pub.set('journal', reqBody.journal);
                     pub.set('volume', reqBody.journal_volume);
                     pub.set('issue', reqBody.journal_issue);
                     pub.set('page', reqBody.journal_pages);
+                    pub.set('type', "journal");
 					break;
 				case "Pub_Patent":
                 	pub.set('reference_number', reqBody.patent_refNum);
                 	pub.set('location', reqBody.patent_location);
+                    pub.set('type', "patent");
 					break;
 				case "Pub_Report":
                 	pub.set('publisher', reqBody.report_publisher);
                 	pub.set('number', reqBody.report_number);
                 	pub.set('location', reqBody.report_location);
+                    pub.set('type', "report");
 					break;
 				case "Pub_Thesis":
                 	pub.set('university', reqBody.thesis_university);
@@ -562,9 +694,11 @@ module.exports=function(app,Parse) {
                 	pub.set('degree', reqBody.thesis_degree);
                 	pub.set('department', reqBody.thesis_depart);
                 	pub.set('page', reqBody.thesis_pages);
+                    pub.set('type', "thesis");
 					break;
 				case "Pub_Unpublished":
                 	pub.set('location', reqBody.unpub_location);
+                    pub.set('type', "unpublished");
 					break;
 				default:
 					console.log("Warning: pub type not identified", reqBody.type);
