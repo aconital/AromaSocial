@@ -1,54 +1,67 @@
 <!-- views/home.handlebars -->
 <div class="jumbotron jumbo-index">
-    <div class="container" style="background-color:transparent";>
-        <p><font color="black"><font size="5"> <b>Syncholar Synchronizes Scholars </b> </font></font> </p> <a href="/signup" role="button" class="btn btn-default btn-lg">Sign Up</a>
+    <canvas id="canvas" style="width:100%; height: 1000px;z-index:5;"></canvas>
+    <div class="container" style="background-color:transparent;z-index:15;position:absolute;top:100px;">
+        <p><font color="white" size="20">Syncholar Synchronizes Scholars </font></p><a href="/signup" role="button" class="btn btn-default btn-lg">Sign Up, It's Free!</a>
     </div>
 </div>
-<div class="container marketing">
+<div style="background-color: #F2F2F2;">
+<div class="container marketing" style="z-index:15;">
     <div class="marketing-heading"><font size="6">For Reseach Labs and Networks</font> </div>
     <div class="row">
-        <div class="col-md-4"><img src="/images/testtube.png" alt="Generic placeholder image" width="140" height="140" class="img-circle"/>
-            <h2>Heading</h2>
+        <div class="col-md-3"><img src="/images/Profile.png" alt="Generic placeholder image" width="140" height="140" />
+            <h2>Create profile</h2>
             <p>
-                Create a profile for your research lab or network, just like you do.
+                Just like you created that research website which is hard to keep updated. <b>But it's way easier on Syncholar!</b>
             </p>
            {{! <p><a href="#" role="button" class="btn btn-default">View Details &raquo;</a></p> }}
         </div>
-        <div class="col-md-4"><img src="/images/userbig.png" alt="Generic placeholder image" width="140" height="140" class="img-circle"/>
-            <h2>Heading</h2>
+        <div class="col-md-3"><img src="/images/squad-512.png" alt="Generic placeholder image" width="140" height="140"/>
+            <h2>Connect members</h2>
             <p>
-                Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac.
+                Invite your members to connect to your page. Great way to spur collaboration! <b>But way more than that!</b>
             </p>
           {{!  <p><a href="#" role="button" class="btn btn-default">View Details &raquo;</a></p> }}
         </div>
-        <div class="col-md-4"><img src="/images/paper.png" alt="Generic placeholder image" width="140" height="140" class="img-circle"/>
-            <h2>Heading</h2>
+        <div class="col-md-3"><img src="/images/search_file-256.png" alt="Generic placeholder image" width="140" height="140" />
+            <h2>Track output</h2>
             <p>
-                Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac.
+                Showcase your research impact by all the work your members carry out. <br> <b> But way beyond just publications!</b></br>
             </p>
           {{!  <p><a href="#" role="button" class="btn btn-default">View Details &raquo;</a></p> }}
+        </div>
+        <div class="col-md-3"><img src="/images/file_sharing-512.png" alt="Generic placeholder image" width="140" height="140" />
+            <h2>Stay up-to-date</h2>
+            <p>
+                No more begging members to update you. Your profile literally updates itself! <b>But way more streamlined!</b>
+            </p>
+            {{!  <p><a href="#" role="button" class="btn btn-default">View Details &raquo;</a></p> }}
         </div>
     </div>
 </div>
+
+<hr class="style14">
+
 <div class="container marketing">
-    <h1>For Reseachers</h1>
+    <div class="marketing-heading"><font size="6">Reseachers</font> </div>
     <div class="row">
         <div class="col-md-4"><img src="/images/testtube.png" alt="Generic placeholder image" width="140" height="140" class="img-circle"/>
-            <h2>Heading</h2>
+            <h2>Full research profile</h2>
             <p>
                 ROAR sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac.
             </p>
            {{!  <p><a href="#" role="button" class="btn btn-default">View Details &raquo;</a></p> }}
         </div>
         <div class="col-md-4"><img src="/images/userbig.png" alt="Generic placeholder image" width="140" height="140" class="img-circle"/>
-            <h2>Heading</h2>
+            <h2>Share knowledge</h2>
             <p>
-                Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac.
+                Yes! Open-access or just peer-to-peer, we've got a whole range of
+                sharing and privacy setting covered!.
             </p>
            {{! <p><a href="#" role="button" class="btn btn-default">View Details &raquo;</a></p> }}
         </div>
         <div class="col-md-4"><img src="/images/paper.png" alt="Generic placeholder image" width="140" height="140" class="img-circle"/>
-            <h2>Heading</h2>
+            <h2></h2>
             <p>
                 Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac.
             </p>
@@ -56,3 +69,22 @@
         </div>
     </div>
 </div>
+</div>
+
+<hr class="style13 style13-footer">
+
+<script type="text/javascript">
+var winH = window.innerHeight,
+    winW = window.innerWidth;
+
+var pattern = Trianglify({
+  height: winH,
+  width: winW,
+  cell_size: 80,
+  y_colors: ['#e0e0e0', '#292929','#e0e0e0'],
+  x_colors: ['#333333','#e0e0e0','#292929'],
+  stroke_width: 0
+});
+
+pattern.canvas(document.getElementById('canvas'));
+</script>

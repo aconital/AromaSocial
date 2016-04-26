@@ -1,4 +1,5 @@
-Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+Parse.initialize("development", "Fomsummer2014");
+Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
@@ -148,7 +149,7 @@ var Organization = React.createClass ({
 									</div>
                                 </a>
                             </div>
-                            <div id="item-bottom-2-organization" className="item-bottom-2-organization">
+                            <div id="item-bottom-2-organization" className="item-bottom-2">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                                 <OrganizationMenu tabs={['About', 'Networks', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />

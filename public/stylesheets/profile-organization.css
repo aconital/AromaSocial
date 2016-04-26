@@ -45,6 +45,7 @@
 
 .edit-overlay-div {
     position:relative;
+    z-index:10 !important;
 } .edit-overlay-div-half {
     position:relative;
     width:50%
@@ -79,8 +80,11 @@
     opacity: 0.8;
 }
 
-.div-minus{position:absolute; right:5px; top:-5px; }
-.div-minus-expertise{position:absolute; right:5px; top:5px; }
+.display-inline-block { display: inline-block; width: 97%; }
+.div-minus{position:absolute; right:5px; top:-5px; display: inline-block; }
+.div-minus-expertise{position:absolute; right:5px; top:5px; display: inline-block; }
+.div-minus-interests{ display: inline-block; width: 3%; text-align:right; height: 31px; padding-top: 5px; overflow:hidden; vertical-align: bottom; }
+.about-item-hr + .about-item-hr { border-top: 1px; border-top: solid 1px; border-color: var(--background-color); padding-top: 5px; margin-top: 5px; }
 
 #resume-education a {
   color: var(--contrast-free-color);
@@ -219,6 +223,7 @@
 
 
 .h1-title { padding-top: 25px !important; }
+.h1-title-solo { padding-top: 25px !important; padding-bottom: 25px !important; }
 .h3-title { padding-bottom: 25px !important; }
 .interact-buttons-wrap {
     position:absolute;
