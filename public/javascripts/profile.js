@@ -440,6 +440,7 @@ var About = React.createClass({
         };
     },
     submitSummary: function() {
+        console.log("SUBMITTING SUMMARY!!!");
         var dataForm = {summary: this.state.summary};
         $.ajax({
             url: path + "/updateSummary",
@@ -542,6 +543,7 @@ var About = React.createClass({
         this.setState({interests: interestsTemp}, function(){ this.submitInterests() }.bind(this));
     },
     handleChange: function(e) {
+        console.log("THIS IS SPARTAAAAAAAAAAAA!");
         this.setState({[e.target.name]:e.target.value});
     },
     handleArrayChange: function(index) {
