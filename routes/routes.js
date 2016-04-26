@@ -241,6 +241,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                     //user with this linkedin ID exists
                     if(user)
                     {   //login the user
+
                         req.login(user.attributes.username, function(err){
                             if(err) res.redirect('/');
                             res.redirect('/');

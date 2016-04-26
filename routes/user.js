@@ -46,6 +46,7 @@ module.exports=function(app,Parse) {
         console.log("LINK USER IS ====>>")
         console.log(req.params)
         if(currentUser.username == linkUser) {
+            console.log(req.path);
             var obj={
                 title: 'Profile',
                 path: req.path,
@@ -143,8 +144,11 @@ module.exports=function(app,Parse) {
         query.include('userId1');
         query.find({
             success: function(result) {
+
+
                 var people =[];
                 for(var uo in result) {
+
                     var title= result[uo].attributes.title;
                     var verified= result[uo].attributes.verified;
                     var user= result[uo].attributes.userId1.attributes;
@@ -154,6 +158,7 @@ module.exports=function(app,Parse) {
                     var work_title= "N/A";
                     var userImgUrl= "/images/user.png";
                     var workExperience= [];
+
                     if(user.hasOwnProperty('fullname')){
                         fullname=user.fullname;
                     }
@@ -162,9 +167,11 @@ module.exports=function(app,Parse) {
                     }
                     //getting first work experience, since there is no date on these objects
                     if(user.hasOwnProperty('workExperience')){
-                        var workExperience= user.workExperience[0];
-                        company= workExperience.company;
-                        work_title= workExperience.title;
+                        if(user.workExperience.length >0) {
+                            var workExperience = user.workExperience[0];
+                            company = workExperience.company;
+                            work_title = workExperience.title;
+                        }
                     }
                     //only show people who are verified by admin
                     if(verified) {
@@ -180,6 +187,7 @@ module.exports=function(app,Parse) {
                     }
                 }
                 var filtered_people=  _.groupBy(people,'title');
+
                 res.json(filtered_people);
             },
             error: function(error) {
@@ -580,9 +588,11 @@ module.exports=function(app,Parse) {
                         }
                         //getting first work experience, since there is no date on these objects
                         if(user.hasOwnProperty('workExperience')){
-                            var workExperience= user.workExperience[0];
-                            company= workExperience.company;
-                            work_title= workExperience.title;
+                            if(user.workExperience.length>0) {
+                                var workExperience = user.workExperience[0];
+                                company = workExperience.company;
+                                work_title = workExperience.title;
+                            }
                         }
 
                         //only show people who are verified by admin

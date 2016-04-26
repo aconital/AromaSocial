@@ -1,5 +1,5 @@
 Parse.initialize("development", "Fomsummer2014");
-Parse.serverURL = 'http://http://52.33.206.191/:1337/parse';
+Parse.serverURL = 'http://52.33.206.191:1337/parse';
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
@@ -839,10 +839,7 @@ var Projects = React.createClass({
     }
 });
 
-var creator = ParseReact.Mutation.Create('Organization', {
-   name: 'DDD'
-});
-creator.dispatch({waitForServer: 'false'});
+
 
 var Publications = React.createClass({
     getInitialState: function() {
