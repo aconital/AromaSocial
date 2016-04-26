@@ -45,6 +45,7 @@
 
 .edit-overlay-div {
     position:relative;
+    z-index:100000 !important;
 } .edit-overlay-div-half {
     position:relative;
     width:50%

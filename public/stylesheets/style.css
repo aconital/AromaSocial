@@ -3504,9 +3504,10 @@ a.badge:hover, a.badge:focus {
   cursor: pointer; }
 
 .jumbotron {
-  padding-top: 30px;
-  padding-bottom: 30px;
-  margin-bottom: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding: 0px !important;
+  margin-bottom: 0px;
   color: inherit;
   background-color: #eeeeee; }
   .jumbotron h1,
@@ -3524,11 +3525,11 @@ a.badge:hover, a.badge:focus {
     max-width: 100%; }
   @media screen and (min-width: 1200px) {
     .jumbotron {
-      padding-top: 48px;
-      padding-bottom: 48px; }
+      padding-top: 0px;
+      padding-bottom: 0px; }
       .container .jumbotron, .container-fluid .jumbotron {
-        padding-left: 60px;
-        padding-right: 60px; }
+        padding-left: 0px !important;
+        padding-right: 0px !important; }
       .jumbotron h1,
       .jumbotron .h1 {
         font-size: 63px; } }
@@ -5420,18 +5421,18 @@ input[type="text"]:focus {
   color: white !important; }
 
 .jumbotron {
-  height: 600px !important; }
+  height: 600px !important;
+  overflow: hidden;}
 
 @media (max-width: 992px) {
   .jumbo-index {
     border-radius: 0px !important;
-    background-image: url("/images/background.jpg");
+    padding: 0px;
     background-size: Auto 600px;
     background-repeat: no-repeat; } }
 @media (min-width: 993px) {
   .jumbo-index {
     border-radius: 0px !important;
-    background-image: url("/images/background.jpg");
     background-size: 100%;
     background-repeat: no-repeat; } }
 .jumbo-index .container {
@@ -5456,7 +5457,7 @@ input[type="text"]:focus {
   margin-left: 10px; }
 
 .marketing .img-circle {
-  background-color: #dedede; }
+  background-color: var(--background-color); }
 
 .marketing .marketing-heading{
   text-align: center;

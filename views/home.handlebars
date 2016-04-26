@@ -1,10 +1,11 @@
 <!-- views/home.handlebars -->
 <div class="jumbotron jumbo-index">
-    <div class="container" style="background-color:transparent";>
-        <p><font color="black"><font size="5"> <b>Syncholar Synchronizes Scholars </b> </font></font> </p> <a href="/signup" role="button" class="btn btn-default btn-lg">Sign Up</a>
+    <canvas id="canvas" style="width:100%; height: 1000px;z-index:5;"></canvas>
+    <div class="container" style="background-color:transparent;z-index:15;position:absolute;top:120px;">
+        <p><font color="white" size="20">Syncholar Synchronizes Scholars </font></p>
     </div>
 </div>
-<div class="container marketing">
+<div class="container marketing" style="z-index:15;">
     <div class="marketing-heading"><font size="6">For Reseach Labs and Networks</font> </div>
     <div class="row">
         <div class="col-md-4"><img src="/images/testtube.png" alt="Generic placeholder image" width="140" height="140" class="img-circle"/>
@@ -56,3 +57,19 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+var winH = window.innerHeight,
+    winW = window.innerWidth;
+
+var pattern = Trianglify({
+  height: winH,
+  width: winW,
+  cell_size: 80,
+  y_colors: ['#e0e0e0', '#292929','#e0e0e0'],
+  x_colors: ['#333333','#e0e0e0','#292929'],
+  stroke_width: 0
+});
+
+pattern.canvas(document.getElementById('canvas'));
+</script>
