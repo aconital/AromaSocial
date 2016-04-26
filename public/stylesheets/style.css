@@ -2480,7 +2480,7 @@ output {
   display: block;
   width: 100%;
   height: auto;
-  padding: 6px 12px;
+  padding: 6px 6px;
   font-size: 14px;
   line-height: 1;
   color: var(--foreground-color);
@@ -6042,21 +6042,19 @@ color: var(--white-color);
     border-color: var(--foreground-color);
     border-radius:0px;
     color:var(--white-color);
-    width:50%;
+    width:100%;
     }
     .btn-panel:hover {
         background-color: var(--foreground-hover-color);
         border-color: var(--foreground-hover-color);
         border-radius:0px;
         color:var(--white-color);
-        width:50%;
         }
     .btn-panel:focus {
             background-color: var(--foreground-hover-color);
             border-color: var(--foreground-hover-color);
             border-radius:0px;
             color:var(--white-color);
-            width:50%;
             }
 .publication-box {
     float:left;
@@ -6189,7 +6187,7 @@ table.summary tr td {
 
 div.react-tagsinput {
     margin: 10px 0px 10px;
-    padding: 5px 12px 5px;
+    padding: 5px 5px 5px;
 }
 
 .model-box {

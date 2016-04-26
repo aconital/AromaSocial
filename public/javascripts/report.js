@@ -1,4 +1,4 @@
-Parse.initialize("development", "Fomsummer2014");
+Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
 Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 var Grid =  ReactBootstrap.Grid, Row =  ReactBootstrap.Row, Col =  ReactBootstrap.Col;
 var ButtonInput = ReactBootstrap.ButtonInput, Input = ReactBootstrap.Input;

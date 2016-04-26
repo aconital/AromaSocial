@@ -81,7 +81,7 @@
 }
 
 .display-inline-block { display: inline-block; width: 97%; }
-.div-minus{position:absolute; right:5px; top:-5px; display: inline-block; }
+.div-minus{ display: inline-block; width: 3%; text-align:right; height: 31px; overflow:hidden; vertical-align: bottom; z-index:5; right:0px;}
 .div-minus-expertise{position:absolute; right:5px; top:5px; display: inline-block; }
 .div-minus-interests{ display: inline-block; width: 3%; text-align:right; height: 31px; padding-top: 5px; overflow:hidden; vertical-align: bottom; }
 .about-item-hr + .about-item-hr { border-top: 1px; border-top: solid 1px; border-color: var(--background-color); padding-top: 5px; margin-top: 5px; }
@@ -231,8 +231,9 @@
     border: solid;
     border-color: var(--foreground-color);
     box-shadow: 0px 2px 10px #888888;
-    top: 25px; right: 0px;
-    width: 200px; }
+    top: 25px; right: 2.25%;
+    width: 100px; }
+.h4-resume-item{width:97%;margin:0px;padding:0px;}
 
 .item-box-table-info { width: 100%; overflow: hidden; }
 .item-box-table-info tr { width: 100%; overflow: hidden; }

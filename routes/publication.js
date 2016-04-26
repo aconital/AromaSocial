@@ -58,26 +58,85 @@ module.exports=function(app,Parse) {
     app.get('/publication', function (req, res, next) {
         res.render('publication', {layout: 'home', title: 'Publication', path: req.path});
     });
+
+    app.get('/publication/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var query = new Parse.Query(req.query.type);
+        console.log(req.query,'\n\n');
+
+        query.equalTo("objectId", req.params.objectId);
+        query.find({
+            success: function(result) {
+                var pubObject = JSON.parse(JSON.stringify(result[0]));
+                var userEnv = {updatePath: req.path,
+                    // currentUserId: currentUser.id,
+                    // currentUsername: currentUser.username,
+                    // currentUserImg: currentUser.imgUrl,
+                    // objectId: req.params.objectId,
+                    // type: 'Pub_fdgdfgfBook',
+                    publication_date: pubObject.publication_date.iso.slice(0,10),
+                    user: pubObject.user.objectId}; //creatorId
+
+                // merge the Parse object and fields for current user
+                var rendered = _.extend(pubObject, userEnv);
+                console.log("us", pubObject);
+
+                res.status(200).json({status:"OK", query: pubObject});
+            },
+            error: function(error) {
+                res.render('index', {title: 'Please Login!', path: req.path});
+            }
+        });
+    });
+
     app.get('/publication/book/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Book');
+        var objs = [];
+
+        // query.include('user');
+        // query.equalTo("objectId", req.params.objectId);
+        // query.find({
         query.get(req.params.objectId,{
             success: function(result) {
+                // console.log('this is tresult\n', JSON.stringify(result,null,4));
+                // // console.log('this is result to json\n', Object.keys(result.toJSON()));
+                // var pubObject = JSON.parse(JSON.stringify(result[0]));
+                // console.log(pubObject.attributes);
+                // console.log("\nthis is just user\n",JSON.parse(JSON.stringify(result[0])).user.objectId);
+                // var userEnv = {path: req.path,
+                //     currentUserId: currentUser.id,
+                //     currentUsername: currentUser.username,
+                //     currentUserImg: currentUser.imgUrl,
+                //     objectId: req.params.objectId,
+                //     type: 'Pub_Book',
+                //     user: pubObject.user.objectId}; //creatorId
+
+                // // merge the Parse object and fields for current user
+                // var rendered = _.extend(pubObject, userEnv);
+                // console.log("us", rendered);
+
+                // res.render('publication', userEnv);
+                console.log(result.get("user"), JSON.stringify(result.get("user"))); //todo parse creatorid
+
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
-                    creatorId: result.get("user").id,
+                    creatorId: JSON.parse(JSON.stringify(result.get("user"))).objectId,
                     objectId: req.params.objectId,
                     title: result.get('title'),
-                    author: JSON.stringify(result.get('collaborator')),
-                    description: result.get('description'),
+                    contributors: JSON.stringify(result.get('contributors')),
+                    author: result.get('author'),
+                    abstract: result.get('abstract'),
                     filename: result.get('filename'),
-                    license: result.get('license'),
-                    keywords: JSON.stringify(result.get('keywords')),
-                    publication_link: result.get('publication_link'),
-                    groupies: result.get('groupies'),
-                    publication_date: result.get('year'),
+                    keywords: result.get('keywords'),
+                    url: result.get('url'),
+                    title: result.get('title'),
+                    doi: result.get('doi'),
+                    type: 'Pub_Book',
+                    publication_keys: JSON.stringify(result[0]),
+                    publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -101,12 +160,13 @@ module.exports=function(app,Parse) {
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
-                    description: result.get('description'),
+                    description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
+                    type: 'Pub_Conference',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -131,12 +191,13 @@ module.exports=function(app,Parse) {
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
-                    description: result.get('description'),
+                    description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
+                    type: 'Pub_Journal_Article',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -161,12 +222,13 @@ module.exports=function(app,Parse) {
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
-                    description: result.get('description'),
+                    description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
+                    type: 'Pub_Patent',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -191,12 +253,13 @@ module.exports=function(app,Parse) {
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     collaborators: JSON.stringify(result.get('collaborators')),
-                    description: result.get('description'),
+                    description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
+                    type: 'Pub_Report',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -221,12 +284,13 @@ module.exports=function(app,Parse) {
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
-                    description: result.get('description'),
+                    description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
+                    type: 'Pub_Thesis',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -251,12 +315,13 @@ module.exports=function(app,Parse) {
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     contributers: result.get('contributers'),
-                    description: result.get('description'),
+                    description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
+                    type: 'Pub_Unpublished',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),

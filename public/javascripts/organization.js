@@ -1,4 +1,4 @@
-Parse.initialize("development", "Fomsummer2014");
+Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
 Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
@@ -175,7 +175,6 @@ var Organization = React.createClass ({
                         <div id="item-bottom-2-organization" className="item-bottom-2">
                             <div className="interact-buttons-wrap">
                                 {joinButton}
-                                <button className="btn btn-panel" value="Follow">Follow</button>
                             </div>
                             <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                             <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
