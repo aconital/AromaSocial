@@ -33,7 +33,6 @@ var app = express();
 Parse.initialize("development", "Fomsummer2014");
 Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 
-
 // just to check that s3 is connected. remove when deploying
 s3.listBuckets(function(err, data) {
   if (err) { console.log("Error:", err); }

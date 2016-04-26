@@ -126,7 +126,7 @@
 }
 
 .img-circle {
-  background-color: var(--background-color);
+  background-color: var(--foreground-color);
   border: solid;
   border-color: var(--contrast-free-color);
   border-width: 1px;

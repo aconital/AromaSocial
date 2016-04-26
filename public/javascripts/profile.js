@@ -336,7 +336,6 @@ var Connections = React.createClass({
         });
     },
     render: function() {
-
         var peopleList = $.map(this.state.data,function(objects) {
             var role= objects[0].title;
             var plist=[];
