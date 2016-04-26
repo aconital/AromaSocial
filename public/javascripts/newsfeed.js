@@ -1,4 +1,5 @@
-Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+Parse.initialize("development", "Fomsummer2014");
+Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 
 var NewsFeed = React.createClass({
   mixins: [ParseReact.Mixin],
