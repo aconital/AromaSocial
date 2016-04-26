@@ -18,7 +18,7 @@ if (!String.prototype.format) {
   };
 }
 String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+    return (this.charAt(0).toUpperCase() + this.slice(1)).replace("_"," ");
 }
 
 var Publication = React.createClass ({
@@ -31,7 +31,7 @@ var Publication = React.createClass ({
         publicationCode: publication_code,
         license: license,
         keywords: keywords,
-        type: type,
+        pub_class: pub_class,
         fields: '',
         abstract: ''
         };
@@ -39,18 +39,18 @@ var Publication = React.createClass ({
     componentWillMount: function() {
         var self = this;
         var fetchPath = "/publication/"+objectId;
-        var staticFields = ['createdAt', 'updatedAt', 'user', 'abstract', 'filename', 'objectId', 'updatePath'];
+        var staticFields = ['createdAt','updatedAt','user','abstract','filename','objectId','updatePath','title', 'type'];
 
         // var fetchFields = 
         $.ajax({
             url: fetchPath,
-            data: {"type": this.state.type},
+            data: {"pub_class": this.state.pub_class},
             success: function(res) {
                 var result = res.query,
                     stateAdditions = {},
                     fields = [];
-                // this.setState({fields: Object.keys(res.query)}); // set all individually
-                // stateAdditions['fields'] = Object.keys(result);
+
+                // set all fields individually
                 for (var property in res.query) {
                     if (res.query.hasOwnProperty(property)) {
                         stateAdditions[property] = result[property];
@@ -61,64 +61,81 @@ var Publication = React.createClass ({
                     }
                 }
                 stateAdditions['fields'] = fields;
-                console.log(JSON.stringify(stateAdditions));
                 this.setState(stateAdditions);
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't retrieve publication details.");
             }.bind(this)
         });
-
-        // fetchFields.done(function() {
-            // console.log("this is publlication{0},{1}\n", self.state.fields,"why me");
-            // console.log(JSON.stringify(self.state.fields, null, 4));
-            // var fields = [], 
-            //     field;
-            // for (var i=0; self.state.fields.length; i++) {
-            //     if (self.state.fields[i] !== undefined) {
-            //         field = '<label htmlFor="{0}">{1}:</label><input className="p-editable" type="text" id="{0}" name="{0}" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.{0}}/>'.format(self.state.fields[i], self.state.fields[i]);
-            //         fields.push(field);
-            //         console.log(field);
-            //     }
-            // }
-
-            // console.log(fields);
-            // this.setState({test: fields});
-        //     console.log('ok');
-        // });
     },
     handleChange: function(e) {
+        // console.log(e.target.name);
         this.setState({[e.target.name]:e.target.value});
     },
+    handleChildChange: function(state) {
+        // console.log(state);
+        this.setState(state);
+    },
     submitChange: function() {
-        var dataForm = {title: this.state.title, description: this.state.description, filename: this.state.filename, publication_date: this.state.publicationDate, publication_code: this.state.publicationCode, license: this.state.license};
+        var self = this;
+        // var dataForm = {title: this.state.title, description: this.state.description, filename: this.state.filename, publication_date: this.state.publicationDate, publication_code: this.state.publicationCode, license: this.state.license};
+        var dataForm = {pub_class: this.state.pub_class, title: this.state.title, abstract: this.state.abstract};
+        
+        this.state.fields.forEach(function(element, index, array) {
+            if ((element == 'keywords' || element == 'contributors') && (typeof self.state[element] === 'string')) {
+                dataForm[element] = self.state[element].split(/\s*,\s*/g);
+            } else {
+                dataForm[element] = self.state[element];
+            }
+        });
+        console.log(dataForm);
 
         $.ajax({
-            url: path + "/update",
+            url: this.state.updatePath + "/update",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             type: 'POST',
             data: JSON.stringify(dataForm),
-            processData: false,
+            // processData: false,
             success: function(data) {
+                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
+                console.error(this.state.updatePath + "/update", status, err.toString());
             }.bind(this)
         });
-
-        return;
     },
-    handleTagsInputChange: function(e) {
+    submitChildChange: function(state) {
+        console.log('hello scc',this.state.updatePath);
+        var dataForm = state;
+
+        $.ajax({
+            url: this.state.updatePath + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            // processData: false,
+            success: function(data) {
+                console.log(data);
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.state.updatePath + "/update", status, err.toString());
+            }.bind(this)
+        });// delete
+
+    },
+    handleTagsInputChange: function(e) { // delete
         var keywordsSubmit = (JSON.stringify(e));
         this.setState({keywords:keywordsSubmit}, function(){ console.log(this.state.keywords); this.submitArrayChange(); }.bind(this));
     },
-    submitArrayChange: function() {
+    submitArrayChange: function() { //delete
         var dataForm = { keywords: this.state.keywords };
 
         $.ajax({
-            url: path + "/update",
+            url: this.state.updatePath + "/update",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             type: 'POST',
@@ -129,7 +146,7 @@ var Publication = React.createClass ({
                 console.log("Submitted!");
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
+                console.error(this.state.updatePath + "/update", status, err.toString());
             }.bind(this)
         });
 
@@ -147,38 +164,20 @@ var Publication = React.createClass ({
             }
         }
         console.log(creatorId, currentUserId, fields);
-        return fields;
+        return fields;// delete
     },
     render: function() {
-        // console.log("this is publlication{0},{1}\n", this.state.keys,"why me");
-        // console.log(JSON.stringify(this.state.keys, null, 4));
-        // var fields = [];
-        // for (var i=0; this.state.keys.length; i++) {
-        //     var field = '<label htmlFor="{0}">{1}:</label><input className="p-editable" type="text" id="{0}" name="{0}" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.{0}}/>'.format(keys[i], keys[i].capitalize());
-        //     fields.push(field);
-
-        // }
-        // console.log(creatorId, currentUserId, fields);
-        setTimeout(console.log('hi'), 3000)
-        // var test = this.populateFields();
         var self = this;
         var keys = (this.state.fields) ? this.state.fields : [];
         if (currentUserId == creatorId) {
-            var test = keys.map(function(name) {
-                    return <InfoEditField key={name} name={name} initVal={self.state[name]} />;
+            var details = keys.map(function(name) {
+                    return <InfoEditField key={name} name={name} initVal={self.state[name]} handleChange={self.handleChildChange} submitChange={self.submitChange} />;
             });
         } else {
-            var test = keys.map(function(name) {
+            var details = keys.map(function(name) {
                 return <InfoField key={name} name={name} initVal={self.state[name]} />;
             });
         }
-        // for (var i=0; keys.length-1; i++) {
-        //     if (keys[i] !== undefined) {
-        //         var field = '<li><label htmlFor="{0}">{1}:</label><input className="p-editable" type="text" id="{0}" name="{0}" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.{0}}/></li>'.format(keys[i], keys[i].capitalize());
-        //         console.log('i=', i, field);
-        //         test.push(field);
-        //     }
-        // }
 
         return (
         <div className="content-wrap-item-page">
@@ -194,19 +193,11 @@ var Publication = React.createClass ({
                     <div className="item-info-div">
                        {(currentUserId == creatorId) ?
                        (<div className="inner">
-                        <ul className="unstyled list-unstyled">{test}</ul>
-
-                        <label for="publicationDate">Publication Date:</label><p className="no-margin"><input type="date" name="publicationDate" id="publicationDate" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.publicationDate} className="p-editable date-editable-input"/></p>
-                        <label for="publicationCode">Publication Code:</label><input className="p-editable" type="text" name="publicationCode" id="publicationCode" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.publicationCode}/>
-                        </div>
+                        <ul className="unstyled list-unstyled">{details}</ul></div>
                        )
                        :
                        (<div className="inner">
-                        <ul className="unstyled list-unstyled">{test}</ul>
-                        
-                        <div><label for="publicationDate">Publication Date:</label><span className="no-margin">{this.state.publicationDate}</span></div>
-                        <div><label for="publicationCode">Publication Code:</label>{this.state.publicationCode}</div>
-                        </div>
+                        <ul className="unstyled list-unstyled">{details}</ul></div>
                        )}
 
                        <div><label for="createdAt">Created At:</label>{createdAt}</div>
@@ -228,13 +219,35 @@ var Publication = React.createClass ({
 });
 
 var InfoEditField = React.createClass({
+    getInitialState: function(){
+        return {
+            name: this.props.name,
+            lastVal: this.props.initVal,
+            currVal: this.props.initVal
+        };
+    },
+    handleChange: function(e){
+        var option = {[this.state.name]: e.target.value};
+        // console.log(this.state.name, option);
+        this.setState({currVal: e.target.value});
+        this.props.handleChange(option);
+    },
+    submitChange: function(){
+        if (this.state.lastVal != this.state.currVal) {
+            console.log('hgello',{[this.state.name]: this.state.currVal});
+            this.props.submitChange({[this.state.name]: this.state.currVal});
+            this.setState({lastVal: this.state.currVal});
+        } else {
+            console.log('no changes');
+        }
+    },
     render: function() {
         var inliner = {whiteSpace:'nowrap'};
         var capitalized = this.props.name.capitalize();
         return (
             <li><span style={inliner}>
                 <label htmlFor="{this.props.name}">{capitalized}: </label>
-                <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal}/>
+                <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.currVal}/>
             </span></li>
         );
     },

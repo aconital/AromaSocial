@@ -193,8 +193,8 @@
 .r-editable:hover { border: 1px dotted var(--link-color); }
 .r-noneditable { border: 1px solid transparent; padding:5px; margin-right: 5px; width:auto; outline: none; display:inline-block; }
 
-.p-editable { border: 1px solid transparent; padding:10px; width:100%; max-width:100%; background-color: transparent; }
-.p-editable:hover { border: 1px dotted var(--link-color); width:100%; background-color: transparent; }
+.p-editable { border: 1px solid transparent; padding:10px; width:95%; max-width:100%; background-color: transparent; }
+.p-editable:hover { border: 1px dotted var(--link-color); width:95%; background-color: transparent; }
 .p-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
 .p-editable-bottom-spacing { margin: 0px 0px; margin-bottom:0px; }
 .p-editable-bottom-wrap { height: 117px; }
