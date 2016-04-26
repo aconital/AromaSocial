@@ -1,4 +1,5 @@
-Parse.initialize("3wx8IGmoAw1h3pmuQybVdep9YyxreVadeCIQ5def", "tymRqSkdjIXfxCM9NQTJu8CyRClCKZuht1be4AR7");
+Parse.initialize("development", "Fomsummer2014");
+Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 var Grid =  ReactBootstrap.Grid, Row =  ReactBootstrap.Row, Col =  ReactBootstrap.Col;
 var ButtonInput = ReactBootstrap.ButtonInput, Input = ReactBootstrap.Input;
 var Panel =  ReactBootstrap.Panel, ListGroup = ReactBootstrap.ListGroup, ListGroupItem = ReactBootstrap.ListGroupItem;
