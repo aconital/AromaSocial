@@ -295,7 +295,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("linkedin_id",linkedin_ID);
                                   user.set("email", email);
                                   user.set("imgUrl", pictureUrl);
-                                  user.set("about",about)
+                                  user.set("about",about);
+                                  user.set("interestsTag", []);
                                   user.signUp(null,
                                       {
                                       success: function (user) {
