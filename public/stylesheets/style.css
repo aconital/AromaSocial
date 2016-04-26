@@ -6442,11 +6442,11 @@ hr.style13 {
 hr.style14 {
   border: 0;
   height: 1px;
-  background-image: -webkit-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-image: -moz-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-image: -ms-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-image: -o-linear-gradient(left, #FFFFFF, #8c8b8b, #FFFFFF);
-  background-color: white;
+  background-image: -webkit-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-image: -moz-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-image: -ms-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-image: -o-linear-gradient(left, #e0e0e0, #8c8b8b, #e0e0e0);
+  background-color: transparent;
   max-width: 1500px;
 }
 
@@ -6459,6 +6459,6 @@ hr.style15 {
   background-image: -moz-linear-gradient(left, transparent, #8c8b8b, transparent);
   background-image: -ms-linear-gradient(left, transparent, #8c8b8b, transparent);
   background-image: -o-linear-gradient(left, transparent, #8c8b8b, transparent);
-  background-color: white;
+  background-color: transparent;
   max-width: 1500px;
 }
