@@ -148,7 +148,7 @@ var Organization = React.createClass ({
 									</div>
                                 </a>
                             </div>
-                            <div id="item-bottom-2-organization" className="item-bottom-2-organization">
+                            <div id="item-bottom-2-organization" className="item-bottom-2">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                                 <OrganizationMenu tabs={['About', 'Networks', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />

@@ -247,7 +247,7 @@ var Profile = React.createClass ({
                     </div>
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}<button className="btn btn-panel" value="Follow">Follow</button></div> }
-                        <h1 className="no-margin-padding align-left h1-title">{fullname}</h1>
+                        <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
                         <ProfileMenu tabs={['About','Connections','Networks', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
                     <div className="item-bottom-3">
@@ -610,9 +610,9 @@ var About = React.createClass({
         }
         if (this.state.interests != "") {
             JSON.parse(this.state.interests).map(function(item, i) {
-                interests_data.push (<div className="div-relative resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
-                        {(currentUsername == username) ? <div className="div-minus-interests"><h4><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
+                interests_data.push (<div className="about-item-hr">
+                        {(currentUsername == username) ? <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
+                        {(currentUsername == username) ? <div className="div-minus-interests"><h4 className="no-margin"><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                      </div>);
             }, this)
         }
@@ -628,12 +628,14 @@ var About = React.createClass({
                     </div>
                 </div>
                 </div>
-                <div id="resume-interests-and-interests" className="div-relative"><hr/>
+                <div id="resume-expertise-and-interests" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top" >Interests</h3>
                     </div>
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addInterest} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
-                    {interests_data}
+                    <div className="div-relative resume-item">
+                        {interests_data}
+                    </div>
                     <hr className="margin-bottom-5"/>
                     {(currentUsername == username) ? <ReactTagsInput type="text" placeholder="Keywords:" name="interests" onChange={this.handleTagsInputChange} onBlur={this.submitTags} value={JSON.parse(this.state.interestsTag)}/> : <div className="margin-top-20">{JSON.parse(this.state.interestsTag).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>

@@ -6449,3 +6449,16 @@ hr.style14 {
   background-color: white;
   max-width: 1500px;
 }
+
+hr.style15 {
+  padding: 0px;
+  margin: 0px;
+  border: 0;
+  height: 1px;
+  background-image: -webkit-linear-gradient(left, transparent, #8c8b8b, transparent);
+  background-image: -moz-linear-gradient(left, transparent, #8c8b8b, transparent);
+  background-image: -ms-linear-gradient(left, transparent, #8c8b8b, transparent);
+  background-image: -o-linear-gradient(left, transparent, #8c8b8b, transparent);
+  background-color: white;
+  max-width: 1500px;
+}

@@ -189,7 +189,7 @@
 
 .r-editable { border: 1px solid transparent; padding:5px; margin-right: 5px; width:auto; outline: none; display:inline-block; background-color: transparent; }
 .r-editable-date { width:145px; padding: 0px; vertical-align:middle; background-color: transparent;}
-.r-editable-full { border: 1px solid transparent; padding:5px; margin-right: 5px; width:98%;  max-width:100%; outline: none; display:inline-block; background-color: transparent; }
+.r-editable-full { border: 1px solid transparent; padding:5px; margin-right: 5px; width:100%;  max-width:100%; outline: none; display:inline-block; background-color: transparent; }
 .r-editable:hover { border: 1px dotted var(--link-color); }
 .r-noneditable { border: 1px solid transparent; padding:5px; margin-right: 5px; width:auto; outline: none; display:inline-block; }
 
@@ -200,3 +200,5 @@
 .p-editable-bottom-wrap { height: 117px; }
 .p-noneditable { border: 1px solid transparent; margin: 0px; padding:10px; }
 .p-non-editable-bottom-wrap { padding:10px; width:100%; max-width:100%; margin: 0px; background-color: transparent; }
+
+.react-tagsinput-input{ padding-left: 5px; }
