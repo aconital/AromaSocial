@@ -198,6 +198,7 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:objectId/organizations', is_auth, function (req, res, next) {
+
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
         var query = new Parse.Query('Relationship');
@@ -233,7 +234,31 @@ module.exports=function(app,Parse) {
                         orgs.push(org);
                     }
                 }
-                res.json(orgs);
+                //This means the user is looking at someone's else profile
+                //we need to get the orgs of current user so we can add the functionalty of Add Org for the user
+                //if the user is viewing his own profile we don't need to do this since he is already in those orgs
+                if(req.user.id !== req.params.objectId)
+                {   var myOrgs =[];
+                    var innerQuery = new Parse.Query(Parse.User);
+                    innerQuery.equalTo("objectId",req.user.id);
+                    var query = new Parse.Query('Relationship');
+                    query.matchesQuery("userId",innerQuery)
+                    query.find({
+                        success: function (r) {
+                            console.log(r);
+                            for(var mo in r) {
+                                var id= r[mo].attributes.orgId.id;
+                                var verified= r[mo].attributes.verified;
+                                myOrgs.push({id:id,verified:verified});
+                            }
+                            res.json({orgs:orgs,
+                                     myOrgs:myOrgs});
+                        }
+                    });
+                }
+                //user is looking at his own profile
+                else
+                    res.json({orgs:orgs,myOrgs:[]});
             },
             error: function(error) {
                 console.log(error);

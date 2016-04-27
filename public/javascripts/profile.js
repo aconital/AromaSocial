@@ -380,25 +380,60 @@ var Connections = React.createClass({
 
 var Organizations = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {orgs: [],myOrgs:[]};
     },
     componentDidMount : function(){
+
         var orgUrl= "/profile/"+objectId+"/organizations";
 
         $.ajax({
             url: orgUrl,
             success: function(data) {
-
-                this.setState({data: data});
+                this.setState({orgs: data.orgs,
+                               myOrgs:data.myOrgs});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve orgs");
             }.bind(this)
         });
     },
+    clickJoin:function(org){
+        var connectURL= "/organization/"+org.orgId+"/join";
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                var myOrg = {id:org.orgId,verified:false};
+                var myOrgs =this.state.myOrgs;
+                myOrgs.push(myOrg);
+                this.setState({myOrgs: myOrgs});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't request join org.");
+            }.bind(this)
+        });
+    },
+    isInOrg:function(orgId)
+    {  var orgs =this.state.myOrgs;
+       for (var o in orgs )
+       {
+           if(orgs[o].id === orgId) {
+
+               return orgs[o];
+           }
+       }
+        return null;
+    },
     render: function() {
 
-        var orgList = $.map(this.state.data,function(org) {
+        var orgList = $.map(this.state.orgs,function(org) {
+
+            var join;
+            var matchingOrg= this.isInOrg(org.orgId);
+            if(matchingOrg == null)
+                join=(<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);
+            else
+                if(!matchingOrg.verified)
+                    join=(<div><a  className="item-box-image">Request Pending</a></div>);
 
             return (
                 <div className="item-box" key={org.orgId} id="item-list">
@@ -410,10 +445,11 @@ var Organizations = React.createClass({
                     <div className="item-box-right">
                         <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
                         <span className="font-15">{org.location}</span>
+                        {join}
                     </div>
                 </div>
             );
-        });
+        }.bind(this));
         return (
             <div>
                 {orgList}
