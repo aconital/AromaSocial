@@ -46,7 +46,8 @@ module.exports=function(app,Parse) {
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     createdAt: result.get('createdAt'),
-                    updatedAt: result.get('updatedAt')
+                    updatedAt: result.get('updatedAt'),
+                    url: result.get('url')
                 });
             },
             error: function(error) {

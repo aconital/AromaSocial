@@ -9,7 +9,7 @@ $(function() {
                   dataType: 'json',
                   cache: false,
                   success: function(data) {
-                    //console.log(data);
+                    console.log(data);
                     var arr = $.grep(data, function(item){
                       return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });
@@ -27,8 +27,8 @@ $(function() {
                   dataType: 'json',
                   cache: false,
                   success: function(data) {
-                    console.log("DATA RECEIVED FOR PUBS: ")
-                    console.log(data);
+                    //console.log("DATA RECEIVED FOR PUBS: ")
+                    //console.log(data);
                     var arr = $.grep(data, function(item){
                       console.log(item.title);
                       return item.title.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();

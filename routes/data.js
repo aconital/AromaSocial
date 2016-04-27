@@ -54,7 +54,7 @@ module.exports=function(app,Parse) {
                         objectId: req.params.objectId,
                         creatorId: result.get("user").id,
                         access: result.get('author'),
-                        collaborators: result.get('collaborators'),
+                        collaborators: JSON.stringify(result.get('collaborators')),
                         description: result.get('description'),
                         hashtags: result.get('hashtags'),
                         title: result.get('title'),
@@ -64,7 +64,8 @@ module.exports=function(app,Parse) {
                         createdAt: result.get('createdAt'),
                         groupies: result.get('groupies'),
                         image_URL: result.get('image_URL'),
-                        aws_path: result.get('path')
+                        aws_path: result.get('path'),
+                        url: result.get('url')
                     });
                 }
                 else {
