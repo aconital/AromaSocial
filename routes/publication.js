@@ -188,21 +188,21 @@ module.exports=function(app,Parse) {
     app.get('/publication/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query(req.query.pub_class);
-        console.log(req.query,'\n\n');
 
+        query.include('user');
         query.equalTo("objectId", req.params.objectId);
         query.find({
             success: function(result) {
                 var pubObject = JSON.parse(JSON.stringify(result[0]));
                 var userEnv = {updatePath: req.path,
                     publication_date: pubObject.publication_date.iso.slice(0,10),
-                    user: pubObject.user.objectId}; //creatorId
+                    user: {username: pubObject.user.username,
+                           imgUrl: pubObject.user.imgUrl}}; // NOTE: currently just links to uploader of file
 
                 // merge the Parse object and fields for current user
                 var rendered = _.extend(pubObject, userEnv);
-                console.log("us", pubObject);
 
-                res.status(200).json({status:"OK", query: pubObject});
+                res.status(200).json({status:"OK", query: rendered});
             },
             error: function(error) {
                 res.render('index', {title: 'Please Login!', path: req.path});
@@ -749,42 +749,30 @@ module.exports=function(app,Parse) {
 
 
     app.post('/publication/:objectId/update',function(req,res,next){
-                    console.log(req.params);
-                    console.log(req.body);
         var query = new Parse.Query(req.body.pub_class); // xhange to req-bosy.type
         query.get(req.params.objectId,{
             success: function(result) {
                 if (req.body.title) {
                     // everything in data form
                     var keys = Object.keys(req.body);
-                    console.log(keys);
                     for (var i=0; i<keys.length; i++) {
-                        console.log(keys[i], req['body'][keys[i]]);
                         if (keys[i] !== 'pub_class') {
                             if (keys[i] == ('publication_date')) {
                                 result.set(keys[i], new Date(req['body'][keys[i]]));
-                            // } else if (keys[i] == ('collaborators' || 'keywords') && typeof req['body'][keys[i]] === 'string') {
-                            //     result.set(keys[i], req['body'][keys[i]].split(/\s*,\s*/g));
                             } else {
                                 result.set(keys[i], req['body'][keys[i]]);
                             }
                         }
                     }
-                    // result.set("title", req.body.title);
-                    // result.set("abstract", req.body.abstract);
-                    // result.set("year", req.body.publication_date);
-                    // result.set("filename", req.body.filename);
-                    // result.set("license", req.body.license);
-                    // result.set("publication_code", req.body.publication_code);
                 }
                 else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
                 result.save(null, {
                     success:function(obj) {
-                        console.log("Successfully saved");
+                        console.log("Pub update successfully saved");
                         res.status(200).json({status:"OK", query: obj});
                     },
                     error:function(err) { 
-                        console.log("Not successfully saved", err);
+                        console.log("Pub update not successfully saved", err);
                         // response.error();
                         res.status(500).json({status:"Error", msg: 'Could not update publication!' + err});
                     }
