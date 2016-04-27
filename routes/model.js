@@ -69,8 +69,15 @@ module.exports=function(app,Parse) {
                     result.set("filename", req.body.filename);
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
-                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
-                    result.save();
+                }
+                if (req.body.keywords) {
+                    result.set("keywords",JSON.parse(req.body.keywords)); 
+                }
+                if (req.body.collaborators) {
+                    result.set("collaborators",JSON.parse(req.body.collaborators)); 
+                }
+                result.save();
+                res.status(200).json({status: "Model Updated Successfully!"});
             }
         });
     });

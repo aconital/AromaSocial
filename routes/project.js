@@ -42,6 +42,7 @@ module.exports=function(app,Parse) {
                     locations: result.get('locations'),
                     keywords: result.get('keywords'),
                     image_URL: result.get('image_URL'),
+                    file_path: result.get('file_path'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
                 });
@@ -67,15 +68,15 @@ module.exports=function(app,Parse) {
             project.set('end_date',req.body.endDate);
             project.set('keywords',JSON.parse(req.body.keywords));
             project.set('image_URL','/images/data.png');
+            project.set('file_path','/images/data.png');
             project.set('client',req.body.client);
             project.set('link_to_resources',req.body.link_to_resources);
             project.set('URL',req.body.url);
             project.save(null, {
                 success: function(response) {
-                    objectId = response.id;
                     var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
                     if (req.body.picture != null) {
-                        var s3Key = req.params.username + "_project_picture_" + objectId + "." + req.body.pictureType;
+                        var s3Key = response.id + "_project_picture"+ "." + req.body.pictureType;
                         var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
                         var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                         var fileParams = {
@@ -93,7 +94,7 @@ module.exports=function(app,Parse) {
                         });
                     }
                     if (req.body.file != null) {
-                        var s3KeyP = req.params.username + "_project_file_" + objectId + "." + req.body.fileType;
+                        var s3KeyP = response.id + "_project_file" + "." + req.body.fileType;
                         var contentTypeP = req.body.file.match(/^data:(\w+\/.+);base64,/);
                         var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
                         var pictureParams = {
@@ -138,32 +139,37 @@ module.exports=function(app,Parse) {
 
     app.post('/project/:objectId/picture', is_auth, function(req,res,next){
         var query = new Parse.Query("Project");
-        query.get(req.params.objectId,{
-            success: function(result) {
-                var bucket = new aws.S3();
-
-                var s3KeyP = req.params.objectId + "_project_picture_" + req.body.randomNumber + "." + req.body.pictureType;
-                var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                var pictureParams = {
-                    Bucket: 'syncholar',
-                    Key: s3KeyP,
-                    Body: pictureBuff,
-                    ContentEncoding: 'base64',
-                    ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                };
-
-                bucket.putObject(pictureParams, is_auth, function (err, data) {
-                    if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
-                    else {
-                        console.log('Uploaded Image to S3!');
-                        result.set("image_URL",awsLink + s3KeyP);
-                        result.save();
-                        res.status(200).json({status: "Picture Uploaded Successfully!"});
-                    }
-                });
+        query.get(req.params.objectId).then(
+            function(result) {
+                if (req.body.picture != null) {
+                    var s3Key = req.params.objectId + "_project_picture_" + req.body.randomNumber + "." + req.body.pictureType;
+                    var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
+                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                    var pictureParams = {
+                        Key: s3Key,
+                        Body: pictureBuff,
+                        ContentEncoding: 'base64',
+                        ContentType: (contentType ? contentType[1] : 'text/plain')
+                    };
+                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+                    bucket.putObject(pictureParams, function (err, data) {
+                        if (err) { console.log("Project Image Upload Error:", err); }
+                        else {
+                            result.set('image_URL', awsLink + s3Key);
+                            result.save().then(
+                                function(){
+                                    res.status(200).json({status: "Picture Uploaded Successfully!"});
+                                },
+                                function(errx){
+                                    console.log(errx);
+                                    res.status(500).json({status: "Picture uploading failed"});
+                                }
+                            );
+                        }
+                    });
+                }
             }
-        });
+        );
     });
 
     /************************************
