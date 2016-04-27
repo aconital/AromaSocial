@@ -1647,18 +1647,16 @@ var ResourceAddForm = React.createClass({
             pictureFeedback: '',
             // form
             picture: null,
-            file: null,
             pictureType: '',
+            file: null,
             fileType: '',
             title: '',
-            description: '',
             collaborators: [fullname],
             creationDate: '',
-            license: '',
-            pubLink: '',
             keywords: [],
+            description: '',
+            license: '',
             url: '',
-           // groupies: []
         };
     },
     // componentDidMount: function() {
@@ -1741,11 +1739,10 @@ var ResourceAddForm = React.createClass({
 */  }
                     <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                     <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                     <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
-                    <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
-                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
-                    <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+                    <Input type="text" placeholder="URL (Link to model)" name="url" onChange={this.handleChange} value={this.state.url} />
                     {/*
                     <div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Users to share:" name="groupies" value={this.state.collaborators} />
@@ -1794,20 +1791,20 @@ var ResourceAddForm = React.createClass({
     },
 	handleSubmitData: function(e) {
         e.preventDefault();
-
-        var dataForm = {file: this.state.file, picture: this.state.picture,
-        				fileType: this.state.fileType, pictureType: this.state.pictureType,
-        				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
-        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title, groupies: JSON.stringify(this.state.groupies)};
+        var endpoint = this.props.fromModelTab ? "/model" : "/data";
+        var dataForm = {picture: this.state.picture,
+                        pictureType: this.state.pictureType,
+                        file: this.state.file,
+        				fileType: this.state.fileType,
+                        title: this.state.title,
+        				collaborators: JSON.stringify(this.state.collaborators),
+                        creationDate: this.state.creationDate,
+        				description: this.state.description,
+                        license: this.state.license,
+                        url: this.state.url,
+                        keywords: JSON.stringify(this.state.keywords)};
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
-			var endpoint = this.props.fromModelTab ? "/model" : "/data";
-			var dataFormORIG = {file: this.state.file, picture: this.state.picture,
-				fileType: this.state.fileType, pictureType: this.state.pictureType,
-				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
 
 			$.ajax({
 				url: path + endpoint,
@@ -1829,7 +1826,10 @@ var ResourceAddForm = React.createClass({
 		}
 		else {
 			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
-			if (isValidForm.indexOf('KEYWORDS') > -1) {
+            if (isValidForm.indexOf('COLLABORATORS') > -1) {
+                message += ' Please specify at least one collaborator.';
+            }
+            if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
             this.setState({formFeedback: message, alertVisible: true});
@@ -1891,9 +1891,12 @@ var ResourceAddForm = React.createClass({
 
 	validateForm: function() {
 		var issues = []
-		if (this.state.keywords.length<1) {
-			issues.push("KEYWORDS");
-		}
+        if (this.state.collaborators.length<1) {
+            issues.push("COLLABORATORS");
+        }
+        if (this.state.keywords.length<1) {
+            issues.push("KEYWORDS");
+        }
 		return issues;
 	},
 });
@@ -1928,9 +1931,8 @@ var ProjectAddForm = React.createClass({
          title: '',
          description: '',
          collaborators: [fullname],
-        startDate: '',
+         startDate: '',
          endDate: '',
-         description: '',
          link_to_resources: '',
          client: '',
          keywords: [],
