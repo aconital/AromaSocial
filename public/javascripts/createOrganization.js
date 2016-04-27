@@ -23,8 +23,7 @@ var CreateOrganization = React.createClass({
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
-										<label htmlFor="name">Name <Required content="*"/></label>
-										<Input type="text" id="name" name="name"  placeholder="Name" onChange={this.handleChange} value={this.state.name} />
+										<Input type="text" id="name" name="name"  label="Name" required placeholder="Name" onChange={this.handleChange} value={this.state.name} />
 										<Input type="file" name="picture" label="Profile Image" help="Please upload the organization's logo."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
 										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} />

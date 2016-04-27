@@ -45,35 +45,37 @@ var FriendRequest = React.createClass({
             return(
                 <li><a href="#" className="align-center">You have no connection requests at this moment. &nbsp;&nbsp;</a></li>
             ) ;
-        else
-        return (
-            <li>
-                {this.state.data.map(person =>
-                    <div id={person.username} className="friend-request-item" key={person.username}>
-                        <div className="friend-request-left">
-                            <div className="friend-request-image-wrap">
-                                <a href={'/profile/'+person.username}>
-                                    <img  src={person.userImgUrl} className="friend-request-image" />
-                                </a>
+        else {
+            $(".notification-counter").text(this.state.data.length - 1);
+            return (
+                <li>
+                    {this.state.data.map(person =>
+                        <div id={person.username} className="friend-request-item" key={person.username}>
+                            <div className="friend-request-left">
+                                <div className="friend-request-image-wrap">
+                                    <a href={'/profile/'+person.username}>
+                                        <img  src={person.userImgUrl} className="friend-request-image" />
+                                    </a>
+                                </div>
                             </div>
+                            <div className="friend-request-center" id="friend-request-info">
+                                <a href={'/profile/'+person.username} className="body-link">
+                                    <b><h3 className="no-margin-padding margin-top-5">{person.fullname}</h3></b>
+                                </a>
+                                <div className="no-margin-padding margin-top-5">{person.work_title} @ {person.company}</div>
+                            </div>
+                            <div className="friend-request-right">
+                               <button className="btn btn-primary friend-request-button" onClick={this.pending_action.bind(this,person,"approve")} id="pending-action">Accept</button>
+                               <button className="btn btn-primary friend-request-button margin-top-10" onClick={this.pending_action.bind(this,person,"deny")}  id="pending-action">Deny</button>
+                            </div>
+                            <div className="clear"></div>
                         </div>
-                        <div className="friend-request-center" id="friend-request-info">
-                            <a href={'/profile/'+person.username} className="body-link">
-                                <b><h3 className="no-margin-padding margin-top-5">{person.fullname}</h3></b>
-                            </a>
-                            <div className="no-margin-padding margin-top-5">{person.work_title} @ {person.company}</div>
-                        </div>
-                        <div className="friend-request-right">
-                           <button className="btn btn-primary friend-request-button" onClick={this.pending_action.bind(this,person,"approve")} id="pending-action">Accept</button>
-                           <button className="btn btn-primary friend-request-button margin-top-10" onClick={this.pending_action.bind(this,person,"deny")}  id="pending-action">Deny</button>
-                        </div>
-                        <div className="clear"></div>
-                    </div>
-                )}
+                    )}
 
-            </li>
+                </li>
 
-        );
+            );
+        }
     }
 });
 
