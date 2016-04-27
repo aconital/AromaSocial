@@ -432,161 +432,169 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:username/publications',function(req,res,next){
-        var pubs=[];
-        var pubBooks = Parse.Object.extend("Pub_Book");
-        var query = new Parse.Query(pubBooks);
-        query.equalTo('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
-        query.find().then(function(books) {
-            console.log("Successfully retrieved " + books.length + " Books.");
-            // Do something with the returned Parse.Object values
-            for (var i = 0; i < books.length; i++) {
-                var object = books[i];
-                pubs.push({
-                    type: "book",
-                    filename: object.attributes.filename,
-                    title: object.attributes.title,
-                    hashtags: object.attributes.hashtags,
-                    date: object.createdAt,
-                    year: object.attributes.year,
-                    contributers: object.attributes.contributers,
-                    description: object.attributes.description,
-                    id: object.id
-                });
-            }
-        }).then(function() {
-            var pubConference = Parse.Object.extend("Pub_Conference");
-            var query1 = new Parse.Query(pubConference);
-            query1.equalTo('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-            query1.find().then(function (conferences) {
-                console.log("Successfully retrieved " + conferences.length + " conferences.");
+        // get publications of profile visited.
+        var profile = req.user.id;
+        profileQuery = new Parse.Query("User");
+        profileQuery.equalTo("username",req.params.username);
+        profileQuery.first().then(function(user) {
+            profile = user.id;
+
+            var pubs=[];
+            var pubBooks = Parse.Object.extend("Pub_Book");
+            var query = new Parse.Query(pubBooks);
+            query.equalTo('user',{ __type: "Pointer", className: "_User", objectId: profile});
+            query.find().then(function(books) {
+                console.log("Successfully retrieved " + books.length + " Books.");
                 // Do something with the returned Parse.Object values
-                for (var i = 0; i < conferences.length; i++) {
-                    var object = conferences[i];
+                for (var i = 0; i < books.length; i++) {
+                    var object = books[i];
                     pubs.push({
-                        type: "conference",
+                        type: "book",
                         filename: object.attributes.filename,
                         title: object.attributes.title,
                         hashtags: object.attributes.hashtags,
                         date: object.createdAt,
                         year: object.attributes.year,
                         contributers: object.attributes.contributers,
-                        description: object.attributes.description,
+                        description: object.attributes.abstract,
                         id: object.id
                     });
                 }
-            }).then(function () {
-                var pubJournal = Parse.Object.extend("Pub_Journal_Article");
-                var query2 = new Parse.Query(pubJournal);
-                query2.equalTo('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-                query2.descending("createdAt");
-                query2.find().then(function (journals) {
-                    console.log("Successfully retrieved " + journals.length + " articles.");
+            }).then(function() {
+                var pubConference = Parse.Object.extend("Pub_Conference");
+                var query1 = new Parse.Query(pubConference);
+                query1.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                query1.find().then(function (conferences) {
+                    console.log("Successfully retrieved " + conferences.length + " conferences.");
                     // Do something with the returned Parse.Object values
-                    for (var i = 0; i < journals.length; i++) {
-                        var object = journals[i];
+                    for (var i = 0; i < conferences.length; i++) {
+                        var object = conferences[i];
                         pubs.push({
-                            type: "journal",
+                            type: "conference",
                             filename: object.attributes.filename,
                             title: object.attributes.title,
                             hashtags: object.attributes.hashtags,
                             date: object.createdAt,
                             year: object.attributes.year,
                             contributers: object.attributes.contributers,
-                            description: object.attributes.description,
+                            description: object.attributes.abstract,
                             id: object.id
                         });
                     }
                 }).then(function () {
-                    var pubPatent = Parse.Object.extend("Pub_Patent");
-                    var query3 = new Parse.Query(pubPatent);
-                    query3.equalTo('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-                    query3.find().then(function (patents) {
-                        console.log("Successfully retrieved " + patents.length + " patents.");
+                    var pubJournal = Parse.Object.extend("Pub_Journal_Article");
+                    var query2 = new Parse.Query(pubJournal);
+                    query2.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                    query2.descending("createdAt");
+                    query2.find().then(function (journals) {
+                        console.log("Successfully retrieved " + journals.length + " articles.");
                         // Do something with the returned Parse.Object values
-                        for (var i = 0; i < patents.length; i++) {
-                            var object = patents[i];
+                        for (var i = 0; i < journals.length; i++) {
+                            var object = journals[i];
                             pubs.push({
-                                type: "patent",
+                                type: "journal",
                                 filename: object.attributes.filename,
                                 title: object.attributes.title,
                                 hashtags: object.attributes.hashtags,
                                 date: object.createdAt,
                                 year: object.attributes.year,
                                 contributers: object.attributes.contributers,
-                                description: object.attributes.description,
+                                description: object.attributes.abstract,
                                 id: object.id
                             });
                         }
                     }).then(function () {
-                        var pubReport = Parse.Object.extend("Pub_Report");
-                        var query4 = new Parse.Query(pubReport);
-                        query4.equalTo('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-                        query4.find().then(function (reports) {
-                            console.log("Successfully retrieved " + reports.length + " reports.");
+                        var pubPatent = Parse.Object.extend("Pub_Patent");
+                        var query3 = new Parse.Query(pubPatent);
+                        query3.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                        query3.find().then(function (patents) {
+                            console.log("Successfully retrieved " + patents.length + " patents.");
                             // Do something with the returned Parse.Object values
-                            for (var i = 0; i < reports.length; i++) {
-                                var object = reports[i];
+                            for (var i = 0; i < patents.length; i++) {
+                                var object = patents[i];
                                 pubs.push({
-                                    type: "report",
+                                    type: "patent",
                                     filename: object.attributes.filename,
                                     title: object.attributes.title,
                                     hashtags: object.attributes.hashtags,
                                     date: object.createdAt,
                                     year: object.attributes.year,
                                     contributers: object.attributes.contributers,
-                                    description: object.attributes.description,
+                                    description: object.attributes.abstract,
                                     id: object.id
                                 });
                             }
                         }).then(function () {
-                            var pubThesis = Parse.Object.extend("Pub_Thesis");
-                            var query4 = new Parse.Query(pubThesis);
-                            query4.equalTo('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-                            query4.find().then(function (thesis) {
-                                console.log("Successfully retrieved " + thesis.length + " thesis.");
+                            var pubReport = Parse.Object.extend("Pub_Report");
+                            var query4 = new Parse.Query(pubReport);
+                            query4.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                            query4.find().then(function (reports) {
+                                console.log("Successfully retrieved " + reports.length + " reports.");
                                 // Do something with the returned Parse.Object values
-                                for (var i = 0; i < thesis.length; i++) {
-                                    var object = thesis[i];
+                                for (var i = 0; i < reports.length; i++) {
+                                    var object = reports[i];
                                     pubs.push({
-                                        type: "thesis",
+                                        type: "report",
                                         filename: object.attributes.filename,
                                         title: object.attributes.title,
                                         hashtags: object.attributes.hashtags,
                                         date: object.createdAt,
                                         year: object.attributes.year,
                                         contributers: object.attributes.contributers,
-                                        description: object.attributes.description,
+                                        description: object.attributes.abstract,
                                         id: object.id
                                     });
                                 }
                             }).then(function () {
-                                var pubUnpublished = Parse.Object.extend("Pub_Unpublished");
-                                var query5 = new Parse.Query(pubUnpublished);
-                                query5.equalTo('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-                                query5.find().then(function (unpublished) {
-                                    console.log("Successfully retrieved " + unpublished.length + " unpublished.");
+                                var pubThesis = Parse.Object.extend("Pub_Thesis");
+                                var query4 = new Parse.Query(pubThesis);
+                                query4.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                                query4.find().then(function (thesis) {
+                                    console.log("Successfully retrieved " + thesis.length + " thesis.");
                                     // Do something with the returned Parse.Object values
-                                    for (var i = 0; i < unpublished.length; i++) {
-                                        var object = unpublished[i];
+                                    for (var i = 0; i < thesis.length; i++) {
+                                        var object = thesis[i];
                                         pubs.push({
-                                            type: "unpublished",
+                                            type: "thesis",
                                             filename: object.attributes.filename,
                                             title: object.attributes.title,
                                             hashtags: object.attributes.hashtags,
                                             date: object.createdAt,
                                             year: object.attributes.year,
                                             contributers: object.attributes.contributers,
-                                            description: object.attributes.description,
+                                            description: object.attributes.abstract,
                                             id: object.id
                                         });
                                     }
-                                }).then(function (results) {
-                                    var filteredPubs= _.groupBy(pubs,'type');
-                                    res.json(filteredPubs);
-                                }, function(error) {
-                                    console.log('Failed to retrive publications, with error code: ' + error.message);
-                                    res.status(500).json({status: "Publication retrieval failed. " + error.message});
-                                });
+                                }).then(function () {
+                                    var pubUnpublished = Parse.Object.extend("Pub_Unpublished");
+                                    var query5 = new Parse.Query(pubUnpublished);
+                                    query5.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                                    query5.find().then(function (unpublished) {
+                                        console.log("Successfully retrieved " + unpublished.length + " unpublished.");
+                                        // Do something with the returned Parse.Object values
+                                        for (var i = 0; i < unpublished.length; i++) {
+                                            var object = unpublished[i];
+                                            pubs.push({
+                                                type: "unpublished",
+                                                filename: object.attributes.filename,
+                                                title: object.attributes.title,
+                                                hashtags: object.attributes.hashtags,
+                                                date: object.createdAt,
+                                                year: object.attributes.year,
+                                                contributers: object.attributes.contributers,
+                                                description: object.attributes.abstract,
+                                                id: object.id
+                                            });
+                                        }
+                                    }).then(function (results) {
+                                        var filteredPubs= _.groupBy(pubs,'type');
+                                        res.json(filteredPubs);
+                                    }, function(error) {
+                                        console.log('Failed to retrive publications, with error code: ' + error.message);
+                                        res.status(500).json({status: "Publication retrieval failed. " + error.message});
+                                    });
+                                })
                             })
                         })
                     })

@@ -704,13 +704,14 @@ module.exports=function(app,Parse) {
 
     app.post('/create/organization', is_auth, function (req, res, next) {
         var currentUser = req.user;
+        var objectId;
         if (currentUser) {
             var Organization = Parse.Object.extend("Organization");
             var org = new Organization();
             org.set('cover_imgURL', '/images/banner.png'); // default. replace later
             org.set('profile_imgURL', '/images/organization.png');
             org.set('name', req.body.name);
-            org.set('location', req.body.location ? req.body.location : 'Unknown');
+            org.set('location', req.body.location ? req.body.location : '');
             org.set('about', req.body.description ? req.body.description : 'About Organization');
             org.set('country', req.body.country ? req.body.country : 'Unknown');
             org.set('prov', req.body.prov ? req.body.prov : 'Unknown');
@@ -720,42 +721,40 @@ module.exports=function(app,Parse) {
             org.set('website', req.body.website ? req.body.website : 'Unknown');
 
             org.save(null).then(function(response) {
-                // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
-                // if provided. FOR LATER: also support cover image.
-                var objectId = response.id;
-
-                if (req.body.picture) {
-                    // encode file
-					var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
-
-					// upload files to S3
-					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-					bucket.putObject(params, function (err, response) {
-						if (err) { console.log("S3 Upload Error:", err); }
-						else {
-							// update file path in parse object
-							org.set('profile_imgURL', awsLink + params.Key);
-							console.log("S3 uploaded successfully.");
-							return {objectId: objectId, data: org.save(null)};
-						}
-					});
-                }
-                return {objectId: objectId};
-            }).then(function(response) {
+                objectId = response.id;
                 // create new Relationship object between organization and admin
                 console.log('Object ID retrieved/path name updated successfully');
                 var Relationship = Parse.Object.extend("Relationship");
                 var relation = new Relationship();
                 relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id});
-                relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: response.objectId });
+                relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
                 relation.set('isAdmin', true);
                 relation.set('verified', true);
                 relation.set('title', 'TODO');
-                return {objectId: response.objectId, data: relation.save(null)};
+                relation.save(null);
             }).then(function(response) {
-                console.log("Organization created successfully.");
-                //org.save();
-                res.status(200).json({status:"OK", location: response.objectId});
+                // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
+                // if provided. FOR LATER: also support cover image.
+                if (req.body.picture) {
+                    // encode file
+                    var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
+                    // upload files to S3
+                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+                    bucket.putObject(params, function (err, response) {
+                        if (err) {
+                            console.log("S3 Upload Error:", err); }
+                        else {
+                            // update file path in parse object
+                            org.set('profile_imgURL', awsLink + params.Key);
+                            org.save(null).then(function(){
+                                res.status(200).json({status:"OK", location: objectId});
+                            })
+                        };
+                    });
+                }
+                else {
+                    res.status(200).json({status:"OK", location: objectId});
+                }
             }, function(error) {
                 console.log('Failed to create new organization, with error code: ' + error.message);
                 res.status(500).json({status: "Creating organization failed. " + error.message});
