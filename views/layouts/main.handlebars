@@ -68,8 +68,10 @@
                     <li class="navbar-hover"><a href="/profile/{{user.username}}"><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
                     <li class="dropdown connection-button">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            <span><i class="fa fa-user-plus"></i></span>
-                            <span id="notification-request"></span>
+                            <div class="notification-container">
+                                <span><i class="fa fa-user-plus"></i></span>
+                                <span class="notification-counter">0</span>
+                            </div>
                         </a>
                         <ul id="friendrequest" class="dropdown-menu friend-request-dropdown" aria-labelledby="dropdownMenuDivider">
                         </ul>
