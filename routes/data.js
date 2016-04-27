@@ -166,7 +166,13 @@ module.exports=function(app,Parse) {
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
                     console.log(req.body.filename);
-                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
+                }
+                if (req.body.keywords) {
+                    result.set("keywords",JSON.parse(req.body.keywords)); 
+                }
+                if (req.body.collaborators) {
+                    result.set("collaborators",JSON.parse(req.body.collaborators)); 
+                }
                 result.save();
             }
         });
