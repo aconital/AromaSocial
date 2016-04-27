@@ -197,8 +197,8 @@ module.exports=function(app,Parse) {
                 var userEnv = {updatePath: req.path,
                     publication_date: pubObject.publication_date.iso.slice(0,10),
                     user: {username: pubObject.user.username,
-                           imgUrl: pubObject.user.imgUrl}}; // NOTE: currently just links to uploader of file
-
+                           imgUrl: pubObject.user.imgUrl}}; // NOTE: currently just the uploader of file
+                console.log(pubObject);
                 // merge the Parse object and fields for current user
                 var rendered = _.extend(pubObject, userEnv);
 
@@ -601,12 +601,12 @@ module.exports=function(app,Parse) {
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
-            console.log(formatted);
             var reqBody = req.body;
 
             // set correct object and send to Parse
             var PubType = (reqBody.type == "Pub_Chapter" ? Parse.Object.extend("Pub_Book") : Parse.Object.extend(reqBody.type));
             var pub = new PubType();
+            var pubClass = reqBody.type; // save field before being overwritten
 
             pub.set('contributors',reqBody.collaborators.split(/\s*,\s*/g));
             pub.set('abstract',reqBody.description);
@@ -695,19 +695,19 @@ module.exports=function(app,Parse) {
 				}
 				console.log("Publication type saved successfully.");
 				return {objectId: response.id};
-            }).then(function(response) {
+            /*}).then(function(response) { // NOTE: likely will be used for future refactoring
 				// add entry into superclass
 				var Publication = Parse.Object.extend("Publication");
 				var publication = new Publication();
-
+                console.log(reqBody, pubClass);
 //				publication.set('groups',reqBody.groups);
 //				publication.set('groupies', reqBody.groupies);
-				publication.set('link', {__type: "Pointer", className: reqBody.type, objectId: response.objectId});
+				publication.set('link', {__type: "Pointer", className: pubClass, objectId: response.objectId});
 				publication.set('year',reqBody.creationDate.substring(0,4));
-				publication.set('type',reqBody.type.replace("Pub_","").replace("_"," "));
+				publication.set('type',pubClass.replace("Pub_","").replace("_"," "));
 
 				console.log("Saving publication superclass.");
-				return publication.save(null);
+				return publication.save(null);*/
 			}).then(function(response) {
 				console.log("Publication created successfully.");
 				res.status(200).json({status:"OK", query: response});
