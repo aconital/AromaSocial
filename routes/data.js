@@ -54,7 +54,7 @@ module.exports=function(app,Parse) {
                         objectId: req.params.objectId,
                         creatorId: result.get("user").id,
                         access: result.get('author'),
-                        collaborators: result.get('collaborators'),
+                        collaborators: JSON.stringify(result.get('collaborators')),
                         description: result.get('description'),
                         hashtags: result.get('hashtags'),
                         title: result.get('title'),
@@ -64,7 +64,8 @@ module.exports=function(app,Parse) {
                         createdAt: result.get('createdAt'),
                         groupies: result.get('groupies'),
                         image_URL: result.get('image_URL'),
-                        aws_path: result.get('path')
+                        aws_path: result.get('path'),
+                        url: result.get('url')
                     });
                 }
                 else {
@@ -102,19 +103,19 @@ module.exports=function(app,Parse) {
             //data.set('groupies', groupies);
             data.save(null, {
                 success: function(response) {
-                    objectId = response.id;
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+                    objectId = response.id;;
+                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });;
                     if (req.body.picture != null) {
                         var s3Key = req.params.username + "_project_picture_" + objectId + "." + req.body.pictureType;
                         var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                        var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                        var fileParams = {
+                        var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                        var pictureParams = {
                             Key: s3Key,
-                            Body: fileBuff,
+                            Body: pictureBuff,
                             ContentEncoding: 'base64',
                             ContentType: (contentType ? contentType[1] : 'text/plain')
                         };
-                        bucket.putObject(fileParams, function (err, data) {
+                        bucket.putObject(pictureParams, function (err, response) {
                             if (err) { console.log("Project Image Upload Error:", err); }
                             else {
                                 data.set('image_URL', awsLink + s3Key);
@@ -125,15 +126,14 @@ module.exports=function(app,Parse) {
                     if (req.body.file != null) {
                         var s3KeyP = req.params.username + "_project_file_" + objectId + "." + req.body.fileType;
                         var contentTypeP = req.body.file.match(/^data:(\w+\/.+);base64,/);
-                        var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                        var pictureParams = {
+                        var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
+                        var fileParams = {
                             Key: s3KeyP,
-                            Body: pictureBuff,
+                            Body: fileBuff,
                             ContentEncoding: 'base64',
                             ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
                         };
-
-                        bucket.putObject(pictureParams, function (err, data) {
+                        bucket.putObject(fileParams, function (err, response) {
                             if (err) { console.log("Project File Upload Error:", err); }
                             else {
                                 data.set('file_path', awsLink + s3KeyP);
@@ -165,8 +165,15 @@ module.exports=function(app,Parse) {
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
                     console.log(req.body.filename);
-                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
+                }
+                if (req.body.keywords) {
+                    result.set("keywords",JSON.parse(req.body.keywords)); 
+                }
+                if (req.body.collaborators) {
+                    result.set("collaborators",JSON.parse(req.body.collaborators)); 
+                }
                 result.save();
+                res.status(200).json({status: "Data Updated Successfully!"});
             }
         });
     });

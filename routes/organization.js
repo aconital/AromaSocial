@@ -724,7 +724,7 @@ module.exports=function(app,Parse) {
                 // if provided. FOR LATER: also support cover image.
                 var objectId = response.id;
 
-                if (req.body.file) {
+                if (req.body.picture) {
                     // encode file
 					var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
 
@@ -754,6 +754,7 @@ module.exports=function(app,Parse) {
                 return {objectId: response.objectId, data: relation.save(null)};
             }).then(function(response) {
                 console.log("Organization created successfully.");
+                //org.save();
                 res.status(200).json({status:"OK", location: response.objectId});
             }, function(error) {
                 console.log('Failed to create new organization, with error code: ' + error.message);

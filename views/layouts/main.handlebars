@@ -32,6 +32,7 @@
             return textArea.value;
         }
     </script>
+
 </head>
 <body>
 
@@ -57,7 +58,7 @@
 
                     <ul class="nav navbar-nav navbar-nav-search">
                         <li class="nav navbar-search">
-                            <form typerole="search" method="post" action="/searchpage" class="navbar-left search-bar-form">
+                            <form typerole="search" class="navbar-left search-bar-form" onsubmit="return false">
                                 <input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
                             </form>
                         </li>
@@ -92,13 +93,18 @@
         </div>
     </nav>
     {{{body}}}
+</div>
+<div class="container container-footer">
     <footer>
         <div class="container">
+            {{#if user}}
+            <hr class="style14" style="margin-top:35px;">
+            {{else}}
+            {{/if}}
             <div class="footer-nav">
-                <hr class="style13 style13-footer">
                 <div class="row">
-                    <div class="col-sm-5-left">
-                        <p><font size="1">&copy; 2016 Syncholar.com. All rights reserved.</font> </p>
+                    <div class="col-sm-5" style="margin:auto !important;float:none;text-align:center;padding:10px;">
+                        <p><font size="2">&copy; 2016 Syncholar.com. All rights reserved.</font> </p>
                     </div>
                 </div>
             </div>
@@ -113,6 +119,10 @@
 <script src="https://www.parsecdn.com/js/parse-react.js"></script>
 <script type="text/jsx" src="/javascripts/navbar.js"></script>
 <script src="/javascripts/autocomplete.js"></script>
+
+<script src="/javascripts/sweetalert/dist/sweetalert.min.js"></script>
+<link rel="stylesheet" href="/javascripts/sweetalert/dist/sweetalert.css">
+
 <script>
     $(document).ready(function(){
         $('.dropdown-toggle').dropdown()

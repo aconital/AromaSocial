@@ -52,20 +52,37 @@ var CreateOrganization = React.createClass({
 		changedState[e.target.name] = e.target.value;
 		this.setState( changedState );
 	},
-	handlePicture: function(e) {
-		var self = this;
-		var reader = new FileReader();
-		var file = e.target.files[0];
-		var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+	// handlePicture: function(e) {
+	// 	var self = this;
+	// 	var reader = new FileReader();
+	// 	var file = e.target.files[0];
+	// 	var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
 
-		reader.onload = function(upload) {
-			self.setState({
-				picture: upload.target.result,
-				pictureType: extension,
-			});
-		}
-		reader.readAsDataURL(file);
-	},
+	// 	reader.onload = function(upload) {
+	// 		self.setState({
+	// 			picture: upload.target.result,
+	// 			pictureType: extension,
+	// 		});
+	// 	}
+	// 	reader.readAsDataURL(file);
+	// },
+	handlePicture: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+         console.log("FILE UPLOAD: ");
+         console.log(upload);
+         self.setState({
+           picture: upload.target.result,
+           pictureType: extension,
+           pictureFeedback: '#dff0d8'
+         });
+        }
+        reader.readAsDataURL(file);
+    },
 	handleSubmitData: function(e) {
 		e.preventDefault();
 		var isValidForm = this.validateForm();

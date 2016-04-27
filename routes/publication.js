@@ -187,27 +187,22 @@ module.exports=function(app,Parse) {
 
     app.get('/publication/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var query = new Parse.Query(req.query.type);
-        console.log(req.query,'\n\n');
+        var query = new Parse.Query(req.query.pub_class);
 
+        query.include('user');
         query.equalTo("objectId", req.params.objectId);
         query.find({
             success: function(result) {
                 var pubObject = JSON.parse(JSON.stringify(result[0]));
                 var userEnv = {updatePath: req.path,
-                    // currentUserId: currentUser.id,
-                    // currentUsername: currentUser.username,
-                    // currentUserImg: currentUser.imgUrl,
-                    // objectId: req.params.objectId,
-                    // type: 'Pub_fdgdfgfBook',
                     publication_date: pubObject.publication_date.iso.slice(0,10),
-                    user: pubObject.user.objectId}; //creatorId
-
+                    user: {username: pubObject.user.username,
+                           imgUrl: pubObject.user.imgUrl}}; // NOTE: currently just the uploader of file
+                console.log(pubObject);
                 // merge the Parse object and fields for current user
                 var rendered = _.extend(pubObject, userEnv);
-                console.log("us", pubObject);
 
-                res.status(200).json({status:"OK", query: pubObject});
+                res.status(200).json({status:"OK", query: rendered});
             },
             error: function(error) {
                 res.render('index', {title: 'Please Login!', path: req.path});
@@ -218,33 +213,9 @@ module.exports=function(app,Parse) {
     app.get('/publication/book/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Book');
-        var objs = [];
 
-        // query.include('user');
-        // query.equalTo("objectId", req.params.objectId);
-        // query.find({
         query.get(req.params.objectId,{
             success: function(result) {
-                // console.log('this is tresult\n', JSON.stringify(result,null,4));
-                // // console.log('this is result to json\n', Object.keys(result.toJSON()));
-                // var pubObject = JSON.parse(JSON.stringify(result[0]));
-                // console.log(pubObject.attributes);
-                // console.log("\nthis is just user\n",JSON.parse(JSON.stringify(result[0])).user.objectId);
-                // var userEnv = {path: req.path,
-                //     currentUserId: currentUser.id,
-                //     currentUsername: currentUser.username,
-                //     currentUserImg: currentUser.imgUrl,
-                //     objectId: req.params.objectId,
-                //     type: 'Pub_Book',
-                //     user: pubObject.user.objectId}; //creatorId
-
-                // // merge the Parse object and fields for current user
-                // var rendered = _.extend(pubObject, userEnv);
-                // console.log("us", rendered);
-
-                // res.render('publication', userEnv);
-                console.log(result.get("user"), JSON.stringify(result.get("user"))); //todo parse creatorid
-
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
@@ -260,7 +231,7 @@ module.exports=function(app,Parse) {
                     url: result.get('url'),
                     title: result.get('title'),
                     doi: result.get('doi'),
-                    type: 'Pub_Book',
+                    pub_class: 'Pub_Book',
                     publication_keys: JSON.stringify(result[0]),
                     publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
@@ -292,7 +263,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Conference',
+                    pub_class: 'Pub_Conference',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -323,7 +294,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Journal_Article',
+                    pub_class: 'Pub_Journal_Article',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -354,7 +325,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Patent',
+                    pub_class: 'Pub_Patent',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -385,7 +356,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Report',
+                    pub_class: 'Pub_Report',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -416,7 +387,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Thesis',
+                    pub_class: 'Pub_Thesis',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -447,7 +418,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Unpublished',
+                    pub_class: 'Pub_Unpublished',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -630,12 +601,12 @@ module.exports=function(app,Parse) {
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
-            console.log(formatted);
             var reqBody = req.body;
 
             // set correct object and send to Parse
             var PubType = (reqBody.type == "Pub_Chapter" ? Parse.Object.extend("Pub_Book") : Parse.Object.extend(reqBody.type));
             var pub = new PubType();
+            var pubClass = reqBody.type; // save field before being overwritten
 
             pub.set('contributors',reqBody.collaborators.split(/\s*,\s*/g));
             pub.set('abstract',reqBody.description);
@@ -724,19 +695,19 @@ module.exports=function(app,Parse) {
 				}
 				console.log("Publication type saved successfully.");
 				return {objectId: response.id};
-            }).then(function(response) {
+            /*}).then(function(response) { // NOTE: likely will be used for future refactoring
 				// add entry into superclass
 				var Publication = Parse.Object.extend("Publication");
 				var publication = new Publication();
-
+                console.log(reqBody, pubClass);
 //				publication.set('groups',reqBody.groups);
 //				publication.set('groupies', reqBody.groupies);
-				publication.set('link', {__type: "Pointer", className: reqBody.type, objectId: response.objectId});
+				publication.set('link', {__type: "Pointer", className: pubClass, objectId: response.objectId});
 				publication.set('year',reqBody.creationDate.substring(0,4));
-				publication.set('type',reqBody.type.replace("Pub_","").replace("_"," "));
+				publication.set('type',pubClass.replace("Pub_","").replace("_"," "));
 
 				console.log("Saving publication superclass.");
-				return publication.save(null);
+				return publication.save(null);*/
 			}).then(function(response) {
 				console.log("Publication created successfully.");
 				res.status(200).json({status:"OK", query: response});
@@ -778,20 +749,38 @@ module.exports=function(app,Parse) {
 
 
     app.post('/publication/:objectId/update',function(req,res,next){
-        var query = new Parse.Query("Publication");
+        var query = new Parse.Query(req.body.pub_class); // xhange to req-bosy.type
         query.get(req.params.objectId,{
             success: function(result) {
                 if (req.body.title) {
-                    result.set("title", req.body.title);
-                    result.set("description", req.body.description);
-                    result.set("year", req.body.publication_date);
-                    result.set("filename", req.body.filename);
-                    result.set("license", req.body.license);
-                    result.set("publication_code", req.body.publication_code);
-                    console.log(req.body.title);
+                    // everything in data form
+                    var keys = Object.keys(req.body);
+                    for (var i=0; i<keys.length; i++) {
+                        if (keys[i] !== 'pub_class') {
+                            if (keys[i] == ('publication_date')) {
+                                result.set(keys[i], new Date(req['body'][keys[i]]));
+                            } else {
+                                result.set(keys[i], req['body'][keys[i]]);
+                            }
+                        }
+                    }
                 }
                 else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
-                result.save();
+                result.save(null, {
+                    success:function(obj) {
+                        console.log("Pub update successfully saved");
+                        res.status(200).json({status:"OK", query: obj});
+                    },
+                    error:function(err) { 
+                        console.log("Pub update not successfully saved", err);
+                        // response.error();
+                        res.status(500).json({status:"Error", msg: 'Could not update publication!' + err});
+                    }
+                    });
+            },
+            error: function(error) {
+                console.log("Error: " + error.code + " " + error.message);
+                res.status(500).json({status:"Error", msg: 'Could not update publication!' + error});
             }
         });
     });

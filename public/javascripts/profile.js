@@ -101,7 +101,6 @@ var CustomTags = React.createClass({
 });
 
 /* TEST REACT TAGS END */
-
 var Profile = React.createClass ({
     getInitialState: function() {
       return { showModal: false,
@@ -444,7 +443,7 @@ var About = React.createClass({
         };
     },
     submitSummary: function() {
-        console.log("SUBMITTING SUMMARY!!!");
+        console.log(this.state.educations);
         var dataForm = {summary: this.state.summary};
         $.ajax({
             url: path + "/updateSummary",
@@ -520,6 +519,7 @@ var About = React.createClass({
             }.bind(this)
         });
         return;
+
     },
     submitEducation: function() {
         var dataForm = {educations: this.state.educations};
@@ -588,8 +588,8 @@ var About = React.createClass({
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"}]; }
-        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"};
+        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
+        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
@@ -597,10 +597,31 @@ var About = React.createClass({
     tabChange: function(index) {
         this.props.tab(index);
     },
-    tabDelete: function(index){
-        console.log("ROAR");
+    updateChildChanges: function() {
+        $.ajax({
+            url: path + "/updateChildChanges",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            processData: false,
+            success: function(data) {
+                var parseData = JSON.parse(data);
+                console.log(data);
+                educationData = parseData[0];
+                workExperienceData = parseData[1];
+                console.log(educationData);
+                this.setState({educations: JSON.stringify(educationData)});
+                this.setState({workExperience: JSON.stringify(workExperienceData)});
+                if (educationData.length == 0) {this.setState({hideEducations: "hide"});}
+                if (workExperienceData.length == 0) {this.setState({hideWorkExperiences: "hide"});}
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateChildChanges", status, err.toString());
+            }.bind(this)
+        });
     },
     render: function() {
+        self = this;
         var workExperience_data = [];
         var educations_data = [];
         var projects_data = [];
@@ -611,13 +632,13 @@ var About = React.createClass({
         if (this.state.workExperience != "") {
             var WEItems = JSON.parse(this.state.workExperience);
             WEItems.forEach(function(item) {
-                workExperience_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} delete={this.tabDelete} type="workExperience" />);
+                workExperience_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} delete={this.tabDelete} type="education" />);
+                educations_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.interests != "") {
@@ -698,7 +719,6 @@ var About = React.createClass({
     }
 });
 var AboutTabObject = React.createClass({
-    mixins: [ParseReact.Mixin],
     getInitialState: function() {
         return {
             key: this.props.identifier,
@@ -709,21 +729,19 @@ var AboutTabObject = React.createClass({
             end: this.props.end,
             data: this.props.data,
             type: this.props.type,
-            delete: this.props.delete,
-            action: ""
+            action: "",
+            display: "show"
             };
-    },
-    observe: function() {
-        return {
-            organization: (new Parse.Query('Organization').equalTo("name", this.state.company))
-        };
     },
     deleteObjectChange: function(index) {
         this.setState({action: "delete"}, function(){ this.submitObjectChange() }.bind(this));
-        this.props.delete.bind(null, i)
+        this.props.delete;
     },
     handleObjectChange: function(e) {
         this.setState({[e.target.name]: e.target.value, action: "update"});
+    },
+    updateChanges: function(){
+        this.props.updateChanges();
     },
     submitObjectChange: function(index) {
         var dataForm = {key: this.state.key, action: this.state.action, title: this.state.title,
@@ -737,8 +755,7 @@ var AboutTabObject = React.createClass({
             data: JSON.stringify(dataForm),
             processData: false,
             success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
+                this.setState({data: data}, function(){this.updateChanges()});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/updateWorkEducation", status, err.toString());
@@ -756,11 +773,12 @@ var AboutTabObject = React.createClass({
                     {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                         <h4 className="h4-resume-item">
                         <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
-                        <p>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full r-editable-50" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}</p>
+                        <span>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}</span>
                         </h4>
                         <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
-                        &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
-                    {(currentUsername == username) ? <p className="no-margin"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+                            &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
+                        {(currentUsername == username) ? <div className="no-margin r-editable-50"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></div> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+
                 </div>
         )
     }
@@ -1075,117 +1093,6 @@ var Data = React.createClass({
     }
 });
 
-var ModelsList = React.createClass({
-  mixins: [ParseReact.Mixin],
-  getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
-                                                          className: "_User",
-                                                          objectId: this.props.objectId}))
-      };
-    },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <ResourceForm fromModelTab={true} list={this.data} />
-        {this.data.models.map(function(model) {
-            rows.push(<ModelListItem objectId={model.objectId}
-                                   collaborators={model.collaborators}
-                                   title={model.title}
-                                   image_URL={model.image_URL}
-                                   keywords={model.keywords}
-                                   number_cited={model.number_cited}
-                                   number_syncholar_factor={model.number_syncholar_factor}
-                                   license={model.license}
-                                   access={model.access}
-                                   abstract={model.abstract} />);
-        })}
-        {rows}
-      </div>
-    );
-  }
-});
-
-var ModelListItem = React.createClass({
-    render: function() {
-        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-        else { var title = this.props.title; }
-        return (
-                <div className="model-box">
-                <div className="model-box-image">
-                    <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
-                </div>
-                <div className="model-box-left model-box-left-full">
-                    <span className="font-15">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                    <b>Collaborators: </b>
-                        {this.props.collaborators.map(function(item, i){
-                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
-                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
-                        })}
-                    <br/>
-                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
-                    </span>
-                </div>
-                {/*
-                <div className="model-box-right">
-                    <h5>Information</h5><br/>
-                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                    {this.props.number_cited} Times Cited<br/>
-                    {this.props.license}<br/>
-                    {this.props.access.map(function(item, i){
-                        if (i == 0) {return item;}
-                        else {return ", " + item;}
-                    })} <br/> Uses This
-                </div>
-                */}
-                </div>
-        )
-    }
-});
-
-var DatumListItem = React.createClass({
-    render: function() {
-        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-        else { var title = this.props.title; }
-        return (
-                <div className="model-box">
-                <div className="model-box-image">
-                    <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
-                </div>
-                <div className="model-box-left model-box-left-full">
-                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                    <span className="font-15">
-                    <b>Authors: </b>
-                        {this.props.collaborators.map(function(item, i){
-                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
-                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
-                        })}
-                    <br/>
-                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
-                    </span>
-                </div>
-                {/*
-                <div className="model-box-right">
-                    <h5>Information</h5><br/>
-                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                    {this.props.number_cited} Times Cited<br/>
-                    {this.props.license}<br/>
-                    {this.props.access.map(function(item, i){
-                        if (i == 0) {return item;}
-                        else {return ", " + item;}
-                    })} <br/> Uses This
-                </div>
-                */}
-                </div>
-        )
-    }
-});
-
 var ResourceForm = React.createClass({
   getInitialState: function() {
     return {
@@ -1256,7 +1163,7 @@ var PublicationAddForm = React.createClass({
          fileType: '',
          title: '',
          description: '',
-         collaborators: [fullname],
+         collaborators: fullname,
         creationDate: '',
          description: '',
          keywords: '',
@@ -1391,11 +1298,11 @@ var PublicationAddForm = React.createClass({
 				</Input>
 				{showBookChapterTitle(this.state.type)}
                 <Input type="text" placeholder={titleLabel} name="title" required onChange={this.handleChange} value={this.state.title} />
-                <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
+                <Input type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
-                <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <Input type="text" placeholder="Keywords:" required name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1415,7 +1322,7 @@ var PublicationAddForm = React.createClass({
 	    this.setState( changedState );
 	},
 
-    handleCollabKeyChange: function(e) {
+    handleCollabKeyChange: function(e) { // TODO delete or fix
         var changedState = {};
         changedState['collaborators'] = e;
         this.setState(changedState);
@@ -1440,7 +1347,7 @@ var PublicationAddForm = React.createClass({
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('http://api.crossref.org/works/', status, err.toString());
-				this.setState({ autoFillStatus: "DOI not found. Try again. EXAMPLE: 10.1126/science.1157784" });
+				this.setState({ autoFillStatus: "DOI not found. Try again." });
 			}.bind(this)
 		});
 		this.setState({ autoFillStatus: "Fetching data..." });
@@ -1571,11 +1478,10 @@ var PublicationAddForm = React.createClass({
 
 	handleSubmitData: function(e) {
         e.preventDefault();
-
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
-        				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
+        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
-        				keywords: JSON.stringify(this.state.keywords), title: this.state.title, type: this.state.type};
+        				keywords: this.state.keywords, title: this.state.title, type: this.state.type};
 		this.fillDetails({type:this.state.type}, pubForm);
 
 		$.ajax({
@@ -1653,18 +1559,16 @@ var ResourceAddForm = React.createClass({
             pictureFeedback: '',
             // form
             picture: null,
-            file: null,
             pictureType: '',
+            file: null,
             fileType: '',
             title: '',
-            description: '',
             collaborators: [fullname],
             creationDate: '',
-            license: '',
-            pubLink: '',
             keywords: [],
+            description: '',
+            license: '',
             url: '',
-           // groupies: []
         };
     },
     // componentDidMount: function() {
@@ -1747,11 +1651,10 @@ var ResourceAddForm = React.createClass({
 */  }
                     <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
+                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                     <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                     <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
-                    <Input type="text" placeholder="Link to publication:" name="pubLink" onChange={this.handleChange} value={this.state.pubLink} />
-                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
-                    <Input type="text" placeholder="URL (Link to patent)" name="url" onChange={this.handleChange} value={this.state.url} />
+                    <Input type="text" placeholder="URL (Link to model)" name="url" onChange={this.handleChange} value={this.state.url} />
                     {/*
                     <div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Users to share:" name="groupies" value={this.state.collaborators} />
@@ -1800,20 +1703,20 @@ var ResourceAddForm = React.createClass({
     },
 	handleSubmitData: function(e) {
         e.preventDefault();
-
-        var dataForm = {file: this.state.file, picture: this.state.picture,
-        				fileType: this.state.fileType, pictureType: this.state.pictureType,
-        				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
-        				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-        				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title, groupies: JSON.stringify(this.state.groupies)};
+        var endpoint = this.props.fromModelTab ? "/model" : "/data";
+        var dataForm = {picture: this.state.picture,
+                        pictureType: this.state.pictureType,
+                        file: this.state.file,
+        				fileType: this.state.fileType,
+                        title: this.state.title,
+        				collaborators: JSON.stringify(this.state.collaborators),
+                        creationDate: this.state.creationDate,
+        				description: this.state.description,
+                        license: this.state.license,
+                        url: this.state.url,
+                        keywords: JSON.stringify(this.state.keywords)};
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
-			var endpoint = this.props.fromModelTab ? "/model" : "/data";
-			var dataFormORIG = {file: this.state.file, picture: this.state.picture,
-				fileType: this.state.fileType, pictureType: this.state.pictureType,
-				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
-				description: this.state.description, license: this.state.license, pubLink: this.state.pubLink,
-				keywords: this.state.keywords, url: this.state.url, title: this.state.title, groupies: this.state.groupies};
 
 			$.ajax({
 				url: path + endpoint,
@@ -1835,7 +1738,10 @@ var ResourceAddForm = React.createClass({
 		}
 		else {
 			var message = (this.props.fromModelTab ? 'Model' : 'Data') + ' could not be added:';
-			if (isValidForm.indexOf('KEYWORDS') > -1) {
+            if (isValidForm.indexOf('COLLABORATORS') > -1) {
+                message += ' Please specify at least one collaborator.';
+            }
+            if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
             this.setState({formFeedback: message, alertVisible: true});
@@ -1897,14 +1803,16 @@ var ResourceAddForm = React.createClass({
 
 	validateForm: function() {
 		var issues = []
-		if (this.state.keywords.length<1) {
-			issues.push("KEYWORDS");
-		}
+        if (this.state.collaborators.length<1) {
+            issues.push("COLLABORATORS");
+        }
+        if (this.state.keywords.length<1) {
+            issues.push("KEYWORDS");
+        }
 		return issues;
 	},
 });
 
-// <<<<<<< HEAD
 function split(val) {
     return val.split( /,\s*/ );
 }
@@ -1934,9 +1842,8 @@ var ProjectAddForm = React.createClass({
          title: '',
          description: '',
          collaborators: [fullname],
-        startDate: '',
+         startDate: '',
          endDate: '',
-         description: '',
          link_to_resources: '',
          client: '',
          keywords: [],

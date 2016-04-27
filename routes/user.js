@@ -319,6 +319,7 @@ module.exports=function(app,Parse) {
         if(currentUser.username == linkUser) {
             var bucket = new aws.S3();
             var s3KeyP = req.params.username + "_profile_picture_" + req.body.randomNumber + "." + req.body.pictureType;
+            console.log(s3KeyP);
             var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
             var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
             var pictureParams = {
@@ -334,14 +335,22 @@ module.exports=function(app,Parse) {
                 }
                 else {
                     var query = new Parse.Query(Parse.User);
-                    query.equalTo("email", currentUser.email);
-                    query.first({
-                        success: function (result) {
-                            result.set("imgUrl",awsLink + s3KeyP);
-                            result.save();
-                            res.status(200).json({status: "Picture Uploaded Successfully!"});
-                        }
-                    });
+                    query.get(currentUser.id).then(
+                        function (result) {
+                            if (result != undefined) {
+                                result.set("imgUrl",awsLink + s3KeyP);
+                                result.save(null, { useMasterKey: true }).then(
+                                    function(){
+                                        //console.log("SAVE SUCCESS");
+                                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                                    },
+                                    function(error){
+                                        console.log(error);
+                                        res.status(500).json({status: "Error uploading summary"})
+                                    }
+                                );
+                            }
+                        });
                 }
             });
         }
@@ -460,7 +469,6 @@ module.exports=function(app,Parse) {
                                     if (workExperienceTemp[i].key == req.body.key) {
                                         workExperienceTemp.splice(i, 1);
                                     }
-                                    console.log(workExperienceTemp);
                                 }
                                 result.set("workExperience", workExperienceTemp);
                             }
@@ -469,9 +477,9 @@ module.exports=function(app,Parse) {
                                 for (var i = 0; i < educationsTemp.length; i++) {
                                     if (educationsTemp[i].key == req.body.key) {
                                         educationsTemp.splice(i, 1);
+                                        result.set("educations", educationsTemp);
                                     }
                                 }
-                                result.set("educations", educationsTemp);
                             }
                             result.save(null, {useMasterKey: true});
                             res.status(200).json({status: "Deleted Successfully!"});
@@ -861,51 +869,48 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:objectId/models_list', is_auth, function (req, res, next) {
-        var innerQuery = new Parse.Query(Parse.User);
-        innerQuery.equalTo("objectId",req.params.objectId);
+        var models =[];
+        var query = new Parse.Query('Model');
+        query.equalTo('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
+        query.each(function(model) {
+            var objectId = model.id;
+            var title = model.get('title');
+            var description = model.get('abstract');
+            var collaborators = model.get('collaborators');
+            var image_URL = model.get('image_URL');
+            var keywords = model.get('keywords');
+            var type = "Other";
+            var creationDate = model.get('createdAt');
+            var license =model.get('license');
+            var url = model.get('url');
+            var model = {
+                objectId: objectId,
+                title: title,
+                description: description,
+                collaborators: collaborators,
+                image_URL: image_URL,
+                type: type,
+                keywords: keywords,
+                start_date: creationDate,
+                license: license,
+                url: url
+            };
+            models.push(model);
+        }).then(function(){
+            var filtered_models=  _.groupBy(models,'type');
+            res.json(filtered_models);
+        }),function(error) {
+            console.log(error);
+            res.render('index', {title: error, path: req.path});
+        }
+    });
 
-        var queryProject = new Parse.Query('Model');
-        queryProject.matchesQuery('user',innerQuery);
-        queryProject.find({
-            success: function(results) {
-                var models = [];
-                for (var i in results) {
-                    var objectId = results[i].id;
-                    var title = "Untitled";
-                    var description = results[i].get('abstract');
-                    var collaborators = results[i].get('collaborators');
-                    var image_URL = results[i].get('image_URL');
-                    var keywords = results[i].get('keywords');
-                    var type = "Other";
-
-                    var creationDate = results[i].get('createdAt');
-                    var license = results[i].get('license');
-                    var url = results[i].get('url');
-
-                    if (results[i].title) { title = results[i].get('title'); }
-                    if (results[i].type) { type = results[i].get('type'); }
-
-                    var model = {
-                        objectId: objectId,
-                        title: title,
-                        description: description,
-                        collaborators: collaborators,
-                        image_URL: image_URL,
-                        type: type,
-                        keywords: keywords,
-                        start_date: creationDate,
-                        license: license,
-                        url: url
-                    }; models.push(model);
-                }
-                var filtered_models=  _.groupBy(models,'type');
-                res.json(filtered_models);
-            },
-            error: function(error) {
-                console.log(error);
-                res.render('index', {title: error, path: req.path});
-            }
-        });
+    app.post('/profile/:username/updateChildChanges', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var data_list = [];
+        data_list.push(currentUser.educations);
+        data_list.push(currentUser.workExperience);
+        res.json(JSON.stringify(data_list));
     });
 
     /************************************
