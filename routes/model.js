@@ -77,6 +77,7 @@ module.exports=function(app,Parse) {
                     result.set("collaborators",JSON.parse(req.body.collaborators)); 
                 }
                 result.save();
+                res.status(200).json({status: "Model Updated Successfully!"});
             }
         });
     });
