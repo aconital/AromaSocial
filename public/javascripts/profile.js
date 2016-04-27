@@ -443,7 +443,7 @@ var About = React.createClass({
         };
     },
     submitSummary: function() {
-        console.log("SUBMITTING SUMMARY!!!");
+        console.log(this.state.educations);
         var dataForm = {summary: this.state.summary};
         $.ajax({
             url: path + "/updateSummary",
@@ -519,6 +519,7 @@ var About = React.createClass({
             }.bind(this)
         });
         return;
+
     },
     submitEducation: function() {
         var dataForm = {educations: this.state.educations};
@@ -596,10 +597,31 @@ var About = React.createClass({
     tabChange: function(index) {
         this.props.tab(index);
     },
-    tabDelete: function(index){
-        console.log("ROAR");
+    updateChildChanges: function() {
+        $.ajax({
+            url: path + "/updateChildChanges",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            processData: false,
+            success: function(data) {
+                var parseData = JSON.parse(data);
+                console.log(data);
+                educationData = parseData[0];
+                workExperienceData = parseData[1];
+                console.log(educationData);
+                this.setState({educations: JSON.stringify(educationData)});
+                this.setState({workExperience: JSON.stringify(workExperienceData)});
+                if (educationData.length == 0) {this.setState({hideEducations: "hide"});}
+                if (workExperienceData.length == 0) {this.setState({hideWorkExperiences: "hide"});}
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateChildChanges", status, err.toString());
+            }.bind(this)
+        });
     },
     render: function() {
+        self = this;
         var workExperience_data = [];
         var educations_data = [];
         var projects_data = [];
@@ -610,13 +632,13 @@ var About = React.createClass({
         if (this.state.workExperience != "") {
             var WEItems = JSON.parse(this.state.workExperience);
             WEItems.forEach(function(item) {
-                workExperience_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} delete={this.tabDelete} type="workExperience" />);
+                workExperience_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                educations_data.push(<AboutTabObject identifier={item.key} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} delete={this.tabDelete} type="education" />);
+                educations_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.interests != "") {
@@ -697,7 +719,6 @@ var About = React.createClass({
     }
 });
 var AboutTabObject = React.createClass({
-    mixins: [ParseReact.Mixin],
     getInitialState: function() {
         return {
             key: this.props.identifier,
@@ -708,21 +729,19 @@ var AboutTabObject = React.createClass({
             end: this.props.end,
             data: this.props.data,
             type: this.props.type,
-            delete: this.props.delete,
-            action: ""
+            action: "",
+            display: "show"
             };
-    },
-    observe: function() {
-        return {
-            organization: (new Parse.Query('Organization').equalTo("name", this.state.company))
-        };
     },
     deleteObjectChange: function(index) {
         this.setState({action: "delete"}, function(){ this.submitObjectChange() }.bind(this));
-        this.props.delete.bind(null, i)
+        this.props.delete;
     },
     handleObjectChange: function(e) {
         this.setState({[e.target.name]: e.target.value, action: "update"});
+    },
+    updateChanges: function(){
+        this.props.updateChanges();
     },
     submitObjectChange: function(index) {
         var dataForm = {key: this.state.key, action: this.state.action, title: this.state.title,
@@ -736,8 +755,7 @@ var AboutTabObject = React.createClass({
             data: JSON.stringify(dataForm),
             processData: false,
             success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
+                this.setState({data: data}, function(){this.updateChanges()});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/updateWorkEducation", status, err.toString());
@@ -1071,117 +1089,6 @@ var Data = React.createClass({
                 <ResourceForm fromModelTab={false} />
                 {itemsList}
             </div>
-        )
-    }
-});
-
-var ModelsList = React.createClass({
-  mixins: [ParseReact.Mixin],
-  getInitialState: function() {
-      return {data: []};
-    },
-  observe: function() {
-      return {
-        models: (new Parse.Query('Model').equalTo("user", {__type: "Pointer",
-                                                          className: "_User",
-                                                          objectId: this.props.objectId}))
-      };
-    },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <ResourceForm fromModelTab={true} list={this.data} />
-        {this.data.models.map(function(model) {
-            rows.push(<ModelListItem objectId={model.objectId}
-                                   collaborators={model.collaborators}
-                                   title={model.title}
-                                   image_URL={model.image_URL}
-                                   keywords={model.keywords}
-                                   number_cited={model.number_cited}
-                                   number_syncholar_factor={model.number_syncholar_factor}
-                                   license={model.license}
-                                   access={model.access}
-                                   abstract={model.abstract} />);
-        })}
-        {rows}
-      </div>
-    );
-  }
-});
-
-var ModelListItem = React.createClass({
-    render: function() {
-        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-        else { var title = this.props.title; }
-        return (
-                <div className="model-box">
-                <div className="model-box-image">
-                    <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
-                </div>
-                <div className="model-box-left model-box-left-full">
-                    <span className="font-15">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                    <b>Collaborators: </b>
-                        {this.props.collaborators.map(function(item, i){
-                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
-                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
-                        })}
-                    <br/>
-                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/model/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
-                    </span>
-                </div>
-                {/*
-                <div className="model-box-right">
-                    <h5>Information</h5><br/>
-                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                    {this.props.number_cited} Times Cited<br/>
-                    {this.props.license}<br/>
-                    {this.props.access.map(function(item, i){
-                        if (i == 0) {return item;}
-                        else {return ", " + item;}
-                    })} <br/> Uses This
-                </div>
-                */}
-                </div>
-        )
-    }
-});
-
-var DatumListItem = React.createClass({
-    render: function() {
-        if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-        else { var title = this.props.title; }
-        return (
-                <div className="model-box">
-                <div className="model-box-image">
-                    <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="contain-image-preview" /></a>
-                </div>
-                <div className="model-box-left model-box-left-full">
-                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
-                    <span className="font-15">
-                    <b>Authors: </b>
-                        {this.props.collaborators.map(function(item, i){
-                            if (i == 0) {return <a href="#" className="body-link">{item}</a>;}
-                            else {return <span>, <a href="#" className="body-link">{item}</a></span>;}
-                        })}
-                    <br/>
-                    <b>Abstract:</b> {this.props.abstract.substr(0,170)}... <a href={"/data/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
-                    </span>
-                </div>
-                {/*
-                <div className="model-box-right">
-                    <h5>Information</h5><br/>
-                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                    {this.props.number_cited} Times Cited<br/>
-                    {this.props.license}<br/>
-                    {this.props.access.map(function(item, i){
-                        if (i == 0) {return item;}
-                        else {return ", " + item;}
-                    })} <br/> Uses This
-                </div>
-                */}
-                </div>
         )
     }
 });

@@ -319,6 +319,7 @@ module.exports=function(app,Parse) {
         if(currentUser.username == linkUser) {
             var bucket = new aws.S3();
             var s3KeyP = req.params.username + "_profile_picture_" + req.body.randomNumber + "." + req.body.pictureType;
+            console.log(s3KeyP);
             var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
             var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
             var pictureParams = {
@@ -334,14 +335,22 @@ module.exports=function(app,Parse) {
                 }
                 else {
                     var query = new Parse.Query(Parse.User);
-                    query.equalTo("email", currentUser.email);
-                    query.first({
-                        success: function (result) {
-                            result.set("imgUrl",awsLink + s3KeyP);
-                            result.save();
-                            res.status(200).json({status: "Picture Uploaded Successfully!"});
-                        }
-                    });
+                    query.get(currentUser.id).then(
+                        function (result) {
+                            if (result != undefined) {
+                                result.set("imgUrl",awsLink + s3KeyP);
+                                result.save(null, { useMasterKey: true }).then(
+                                    function(){
+                                        //console.log("SAVE SUCCESS");
+                                        res.status(200).json({status: "Info Uploaded Successfully!"});
+                                    },
+                                    function(error){
+                                        console.log(error);
+                                        res.status(500).json({status: "Error uploading summary"})
+                                    }
+                                );
+                            }
+                        });
                 }
             });
         }
@@ -460,7 +469,6 @@ module.exports=function(app,Parse) {
                                     if (workExperienceTemp[i].key == req.body.key) {
                                         workExperienceTemp.splice(i, 1);
                                     }
-                                    console.log(workExperienceTemp);
                                 }
                                 result.set("workExperience", workExperienceTemp);
                             }
@@ -469,9 +477,9 @@ module.exports=function(app,Parse) {
                                 for (var i = 0; i < educationsTemp.length; i++) {
                                     if (educationsTemp[i].key == req.body.key) {
                                         educationsTemp.splice(i, 1);
+                                        result.set("educations", educationsTemp);
                                     }
                                 }
-                                result.set("educations", educationsTemp);
                             }
                             result.save(null, {useMasterKey: true});
                             res.status(200).json({status: "Deleted Successfully!"});
@@ -895,6 +903,14 @@ module.exports=function(app,Parse) {
             console.log(error);
             res.render('index', {title: error, path: req.path});
         }
+    });
+
+    app.post('/profile/:username/updateChildChanges', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var data_list = [];
+        data_list.push(currentUser.educations);
+        data_list.push(currentUser.workExperience);
+        res.json(JSON.stringify(data_list));
     });
 
     /************************************
