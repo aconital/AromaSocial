@@ -9,7 +9,11 @@ var CreateOrganization = React.createClass({
      return {
      	createStatus:'',
         // form
-        picture: null, pictureType: '', name: '', description: '', location: ''
+		 picture: null,
+		 pictureType: '',
+		 name: '',
+		 description: '',
+		 location: ''
         };
     },
 	render: function() {
@@ -23,8 +27,7 @@ var CreateOrganization = React.createClass({
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
-										<label htmlFor="name">Name <Required content="*"/></label>
-										<Input type="text" id="name" name="name"  placeholder="Name" onChange={this.handleChange} value={this.state.name} />
+										<Input type="text" id="name" name="name"  label="Name" placeholder="Name" required onChange={this.handleChange} value={this.state.name} />
 										<Input type="file" name="picture" label="Profile Image" help="Please upload the organization's logo."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
 										<Input type="text" name="location" label="Location" placeholder="Location" onChange={this.handleChange} value={this.state.location} />
@@ -79,60 +82,27 @@ var CreateOrganization = React.createClass({
     },
 	handleSubmitData: function(e) {
 		e.preventDefault();
-		var isValidForm = this.validateForm();
-		if (isValidForm.length === 0) {
-			var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType,
-				description: this.state.description, name: this.state.name, location: this.state.location};
-			this.setState({createStatus: 'In progress...'});
-
-			$.ajax({
-				url: '/create/organization',
-				dataType: 'json',
-				contentType: "application/json; charset=utf-8",
-				type: 'POST',
-				data: JSON.stringify(dataForm),
-				processData: false,
-				success: function(data) {
-					this.setState({createStatus: 'Organization created! Redirecting...'});
-					window.location = '../organization/' + data.location;
-				}.bind(this),
-				error: function(xhr, status, err) {
-					console.error('/create/organization', status, err.toString());
-					this.setState({createStatus: 'Error creating organization: ' + err.toString()});
-				}.bind(this)
-			});
-		}
-		else {
-			var message = '';
-			if (isValidForm.indexOf('TITLE') > -1) {
-				message += 'Organization title is required.';
-			}
-			if (isValidForm.indexOf('PICTURE') > -1) {
-				message += ' Please upload an image file ending in png, gif, or jpg.';
-			}
-			this.setState({createStatus: message});
-		}
-		return;
-	},
-	validateForm: function() {
-		var issues = []
-		if (!this.state.name.trim()) {
-			issues.push("TITLE");
-		}
-		if (this.state.picture && ['png','gif','jpg','jpeg'].indexOf(this.state.pictureType) < 0) {
-			issues.push("PICTURE");
-		}
-		return issues;
-	},
-});
-
-var Required = React.createClass({
-	render: function() {
-		var requiredField = {color: 'red', fontWeight: '800'}
-		return (
-			<span style={requiredField}>{this.props.content}</span>
-		);
-	},
+		var dataForm = {picture: this.state.picture,
+						pictureType: this.state.pictureType,
+						description: this.state.description,
+						name: this.state.name,
+						location: this.state.location};
+		$.ajax({
+			url: '/create/organization',
+			dataType: 'json',
+			contentType: "application/json; charset=utf-8",
+			type: 'POST',
+			data: JSON.stringify(dataForm),
+			processData: false,
+			success: function(data){
+				window.location = '../organization/' + data.location;
+			}.bind(this),
+			error: function(xhr, status, err) {
+				console.error('/create/organization', status, err.toString());
+				this.setState({createStatus: 'Error creating organization: ' + err.toString()});
+			}.bind(this)
+		});
+	}
 });
 
 ReactDOM.render(<CreateOrganization />, document.getElementById('content'));
