@@ -78,17 +78,15 @@ var Publication = React.createClass ({
     },
     submitChange: function() {
         var self = this;
-        // var dataForm = {title: this.state.title, description: this.state.description, filename: this.state.filename, publication_date: this.state.publicationDate, publication_code: this.state.publicationCode, license: this.state.license};
         var dataForm = {pub_class: this.state.pub_class, title: this.state.title, abstract: this.state.abstract};
         
         this.state.fields.forEach(function(element, index, array) {
-            if ((element == 'keywords' || element == 'contributors') && (typeof self.state[element] === 'string')) {
+            if ((element == 'keywords' || element == 'contributors' || element == 'supervisors') && (typeof self.state[element] === 'string')) {
                 dataForm[element] = self.state[element].split(/\s*,\s*/g);
             } else {
                 dataForm[element] = self.state[element];
             }
         });
-        console.log(dataForm);
 
         $.ajax({
             url: this.state.updatePath + "/update",
@@ -98,7 +96,6 @@ var Publication = React.createClass ({
             data: JSON.stringify(dataForm),
             // processData: false,
             success: function(data) {
-                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -106,8 +103,7 @@ var Publication = React.createClass ({
             }.bind(this)
         });
     },
-    submitChildChange: function(state) {
-        console.log('hello scc',this.state.updatePath);
+    submitChildChange: function(state) { // TODO delete
         var dataForm = state;
 
         $.ajax({
@@ -124,14 +120,14 @@ var Publication = React.createClass ({
             error: function(xhr, status, err) {
                 console.error(this.state.updatePath + "/update", status, err.toString());
             }.bind(this)
-        });// delete
+        });
 
     },
-    handleTagsInputChange: function(e) { // delete
+    handleTagsInputChange: function(e) { // TODO delete
         var keywordsSubmit = (JSON.stringify(e));
         this.setState({keywords:keywordsSubmit}, function(){ console.log(this.state.keywords); this.submitArrayChange(); }.bind(this));
     },
-    submitArrayChange: function() { //delete
+    submitArrayChange: function() { // TODOdelete
         var dataForm = { keywords: this.state.keywords };
 
         $.ajax({
@@ -152,25 +148,22 @@ var Publication = React.createClass ({
 
         return;
     },
-    populateFields: function() {
-        console.log("this is publlication{0},{1}\n".format(this.state.fields,"why me"));
-        var fields = [],
-            keys = this.state.fields;
-        for (var i=0; keys.length; i++) {
-            if (keys[i] !== undefined) {
-                var field = '<label htmlFor="{0}">{1}:</label><input className="p-editable" type="text" id="{0}" name="{0}" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.{0}}/>'.format(keys[i], keys[i].capitalize());
-                console.log(field);
-                fields.push(field);
-            }
-        }
-        console.log(creatorId, currentUserId, fields);
-        return fields;// delete
-    },
     render: function() {
-        var self = this;
-        var keys = (this.state.fields) ? this.state.fields : [];
+        var self = this,
+            keys = (this.state.fields) ? this.state.fields : [],
+            fileExists = this.state.filename || false,
+            creator = (this.state.user) ? '/profile/' + this.state.user.username : '',
+            avatar = (this.state.user) ? this.state.user.imgUrl : '',
+            details;
+
+        if (this.state.filename || false) {
+            fileExists = <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
+        } else {
+            fileExists = <h2 className="corner"></h2>;
+        }
+
         if (currentUserId == creatorId) {
-            var details = keys.map(function(name) {
+            details = keys.map(function(name) {
                     return <InfoEditField key={name} name={name} initVal={self.state[name]} handleChange={self.handleChildChange} submitChange={self.submitChange} />;
             });
         } else {
@@ -184,32 +177,23 @@ var Publication = React.createClass ({
             <div className="content-wrap-item-page-100">
                 <div className="item-panel">
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
-                    <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>
+                    {fileExists}
                     {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <p className="p-non-editable-bottom-wrap">{this.state.abstract}</p>}
                 </div>
                 <div className="item-panel">
                     <h3 className="no-margin h3-item-wrap h3-item-spacing">Information</h3>
 
-                    <div className="item-info-div">
-                       {(currentUserId == creatorId) ?
-                       (<div className="inner">
-                        <ul className="unstyled list-unstyled">{details}</ul></div>
-                       )
-                       :
-                       (<div className="inner">
-                        <ul className="unstyled list-unstyled">{details}</ul></div>
-                       )}
-
-                       <div><label for="createdAt">Created At:</label>{createdAt}</div>
-                       <div><label for="updatedAt">Updated At:</label>{updatedAt}</div>
-
-                    </div>
+                    <div className="item-info-div"><table className="item-info-table">
+                        <tbody className="inner">
+                            {details}
+                        </tbody>
+                    </table></div>
                 </div>
+
                 <div className="item-panel">
-                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Author(s)</h3>
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Uploaded By</h3>
                     <div className="item-authors-div">
-                        <a href="/profile/saeedghaf" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrink_200_200/p/2/000/100/1fa/01e2c05.jpg" className="contain-panel-small-image"/></a>
-                        <a href="/profile/erinbush" className="nostyle"><img src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/8/005/0b3/113/19491d0.jpg" className="contain-panel-small-image"/></a>
+                        <a href={creator} className="nostyle"><img src={avatar} className="contain-panel-small-image"/></a>
                     </div>
                 </div>
             </div>
@@ -228,13 +212,11 @@ var InfoEditField = React.createClass({
     },
     handleChange: function(e){
         var option = {[this.state.name]: e.target.value};
-        // console.log(this.state.name, option);
         this.setState({currVal: e.target.value});
         this.props.handleChange(option);
     },
     submitChange: function(){
         if (this.state.lastVal != this.state.currVal) {
-            console.log('hgello',{[this.state.name]: this.state.currVal});
             this.props.submitChange({[this.state.name]: this.state.currVal});
             this.setState({lastVal: this.state.currVal});
         } else {
@@ -244,11 +226,13 @@ var InfoEditField = React.createClass({
     render: function() {
         var inliner = {whiteSpace:'nowrap'};
         var capitalized = this.props.name.capitalize();
+
         return (
-            <li><span style={inliner}>
-                <label htmlFor="{this.props.name}">{capitalized}: </label>
-                <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.currVal}/>
-            </span></li>
+            <tr className="no-margin">
+                <td className="publication-table-info-left"><label htmlFor="{this.props.name}">{capitalized}:</label></td>
+                <td className="publication-table-info-right">
+                    <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal} /></td>
+            </tr>
         );
     },
 });
@@ -257,12 +241,13 @@ var InfoField = React.createClass({
     render: function() {
         var inliner = {whiteSpace:'nowrap'};
         var capitalized = this.props.name.capitalize();
-        // var val = this['state'][this.props.name];
+
         return (
-            <li><span>
-                <label for="{this.props.name}">{capitalized}: </label>
-                <span className="no-margin">{this.props.initVal}</span>
-            </span></li>
+            <tr className="p-noneditable">
+                <td className="publication-table-info-left">
+                    <label htmlFor="{this.props.name}">{capitalized}:</label></td>
+                <td className="publication-table-info-right">{this.props.initVal}</td>
+            </tr>
         );
     },
 });

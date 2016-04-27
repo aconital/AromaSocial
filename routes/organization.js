@@ -53,6 +53,12 @@ module.exports=function(app,Parse) {
                     name: result.get('name'),
                     about: result.get('about'),
                     location: result.get('location'),
+                    country: result.get('country'),
+                    prov: result.get('prov'),
+                    city: result.get('city'),
+                    street: result.get('street'),
+                    postalcode: result.get('postalcode'),
+                    website: result.get('website'),
                     organization_imgURL: result.get('profile_imgURL'),
                     cover_imgURL: result.get('cover_imgURL')
                 });
@@ -197,10 +203,14 @@ module.exports=function(app,Parse) {
                     var organization= result[i].attributes.orgId1.attributes;
                     var orgId= result[i].attributes.orgId1.id;
                     var name= organization.name;
-                    var location= "N/A";
+                    var location= "";
                     var profile_imgURL= "/images/organization.png";
-                    if(organization.hasOwnProperty('location')){
-                        location=organization.location;
+                    if (connected_orgs.hasOwnProperty('city')) {
+                        location = connected_orgs.city+', ';
+                    } if (connected_orgs.hasOwnProperty('prov')) {
+                        location = location +connected_orgs.prov +', ';
+                    } if (connected_orgs.hasOwnProperty('country')) {
+                        location = location  +connected_orgs.country;
                     }
                     if(organization.hasOwnProperty('profile_imgURL')){
                         profile_imgURL=organization.profile_imgURL;
@@ -381,13 +391,17 @@ module.exports=function(app,Parse) {
                 var connected_orgs = results[uo].attributes.orgId1.attributes;
                 var orgId = results[uo].attributes.orgId1.id;
                 var name = "N/A";
-                var location = "N/A";
+                var location = "";
                 var orgImgUrl = "/images/organization.png";
                 if (connected_orgs.hasOwnProperty('name')) {
                     name = connected_orgs.name;
                 }
-                if (connected_orgs.hasOwnProperty('location')) {
-                    location = connected_orgs.location;
+                if (connected_orgs.hasOwnProperty('city')) {
+                    location = connected_orgs.city+', ';
+                } if (connected_orgs.hasOwnProperty('prov')) {
+                    location = location +connected_orgs.prov +', ';
+                } if (connected_orgs.hasOwnProperty('country')) {
+                    location = location  +connected_orgs.country;
                 }
                 if (connected_orgs.hasOwnProperty('profile_imgURL')) {
                     orgImgUrl = connected_orgs.profile_imgURL;
@@ -419,13 +433,17 @@ module.exports=function(app,Parse) {
                     var connected_orgs = results[uo].attributes.orgId0.attributes;
                     var orgId = results[uo].attributes.orgId0.id;
                     var name = "N/A";
-                    var location = "N/A";
+                    var location = "";
                     var orgImgUrl = "/images/organization.png";
                     if (connected_orgs.hasOwnProperty('name')) {
                         name = connected_orgs.name;
                     }
-                    if (connected_orgs.hasOwnProperty('location')) {
-                        location = connected_orgs.location;
+                    if (connected_orgs.hasOwnProperty('city')) {
+                        location = connected_orgs.city+', ';
+                    } if (connected_orgs.hasOwnProperty('prov')) {
+                        location = location +connected_orgs.prov +', ';
+                    } if (connected_orgs.hasOwnProperty('country')) {
+                        location = location  +connected_orgs.country;
                     }
                     if (connected_orgs.hasOwnProperty('profile_imgURL')) {
                         orgImgUrl = connected_orgs.profile_imgURL;
@@ -695,6 +713,13 @@ module.exports=function(app,Parse) {
             org.set('name', req.body.name);
             org.set('location', req.body.location ? req.body.location : '');
             org.set('about', req.body.description ? req.body.description : 'About Organization');
+            org.set('country', req.body.country ? req.body.country : 'Unknown');
+            org.set('prov', req.body.prov ? req.body.prov : 'Unknown');
+            org.set('city', req.body.city ? req.body.city : 'Unknown');
+            org.set('street', req.body.street ? req.body.street : 'Unknown');
+            org.set('postalcode', req.body.postalcode ? req.body.postalcode : 'Unknown');
+            org.set('website', req.body.website ? req.body.website : 'Unknown');
+
             org.save(null).then(function(response) {
                 objectId = response.id;
                 // create new Relationship object between organization and admin
@@ -734,6 +759,7 @@ module.exports=function(app,Parse) {
                 console.log('Failed to create new organization, with error code: ' + error.message);
                 res.status(500).json({status: "Creating organization failed. " + error.message});
             });
+
         } else {
             res.status(403).json({status:"Please login!"});
         }

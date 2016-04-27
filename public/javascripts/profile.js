@@ -6,6 +6,9 @@ var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 // require('autocomplete.js').UserAutocomplete();
+String.prototype.capitalize = function() {
+    return (this.charAt(0).toUpperCase() + this.slice(1)).replace("_"," ");
+}
 
 /* TEST REACT TAGS */
 
@@ -894,7 +897,7 @@ var Publications = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
-            var type = items[0].type;
+            var type = items[0].type.capitalize();
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
@@ -910,7 +913,6 @@ var Publications = React.createClass({
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
-                            <tr><td><b>Publication Code: </b></td><td>{item.publication_code}</td></tr>
                         </table>
                         </span>
                     </div>
@@ -1163,7 +1165,7 @@ var PublicationAddForm = React.createClass({
          fileType: '',
          title: '',
          description: '',
-         collaborators: [fullname],
+         collaborators: fullname,
         creationDate: '',
          description: '',
          keywords: '',
@@ -1298,11 +1300,11 @@ var PublicationAddForm = React.createClass({
 				</Input>
 				{showBookChapterTitle(this.state.type)}
                 <Input type="text" placeholder={titleLabel} name="title" required onChange={this.handleChange} value={this.state.title} />
-                <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
+                <Input type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
-                <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <Input type="text" placeholder="Keywords:" required name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1322,7 +1324,7 @@ var PublicationAddForm = React.createClass({
 	    this.setState( changedState );
 	},
 
-    handleCollabKeyChange: function(e) {
+    handleCollabKeyChange: function(e) { // TODO delete or fix
         var changedState = {};
         changedState['collaborators'] = e;
         this.setState(changedState);
@@ -1347,7 +1349,7 @@ var PublicationAddForm = React.createClass({
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error('http://api.crossref.org/works/', status, err.toString());
-				this.setState({ autoFillStatus: "DOI not found. Try again. EXAMPLE: 10.1126/science.1157784" });
+				this.setState({ autoFillStatus: "DOI not found. Try again." });
 			}.bind(this)
 		});
 		this.setState({ autoFillStatus: "Fetching data..." });
@@ -1478,11 +1480,10 @@ var PublicationAddForm = React.createClass({
 
 	handleSubmitData: function(e) {
         e.preventDefault();
-
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
-        				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
+        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
-        				keywords: JSON.stringify(this.state.keywords), title: this.state.title, type: this.state.type};
+        				keywords: this.state.keywords, title: this.state.title, type: this.state.type};
 		this.fillDetails({type:this.state.type}, pubForm);
 
 		$.ajax({
@@ -1814,7 +1815,6 @@ var ResourceAddForm = React.createClass({
 	},
 });
 
-// <<<<<<< HEAD
 function split(val) {
     return val.split( /,\s*/ );
 }

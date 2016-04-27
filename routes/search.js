@@ -42,6 +42,7 @@ module.exports=function(app,Parse) {
     });
 
     app.post('/searchpage', is_auth, function (req, res, next) {
+
         var searchQ = req.body.searchQuery;
         var matching_users = {};
         var matching_models = {};
