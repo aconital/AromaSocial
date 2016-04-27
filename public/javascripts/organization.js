@@ -889,7 +889,7 @@ var EquipmentAddForm = React.createClass({
         				    model_year: this.state.model_year,
                             keywords: JSON.stringify(this.state.keywords),
                             title: this.state.title};
-		                    console.log(dataForm);
+		                    console.log(JSON.stringify(dataForm));
 
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
