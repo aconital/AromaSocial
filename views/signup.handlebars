@@ -1,3 +1,17 @@
+<script>
+function nospaces(t){
+
+    if( t.value.match(/\s/g) || t.value.match(/\./g)  ){
+
+        swal("Sorry...", "You can't have spaces or periods in your username", "error");
+
+        t.value= (t.value.replace(/\s/g,'') .replace(/\./g,''));
+
+    }
+
+}
+</script>
+
 <div class="row">
     <div class="col-md-offset-4 col-md-4">
         <div class="panel panel-default panel-signup">
@@ -10,7 +24,7 @@
             <form name="form" method="post" action="/signup" novalidate="novalidate">
                 <div class="form-group">
                     <label for="username" class="control-label">Username</label>
-                    <input type="text" name="username" id="username" placeholder="Username" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
+                    <input type="text" name="username" id="username" onkeyup="nospaces(this)" placeholder="Username" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
                 </div>
                 <div class="form-group">
                     <label for="fullname" class="control-label">Full Name</label>
