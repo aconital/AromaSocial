@@ -1080,7 +1080,6 @@ var Publications = React.createClass({
                                 <span className="font-15">
                                     <table className="item-box-table-info">
                                         <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
-                                        <tr><td><b>Publication Code: </b></td><td>{item.publication_code}</td></tr>
                                     </table>
                                 </span>
                             </div>
