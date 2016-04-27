@@ -705,6 +705,7 @@ module.exports=function(app,Parse) {
 
         var queryEquipment = new Parse.Query('Equipment');
         queryEquipment.matchesQuery('user',innerQuery);
+        queryEquipment.descending("createdAt");
         queryEquipment.find({
             success: function(results) {
                 var equipments = [];
@@ -738,6 +739,7 @@ module.exports=function(app,Parse) {
 
         var queryProject = new Parse.Query('Project');
         queryProject.matchesQuery('user',innerQuery);
+        queryProject.descending("createdAt");
         queryProject.find({
             success: function(results) {
                 var projects = [];
@@ -784,6 +786,7 @@ module.exports=function(app,Parse) {
 
         var queryProject = new Parse.Query('Publication');
         queryProject.matchesQuery('user',innerQuery);
+        queryProject.descending("createdAt");
         queryProject.find({
             success: function(results) {
                 var publications = [];
@@ -824,6 +827,7 @@ module.exports=function(app,Parse) {
 
         var queryProject = new Parse.Query('Data');
         queryProject.matchesQuery('user',innerQuery);
+        queryProject.descending("createdAt");
         queryProject.find({
             success: function(results) {
                 var data = [];
@@ -869,9 +873,13 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:objectId/models_list', is_auth, function (req, res, next) {
+        var innerQuery = new Parse.Query('User');
+        innerQuery.equalTo("objectId",req.params.objectId);
+
         var models =[];
         var query = new Parse.Query('Model');
-        query.equalTo('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
+        query.matchesQuery('user',innerQuery);
+
         query.each(function(model) {
             var objectId = model.id;
             var title = model.get('title');
@@ -898,7 +906,16 @@ module.exports=function(app,Parse) {
             models.push(model);
         }).then(function(){
             var filtered_models=  _.groupBy(models,'type');
-            res.json(filtered_models);
+
+            var sorted_models = _.chain(filtered_models).map(function(type) {
+                return _.sortBy(type, function(inner) {
+                return -inner.start_date;
+            });
+            }).sortBy(function(outer) {
+                return -outer[0].start_date;
+            }).value();
+
+            res.json(sorted_models);
         }),function(error) {
             console.log(error);
             res.render('index', {title: error, path: req.path});
