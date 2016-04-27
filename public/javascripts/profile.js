@@ -101,7 +101,6 @@ var CustomTags = React.createClass({
 });
 
 /* TEST REACT TAGS END */
-
 var Profile = React.createClass ({
     getInitialState: function() {
       return { showModal: false,
