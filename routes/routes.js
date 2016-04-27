@@ -100,7 +100,14 @@ module.exports=function(app,Parse) {
      user.set("fullname", req.body.fullname);
      user.set("email", req.body.email);
      user.set("imgUrl", "/images/user.png");
-        user.set("interestsTag", []);
+     user.set("interestsTag", []);
+     user.set("interests", []);
+     user.set("summary", "");
+     user.set("educations", []);
+     user.set("about", "");
+     user.set("projects", []);
+     user.set("workExperience", []);
+     
      console.log(req.body.username);
      user.signUp(null, {
         success: function (user) {
