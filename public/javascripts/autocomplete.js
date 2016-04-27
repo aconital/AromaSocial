@@ -27,15 +27,17 @@ $(function() {
                   dataType: 'json',
                   cache: false,
                   success: function(data) {
+                    //console.log("DATA RECEIVED FOR PUBS: ")
                     //console.log(data);
                     var arr = $.grep(data, function(item){
                       console.log(item.title);
                       return item.title.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });
                     $.map(arr, function(item){
-                      console.log("PUB ITEM: ");
-                      console.log(item);
-                      var dlink = "/publication/" + item.objectId;
+                      //console.log("PUB ITEM: ");
+                      //console.log(item);
+                      var type = item.type;
+                      var dlink = "/publication/" + type + "/" + item.objectId;
                       r.push({label: item.title, value: item.title, category: "Publications", link: dlink});
                     });
                   },
@@ -48,7 +50,7 @@ $(function() {
                   dataType: 'json',
                   cache: false,
                   success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     var arr = $.grep(data, function(item){
                       return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });

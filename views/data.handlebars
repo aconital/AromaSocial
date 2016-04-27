@@ -6,7 +6,8 @@
         currentUsername = '{{currentUsername}}',
         currentUserImg = '{{currentUserImg}}',
         access = '{{access}}',
-        collaborators = '{{collaborators}}',
+        url = '{{url}}',
+        collaborators = '{{collaborators}}'.replace(/&quot;/g,'"'),
         objectId = '{{objectId}}',
         creatorId = '{{creatorId}}',
         description = decodeEntities('{{description}}'),
@@ -15,10 +16,7 @@
         filename = decodeEntities('{{filename}}'),
         keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
         license = decodeEntities('{{license}}'),
-        publication_link = '{{publication_link}}',
         groupies = '{{groupies}}',
-        publication_date = '{{publication_date}}',
-        publication_code = decodeEntities('{{publication_code}}'),
         createdAt = '{{createdAt}}',
         updatedAt = '{{updatedAt}}';
 </script>

@@ -29,7 +29,6 @@ module.exports=function(app,Parse) {
         query.get(req.params.objectId,{
             success: function(result) {
                 res.render('model', {
-                    title: 'Model',
                     path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
@@ -38,8 +37,6 @@ module.exports=function(app,Parse) {
                     creatorId: result.get("user").id,
                     access: result.get('access'),
                     description: result.get('abstract'),
-                    feature: result.get('feature'),
-                    other: result.get('other'),
                     hashtags: result.get('hashtags'),
                     title: result.get('title'),
                     image: result.get('image'),
@@ -48,10 +45,9 @@ module.exports=function(app,Parse) {
                     filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
-                    publication_link: result.get('publication_link'),
-                    publication_date: result.get('publication_date'),
                     createdAt: result.get('createdAt'),
-                    updatedAt: result.get('updatedAt')
+                    updatedAt: result.get('updatedAt'),
+                    url: result.get('url')
                 });
             },
             error: function(error) {
@@ -73,8 +69,14 @@ module.exports=function(app,Parse) {
                     result.set("filename", req.body.filename);
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
-                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
-                    result.save();
+                }
+                if (req.body.keywords) {
+                    result.set("keywords",JSON.parse(req.body.keywords)); 
+                }
+                if (req.body.collaborators) {
+                    result.set("collaborators",JSON.parse(req.body.collaborators)); 
+                }
+                result.save();
             }
         });
     });

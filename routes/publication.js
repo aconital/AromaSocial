@@ -29,24 +29,150 @@ var encodeHtmlEntity = function(str) {
 
 module.exports=function(app,Parse) {
 
+    // app.get('/allpublications', function(req, res, next) {
+    //     var currentUser = req.user;
+    //     var query = new Parse.Query('Publication');
+    //     query.find({
+    //         success: function(items) {
+    //             var results = [];
+    //             for (var i = 0; i < items.length; i++) {
+    //                 var obj = items[i];
+    //                 results.push(obj);
+    //             }
+    //             console.log("RESULTS ARE: ");
+    //             console.log(results);
+    //             res.send(results);
+    //         },
+    //         error: function(error) {
+    //             console.log("Error while getting all publications");
+    //         }
+    //     });
+    // });
+
+    
     app.get('/allpublications', function(req, res, next) {
         var currentUser = req.user;
-        var query = new Parse.Query('Publication');
+        var results = [];
+
+        var query = new Parse.Query('Pub_Book');
         query.find({
             success: function(items) {
-                var results = [];
+                //var results = [];
                 for (var i = 0; i < items.length; i++) {
                     var obj = items[i];
                     results.push(obj);
                 }
                 console.log("RESULTS ARE: ");
                 console.log(results);
-                res.send(results);
+                //res.send(results);
             },
             error: function(error) {
                 console.log("Error while getting all publications");
             }
-        });
+        }).then(function() {
+            var query = new Parse.Query('Pub_Conference');
+            query.find({
+                success: function(items) {
+                    //var results = [];
+                    for (var i = 0; i < items.length; i++) {
+                        var obj = items[i];
+                        results.push(obj);
+                    }
+                    console.log("RESULTS ARE: ");
+                    console.log(results);
+                    //res.send(results);
+                },
+                error: function(error) {
+                    console.log("Error while getting all publications");
+                }
+            }).then(function() {
+                var query = new Parse.Query('Pub_Journal_Article');
+                query.find({
+                    success: function(items) {
+                        //var results = [];
+                        for (var i = 0; i < items.length; i++) {
+                            var obj = items[i];
+                            results.push(obj);
+                        }
+                        console.log("RESULTS ARE: ");
+                        console.log(results);
+                        //res.send(results);
+                    },
+                    error: function(error) {
+                        console.log("Error while getting all publications");
+                    }
+                }).then(function() {
+                    var query = new Parse.Query('Pub_Patent');
+                    query.find({
+                        success: function(items) {
+                            //var results = [];
+                            for (var i = 0; i < items.length; i++) {
+                                var obj = items[i];
+                                results.push(obj);
+                            }
+                            console.log("RESULTS ARE: ");
+                            console.log(results);
+                            //res.send(results);
+                        },
+                        error: function(error) {
+                            console.log("Error while getting all publications");
+                        }
+                    }).then(function() {
+                        var query = new Parse.Query('Pub_Report');
+                        query.find({
+                            success: function(items) {
+                                //var results = [];
+                                for (var i = 0; i < items.length; i++) {
+                                    var obj = items[i];
+                                    results.push(obj);
+                                }
+                                console.log("RESULTS ARE: ");
+                                console.log(results);
+                                //res.send(results);
+                            },
+                            error: function(error) {
+                                console.log("Error while getting all publications");
+                            }
+                        }).then(function(){             
+                            var query = new Parse.Query('Pub_Thesis');
+                            query.find({
+                                success: function(items) {
+                                    //var results = [];
+                                    for (var i = 0; i < items.length; i++) {
+                                        var obj = items[i];
+                                        results.push(obj);
+                                    }
+                                    console.log("RESULTS ARE: ");
+                                    console.log(results);
+                                    //res.send(results);
+                                },
+                                error: function(error) {
+                                    console.log("Error while getting all publications");
+                                }
+                            }).then(function() {
+                                var query = new Parse.Query('Pub_Unpublished');
+                                query.find({
+                                    success: function(items) {
+                                        //var results = [];
+                                        for (var i = 0; i < items.length; i++) {
+                                            var obj = items[i];
+                                            results.push(obj);
+                                        }
+                                        console.log("RESULTS ARE: ");
+                                        console.log(results);
+                                        res.send(results);
+                                    },
+                                    error: function(error) {
+                                        console.log("Error while getting all publications");
+                                    }
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+        //res.send(results);
     });
 
 
@@ -61,7 +187,7 @@ module.exports=function(app,Parse) {
 
     app.get('/publication/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var query = new Parse.Query(req.query.type);
+        var query = new Parse.Query(req.query.pub_class);
         console.log(req.query,'\n\n');
 
         query.equalTo("objectId", req.params.objectId);
@@ -69,11 +195,6 @@ module.exports=function(app,Parse) {
             success: function(result) {
                 var pubObject = JSON.parse(JSON.stringify(result[0]));
                 var userEnv = {updatePath: req.path,
-                    // currentUserId: currentUser.id,
-                    // currentUsername: currentUser.username,
-                    // currentUserImg: currentUser.imgUrl,
-                    // objectId: req.params.objectId,
-                    // type: 'Pub_fdgdfgfBook',
                     publication_date: pubObject.publication_date.iso.slice(0,10),
                     user: pubObject.user.objectId}; //creatorId
 
@@ -92,33 +213,9 @@ module.exports=function(app,Parse) {
     app.get('/publication/book/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Book');
-        var objs = [];
 
-        // query.include('user');
-        // query.equalTo("objectId", req.params.objectId);
-        // query.find({
         query.get(req.params.objectId,{
             success: function(result) {
-                // console.log('this is tresult\n', JSON.stringify(result,null,4));
-                // // console.log('this is result to json\n', Object.keys(result.toJSON()));
-                // var pubObject = JSON.parse(JSON.stringify(result[0]));
-                // console.log(pubObject.attributes);
-                // console.log("\nthis is just user\n",JSON.parse(JSON.stringify(result[0])).user.objectId);
-                // var userEnv = {path: req.path,
-                //     currentUserId: currentUser.id,
-                //     currentUsername: currentUser.username,
-                //     currentUserImg: currentUser.imgUrl,
-                //     objectId: req.params.objectId,
-                //     type: 'Pub_Book',
-                //     user: pubObject.user.objectId}; //creatorId
-
-                // // merge the Parse object and fields for current user
-                // var rendered = _.extend(pubObject, userEnv);
-                // console.log("us", rendered);
-
-                // res.render('publication', userEnv);
-                console.log(result.get("user"), JSON.stringify(result.get("user"))); //todo parse creatorid
-
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
@@ -134,7 +231,7 @@ module.exports=function(app,Parse) {
                     url: result.get('url'),
                     title: result.get('title'),
                     doi: result.get('doi'),
-                    type: 'Pub_Book',
+                    pub_class: 'Pub_Book',
                     publication_keys: JSON.stringify(result[0]),
                     publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
@@ -166,7 +263,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Conference',
+                    pub_class: 'Pub_Conference',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -197,7 +294,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Journal_Article',
+                    pub_class: 'Pub_Journal_Article',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -228,7 +325,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Patent',
+                    pub_class: 'Pub_Patent',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -259,7 +356,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Report',
+                    pub_class: 'Pub_Report',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -290,7 +387,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Thesis',
+                    pub_class: 'Pub_Thesis',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -321,7 +418,7 @@ module.exports=function(app,Parse) {
                     keywords: JSON.stringify(result.get('keywords')),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
-                    type: 'Pub_Unpublished',
+                    pub_class: 'Pub_Unpublished',
                     publication_date: result.get('year'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
@@ -528,6 +625,7 @@ module.exports=function(app,Parse) {
                 	pub.set('isbn', reqBody.book_isbn);
                 	pub.set('edition', reqBody.book_edition);
                 	pub.set('page', reqBody.book_pages);
+                    pub.set('type', "book");
 					break;
 				case "Pub_Chapter":
                 	pub.set('publisher', reqBody.book_publisher);
@@ -535,26 +633,31 @@ module.exports=function(app,Parse) {
                 	pub.set('edition', reqBody.book_edition);
                 	pub.set('page', reqBody.book_pages);
 				 	pub.set('chapter', reqBody.book_chapter);
+                    pub.set('type', "chapter");
 					break;
 				case "Pub_Conference":
                     pub.set('conference', reqBody.conf);
                     pub.set('volume', reqBody.conf_volume);
                     pub.set('location', reqBody.conf_location);
+                    pub.set('type', "conference");
 					break;
 				case "Pub_Journal_Article":
                     pub.set('journal', reqBody.journal);
                     pub.set('volume', reqBody.journal_volume);
                     pub.set('issue', reqBody.journal_issue);
                     pub.set('page', reqBody.journal_pages);
+                    pub.set('type', "journal");
 					break;
 				case "Pub_Patent":
                 	pub.set('reference_number', reqBody.patent_refNum);
                 	pub.set('location', reqBody.patent_location);
+                    pub.set('type', "patent");
 					break;
 				case "Pub_Report":
                 	pub.set('publisher', reqBody.report_publisher);
                 	pub.set('number', reqBody.report_number);
                 	pub.set('location', reqBody.report_location);
+                    pub.set('type', "report");
 					break;
 				case "Pub_Thesis":
                 	pub.set('university', reqBody.thesis_university);
@@ -562,9 +665,11 @@ module.exports=function(app,Parse) {
                 	pub.set('degree', reqBody.thesis_degree);
                 	pub.set('department', reqBody.thesis_depart);
                 	pub.set('page', reqBody.thesis_pages);
+                    pub.set('type', "thesis");
 					break;
 				case "Pub_Unpublished":
                 	pub.set('location', reqBody.unpub_location);
+                    pub.set('type', "unpublished");
 					break;
 				default:
 					console.log("Warning: pub type not identified", reqBody.type);
@@ -644,20 +749,50 @@ module.exports=function(app,Parse) {
 
 
     app.post('/publication/:objectId/update',function(req,res,next){
-        var query = new Parse.Query("Publication");
+                    console.log(req.params);
+                    console.log(req.body);
+        var query = new Parse.Query(req.body.pub_class); // xhange to req-bosy.type
         query.get(req.params.objectId,{
             success: function(result) {
                 if (req.body.title) {
-                    result.set("title", req.body.title);
-                    result.set("description", req.body.description);
-                    result.set("year", req.body.publication_date);
-                    result.set("filename", req.body.filename);
-                    result.set("license", req.body.license);
-                    result.set("publication_code", req.body.publication_code);
-                    console.log(req.body.title);
+                    // everything in data form
+                    var keys = Object.keys(req.body);
+                    console.log(keys);
+                    for (var i=0; i<keys.length; i++) {
+                        console.log(keys[i], req['body'][keys[i]]);
+                        if (keys[i] !== 'pub_class') {
+                            if (keys[i] == ('publication_date')) {
+                                result.set(keys[i], new Date(req['body'][keys[i]]));
+                            // } else if (keys[i] == ('collaborators' || 'keywords') && typeof req['body'][keys[i]] === 'string') {
+                            //     result.set(keys[i], req['body'][keys[i]].split(/\s*,\s*/g));
+                            } else {
+                                result.set(keys[i], req['body'][keys[i]]);
+                            }
+                        }
+                    }
+                    // result.set("title", req.body.title);
+                    // result.set("abstract", req.body.abstract);
+                    // result.set("year", req.body.publication_date);
+                    // result.set("filename", req.body.filename);
+                    // result.set("license", req.body.license);
+                    // result.set("publication_code", req.body.publication_code);
                 }
                 else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
-                result.save();
+                result.save(null, {
+                    success:function(obj) {
+                        console.log("Successfully saved");
+                        res.status(200).json({status:"OK", query: obj});
+                    },
+                    error:function(err) { 
+                        console.log("Not successfully saved", err);
+                        // response.error();
+                        res.status(500).json({status:"Error", msg: 'Could not update publication!' + err});
+                    }
+                    });
+            },
+            error: function(error) {
+                console.log("Error: " + error.code + " " + error.message);
+                res.status(500).json({status:"Error", msg: 'Could not update publication!' + error});
             }
         });
     });

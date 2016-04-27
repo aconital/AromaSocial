@@ -1,25 +1,23 @@
 <div id="content"></div>
 <script type="text/javascript">
-    var title = decodeEntities('{{title}}',
+    var title = decodeEntities('{{title}}'),
         path = '{{path}}',
         currentUserId = '{{currentUserId}}',
         currentUsername = '{{currentUsername}}',
         currentUserImg = '{{currentUserImg}}',
         access = '{{access}}',
-        collaborators = '{{collaborators}}',
+        url = '{{url}}',
+        collaborators = '{{collaborators}}'.replace(/&quot;/g,'"'),
         objectId = '{{objectId}}',
         creatorId = '{{creatorId}}',
         description = decodeEntities('{{description}}'),
-        feature = decodeEntities('{{feature}}'),
-        other = decodeEntities('{{other}}'),
         image_URL = decodeEntities('{{image_URL}}'),
+        aws_path = decodeEntities('{{aws_path}}'),
         filename = decodeEntities('{{filename}}'),
         keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
         license = decodeEntities('{{license}}'),
-        publication_link = decodeEntities('{{publication_link}}'),
-        publication_date = '{{publication_date}}',
-        publication_code = decodeEntities('{{publication_code}}'),
+        groupies = '{{groupies}}',
         createdAt = '{{createdAt}}',
-        updatedAt = '{{updatedAt}}');
+        updatedAt = '{{updatedAt}}'
 </script>
 <script type="text/jsx" src="/javascripts/model.js"></script>

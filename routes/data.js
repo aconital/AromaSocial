@@ -54,7 +54,7 @@ module.exports=function(app,Parse) {
                         objectId: req.params.objectId,
                         creatorId: result.get("user").id,
                         access: result.get('author'),
-                        collaborators: result.get('collaborators'),
+                        collaborators: JSON.stringify(result.get('collaborators')),
                         description: result.get('description'),
                         hashtags: result.get('hashtags'),
                         title: result.get('title'),
@@ -65,8 +65,7 @@ module.exports=function(app,Parse) {
                         groupies: result.get('groupies'),
                         image_URL: result.get('image_URL'),
                         aws_path: result.get('path'),
-                        publication: result.get('publication'),
-                        publication_link: result.get('publication_link')
+                        url: result.get('url')
                     });
                 }
                 else {
@@ -166,7 +165,13 @@ module.exports=function(app,Parse) {
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
                     console.log(req.body.filename);
-                } else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
+                }
+                if (req.body.keywords) {
+                    result.set("keywords",JSON.parse(req.body.keywords)); 
+                }
+                if (req.body.collaborators) {
+                    result.set("collaborators",JSON.parse(req.body.collaborators)); 
+                }
                 result.save();
             }
         });

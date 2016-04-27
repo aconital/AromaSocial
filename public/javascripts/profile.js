@@ -51,23 +51,27 @@ var CustomTags = React.createClass({
     },
     handleAddition: function(tag) {
         var tags = this.state.tags;
-        tags.push({
-            id: tags.length + 1,
-            text: tag
-        });
-        this.setState({tags: tags});
+        if ($.inArray('specialword', tags) == -1) {
+            console.log("Duplicate tag found. Not adding.");
+        } else {
+            tags.push({
+                id: tags.length + 1,
+                text: tag
+            });
+            this.setState({tags: tags});
 
-        var ids = this.state.ids;
-        ids.push(this.state.idMap[tag]);
-        this.setState({ids: ids});
-        
+            var ids = this.state.ids;
+            ids.push(this.state.idMap[tag]);
+            this.setState({ids: ids});
+            
 
-        console.log("ID MAP ENTRY: ");
-        console.log(this.state.ids);
-        if (this.state.idMap[tag] != null) {
-            // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
-            // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
-            this.props.changeFunc(this.props.name, this.state.ids);
+            console.log("ID MAP ENTRY: ");
+            console.log(this.state.ids);
+            if (this.state.idMap[tag] != null) {
+                // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
+                // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
+                this.props.changeFunc(this.props.name, this.state.ids);
+            }
         }
     },
     handleDrag: function(tag, currPos, newPos) {
@@ -440,6 +444,7 @@ var About = React.createClass({
         };
     },
     submitSummary: function() {
+        console.log("SUBMITTING SUMMARY!!!");
         var dataForm = {summary: this.state.summary};
         $.ajax({
             url: path + "/updateSummary",
@@ -543,6 +548,7 @@ var About = React.createClass({
         if (JSON.parse(interestsTemp).length == 0) {this.setState({hideInterests: "hide"});}
     },
     handleChange: function(e) {
+        console.log("THIS IS SPARTAAAAAAAAAAAA!");
         this.setState({[e.target.name]:e.target.value});
     },
     handleArrayChange: function(index) {
@@ -582,8 +588,8 @@ var About = React.createClass({
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"}]; }
-        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Major / Degree"};
+        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
+        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
@@ -750,11 +756,12 @@ var AboutTabObject = React.createClass({
                     {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                         <h4 className="h4-resume-item">
                         <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
-                        <p>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full r-editable-50" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}</p>
+                        <span>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}</span>
                         </h4>
                         <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
-                        &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
-                    {(currentUsername == username) ? <p className="no-margin"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></p> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+                            &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
+                        {(currentUsername == username) ? <div className="no-margin r-editable-50"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></div> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+
                 </div>
         )
     }
