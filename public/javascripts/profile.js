@@ -6,6 +6,9 @@ var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 // require('autocomplete.js').UserAutocomplete();
+String.prototype.capitalize = function() {
+    return (this.charAt(0).toUpperCase() + this.slice(1)).replace("_"," ");
+}
 
 /* TEST REACT TAGS */
 
@@ -894,7 +897,7 @@ var Publications = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
-            var type = items[0].type;
+            var type = items[0].type.capitalize();
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
