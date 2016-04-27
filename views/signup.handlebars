@@ -5,6 +5,7 @@ function nospaces(t){
 
         //swal("Sorry...", "You can't have spaces or periods in your username", "error");
         $('#username').tooltip('toggle');
+        setTimeout(function(){ $('#username').tooltip('toggle'); }, 3000);
 
         t.value= (t.value.replace(/\s/g,'') .replace(/\./g,''));
 
