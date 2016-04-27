@@ -3,7 +3,9 @@ function nospaces(t){
 
     if( t.value.match(/\s/g) || t.value.match(/\./g)  ){
 
-        swal("Sorry...", "You can't have spaces or periods in your username", "error");
+        //swal("Sorry...", "You can't have spaces or periods in your username", "error");
+        $('#username').tooltip('toggle');
+        setTimeout(function(){ $('#username').tooltip('toggle'); }, 3000);
 
         t.value= (t.value.replace(/\s/g,'') .replace(/\./g,''));
 
@@ -24,7 +26,7 @@ function nospaces(t){
             <form name="form" method="post" action="/signup" novalidate="novalidate">
                 <div class="form-group">
                     <label for="username" class="control-label">Username</label>
-                    <input type="text" name="username" id="username" onkeyup="nospaces(this)" placeholder="Username" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
+                    <input type="text" name="username" id="username" onkeyup="nospaces(this)" placeholder="Username" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="No spaces or periods in username..."/>
                 </div>
                 <div class="form-group">
                     <label for="fullname" class="control-label">Full Name</label>

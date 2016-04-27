@@ -9,7 +9,7 @@ var CreateOrganization = React.createClass({
      return {
      	createStatus:'',
         // form
-        picture: null, pictureType: '', name: '', description: '', location: ''
+        picture: null, pictureType: '', name: '', description: '', location: '', prov: '', country: '', city: '', street: '', postalcode: '', website: ''
         };
     },
 	render: function() {
@@ -18,8 +18,8 @@ var CreateOrganization = React.createClass({
 				<Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
 				<Row className="show-grid">
 					<Col xs={9} xsOffset={2} md={6} mdOffset={3}>
-						<Panel header="Create Research Network">
-							<p>Description and instructions go here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+						<Panel header="Create homepage for your research lab or network" >
+							<p>Once you have created the home page, remember to connect to your home department, instituation, sponsors, etc. and more importantly invite your members to connect.  <br/> 	 <br/><br/> *If you are creating a homepage for your faculty, department, or an institution, we may already have a placeholder for you! use the autocomplete feature and </p>
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
@@ -27,8 +27,14 @@ var CreateOrganization = React.createClass({
 										<Input type="text" id="name" name="name"  placeholder="Name" onChange={this.handleChange} value={this.state.name} />
 										<Input type="file" name="picture" label="Profile Image" help="Please upload the organization's logo."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-										<Input type="text" name="location" label="Location" placeholder="Location" onChange={this.handleChange} value={this.state.location} />
 										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} />
+										<Input type="text" name="location" label="Address" placeholder="Country,State/province, City" onChange={this.handleChange} value={this.state.location} />
+										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
+										<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
+										<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
+										<Input type="text" name="street" placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
+										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />
+										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
 										<ButtonInput className="center-block" type="submit" value="Create New Organization" />
 									</form>
 								</ListGroupItem>
@@ -82,7 +88,8 @@ var CreateOrganization = React.createClass({
 		var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
 			var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType,
-				description: this.state.description, name: this.state.name, location: this.state.location};
+				description: this.state.description, name: this.state.name, location: this.state.location, country: this.state.country,
+				prov: this.state.prov, city: this.state.city, street: this.state.street, postalcode: this.state.postalcode, website: this.state.website};
 			this.setState({createStatus: 'In progress...'});
 
 			$.ajax({
