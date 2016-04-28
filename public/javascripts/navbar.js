@@ -41,12 +41,15 @@ var FriendRequest = React.createClass({
     },
     render: function() {
 
-        if(this.state.data.length <=0)
+        if(this.state.data.length <=0) {
+            $('.notification-counter').hide();
             return(
                 <li><a href="#" className="align-center">You have no connection requests at this moment. &nbsp;&nbsp;</a></li>
-            ) ;
+            );
+        }
         else {
-            $(".notification-counter").text(this.state.data.length - 1);
+            $('.notification-counter').show();
+            $(".notification-counter").text(this.state.data.length);
             return (
                 <li>
                     {this.state.data.map(person =>
