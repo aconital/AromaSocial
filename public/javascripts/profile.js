@@ -694,7 +694,7 @@ var About = React.createClass({
 
                 <div id="resume-summary-item">
                     <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <p className="p-noneditable">{this.state.summary}</p>}
                     </div>
                 </div>
                 </div>
@@ -1364,7 +1364,14 @@ var PublicationAddForm = React.createClass({
         this.setState(changedState);
     },
 
+    pullAuthors: function(authors) {
+        return authors.map(function(author) {
+            return author.given + ' ' + author.family;
+        });
+    },
+
 	fillDoi: function(e) {
+        var self = this;
 		$.ajax({
 			url: 'http://api.crossref.org/works/' + this.state.doi,
 			type: 'GET',
@@ -1373,10 +1380,10 @@ var PublicationAddForm = React.createClass({
 				var entry = data.message;
 				this.setState({
 					title: entry.title[0],
-					collaborators: (entry.hasOwnProperty('author') ? entry.author[0].given + ' ' + entry.author[0].family : ''),
+					collaborators: (entry.hasOwnProperty('author') ? self.pullAuthors(data.message.author).join(", ") : ''),
 					creationDate: entry.created['date-time'].split('T')[0],//entry['published-print']['date-parts'][0],
 					url: entry.URL,
-					keywords: (entry.hasOwnProperty('subject') ? entry.subject.join(",") : ''),
+					keywords: (entry.hasOwnProperty('subject') ? entry.subject.join(", ") : ''),
 					autoFillStatus: "",
 				});
 				this.fillDetails(entry, null);
