@@ -87,9 +87,9 @@ module.exports=function(app,Parse) {
                     var verified= result[uo].attributes.verified;
                     var user= result[uo].attributes.userId.attributes;
                     var username= user.username;
-                    var fullname="N/A";
-                    var company= "N/A";
-                    var work_title= "N/A";
+                    var fullname="";
+                    var company= "";
+                    var work_title= "";
                     var userImgUrl= "/images/user.png";
                     var work_experience= [];
                     if(user.hasOwnProperty('fullname')){
@@ -146,9 +146,9 @@ module.exports=function(app,Parse) {
                     var verified= result[uo].attributes.verified;
                     var user= result[uo].attributes.userId.attributes;
                     var username= user.username;
-                    var fullname="N/A";
-                    var company= "N/A";
-                    var work_title= "N/A";
+                    var fullname="";
+                    var company= "";
+                    var work_title= "";
                     var userImgUrl= "/images/user.png";
                     var work_experience= [];
                     var id = result[uo].attributes.userId.id;
@@ -203,15 +203,9 @@ module.exports=function(app,Parse) {
                     var organization= result[i].attributes.orgId1.attributes;
                     var orgId= result[i].attributes.orgId1.id;
                     var name= organization.name;
-                    var location= "";
+                    var location= organization.location;
                     var profile_imgURL= "/images/organization.png";
-                    if (connected_orgs.hasOwnProperty('city')) {
-                        location = connected_orgs.city+', ';
-                    } if (connected_orgs.hasOwnProperty('prov')) {
-                        location = location +connected_orgs.prov +', ';
-                    } if (connected_orgs.hasOwnProperty('country')) {
-                        location = location  +connected_orgs.country;
-                    }
+
                     if(organization.hasOwnProperty('profile_imgURL')){
                         profile_imgURL=organization.profile_imgURL;
                     }
@@ -330,33 +324,59 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.post('/organization/:objectId/update',function(req,res,next){
-    	var currentUser = req.user;
+    app.post('/organization/:objectId/update',function(req,res,next) {
         query = new Parse.Query("Organization");
-        query.get(req.params.objectId,{
-            success: function(result) {
-                if (req.body.name && req.body.about && req.body.location) {
-                    result.set("name", req.body.name);
-                    result.set("about", req.body.about);
-                    result.set("location", req.body.location);
-                	result.save();
-                	res.status(200).json({status: "Updated Successfully!"});
-                }
-                else if (req.body.picture && req.body.pictureType) {
-					var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_");
-
-					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-					bucket.putObject(params, function (err, response) {
-						if (err) { console.log("S3 Upload Error:", err); }
-						else {
-							result.set("profile_imgURL", awsLink + params.Key);
-							result.save();
-							res.status(200).json({status: "Picture Uploaded Successfully!"});
-						}
-					});
-                }
+        query.get(req.params.objectId).then(function (result) {
+            result.set("name", req.body.name);
+            result.set("about", req.body.about);
+            result.set("street", req.body.street);
+            result.set("city", req.body.city);
+            result.set("prov", req.body.prov);
+            result.set("country", req.body.country);
+            result.set("postalcode", req.body.postalcode);
+            result.set("website", req.body.website);
+            var location= '';
+            if (req.body.city ) {
+                location = req.body.city;
+            } if (req.body.prov) {
+                if(location!='')
+                    location = location +', ' +req.body.prov;
+                else
+                    location = req.body.prov;
+            } if (req.body.country) {
+                if(location!='')
+                    location = location +', ' +req.body.country;
+                else
+                    location = req.body.country;
             }
+            result.set('location', location);
+
+            result.save();
+            res.status(200).json({status: "Updated Successfully!"});
         });
+    });
+
+    app.post('/organization/:objectId/updatePicture', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("profile_imgURL", awsLink + params.Key);
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
     });
 
     app.get('/organization/:objectId/join-status', is_auth, function (req, res, next) {
@@ -391,18 +411,12 @@ module.exports=function(app,Parse) {
                 var connected_orgs = results[uo].attributes.orgId1.attributes;
                 var orgId = results[uo].attributes.orgId1.id;
                 var name = "N/A";
-                var location = "";
+                var location = connected_orgs.location;
                 var orgImgUrl = "/images/organization.png";
                 if (connected_orgs.hasOwnProperty('name')) {
                     name = connected_orgs.name;
                 }
-                if (connected_orgs.hasOwnProperty('city')) {
-                    location = connected_orgs.city+', ';
-                } if (connected_orgs.hasOwnProperty('prov')) {
-                    location = location +connected_orgs.prov +', ';
-                } if (connected_orgs.hasOwnProperty('country')) {
-                    location = location  +connected_orgs.country;
-                }
+
                 if (connected_orgs.hasOwnProperty('profile_imgURL')) {
                     orgImgUrl = connected_orgs.profile_imgURL;
                 }
@@ -433,18 +447,12 @@ module.exports=function(app,Parse) {
                     var connected_orgs = results[uo].attributes.orgId0.attributes;
                     var orgId = results[uo].attributes.orgId0.id;
                     var name = "N/A";
-                    var location = "";
+                    var location = connected_orgs.location;
                     var orgImgUrl = "/images/organization.png";
                     if (connected_orgs.hasOwnProperty('name')) {
                         name = connected_orgs.name;
                     }
-                    if (connected_orgs.hasOwnProperty('city')) {
-                        location = connected_orgs.city+', ';
-                    } if (connected_orgs.hasOwnProperty('prov')) {
-                        location = location +connected_orgs.prov +', ';
-                    } if (connected_orgs.hasOwnProperty('country')) {
-                        location = location  +connected_orgs.country;
-                    }
+
                     if (connected_orgs.hasOwnProperty('profile_imgURL')) {
                         orgImgUrl = connected_orgs.profile_imgURL;
                     }
@@ -711,14 +719,30 @@ module.exports=function(app,Parse) {
             org.set('cover_imgURL', '/images/banner.png'); // default. replace later
             org.set('profile_imgURL', '/images/organization.png');
             org.set('name', req.body.name);
-            org.set('location', req.body.location ? req.body.location : '');
+           // org.set('location', req.body.location ? req.body.location : '');
             org.set('about', req.body.description ? req.body.description : 'About Organization');
-            org.set('country', req.body.country ? req.body.country : 'Unknown');
-            org.set('prov', req.body.prov ? req.body.prov : 'Unknown');
-            org.set('city', req.body.city ? req.body.city : 'Unknown');
-            org.set('street', req.body.street ? req.body.street : 'Unknown');
-            org.set('postalcode', req.body.postalcode ? req.body.postalcode : 'Unknown');
-            org.set('website', req.body.website ? req.body.website : 'Unknown');
+            org.set('country', req.body.country ? req.body.country : '');
+            org.set('prov', req.body.prov ? req.body.prov : '');
+            org.set('city', req.body.city ? req.body.city : '');
+            org.set('street', req.body.street ? req.body.street : '');
+            org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
+            org.set('website', req.body.website ? req.body.website : '');
+
+            var location= '';
+            if (req.body.city ) {
+                location = req.body.city;
+            } if (req.body.prov) {
+                if(location!='')
+                    location = location +', ' +req.body.prov;
+                else
+                    location = req.body.prov;
+            } if (req.body.country) {
+                if(location!='')
+                    location = location +', ' +req.body.country;
+                else
+                    location = req.body.country;
+            }
+            org.set('location', location);
 
             org.save(null).then(function(response) {
                 objectId = response.id;
@@ -920,7 +944,7 @@ module.exports=function(app,Parse) {
              success: function(results) {
                  var equipments = [];
                  for (var i in results) {
-                     var keywords = ["N/A"];
+                     var keywords = [""];
                      var objectId = results[i].id;
                      var title = results[i].attributes.title;
                      var description = results[i].attributes.description;
@@ -1004,9 +1028,11 @@ module.exports=function(app,Parse) {
         adminQuery.equalTo("userId", { __type: "Pointer", className: "_User", objectId: currentUser.id});
         adminQuery.first({
             success: function(result) {
-                var isAdmin=true;
                 if (result==undefined){
                     var isAdmin=false;
+                }
+                else {
+                    var isAdmin = result.get('isAdmin');
                 }
                 res.json({isAdmin: isAdmin});
             },

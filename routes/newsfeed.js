@@ -192,11 +192,30 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                   console.log("Error: " + error.code + " " + error.message);
               }
           });
-
-
     });
 
-
+    app.get('/organizations', is_auth, function (req, res, next){
+        var orgs =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo('userId',{ __type: "Pointer", className: "_User", objectId: req.user.id});
+        query.include('orgId');
+        query.each(function(result) {
+            var verified = result.get('verified');
+            var orgId = result.get('orgId').id;
+            var orgName = result.get('orgId').get('name');
+            //console.log("VERIFIED " +verified + " ORGID " + orgId + " ORGNAME " + orgName);
+            if (verified) {
+                var org = {
+                    orgId: orgId,
+                    orgName: orgName
+                }
+            }
+            orgs.push(org);
+        }).then(function(){
+            //console.log(JSON.stringify(orgs));
+            res.json(orgs);
+        })
+    });
 
     app.post('/newsfeed', is_auth,function (req, res, next) {
         var NewsFeed = Parse.Object.extend("NewsFeed");

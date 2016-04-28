@@ -13,7 +13,7 @@ String.prototype.capitalize = function() {
 /* TEST REACT TAGS */
 
 var ReactTags = ReactTags.WithContext;
- 
+
 var CustomTags = React.createClass({
     getInitialState: function() {
         var resultArr = [];
@@ -66,7 +66,7 @@ var CustomTags = React.createClass({
             var ids = this.state.ids;
             ids.push(this.state.idMap[tag]);
             this.setState({ids: ids});
-            
+
 
             console.log("ID MAP ENTRY: ");
             console.log(this.state.ids);
@@ -79,12 +79,12 @@ var CustomTags = React.createClass({
     },
     handleDrag: function(tag, currPos, newPos) {
         var tags = this.state.tags;
- 
-        // mutate array 
+
+        // mutate array
         tags.splice(currPos, 1);
         tags.splice(newPos, 0, tag);
- 
-        // re-render 
+
+        // re-render
         this.setState({ tags: tags });
     },
     render: function() {
@@ -255,7 +255,7 @@ var Profile = React.createClass ({
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
                         <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
-                        <ProfileMenu tabs={['About','Connections','Networks', 'Projects', 'Publications', 'Data', 'Models']} />
+                        <ProfileMenu tabs={['About','Colleagues','Connections', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
                     <div className="item-bottom-3">
                         {/*<input className="btn btn-panel" value="Message" />
@@ -363,7 +363,6 @@ var Connections = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                            <span className="font-15">{person.workTitle} @ {person.company}</span>
                         </div>
                     </div>
                     )}
@@ -380,26 +379,63 @@ var Connections = React.createClass({
 
 var Organizations = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {orgs: [],myOrgs:[],isMe:false};
     },
     componentDidMount : function(){
+
         var orgUrl= "/profile/"+objectId+"/organizations";
 
         $.ajax({
             url: orgUrl,
             success: function(data) {
-
-                this.setState({data: data});
+                this.setState({orgs: data.orgs,
+                               myOrgs:data.myOrgs,
+                               isMe:data.isMe});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve orgs");
             }.bind(this)
         });
     },
+    clickJoin:function(org){
+        var connectURL= "/organization/"+org.orgId+"/join";
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                var myOrg = {id:org.orgId,verified:false};
+                var myOrgs =this.state.myOrgs;
+                myOrgs.push(myOrg);
+                this.setState({myOrgs: myOrgs});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't request join org.");
+            }.bind(this)
+        });
+    },
+    isInOrg:function(orgId)
+    {  var orgs =this.state.myOrgs;
+       for (var o in orgs )
+       {
+           if(orgs[o].id === orgId) {
+
+               return orgs[o];
+           }
+       }
+        return null;
+    },
     render: function() {
 
-        var orgList = $.map(this.state.data,function(org) {
+        var orgList = $.map(this.state.orgs,function(org) {
 
+            var join;
+            var matchingOrg= this.isInOrg(org.orgId);
+            if(!this.state.isMe)
+            {
+                if (matchingOrg == null)
+                    join = (<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);
+                else if (!matchingOrg.verified)
+                    join = (<div><a>Request Pending</a></div>);
+            }
             return (
                 <div className="item-box" key={org.orgId} id="item-list">
                     <div className="item-box-left">
@@ -410,10 +446,11 @@ var Organizations = React.createClass({
                     <div className="item-box-right">
                         <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
                         <span className="font-15">{org.location}</span>
+                        {join}
                     </div>
                 </div>
             );
-        });
+        }.bind(this));
         return (
             <div>
                 {orgList}
@@ -655,12 +692,10 @@ var About = React.createClass({
         return (
             <div id="resume">
                 <div id="resume-summary">
-                <div>
-                    <h3 className="summary-margin-top">Summary</h3>
-                </div>
+
                 <div id="resume-summary-item">
                     <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
                     </div>
                 </div>
                 </div>
