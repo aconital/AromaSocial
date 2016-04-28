@@ -164,35 +164,35 @@ $(function() {
 // });
 
 // // Organizations - working
-$(function() {
-     $('.auto2').autocomplete({
-             source: function(req, res) {
-                 $.ajax({
-                   url: '/allorganizations',
-                   dataType: 'json',
-                   cache: false,
-                   success: function(data) {
-                     console.log("SUCCESS!!!!!!!");
-                     console.log(data);
-                     var arr = $.grep(data, function(item){
-                       return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                     });
-                     res($.map(arr, function(item){
-                       return {
-                         label: item.name,
-                         value: item.name
-                       };
-                     }));
-                   },
-                   error: function(xhr) {
-                     console.log("ERROR WTF!!!");
-                     console.log(xhr.status);
-                   }
-                 });
-             },
-             messages: {
-               noResults: '',
-               results: function() {}
-             }
-    });
-});
+// $(function() {
+//      $('.auto2').autocomplete({
+//              source: function(req, res) {
+//                  $.ajax({
+//                    url: '/allorganizations',
+//                    dataType: 'json',
+//                    cache: false,
+//                    success: function(data) {
+//                      console.log("SUCCESS!!!!!!!");
+//                      console.log(data);
+//                      var arr = $.grep(data, function(item){
+//                        return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+//                      });
+//                      res($.map(arr, function(item){
+//                        return {
+//                          label: item.name,
+//                          value: item.name
+//                        };
+//                      }));
+//                    },
+//                    error: function(xhr) {
+//                      console.log("ERROR WTF!!!");
+//                      console.log(xhr.status);
+//                    }
+//                  });
+//              },
+//              messages: {
+//                noResults: '',
+//                results: function() {}
+//              }
+//     });
+// });

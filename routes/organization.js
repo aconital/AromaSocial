@@ -117,6 +117,8 @@ module.exports=function(app,Parse) {
                         people.push(person);
                     }
                 }
+                console.log("PEOPLE: ");
+                console.log(people);
                 var filtered_people=  _.groupBy(people,'title');
                 res.json(filtered_people);
 

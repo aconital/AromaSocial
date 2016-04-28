@@ -482,6 +482,8 @@ var People = React.createClass({
       $.ajax({
           url: peopleUrl,
           success: function(data) {
+              console.log("PEOPLE RECEIVED: ");
+              console.log(data);
               this.setState({data: data});
           }.bind(this),
           error: function(xhr, status, err) {
