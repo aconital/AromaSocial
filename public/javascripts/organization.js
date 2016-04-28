@@ -1284,7 +1284,6 @@ var Models = React.createClass({
   },
   componentDidMount : function(){
     var peopleUrl= "/organization/"+objectId+"/models";
-
     $.ajax({
         url: peopleUrl,
         success: function(models) {

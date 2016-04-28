@@ -5,7 +5,7 @@ var NewsFeed = React.createClass({
           data: []
       };
    },
-  componentDidMount: function() {
+  componentWillMount: function() {
       $.ajax({
           url: '/newsfeeddata',
           dataType: 'json',

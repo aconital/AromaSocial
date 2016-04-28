@@ -601,74 +601,48 @@ module.exports=function(app,Parse) {
     });
     
     app.get('/organization/:objectId/datas', function (req, res, next) {
-        var count = 0;
-        var userResults =[];
-        var dataResults =[];
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
+        var datas =[];
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery);
+        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.include("userId");
-        query.find().then(function(users) {
-            _.each(users, function(user) {
-                var userId = user.get("userId").id;
-                userResults.push(userId);
-                console.log(userId);
-            });
-        }).then(function() {
-            _.each(userResults, function(userId, i) {
-                var queryDatas = new Parse.Query('Data');
-                queryDatas.equalTo("user", {__type: "Pointer",
-                                                  className: "_User",
-                                                  objectId: userId });
-                queryDatas.find().then(function(datas) {
-                    _.each(datas, function(data) {
-                        dataResults.push(data);
-                    });
-                }).then(function(){
-                    count++;
-                    if (userResults.length == count) {
-                        console.log(dataResults);
-                        res.json(dataResults);
-                    }
+        query.each(function(relationship) {
+            var promise = Parse.Promise.as();
+            promise = promise.then(function() {
+                var dataQuery = new Parse.Query("Data");
+                dataQuery.equalTo("user", relationship.get('userId'));
+                return dataQuery.each(function (data) {
+                    datas.push(data);
                 });
             });
+            return promise;
+        }).then(function(){
+            //var filtered_models=  _.groupBy(models,'type');
+            res.json(datas);
+        }, function(error) {
+            console.log(error);
         });
     });
     
     app.get('/organization/:objectId/models', function (req, res, next) {
-        var count = 0;
-        var userResults =[];
-        var modelResults =[];
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
+        var models =[];
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery);
+        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.include("userId");
-        query.find().then(function(users) {
-            _.each(users, function(user) {
-                var userId = user.get("userId").id;
-                userResults.push(userId);
-                console.log(userId);
-            });
-        }).then(function() {
-            _.each(userResults, function(userId, i) {
-                var queryModels = new Parse.Query('Model');
-                queryModels.equalTo("user", {__type: "Pointer",
-                                                  className: "_User",
-                                                  objectId: userId });
-                queryModels.find().then(function(models) {
-                    _.each(models, function(model) {
-                        modelResults.push(model);
-                    });
-                }).then(function(){
-                    count++;
-                    if (userResults.length == count) {
-                        console.log(modelResults);
-                        res.json(modelResults);
-                    }
+        query.each(function(relationship) {
+            var promise = Parse.Promise.as();
+            promise = promise.then(function() {
+                var modelsQuery = new Parse.Query("Model");
+                modelsQuery.equalTo("user", relationship.get('userId'));
+                return modelsQuery.each(function (model) {
+                    models.push(model);
                 });
             });
+            return promise;
+        }).then(function(){
+            //var filtered_models=  _.groupBy(models,'type');
+            res.json(models);
+        }, function(error) {
+            console.log(error);
         });
     });
 

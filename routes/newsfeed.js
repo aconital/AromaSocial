@@ -209,10 +209,10 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                     orgId: orgId,
                     orgName: orgName
                 }
+                orgs.push(org);
             }
-            orgs.push(org);
         }).then(function(){
-            //console.log(JSON.stringify(orgs));
+            console.log(JSON.stringify(orgs));
             res.json(orgs);
         })
     });
