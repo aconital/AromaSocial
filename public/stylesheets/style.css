@@ -6017,17 +6017,17 @@ color: var(--white-color);
 .publication-button:hover {
      background-color: var(--foreground-hover-color);
      border-color: var(--foreground-hover-color);
-     }
+}
 
-     .no-margin{margin:0px;}
-     .no-padding{padding:0px;}
-     .no-padding-right{padding-right:0px;}
-      .no-margin-top{margin-top:0px;}
-      .summary-margin-top{margin-top:5px;}
+.no-margin{margin:0px;}
+.no-padding{padding:0px;}
+.no-padding-right{padding-right:0px;}
+.no-margin-top{margin-top:0px;}
+.summary-margin-top{margin-top:5px;}
 
-            .fifty-fifty{width:50%;}
-      .h4-resume-item{margin:0px;font-weight:normal;}
-      .extend-bottom{display:block;height:60px;width:100%;}
+.fifty-fifty{width:50%;}
+.h4-resume-item{margin:0px;font-weight:normal;}
+.extend-bottom{display:block;height:60px;width:100%;}
 
 .legend-top{font-size:15px;}
 .title-link{color: var(--link-color);}
@@ -6073,6 +6073,10 @@ color: var(--white-color);
     margin-top:10px;
     }
 
+.profile-about-summary {
+    height: auto;
+    width: 100%;
+}
 
 .resume-item + resume-item {
     margin-top:10px;

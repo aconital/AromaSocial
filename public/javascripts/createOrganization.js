@@ -26,7 +26,7 @@ var CreateOrganization = React.createClass({
 										<Input type="text" id="name" name="name"  label="Name" required placeholder="Name" onChange={this.handleChange} value={this.state.name} />
 										<Input type="file" name="picture" label="Profile Image" help="Please upload the organization's logo."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} />
+										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
 										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
 										<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
