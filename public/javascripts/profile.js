@@ -13,7 +13,7 @@ String.prototype.capitalize = function() {
 /* TEST REACT TAGS */
 
 var ReactTags = ReactTags.WithContext;
- 
+
 var CustomTags = React.createClass({
     getInitialState: function() {
         var resultArr = [];
@@ -66,7 +66,7 @@ var CustomTags = React.createClass({
             var ids = this.state.ids;
             ids.push(this.state.idMap[tag]);
             this.setState({ids: ids});
-            
+
 
             console.log("ID MAP ENTRY: ");
             console.log(this.state.ids);
@@ -79,12 +79,12 @@ var CustomTags = React.createClass({
     },
     handleDrag: function(tag, currPos, newPos) {
         var tags = this.state.tags;
- 
-        // mutate array 
+
+        // mutate array
         tags.splice(currPos, 1);
         tags.splice(newPos, 0, tag);
- 
-        // re-render 
+
+        // re-render
         this.setState({ tags: tags });
     },
     render: function() {
@@ -363,7 +363,6 @@ var Connections = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                            <span className="font-15">{person.workTitle} @ {person.company}</span>
                         </div>
                     </div>
                     )}

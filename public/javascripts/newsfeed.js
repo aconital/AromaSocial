@@ -1,102 +1,72 @@
-Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
-Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 var NewsFeed = React.createClass({
-  mixins: [ParseReact.Mixin],
   getInitialState: function() {
-    return {
-      data: [],
-      load: "visible",
-      main: "invisible"
-    };
+      return {
+          organizations: [],
+          data: []
+      };
    },
-  loadFeedFromServer: function() {
-    console.log(this.props.url);
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState({data: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
-  loadGroupsFromServer: function(){
-    $.ajax({
-      url: this.props.groupsurl,
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState({groups: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
-  observe: function() {
-    return {
-      organizations: (new Parse.Query('Relationship').equalTo("userId", {__type: "Pointer",
-                                                                        className: "_User",
-                                                                        objectId: this.props.userId}))
-    };
-  },
   componentDidMount: function() {
-    this.loadFeedFromServer();
+      $.ajax({
+          url: '/newsfeeddata',
+          dataType: 'json',
+          cache: false,
+          success: function(data) {
+              this.setState({data: data});
+          }.bind(this),
+          error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+          }.bind(this)
+      });
+      $.ajax({
+          url: '/organizations',
+          dataType: 'json',
+          cache: false,
+          success: function(data) {
+              this.setState({organizations: data});
+          }.bind(this),
+          error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+          }.bind(this)
+      });
   },
-  render: function() {
-    return (
-      <div className="container-newsFeed">
-        <div className="row">
-          <div className="col-xs-8">
-            {this.state.data.map(function(item) {
-              return (<NewsFeedList
-                                    itemId={item.itemId}
-                                    objId={item.objId}
-                                    userName={item.username}
-                                    fullname={item.fullname}
-                                    userImg={item.userImg}
-                                    image_URL={item.image_URL}
-                                    type={item.type}
-                                    date={item.date}
-                                    year={item.year}
-                                    filename={item.filename}
-                                    title={item.title}
-                                    description={item.description}
-                                    upload={item.upload}
-                                    keywords={item.keywords} />);
-            })}
-          </div>
-          <div className="col-xs-4">
-            <div className = "panel search-panel your-groups">
-              <h4 className="white">ORGANIZATIONS</h4>
-              {this.data.organizations.map(function(organization) {
-                  return (<OrganizationList organizationId={organization.orgId.objectId} organizationName={organization.orgId.name}/>);
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-});
 
-var OrganizationList = React.createClass({
-  mixins: [ParseReact.Mixin],
-  observe: function() {
-    return {
-      organization: (new Parse.Query('Organization').equalTo("objectId", this.props.organizationId).limit(1))
-    };
-  },
-  render: function(){
-    return(
-    <div className="list-group">
-      <a href={"organization/" + this.props.organizationId} className="list-group-item groups-list">&#x25cf; {this.props.organizationName}</a>
-    </div>
-    );
-  }
+  render: function() {
+      return (
+          <div className="container-newsFeed">
+              <div className="row">
+                  <div className="col-xs-8">
+                      {this.state.data.map(function(item) {
+                        return (<NewsFeedList
+                                              itemId={item.itemId}
+                                              objId={item.objId}
+                                              userName={item.username}
+                                              fullname={item.fullname}
+                                              userImg={item.userImg}
+                                              image_URL={item.image_URL}
+                                              type={item.type}
+                                              date={item.date}
+                                              year={item.year}
+                                              filename={item.filename}
+                                              title={item.title}
+                                              description={item.description}
+                                              upload={item.upload}
+                                              keywords={item.keywords} />);
+                      })}
+                    </div>
+                    <div className="col-xs-4">
+                      <div className = "panel search-panel your-groups">
+                        <h4 className="white">ORGANIZATIONS</h4>
+                          {this.state.organizations.map(function(item) {
+                              return (<div className="list-group">
+                                  <a href={"organization/" + item.orgId} className="list-group-item groups-list">&#x25cf; {item.orgName}</a>
+                              </div>);
+                          })}
+                    </div>
+                  </div>
+              </div>
+        </div>
+      );
+    }
 });
 
 // <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>

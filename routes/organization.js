@@ -330,33 +330,38 @@ module.exports=function(app,Parse) {
         });
     });
 
-    app.post('/organization/:objectId/update',function(req,res,next){
-    	var currentUser = req.user;
+    app.post('/organization/:objectId/update',function(req,res,next) {
         query = new Parse.Query("Organization");
-        query.get(req.params.objectId,{
-            success: function(result) {
-                if (req.body.name && req.body.about && req.body.location) {
-                    result.set("name", req.body.name);
-                    result.set("about", req.body.about);
-                    result.set("location", req.body.location);
-                	result.save();
-                	res.status(200).json({status: "Updated Successfully!"});
-                }
-                else if (req.body.picture && req.body.pictureType) {
-					var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_");
-
-					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-					bucket.putObject(params, function (err, response) {
-						if (err) { console.log("S3 Upload Error:", err); }
-						else {
-							result.set("profile_imgURL", awsLink + params.Key);
-							result.save();
-							res.status(200).json({status: "Picture Uploaded Successfully!"});
-						}
-					});
-                }
-            }
+        query.get(req.params.objectId).then(function (result) {
+            result.set("name", req.body.name);
+            result.set("about", req.body.about);
+            result.set("location", req.body.location);
+            result.save();
+            res.status(200).json({status: "Updated Successfully!"});
         });
+    });
+
+    app.post('/organization/:objectId/updatePicture', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("profile_imgURL", awsLink + params.Key);
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
     });
 
     app.get('/organization/:objectId/join-status', is_auth, function (req, res, next) {
@@ -1004,9 +1009,11 @@ module.exports=function(app,Parse) {
         adminQuery.equalTo("userId", { __type: "Pointer", className: "_User", objectId: currentUser.id});
         adminQuery.first({
             success: function(result) {
-                var isAdmin=true;
                 if (result==undefined){
                     var isAdmin=false;
+                }
+                else {
+                    var isAdmin = result.get('isAdmin');
                 }
                 res.json({isAdmin: isAdmin});
             },

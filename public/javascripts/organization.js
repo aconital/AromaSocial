@@ -79,7 +79,7 @@ var Organization = React.createClass ({
     submitPicture: function() { //todo export utils
         var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
-            url: path + "/update",
+            url: path + "/updatePicture",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             type: 'POST',
@@ -197,7 +197,7 @@ var OrganizationMenu = React.createClass ({
     render: function() {
         var self = this;
 
-        var tabMap = {0: <About />,
+        var tabMap = {0: <About objectId={objectId}/>,
                 1: <Connections  />,
                 2: <People />,
                 3: <Equipments objectId={objectId}/>,
@@ -230,6 +230,65 @@ var OrganizationMenu = React.createClass ({
         );
     }
 });
+
+var About = React.createClass({
+    getInitialState: function(){
+        return {about: {about}};
+    },
+    componentDidMount : function() {
+        var isAdminURL= "/organization/"+objectId+"/isAdmin";
+        $.ajax({
+            type: 'GET',
+            url: isAdminURL,
+            success: function(isAdminData) {
+                this.setState({ isAdmin: isAdminData.isAdmin });
+                console.log(isAdminData.isAdmin);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve isAdmin!");
+            }.bind(this)
+        });
+    },
+    handleChange: function(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
+    submitChange: function() {
+        var dataForm = {isAdmin: false, about: this.state.about};
+        var isAdminURL= "/organization/"+objectId+"/isAdmin";
+        $.ajax({
+            url: path + "/update",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+    },
+    render: function() {
+        return(
+            <div>
+                <div className="organization-table-div">
+                    <table className="organization-table-info">
+                        <tbody>
+                        <tr>
+                            <td><b>About: </b></td>
+                            {(this.state.isAdmin) ? <td><textarea rows="5" type="text" className="r-editable r-editable-full" id="about" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea></td> : <td>{about}</td>}
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
+    },
+})
 
 var Connections = React.createClass({
     getInitialState: function() {
@@ -471,8 +530,6 @@ var People = React.createClass({
 var Manage = React.createClass({
     getInitialState: function() {
         return {
-             name: name,
-             about: about,
              orgLocation: orgLocation,
              organization_imgURL: organization_imgURL,
              cover_imgURL: cover_imgURL,
@@ -485,7 +542,7 @@ var Manage = React.createClass({
         this.setState({[e.target.name]:e.target.value});
     },
     submitChange: function() {
-        var dataForm = {name: this.state.name, about: this.state.about, location: this.state.orgLocation};
+        var dataForm = {name: this.state.name, location: this.state.orgLocation};
 
         $.ajax({
             url: path + "/update",
@@ -501,7 +558,6 @@ var Manage = React.createClass({
                 console.error(path + "/update", status, err.toString());
             }.bind(this)
         });
-
         return;
     },
     componentDidMount : function(){
@@ -648,14 +704,6 @@ var Manage = React.createClass({
                     <table className="organization-table-info">
                         <tbody>
                         <tr>
-                            <td><b>Name: </b></td>
-                            <td><input type="text" className="p-editable" name="name" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.name} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>About: </b></td>
-                            <td><textarea rows="5" type="text" className="r-editable r-editable-full" id="about" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea></td>
-                        </tr>
-                        <tr>
                             <td><b>Location: </b></td>
                             <td><input type="text" className="p-editable" name="orgLocation" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgLocation} /></td>
                         </tr>
@@ -687,16 +735,6 @@ var Manage = React.createClass({
 
         )
     }
-});
-
-var About = React.createClass({
-  render: function() {
-    return (
-      <div>
-        {about}
-      </div>
-    )
-  }
 });
 
 var NewsAndEvents = React.createClass({
