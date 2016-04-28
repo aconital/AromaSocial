@@ -588,7 +588,6 @@ var About = React.createClass({
         if (JSON.parse(interestsTemp).length == 0) {this.setState({hideInterests: "hide"});}
     },
     handleChange: function(e) {
-        console.log("THIS IS SPARTAAAAAAAAAAAA!");
         this.setState({[e.target.name]:e.target.value});
     },
     handleArrayChange: function(index) {
@@ -1338,7 +1337,7 @@ var PublicationAddForm = React.createClass({
                 <Input type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
-                <Input type="textarea" placeholder="Description:" name="description" required onChange={this.handleChange} value={this.state.description} />
+                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="Keywords:" required name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
