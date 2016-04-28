@@ -305,6 +305,11 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("imgUrl", pictureUrl);
                                   user.set("about",about);
                                   user.set("interestsTag", []);
+                                  user.set("interests", []);
+                                  user.set("summary", "");
+                                  user.set("educations", []);
+                                  user.set("projects", []);
+                                  user.set("workExperience", []);
                                   user.signUp(null,
                                       {
                                       success: function (user) {
