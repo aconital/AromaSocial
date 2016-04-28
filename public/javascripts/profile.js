@@ -946,7 +946,7 @@ var Publications = React.createClass({
                         <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
-                            <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
+                            <tr><td><b>Abstract: </b></td><td>{item.description}</td></tr>
                         </table>
                         </span>
                     </div>
@@ -1220,7 +1220,7 @@ var PublicationAddForm = React.createClass({
 		var self = this;
 		var titleLabel = "Title:";
 		var autoFillBtn = (
-			<Button className="" onClick={this.fillDoi}>Auto-fill</Button>
+			<Button bsSize="small" onClick={this.fillDoi}>Auto-fill</Button>
         );
         var journalDetailFields = (
         	<div><Input type="text" placeholder="Journal:" name="journal" required onChange={this.handleChange} value={this.state.journal} />
@@ -1337,7 +1337,7 @@ var PublicationAddForm = React.createClass({
                 <Input type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                <Input type="textarea" placeholder="Abstract:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="Keywords:" required name="keywords" onChange={this.handleChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
@@ -1969,7 +1969,6 @@ var ProjectAddForm = React.createClass({
                 <Input type="date" placeholder="End Date:" name="endDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.endDate} />
                 <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                 <Input type="text" placeholder="Client:" name="client" onChange={this.handleChange} value={this.state.client} />
-                <Input type="text" placeholder="Link to Resources:" name="link_to_resources" onChange={this.handleChange} value={this.state.link_to_resources} />
                 <ReactTagsInput type="textarea" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL:" name="url" onChange={this.handleChange} value={this.state.url} />
                     {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
