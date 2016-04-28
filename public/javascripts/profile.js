@@ -379,7 +379,7 @@ var Connections = React.createClass({
 
 var Organizations = React.createClass({
     getInitialState: function() {
-        return {orgs: [],myOrgs:[]};
+        return {orgs: [],myOrgs:[],isMe:false};
     },
     componentDidMount : function(){
 
@@ -389,7 +389,8 @@ var Organizations = React.createClass({
             url: orgUrl,
             success: function(data) {
                 this.setState({orgs: data.orgs,
-                               myOrgs:data.myOrgs});
+                               myOrgs:data.myOrgs,
+                               isMe:data.isMe});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve orgs");
@@ -428,12 +429,13 @@ var Organizations = React.createClass({
 
             var join;
             var matchingOrg= this.isInOrg(org.orgId);
-            if(matchingOrg == null)
-                join=(<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);
-            else
-                if(!matchingOrg.verified)
-                    join=(<div><a  className="item-box-image">Request Pending</a></div>);
-
+            if(!this.state.isMe)
+            {
+                if (matchingOrg == null)
+                    join = (<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);
+                else if (!matchingOrg.verified)
+                    join = (<div><a>Request Pending</a></div>);
+            }
             return (
                 <div className="item-box" key={org.orgId} id="item-list">
                     <div className="item-box-left">

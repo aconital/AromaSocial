@@ -252,13 +252,14 @@ module.exports=function(app,Parse) {
                                 myOrgs.push({id:id,verified:verified});
                             }
                             res.json({orgs:orgs,
-                                     myOrgs:myOrgs});
+                                     myOrgs:myOrgs,
+                                     isMe:false});
                         }
                     });
                 }
                 //user is looking at his own profile
                 else
-                    res.json({orgs:orgs,myOrgs:[]});
+                    res.json({orgs:orgs,myOrgs:[],isMe:true});
             },
             error: function(error) {
                 console.log(error);
