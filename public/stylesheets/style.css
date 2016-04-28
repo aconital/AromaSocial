@@ -6073,6 +6073,10 @@ color: var(--white-color);
     margin-top:10px;
     }
 
+.profile-about-summary {
+    height: auto;
+    width: 100%;
+}
 
 .resume-item + resume-item {
     margin-top:10px;
