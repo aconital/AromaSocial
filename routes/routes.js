@@ -12,13 +12,14 @@ var awsUtils = require('../utils/awsUtils');
 var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
 var nodemailer = require('nodemailer');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+//var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://syncholar.com/auth/linkedin/callback');
 
 var transporter = nodemailer.createTransport("SMTP",{
         service: "Gmail",
         auth: {
-            user: "shariqazz15@gmail.com",
-            pass: "University@1"
+            user: "syncholar@gmail.com",
+            pass: "Fomsummer2016"
         }
     });
 
@@ -223,6 +224,7 @@ app.get('/auth/linkedin/callback',function(req,res){
 
 
         var token= results.access_token;
+
         var linkedin = Linkedin.init(token);
         linkedin.people.me(function(err, $in) {
             var linkedin_ID= $in.id;
@@ -248,7 +250,6 @@ app.get('/auth/linkedin/callback',function(req,res){
                     //user with this linkedin ID exists
                     if(user)
                     {   //login the user
-
                         req.login(user.attributes.username, function(err){
                             if(err) res.redirect('/');
                             res.redirect('/');
@@ -264,18 +265,17 @@ app.get('/auth/linkedin/callback',function(req,res){
                             success: function (result) {
                               if(result)
                               {
-
                                   var activation_code= randomString(3)+result.id+randomString(3);
                                   result.set("activation_code",activation_code);
                                   result.save(null, { useMasterKey: true }).then(function() {
                                           //TODO REFACTOR THIS
-                                          var mailOptions = {
-                                              from: 'Syncholar <no-reply@syncholar.com>', // sender address
+                                         var mailOptions = {
+                                              from: 'Syncholar <syncholar@gmail.com>', // sender address
                                               to: result.attributes.email, // list of receivers
                                               subject: 'Connecting Linkedin to your account', // Subject line
                                               text: '', // plaintext body
                                               html: '<h2><p>Hi '+result.attributes.fullname+',</p> Please click on the following link to connect your linkedin to your account:</h2>' +
-                                                    '<a href="http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
+                                                    '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
                                           };
                                           transporter.sendMail(mailOptions, function(error, info){
                                               if(error){
@@ -288,7 +288,6 @@ app.get('/auth/linkedin/callback',function(req,res){
 
                                           res.render('signin', {Error: error.message, path: req.path})
                                       });
-
                               }
                                 else
                               {

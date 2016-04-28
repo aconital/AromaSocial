@@ -73,60 +73,38 @@ module.exports=function(app,Parse) {
     //not doing it in REACT
     //getting People of org here and pass it to view
     app.get('/organization/:objectId/people', function (req, res, next) {
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
+        var people =[];
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery)
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
         query.include('userId');
-        query.find({
-            success: function(result) {
-                var people =[];
-                for(var uo in result)
-                {
-                    var title= result[uo].attributes.title;
-                    var verified= result[uo].attributes.verified;
-                    var user= result[uo].attributes.userId.attributes;
-                    var username= user.username;
-                    var fullname="";
-                    var company= "";
-                    var work_title= "";
-                    var userImgUrl= "/images/user.png";
-                    var work_experience= [];
-                    if(user.hasOwnProperty('fullname')){
-                        fullname=user.fullname;
-                    }
-                    if(user.hasOwnProperty('imgUrl')){
-                        userImgUrl=user.imgUrl;
-                    }
-                    //getting first work experience, since there is no date on these objects
-                    if(user.hasOwnProperty('work_experiences')){
-                        var work_experience= user.work_experiences[0];
-                        company= work_experience.company;
-                        work_title= work_experience.title;
-                    }
-                    //only show people who are verified by admin
-                    if(verified) {
-                        var person = {
-                            username:username,
-                            title: title,
-                            fullname: fullname,
-                            userImgUrl: userImgUrl,
-                            company: company,
-                            workTitle: work_title
-                        };
-                        people.push(person);
-                    }
-                }
-                console.log("PEOPLE: ");
-                console.log(people);
-                var filtered_people=  _.groupBy(people,'title');
-                res.json(filtered_people);
-
-            },
-            error: function(error) {
-                console.log(error);
-                res.render('index', {title: error, path: req.path});
+        query.each(function(result) {
+            var title= result.get('title');
+            var verified= result.get('verified');
+            var user= result.get('userId');
+            console.log(user);
+            var username= user.get('username');
+            var fullname=user.get('fullname');
+            //var company= "";
+            //var work_title= "";
+            var userImgUrl=user.get('imgUrl');
+            var work_experience= [];
+            if(verified) {
+                var person = {
+                    username:username,
+                    title: title,
+                    fullname: fullname,
+                    userImgUrl: userImgUrl,
+                };
+                people.push(person);
             }
+        }).then(function(){            
+            console.log("PEOPLE: ");
+            console.log(JSON.stringify(people));
+            var filtered_people=  _.groupBy(people,'title');
+            res.json(filtered_people);
+        }, function(err) {
+            console.log("ERROR THROWN: ");
+            console.log(err);
         });
     });
     //Done by Hirad
@@ -466,6 +444,7 @@ module.exports=function(app,Parse) {
                             location: location,
                             orgImgUrl: orgImgUrl
                         };
+                        console.log("Verified org: ");
                         console.log(org);
                         orgs.push(org);
                     }
@@ -601,74 +580,48 @@ module.exports=function(app,Parse) {
     });
     
     app.get('/organization/:objectId/datas', function (req, res, next) {
-        var count = 0;
-        var userResults =[];
-        var dataResults =[];
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
+        var datas =[];
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery);
+        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.include("userId");
-        query.find().then(function(users) {
-            _.each(users, function(user) {
-                var userId = user.get("userId").id;
-                userResults.push(userId);
-                console.log(userId);
-            });
-        }).then(function() {
-            _.each(userResults, function(userId, i) {
-                var queryDatas = new Parse.Query('Data');
-                queryDatas.equalTo("user", {__type: "Pointer",
-                                                  className: "_User",
-                                                  objectId: userId });
-                queryDatas.find().then(function(datas) {
-                    _.each(datas, function(data) {
-                        dataResults.push(data);
-                    });
-                }).then(function(){
-                    count++;
-                    if (userResults.length == count) {
-                        console.log(dataResults);
-                        res.json(dataResults);
-                    }
+        query.each(function(relationship) {
+            var promise = Parse.Promise.as();
+            promise = promise.then(function() {
+                var dataQuery = new Parse.Query("Data");
+                dataQuery.equalTo("user", relationship.get('userId'));
+                return dataQuery.each(function (data) {
+                    datas.push(data);
                 });
             });
+            return promise;
+        }).then(function(){
+            //var filtered_models=  _.groupBy(models,'type');
+            res.json(datas);
+        }, function(error) {
+            console.log(error);
         });
     });
     
     app.get('/organization/:objectId/models', function (req, res, next) {
-        var count = 0;
-        var userResults =[];
-        var modelResults =[];
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
+        var models =[];
         var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery);
+        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.include("userId");
-        query.find().then(function(users) {
-            _.each(users, function(user) {
-                var userId = user.get("userId").id;
-                userResults.push(userId);
-                console.log(userId);
-            });
-        }).then(function() {
-            _.each(userResults, function(userId, i) {
-                var queryModels = new Parse.Query('Model');
-                queryModels.equalTo("user", {__type: "Pointer",
-                                                  className: "_User",
-                                                  objectId: userId });
-                queryModels.find().then(function(models) {
-                    _.each(models, function(model) {
-                        modelResults.push(model);
-                    });
-                }).then(function(){
-                    count++;
-                    if (userResults.length == count) {
-                        console.log(modelResults);
-                        res.json(modelResults);
-                    }
+        query.each(function(relationship) {
+            var promise = Parse.Promise.as();
+            promise = promise.then(function() {
+                var modelsQuery = new Parse.Query("Model");
+                modelsQuery.equalTo("user", relationship.get('userId'));
+                return modelsQuery.each(function (model) {
+                    models.push(model);
                 });
             });
+            return promise;
+        }).then(function(){
+            //var filtered_models=  _.groupBy(models,'type');
+            res.json(models);
+        }, function(error) {
+            console.log(error);
         });
     });
 
