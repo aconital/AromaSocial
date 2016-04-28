@@ -477,8 +477,9 @@ var People = React.createClass({
         return {data: []};
     },
     componentDidMount : function(){
-        var peopleUrl= "/organization/"+objectId+"/people";
-
+      var peopleUrl= "/organization/"+objectId+"/people";
+      console.log("PEOPLE COMPONENT MOUNTED");
+      console.log(peopleUrl);
       $.ajax({
           url: peopleUrl,
           success: function(data) {
