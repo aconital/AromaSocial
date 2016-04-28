@@ -198,6 +198,7 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:objectId/organizations', is_auth, function (req, res, next) {
+
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
         var query = new Parse.Query('Relationship');
@@ -233,7 +234,31 @@ module.exports=function(app,Parse) {
                         orgs.push(org);
                     }
                 }
-                res.json(orgs);
+                //This means the user is looking at someone's else profile
+                //we need to get the orgs of current user so we can add the functionalty of Add Org for the user
+                //if the user is viewing his own profile we don't need to do this since he is already in those orgs
+                if(req.user.id !== req.params.objectId)
+                {   var myOrgs =[];
+                    var innerQuery = new Parse.Query(Parse.User);
+                    innerQuery.equalTo("objectId",req.user.id);
+                    var query = new Parse.Query('Relationship');
+                    query.matchesQuery("userId",innerQuery)
+                    query.find({
+                        success: function (r) {
+                            console.log(r);
+                            for(var mo in r) {
+                                var id= r[mo].attributes.orgId.id;
+                                var verified= r[mo].attributes.verified;
+                                myOrgs.push({id:id,verified:verified});
+                            }
+                            res.json({orgs:orgs,
+                                     myOrgs:myOrgs});
+                        }
+                    });
+                }
+                //user is looking at his own profile
+                else
+                    res.json({orgs:orgs,myOrgs:[]});
             },
             error: function(error) {
                 console.log(error);
@@ -705,6 +730,7 @@ module.exports=function(app,Parse) {
 
         var queryEquipment = new Parse.Query('Equipment');
         queryEquipment.matchesQuery('user',innerQuery);
+        queryEquipment.descending("createdAt");
         queryEquipment.find({
             success: function(results) {
                 var equipments = [];
@@ -738,6 +764,7 @@ module.exports=function(app,Parse) {
 
         var queryProject = new Parse.Query('Project');
         queryProject.matchesQuery('user',innerQuery);
+        queryProject.descending("createdAt");
         queryProject.find({
             success: function(results) {
                 var projects = [];
@@ -784,6 +811,7 @@ module.exports=function(app,Parse) {
 
         var queryProject = new Parse.Query('Publication');
         queryProject.matchesQuery('user',innerQuery);
+        queryProject.descending("createdAt");
         queryProject.find({
             success: function(results) {
                 var publications = [];
@@ -824,6 +852,7 @@ module.exports=function(app,Parse) {
 
         var queryProject = new Parse.Query('Data');
         queryProject.matchesQuery('user',innerQuery);
+        queryProject.descending("createdAt");
         queryProject.find({
             success: function(results) {
                 var data = [];
@@ -869,9 +898,13 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:objectId/models_list', is_auth, function (req, res, next) {
+        var innerQuery = new Parse.Query('User');
+        innerQuery.equalTo("objectId",req.params.objectId);
+
         var models =[];
         var query = new Parse.Query('Model');
-        query.equalTo('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
+        query.matchesQuery('user',innerQuery);
+
         query.each(function(model) {
             var objectId = model.id;
             var title = model.get('title');
@@ -898,7 +931,16 @@ module.exports=function(app,Parse) {
             models.push(model);
         }).then(function(){
             var filtered_models=  _.groupBy(models,'type');
-            res.json(filtered_models);
+
+            var sorted_models = _.chain(filtered_models).map(function(type) {
+                return _.sortBy(type, function(inner) {
+                return -inner.start_date;
+            });
+            }).sortBy(function(outer) {
+                return -outer[0].start_date;
+            }).value();
+
+            res.json(sorted_models);
         }),function(error) {
             console.log(error);
             res.render('index', {title: error, path: req.path});
