@@ -152,7 +152,7 @@ var Organization = React.createClass ({
                             <div id="item-bottom-2-organization" className="item-bottom-2">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -178,7 +178,7 @@ var Organization = React.createClass ({
                             </div>
                             <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                             <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                            <OrganizationMenu tabs={['About', 'Connections', 'People', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                            <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
                         </div>
                     </div>
                 </div>
@@ -198,8 +198,8 @@ var OrganizationMenu = React.createClass ({
         var self = this;
 
         var tabMap = {0: <About objectId={objectId}/>,
-                1: <Connections  />,
-                2: <People />,
+                1: <People />,
+                2: <Connections  />,
                 3: <Equipments objectId={objectId}/>,
                 4: <Projects objectId={objectId}/>,
                 // 4: <Knowledge/>,
@@ -279,8 +279,8 @@ var About = React.createClass({
                     <table className="organization-table-info">
                         <tbody>
                         <tr>
-                            <td><b>About: </b></td>
-                            {(this.state.isAdmin) ? <td><textarea rows="5" type="text" className="r-editable r-editable-full" id="about" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea></td> : <td>{about}</td>}
+
+                            {(this.state.isAdmin) ? <td><textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea></td> : <td>{about}</td>}
                         </tr>
                         </tbody>
                     </table>
@@ -288,6 +288,7 @@ var About = React.createClass({
             </div>
         );
     },
+
 })
 
 var Connections = React.createClass({
@@ -530,7 +531,12 @@ var People = React.createClass({
 var Manage = React.createClass({
     getInitialState: function() {
         return {
-             orgLocation: orgLocation,
+             orgCountry: orgCountry,
+            orgProv: orgProv,
+            orgCity: orgCity,
+            orgStreet: orgStreet,
+            orgPostalcode: orgPostalcode,
+            orgWebsite: orgWebsite,
              organization_imgURL: organization_imgURL,
              cover_imgURL: cover_imgURL,
              pendingPeople: [],
@@ -542,7 +548,7 @@ var Manage = React.createClass({
         this.setState({[e.target.name]:e.target.value});
     },
     submitChange: function() {
-        var dataForm = {name: this.state.name, location: this.state.orgLocation};
+        var dataForm = {name: this.state.name, country: this.state.orgCountry, prov: this.state.orgProv, city: this.state.orgCity, street: this.state.orgStreet, postalcode: this.state.orgPostalcode, website: this.state.orgWebsite};
 
         $.ajax({
             url: path + "/update",
@@ -704,9 +710,29 @@ var Manage = React.createClass({
                     <table className="organization-table-info">
                         <tbody>
                         <tr>
-                            <td><b>Location: </b></td>
-                            <td><input type="text" className="p-editable" name="orgLocation" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgLocation} /></td>
+                            <td><b>Country: </b></td>
+                            <td><input type="text" className="p-editable" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
                         </tr>
+                            <tr>
+                                <td><b>State/Province: </b></td>
+                                <td><input type="text" className="p-editable" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
+                            </tr>
+                            <tr>
+                                <td><b>City: </b></td>
+                                <td><input type="text" className="p-editable" name="orgCity" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
+                            </tr>
+                            <tr>
+                                <td><b>Street Address: </b></td>
+                                <td><input type="text" className="p-editable" name="orgStreet" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
+                            </tr>
+                            <tr>
+                                <td><b>Zip/Postal code: </b></td>
+                                <td><input type="text" className="p-editable" name="orgPostalcode" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
+                            </tr>
+                            <tr>
+                                <td><b>Website URL: </b></td>
+                                <td><input type="text" className="p-editable" name="orgWebsite" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
+                            </tr>
                         <tr>
                             <td><b>Admins: </b></td>
                             <td><div>{adminsList}</div></td>

@@ -255,7 +255,7 @@ var Profile = React.createClass ({
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
                         <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
-                        <ProfileMenu tabs={['About','Connections','Networks', 'Projects', 'Publications', 'Data', 'Models']} />
+                        <ProfileMenu tabs={['About','Colleagues','Connections', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
                     <div className="item-bottom-3">
                         {/*<input className="btn btn-panel" value="Message" />
@@ -690,12 +690,10 @@ var About = React.createClass({
         return (
             <div id="resume">
                 <div id="resume-summary">
-                <div>
-                    <h3 className="summary-margin-top">Summary</h3>
-                </div>
+
                 <div id="resume-summary-item">
                     <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                        {(currentUsername == username) ? <p className="no-margin"><input type="text" className="p-editable" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary} /></p> : <p className="p-noneditable">{this.state.summary}</p>}
                     </div>
                 </div>
                 </div>

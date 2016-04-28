@@ -153,9 +153,9 @@ module.exports=function(app,Parse) {
                     var verified= result[uo].attributes.verified;
                     var user= result[uo].attributes.userId1.attributes;
                     var username= user.username;
-                    var fullname="N/A";
-                    var company= "N/A";
-                    var work_title= "N/A";
+                    var fullname="";
+                    var company= "";
+                    var work_title= "";
                     var userImgUrl= "/images/user.png";
                     var workExperience= [];
 
@@ -211,15 +211,15 @@ module.exports=function(app,Parse) {
                     var verified= result[uo].attributes.verified;
                     var connected_orgs= result[uo].attributes.orgId.attributes;
                     var orgId= result[uo].attributes.orgId.id;
-                    var name= "N/A";
-                    var location= "N/A";
+                    var name= "";
+                    var location= connected_orgs.location;
                     var orgImgUrl= "/images/organization.png";
                     if(connected_orgs.hasOwnProperty('name')){
                         name=connected_orgs.name;
                     }
-                    if(connected_orgs.hasOwnProperty('location')){
+
                         location=connected_orgs.location;
-                    }
+
                     if(connected_orgs.hasOwnProperty('profile_imgURL')){
                         orgImgUrl=connected_orgs.profile_imgURL;
                     }
@@ -615,9 +615,9 @@ module.exports=function(app,Parse) {
                         var user= result[uo].attributes.userId1.attributes;
 
                         var username= user.username;
-                        var fullname="N/A";
-                        var company= "N/A";
-                        var work_title= "N/A";
+                        var fullname="";
+                        var company= "";
+                        var work_title= "";
                         var userImgUrl= "/images/user.png";
                         var workExperience= [];
 
@@ -735,7 +735,7 @@ module.exports=function(app,Parse) {
             success: function(results) {
                 var equipments = [];
                 for (var i in results) {
-                    var keywords = ["N/A"];
+                    var keywords = [""];
                     var objectId = results[i].id;
                     var title = results[i].attributes.title;
                     var description = results[i].attributes.description;

@@ -19,7 +19,7 @@ var CreateOrganization = React.createClass({
 				<Row className="show-grid">
 					<Col xs={9} xsOffset={2} md={6} mdOffset={3}>
 						<Panel header="Create homepage for your research lab or network" >
-							<p>Once you have created the home page, remember to connect to your home department, instituation, sponsors, etc. and more importantly invite your members to connect.  <br/> 	 <br/><br/> *If you are creating a homepage for your faculty, department, or an institution, we may already have a placeholder for you! use the autocomplete feature and </p>
+							<p>Once you have created the home page, remember to connect to your home department, instituation, sponsors, etc. and more importantly invite your members to connect.  </p>
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
@@ -27,13 +27,13 @@ var CreateOrganization = React.createClass({
 										<Input type="file" name="picture" label="Profile Image" help="Please upload the organization's logo."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
 										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} />
-										<Input type="text" name="location" label="Address" placeholder="Country,State/province, City" onChange={this.handleChange} value={this.state.location} />
-										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
-										<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
-										<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
-										<Input type="text" name="street" placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
-										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
+										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
+										<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
+										<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
+										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
+										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />
+
 										<ButtonInput className="center-block" type="submit" value="Create New Organization" />
 									</form>
 								</ListGroupItem>
