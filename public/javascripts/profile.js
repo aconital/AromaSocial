@@ -484,7 +484,7 @@ var About = React.createClass({
     },
     submitSummary: function() {
         console.log(this.state.educations);
-        var dataForm = {summary: this.state.summary};
+        var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r)/gm,'\\n')};
         $.ajax({
             url: path + "/updateSummary",
             dataType: 'json',
