@@ -113,21 +113,65 @@ module.exports=function(app,Parse) {
         }
     });
 
-    app.get('/profile/:objectId/connection-status', is_auth, function (req, res, next) {
+    // app.get('/profile/:objectId/connection-status', is_auth, function (req, res, next) {
+    //     var currentUser = req.user;
+    //     var currentUserId = currentUser.id;
+    //     var otherUserId = req.params.objectId;
+    //     var status;
+    //     var connectQuery1 = new Parse.Query("RelationshipUser");
+    //     var connectQuery2 = new Parse.Query("RelationshipUser");
+    //     connectQuery1.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: otherUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: currentUserId});
+    //     connectQuery2.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: currentUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: otherUserId});
+    //     var connectQuery = Parse.Query.or(connectQuery1, connectQuery2);
+    //     connectQuery.find({
+    //         success: function(result) {
+    //             if (result.length == 0) { status = "not-connected"; }
+    //             else if (result[0].attributes.verified == true) { status = "connected"; }
+    //             else { status = "pending"; }
+    //             res.json(status);
+    //         }, error: function(error) {
+    //             console.log(error);
+    //             res.render('index', {title: error, path: req.path});
+    //         }
+    //     });
+    // });
+
+    app.post('/profile/:objectId/connection-status', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var currentUserId = currentUser.id;
-        var otherUserId = req.params.objectId;
-        var status;
-        var connectQuery1 = new Parse.Query("RelationshipUser");
-        var connectQuery2 = new Parse.Query("RelationshipUser");
-        connectQuery1.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: otherUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: currentUserId});
-        connectQuery2.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: currentUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: otherUserId});
-        var connectQuery = Parse.Query.or(connectQuery1, connectQuery2);
+        var otherUser = req.body.userId;
+        var status = "";
+
+        var query0 = new Parse.Query("RelationshipUser");
+        var query1 = new Parse.Query("RelationshipUser");
+
+        console.log("This user id: ");
+        console.log(currentUser.id);
+        console.log("Other user id: ");
+        console.log(req.body);
+
+        query0.equalTo('userId0', { __type: "Pointer", className: "_User", objectId: currentUser.id});
+        query0.equalTo('userId1', { __type: "Pointer", className: "_User", objectId: otherUser});
+
+        query1.equalTo('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id});
+        query1.equalTo('userId0', { __type: "Pointer", className: "_User", objectId: otherUser});
+
+
+        var connectQuery = Parse.Query.or(query0, query1);
         connectQuery.find({
             success: function(result) {
-                if (result.length == 0) { status = "not-connected"; }
-                else if (result[0].attributes.verified == true) { status = "connected"; }
-                else { status = "pending"; }
+                console.log(result);
+                if (result.length == 0) {
+                    console.log("NOT CONNECTED");
+                    status = "not-connected"; 
+                }
+                else if (result[0].attributes.verified == true) {
+                    console.log("CONNECTED");
+                    status = "connected"; 
+                }
+                else { 
+                    console.log("PENDING");
+                    status = "pending"; 
+                }
                 res.json(status);
             }, error: function(error) {
                 console.log(error);
@@ -553,21 +597,85 @@ module.exports=function(app,Parse) {
         }
     });
 
+    // app.get('/profile/:objectId/connect', is_auth, function (req, res, next) {
+    //     var userId= req.params.objectId;
+    //     var currentUser = req.user
+    //     var Relationship = Parse.Object.extend("RelationshipUser");
+    //     var relation = new Relationship();
+    //     relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
+    //     relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
+    //     relation.set('verified', false);
+    //     relation.save(null,{
+    //         success:function(){
+    //             res.json({success: "Requested Successfully"});
+    //         },
+    //         error:function(error){
+    //             res.json({error:error});
+    //         }
+    //     });
+    // });
+
     app.get('/profile/:objectId/connect', is_auth, function (req, res, next) {
         var userId= req.params.objectId;
         var currentUser = req.user
         var Relationship = Parse.Object.extend("RelationshipUser");
-        var relation = new Relationship();
-        relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
-        relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
-        relation.set('verified', false);
-        relation.save(null,{
-            success:function(){
-                res.json({success: "Requested Successfully"});
-            },
-            error:function(error){
-                res.json({error:error});
+        //var relation = new Relationship();
+
+        var query = new Parse.Query("RelationshipUser");
+        query.equalTo('userId0', { __type: "Pointer", className: "_User", objectId: currentUser.id});
+        query.equalTo('userId1', { __type: "Pointer", className: "_User", objectId: userId});
+
+        query.first(function(result) {
+
+            if (result == undefined) {
+                // entry doesn't exist i.e the person we're trying to connect to hasn't sent us a request
+                var relation = new Relationship();
+                relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
+                relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
+
+                console.log("No entry found for: ");
+                console.log(currentUser.id);
+                console.log(userId);
+                relation.set('verified', false);
+
+                relation.save(null,{
+                    success:function(){
+                        res.json({success: "Requested Successfully"});
+                    },
+                    error:function(error){
+                        res.json({error:error});
+                    }
+                });
+                res.json("pending");
+
+            } else {
+                // entry exists
+                console.log("Entry found for: ");
+                console.log(currentUser.id);
+                console.log(userId);
+                result.set('verified', true);              
+                result.save(null,{
+                    success:function(){
+                        res.json({success: "Successfully set friend's verified status"});
+                    },
+                    error:function(error){
+                        res.json({error:error});
+                    }
+                });
+                res.json("connected");
             }
+        }).then(function(response) {
+            // relation.save(null,{
+            //     success:function(){
+            //         res.json({success: "Requested Successfully"});
+            //     },
+            //     error:function(error){
+            //         res.json({error:error});
+            //     }
+            // });
+        }, function(err) {
+            console.log("Connecting to friend threw error: ");
+            console.log(err);
         });
     });
 
@@ -624,10 +732,8 @@ module.exports=function(app,Parse) {
                 people.push(person);
             }
         }).then(function(){
-            console.log("Successfully got friendrequest")
             res.json(people);
         }, function(err) {
-            console.log("OH NOooooooooooo!");
             console.log(err);
         });
     });
@@ -659,7 +765,7 @@ module.exports=function(app,Parse) {
                             relation.set('verified', true);
                             relation.save(null,{
                                 success:function(){
-                                    res.json({scucess:"approved"});
+                                    res.json({success:"approved"});
                                 },
                                 error:function(error){
                                     res.json({error:error});
