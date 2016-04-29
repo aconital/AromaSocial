@@ -600,68 +600,36 @@ module.exports=function(app,Parse) {
 
     app.get('/friendrequest', is_auth, function(req,res,next){
         var currentUser= req.user;
+        var people =[];
+        var query = new Parse.Query('RelationshipUser');
+        query.equalTo("verified",false)
+        query.include('userId1')
+        query.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: currentUser.id})
+        query.each(function(result) {
+            console.log("In each");
+            var title= result.get('title');
+            var user= result.get('userId1');
+            var username= user.get('username');
+            var fullname= user.get('fullname');
+            var userImgUrl= user.get('imgUrl');
+            var verified= result.get('verified');
 
-            var query = new Parse.Query('RelationshipUser');
-            query.equalTo("verified",false)
-            query.include('userId1')
-            query.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: currentUser.id})
-            query.find({
-                success: function(result) {
-                    var people =[];
-                    for(var uo in result)
-                    {
-                        var title= result[uo].attributes.title;
-                        var verified= result[uo].attributes.verified;
-
-                        var user= result[uo].attributes.userId1.attributes;
-
-                        var username= user.username;
-                        var fullname="";
-                        var company= "";
-                        var work_title= "";
-                        var userImgUrl= "/images/user.png";
-                        var workExperience= [];
-
-                        if(user.hasOwnProperty('fullname')){
-                            fullname=user.fullname;
-                        }
-                        if(user.hasOwnProperty('imgUrl')){
-                            userImgUrl=user.imgUrl;
-                        }
-                        //getting first work experience, since there is no date on these objects
-                        if(user.hasOwnProperty('workExperience')){
-                            if(user.workExperience.length>0) {
-                                var workExperience = user.workExperience[0];
-                                company = workExperience.company;
-                                work_title = workExperience.title;
-                            }
-                        }
-
-                        //only show people who are verified by admin
-                        if(!verified)
-                        {
-                            var person = {
-                                username:username,
-                                title: title,
-                                fullname: fullname,
-                                userImgUrl: userImgUrl,
-                                company: company,
-                                work_title: work_title
-                            };
-                            people.push(person);
-
-                        }
-
-                    }
-                    res.json(people);
-
-
-                },
-                error: function(error) {
-                    console.log(error);
-                    res.render('home', {title: error, path: req.path});
-                }
-            });
+            if(!verified) {
+                var person = {
+                    username:username,
+                    title: title,
+                    fullname: fullname,
+                    userImgUrl: userImgUrl
+                };
+                people.push(person);
+            }
+        }).then(function(){
+            console.log("Successfully got friendrequest")
+            res.json(people);
+        }, function(err) {
+            console.log("OH NOooooooooooo!");
+            console.log(err);
+        });
     });
 
     app.post('/friendrequest/', is_auth, function (req, res, next) {

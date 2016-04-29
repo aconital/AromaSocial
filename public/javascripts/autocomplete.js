@@ -38,7 +38,7 @@ $(function() {
                       //console.log(item);
                       var type = item.type;
                       var dlink = "/publication/" + type + "/" + item.objectId;
-                      r.push({label: item.title, value: item.title, category: "Publications", link: dlink});
+                      r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink});
                     });
                   },
                   error: function(xhr) {
