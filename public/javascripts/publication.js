@@ -242,12 +242,25 @@ var InfoField = React.createClass({
     render: function() {
         var inliner = {whiteSpace:'nowrap'};
         var capitalized = this.props.name.capitalize();
+        var element;
+        
+        if (typeof this.props.initVal !== 'string') {
+            var tagArray = this.props.initVal;
+            var tagsElement = tagArray.map(function(item) { 
+                return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;
+            });
+            element = ( tagsElement );
+        } else {
+            element = ( this.props.initVal );
+        }
 
         return (
-            <tr className="p-noneditable">
+            <tr>
                 <td className="publication-table-info-left">
-                    <label htmlFor="{this.props.name}">{capitalized}:</label></td>
-                <td className="publication-table-info-right">{this.props.initVal}</td>
+                    <label htmlFor="{this.props.name}">{capitalized}:</label>
+                </td>
+                <td className="publication-table-info-right">{element}
+                </td>
             </tr>
         );
     },

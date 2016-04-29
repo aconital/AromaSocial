@@ -452,10 +452,10 @@ module.exports=function(app,Parse) {
                         type: "book",
                         filename: object.attributes.filename,
                         title: object.attributes.title,
-                        hashtags: object.attributes.hashtags,
+                        keywords: object.attributes.keywords,
                         date: object.createdAt,
                         year: object.attributes.year,
-                        contributers: object.attributes.contributers,
+                        contributors: object.attributes.contributors,
                         description: object.attributes.abstract,
                         id: object.id
                     });
@@ -473,10 +473,10 @@ module.exports=function(app,Parse) {
                             type: "conference",
                             filename: object.attributes.filename,
                             title: object.attributes.title,
-                            hashtags: object.attributes.hashtags,
+                            keywords: object.attributes.keywords,
                             date: object.createdAt,
                             year: object.attributes.year,
-                            contributers: object.attributes.contributers,
+                            contributors: object.attributes.contributors,
                             description: object.attributes.abstract,
                             id: object.id
                         });
@@ -495,10 +495,10 @@ module.exports=function(app,Parse) {
                                 type: "journal",
                                 filename: object.attributes.filename,
                                 title: object.attributes.title,
-                                hashtags: object.attributes.hashtags,
+                                keywords: object.attributes.keywords,
                                 date: object.createdAt,
                                 year: object.attributes.year,
-                                contributers: object.attributes.contributers,
+                                contributors: object.attributes.contributors,
                                 description: object.attributes.abstract,
                                 id: object.id
                             });
@@ -516,10 +516,10 @@ module.exports=function(app,Parse) {
                                     type: "patent",
                                     filename: object.attributes.filename,
                                     title: object.attributes.title,
-                                    hashtags: object.attributes.hashtags,
+                                    keywords: object.attributes.keywords,
                                     date: object.createdAt,
                                     year: object.attributes.year,
-                                    contributers: object.attributes.contributers,
+                                    contributors: object.attributes.contributors,
                                     description: object.attributes.abstract,
                                     id: object.id
                                 });
@@ -537,10 +537,10 @@ module.exports=function(app,Parse) {
                                         type: "report",
                                         filename: object.attributes.filename,
                                         title: object.attributes.title,
-                                        hashtags: object.attributes.hashtags,
+                                        keywords: object.attributes.keywords,
                                         date: object.createdAt,
                                         year: object.attributes.year,
-                                        contributers: object.attributes.contributers,
+                                        contributors: object.attributes.contributors,
                                         description: object.attributes.abstract,
                                         id: object.id
                                     });
@@ -558,10 +558,10 @@ module.exports=function(app,Parse) {
                                             type: "thesis",
                                             filename: object.attributes.filename,
                                             title: object.attributes.title,
-                                            hashtags: object.attributes.hashtags,
+                                            keywords: object.attributes.keywords,
                                             date: object.createdAt,
                                             year: object.attributes.year,
-                                            contributers: object.attributes.contributers,
+                                            contributors: object.attributes.contributors,
                                             description: object.attributes.abstract,
                                             id: object.id
                                         });
@@ -579,10 +579,10 @@ module.exports=function(app,Parse) {
                                                 type: "unpublished",
                                                 filename: object.attributes.filename,
                                                 title: object.attributes.title,
-                                                hashtags: object.attributes.hashtags,
+                                                keywords: object.attributes.keywords,
                                                 date: object.createdAt,
                                                 year: object.attributes.year,
-                                                contributers: object.attributes.contributers,
+                                                contributors: object.attributes.contributors,
                                                 description: object.attributes.abstract,
                                                 id: object.id
                                             });

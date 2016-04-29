@@ -946,7 +946,11 @@ var Publications = React.createClass({
                         <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
-                            <tr><td><b>Abstract: </b></td><td>{item.description}</td></tr>
+                            <table className="item-box-table-info">
+                                <tr><td><b>Contributors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
+                                <tr><td><b>Creation Date: </b></td><td>{item.date.toString()}</td></tr>
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                            </table>
                         </table>
                         </span>
                     </div>
