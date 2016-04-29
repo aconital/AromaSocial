@@ -178,6 +178,8 @@ var Profile = React.createClass ({
 
         $.ajax({
             url: connectURL,
+            type: 'POST',
+            data: {userId: objectId},
             success: function(status) {
                 this.setState({status: status})
             }.bind(this),
@@ -195,7 +197,7 @@ var Profile = React.createClass ({
       $.ajax({
         url: connectURL,
         success: function(status) {
-            this.setState({status: "pending"});
+            this.setState({status: status});
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't retrieve people.");
