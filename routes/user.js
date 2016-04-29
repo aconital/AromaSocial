@@ -624,10 +624,8 @@ module.exports=function(app,Parse) {
                 people.push(person);
             }
         }).then(function(){
-            console.log("Successfully got friendrequest")
             res.json(people);
         }, function(err) {
-            console.log("OH NOooooooooooo!");
             console.log(err);
         });
     });
