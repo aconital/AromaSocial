@@ -29,8 +29,10 @@ var CreateOrganization = React.createClass({
 										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
 										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
-										<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
-										<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
+										<div class="col-md-3">
+											<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
+										</div>
+											<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
 										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
 										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />
 
@@ -44,6 +46,7 @@ var CreateOrganization = React.createClass({
                   </Col>
 				</Row>
 			</Grid></div>
+
 		);
 	},
 	handleChange: function(e) {

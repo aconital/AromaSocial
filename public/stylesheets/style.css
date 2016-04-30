@@ -6488,3 +6488,11 @@ hr.style15 {
     padding: 1px 3px;
     font: 8px Verdana;
 }
+
+.contain-image {
+  background-color: transparent !important;
+}
+
+.item-box-image-outside{
+  background-color: transparent !important;
+}
