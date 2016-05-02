@@ -29,6 +29,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
           query.include("datId");
           query.include('from');
           query.descending("createdAt");
+          query.limit(20);
           query.find({
               success: function(results) {
                   console.log("Successfully retrieved " + results.length + " feed.");
@@ -37,6 +38,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                   for (var i = 0; i < results.length; i++) {
                       var object = results[i];
                       var username = "N/A";
+                      var fullname = "N/A"
                       var userImg = "";
                       if(object.attributes.from!=null) {
                            username = object.attributes.from.attributes.username;
@@ -171,7 +173,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               feeds.push({
                                   username: username,
                                   userImg: userImg,
-                                  //fullname: fullname,
+                                  fullname: fullname,
                                   type:type,
                                   date:date,
                                   filename: filename,

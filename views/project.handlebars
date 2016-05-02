@@ -10,8 +10,8 @@
         description = decodeEntities('{{description}}'),
         image_URL = decodeEntities('{{image_URL}}'),
         file_path = decodeEntities('{{file_path}}'),
-        authors = '{{authors}}'.replace(/&quot;/g,'"'),
-        keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
+        authors = decodeEntities('{{authors}}'),
+        keywords = decodeEntities('{{keywords}}'),
         locations = '{{locations}}'.replace(/&quot;/g,'"'),
         createdAt = '{{createdAt}}',
         updatedAt = '{{updatedAt}}';

@@ -32,7 +32,7 @@ var Model = React.createClass ({
     },
     submitChange: function() {
         var dataForm = {title: this.state.title,
-                        description: this.state.description,
+                        description: this.state.description.replace(/(\r\n|\n|\r|\\)/gm,'\\n'),
                         feature: this.state.feature,
                         other: this.state.other,
                         filename: this.state.filename,
@@ -184,14 +184,14 @@ var Model = React.createClass ({
                     </Modal.Footer>
                 </Modal>
                 <div className="item-panel">
-                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{this.state.title}</h2>}
+                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" style={{width:'90%'}} onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{this.state.title}</h2>}
                     <h2 className="corner"><a href={this.state.image} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>
                     <div className="contain-panel-big-item-image">
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </div>
                     <div className="contain-panel-big item-info">
                         <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
-                        {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="description" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-non-editable-bottom-wrap">{description}</p>}
+                        {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="description" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{description}</pre>}
                     </div>
                 </div>
 

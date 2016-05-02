@@ -11,7 +11,7 @@
         model = decodeEntities('{{model}}'),
         model_year = decodeEntities('{{model_year}}'),
         image_URL = decodeEntities('{{image_URL}}'),
-        keywords = '{{keywords}}'.replace(/&quot;/g,'"'),
+        keywords = decodeEntities('{{keywords}}'),
         createdAt = '{{createdAt}}',
         updatedAt = '{{updatedAt}}';
 </script>
