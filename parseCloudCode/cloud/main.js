@@ -324,7 +324,7 @@ Parse.Cloud.afterSave("Equipment", function(request, response) {
 			if (result==undefined){
 				feed.set("from", userId);
 				feed.set("type", "equipment");
-				feed.set("equipId", equipId);
+				feed.set("equipmentId", equipId);
 				feed.save();
 				response.success("Added Equipment Newsfeed Entry");
 			}
@@ -336,7 +336,7 @@ Parse.Cloud.afterSave("Equipment", function(request, response) {
 				feed.set("from", userId);
 				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
 				feed.set("type", "equipment");
-				feed.set("equipId", equipId);
+				feed.set("equipmentId", equipId);
 				feed.save();
 				response.success("Added Equipment Newsfeed Entry");
 			}
@@ -346,7 +346,7 @@ Parse.Cloud.afterSave("Equipment", function(request, response) {
 			//else simply insert it
 			feed.set("from", userId);
 			feed.set("type", "equipment");
-			feed.set("equipId", equipId);
+			feed.set("equipmentId", equipId);
 			feed.save();
 			response.success("Added Equipment Newsfeed Entry");
 		}
@@ -667,7 +667,7 @@ Parse.Cloud.afterDelete("Equipment", function(request) {
 	var equipId= request.object;
 	var NewsFeed = Parse.Object.extend("NewsFeed");
 	var query = new Parse.Query(NewsFeed);
-	query.equalTo("equipId", equipId);
+	query.equalTo("equipmentId", equipId);
 	query.first({
 		success: function(object) {
 			object.destroy();
