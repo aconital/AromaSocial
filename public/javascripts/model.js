@@ -18,6 +18,8 @@ var Model = React.createClass ({
         collaborators: collaborators,
         url: url,
         path: path,
+        creator: {username: creatorName,
+                  imgUrl: creatorImg},
 
         fromModelTab: false,
         pictureChosen: null,
@@ -163,6 +165,8 @@ var Model = React.createClass ({
         return;
     },
     render: function() {
+        var creator = (this.state.creator) ? '/profile/' + this.state.creator.username : '',
+            avatar = (this.state.creator) ? this.state.creator.imgUrl : '';
         return (
         <div className="content-wrap-item-page">
             <div className="content-wrap-item-page-100">
@@ -192,18 +196,25 @@ var Model = React.createClass ({
                 </div>
 
                 <div className="item-panel">
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Uploaded By</h3>
+                    <div className="item-authors-div">
+                        <a href={creator} className="nostyle"><img src={avatar} className="contain-panel-small-image"/></a>
+                    </div>
+                </div>
+
+                <div className="item-panel">
                     <h3 className="no-margin h3-item-wrap h3-item-spacing">Information</h3>
                     <div className="item-info-div">
                     <table className="item-info-table">
                         <tbody>
-                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="title">Title:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="title" name="title" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.title}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="title">Title:</label></td><td className="publication-table-info-right"><a href='#' className="body-link">{this.state.title}</a></td></tr>}
-                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="license">License:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="license" name="license" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.license}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="filename">License:</label></td><td className="publication-table-info-right">{this.state.license}</td></tr>}
-                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="collaborators">Collaborators:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Collaborators (Enter Separated)", className: "l-editable-input", name: "collaborators", onChange : this.handleCollabsInputChange, value : JSON.parse(this.state.collaborators)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label for="collaborators">Collaborators:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.collaborators).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
-                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", className: "l-editable-input", name: "keywords", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.keywords)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label for="keywords">Keywords:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.keywords).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
-                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label for="url">URL:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="url" name="url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.url}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label for="url">URL:</label></td><td className="publication-table-info-right"><a href='#' className="body-link">{this.state.url}</a></td></tr>}
+                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label htmlFor="title">Title:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="title" name="title" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.title}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label htmlFor="title">Title:</label></td><td className="publication-table-info-right"><a href='#' className="body-link">{this.state.title}</a></td></tr>}
+                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label htmlFor="license">License:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="license" name="license" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.license}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label htmlFor="filename">License:</label></td><td className="publication-table-info-right">{this.state.license}</td></tr>}
+                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label htmlFor="collaborators">Collaborators:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Collaborators (Enter Separated)", className: "l-editable-input", name: "collaborators", onChange : this.handleCollabsInputChange, value : JSON.parse(this.state.collaborators)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label htmlFor="collaborators">Collaborators:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.collaborators).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
+                           {(currentUserId == creatorId) ? <tr><td className="publication-table-info-left"><label htmlFor="keywords">Keywords:</label></td><td className="publication-table-info-right"><div>{React.createElement("div", null, React.createElement(ReactTagsInput, { ref: "tags", placeholder: "Keywords (Enter Separated)", className: "l-editable-input", name: "keywords", onChange : this.handleTagsInputChange, value : JSON.parse(this.state.keywords)}))}</div></td></tr> : <tr><td className="publication-table-info-left"><label htmlFor="keywords">Keywords:</label></td><td className="publication-table-info-right">{JSON.parse(this.state.keywords).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;})}</td></tr>}
+                           {(currentUserId == creatorId) ? <tr className="no-margin"><td className="publication-table-info-left"><label htmlFor="url">URL:</label></td><td className="publication-table-info-right"><input className="p-editable" type="text" id="url" name="url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.url}/></td></tr> : <tr className="p-noneditable"><td className="publication-table-info-left"><label htmlFor="url">URL:</label></td><td className="publication-table-info-right"><a href='#' className="body-link">{this.state.url}</a></td></tr>}
 
-                           <tr className="p-noneditable padding-top-25"><td className="publication-table-info-left"><label for="createdAt">Created At:</label></td><td className="publication-table-info-right">{createdAt}</td></tr>
-                           <tr className="p-noneditable"><td className="publication-table-info-left"><label for="updatedAt">Updated At:</label></td><td className="publication-table-info-right">{updatedAt}</td></tr>
+                           <tr className="p-noneditable padding-top-25"><td className="publication-table-info-left"><label htmlFor="createdAt">Created At:</label></td><td className="publication-table-info-right">{createdAt}</td></tr>
+                           <tr className="p-noneditable"><td className="publication-table-info-left"><label htmlFor="updatedAt">Updated At:</label></td><td className="publication-table-info-right">{updatedAt}</td></tr>
                         </tbody>
                     </table>
                     </div>
