@@ -308,6 +308,51 @@ Parse.Cloud.afterSave("Pub_Unpublished", function(request, response) {
 		}
 	});
 });
+Parse.Cloud.afterSave("Equipment", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var equipId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("equipId", equipId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "equipment");
+				feed.set("equipId", equipId);
+				feed.save();
+				response.success("Added Equipment Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "equipment");
+				feed.set("equipId", equipId);
+				feed.save();
+				response.success("Added Equipment Newsfeed Entry");
+			}
+			response.success("Equipment Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "equipment");
+			feed.set("equipId", equipId);
+			feed.save();
+			response.success("Added Equipment Newsfeed Entry");
+		}
+	});
+});
+
 Parse.Cloud.afterSave("Model", function(request, response) {
 	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("user");
@@ -607,6 +652,22 @@ Parse.Cloud.afterDelete("Pub_Unpublished", function(request) {
 	var NewsFeed = Parse.Object.extend("NewsFeed");
 	var query = new Parse.Query(NewsFeed);
 	query.equalTo("pubUnpublishedId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Equipment", function(request) {
+	Parse.Cloud.useMasterKey();
+	var equipId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("equipId", equipId);
 	query.first({
 		success: function(object) {
 			object.destroy();
