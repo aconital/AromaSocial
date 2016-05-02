@@ -30,9 +30,12 @@ module.exports=function(app,Parse) {
 
     app.get('/data/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
+        console.log('hi');
         var query = new Parse.Query('Data');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                console.log(result);
                 var group = result.get('groupies');
                 var allowed = false;
                 if (group) {
@@ -46,13 +49,17 @@ module.exports=function(app,Parse) {
                     allowed = true; // everyone allowed to access. No entry in groupies
                 }
                 if (allowed) {
+                    var creator = JSON.parse(JSON.stringify(result.get('user')));
+
                     res.render('data', {
                         path: req.path,
                         currentUserId: currentUser.id,
                         currentUsername: currentUser.username,
                         currentUserImg: currentUser.imgUrl,
                         objectId: req.params.objectId,
-                        creatorId: result.get("user").id,
+                        creatorId: creator.objectId,
+                        creatorName: creator.username,
+                        creatorImg: creator.imgUrl,
                         access: result.get('author'),
                         collaborators: JSON.stringify(result.get('collaborators')),
                         description: result.get('description'),
