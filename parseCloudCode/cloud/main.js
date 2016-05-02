@@ -1,5 +1,47 @@
-// Use Parse.Cloud.define to define as many cloud functions as you want.
-// For example:
+Parse.Cloud.afterSave("Project", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var projId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("projectId", projId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "project");
+				feed.set("projectId", projId);
+				feed.save();
+				response.success("Added Project Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "project");
+				feed.set("projectId", projId);
+				feed.save();
+				response.success("Added Project Newsfeed Entry");
+			}
+			response.success("Project Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "project");
+			feed.set("projectId", projId);
+			feed.save();
+			response.success("Added Project Newsfeed Entry");
+		}
+	});
+});
 Parse.Cloud.afterSave("Pub_Book", function(request, response) {
 	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("user");
@@ -668,6 +710,22 @@ Parse.Cloud.afterDelete("Equipment", function(request) {
 	var NewsFeed = Parse.Object.extend("NewsFeed");
 	var query = new Parse.Query(NewsFeed);
 	query.equalTo("equipmentId", equipId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Project", function(request) {
+	Parse.Cloud.useMasterKey();
+	var projId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("projectId", projId);
 	query.first({
 		success: function(object) {
 			object.destroy();
