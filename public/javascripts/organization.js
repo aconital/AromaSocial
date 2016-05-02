@@ -1078,6 +1078,8 @@ var Projects = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
@@ -1134,6 +1136,7 @@ var Publications = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
+                item.date = (new Date(item.date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
             console.log(typeList);
@@ -1237,7 +1240,8 @@ var Data = React.createClass({
                                     number_syncholar_factor={item.number_syncholar_factor}
                                     license={item.license}
                                     access={item.access}
-                                    abstract={item.description} />);
+                                    abstract={item.description}
+                                    start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
         })}
       </div>
     );
@@ -1324,7 +1328,8 @@ var Models = React.createClass({
                                    number_syncholar_factor={model.number_syncholar_factor}
                                    license={model.license}
                                    access={model.access}
-                                   abstract={model.abstract} />);
+                                   abstract={model.abstract}
+                                   start_date={(new Date(model.createdAt)).toUTCString().slice(0,-12)} />);
         })}
         {rows}
       </div>

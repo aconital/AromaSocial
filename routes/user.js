@@ -913,7 +913,7 @@ module.exports=function(app,Parse) {
                     var type = "Other";
 
                     var license = results[i].get('license');
-                    var creationDate = results[i].get('createdAt');
+                    var publication_date = results[i].get('publication_date');
                     var url = results[i].get('url');
 
                     if (results[i].get('title')) { title = results[i].get('title'); }
@@ -929,7 +929,7 @@ module.exports=function(app,Parse) {
                         keywords: keywords,
                         image_URL: image_URL,
                         type: type,
-                        start_date: creationDate,
+                        start_date: publication_date,
                         license: license,
                         url: url
                     }; data.push(datum);
@@ -960,7 +960,7 @@ module.exports=function(app,Parse) {
             var image_URL = model.get('image_URL');
             var keywords = model.get('keywords');
             var type = "Other";
-            var creationDate = model.get('createdAt');
+            var publication_date = model.get('publication_date');
             var license =model.get('license');
             var url = model.get('url');
             var model = {
@@ -971,7 +971,7 @@ module.exports=function(app,Parse) {
                 image_URL: image_URL,
                 type: type,
                 keywords: keywords,
-                start_date: creationDate,
+                start_date: publication_date,
                 license: license,
                 url: url
             };
