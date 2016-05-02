@@ -32,7 +32,7 @@ var Model = React.createClass ({
     },
     submitChange: function() {
         var dataForm = {title: this.state.title,
-                        description: this.state.description,
+                        description: this.state.description.replace(/(\r\n|\n|\r|\\)/gm,'\\n'),
                         feature: this.state.feature,
                         other: this.state.other,
                         filename: this.state.filename,
@@ -191,7 +191,7 @@ var Model = React.createClass ({
                     </div>
                     <div className="contain-panel-big item-info">
                         <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
-                        {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="description" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-non-editable-bottom-wrap">{description}</p>}
+                        {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" name="description" className="p-editable p-editable-bottom-spacing" onChange={this.handleChange}  onBlur={this.submitChange}>{this.state.description}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{description}</pre>}
                     </div>
                 </div>
 

@@ -18,7 +18,7 @@ var Equipment = React.createClass ({
     },
     submitChange: function() {
         var dataForm = {title: this.state.title,
-                        description: this.state.description};
+                        description: this.state.description.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
 
         $.ajax({
             url: path + "/update",
@@ -119,7 +119,7 @@ var Equipment = React.createClass ({
                     {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen} id="big-image"><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.image_URL} className="contain-panel-big-image"/>}
                     <div className="contain-panel-big item-info">
                         <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
-                        {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" className="p-editable" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <p className="p-non-editable-bottom-wrap">{description}</p>}
+                        {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" type="text" className="p-editable" name="description" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.description}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{description}</pre>}
                     </div>
                 </div>
             </div>
