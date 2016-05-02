@@ -858,6 +858,9 @@ module.exports=function(app,Parse) {
         var createConnection = Parse.Object.extend("RelationshipOrg");
         var orgId0= req.body.orgId;
         var orgId1= req.params.objectId;
+        if(orgId0==orgId1){
+            res.status(200).json({status: "Organization should not have itself as a connection!"})
+        }
         //check the connection one way
         var query = new Parse.Query("RelationshipOrg");
         query.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId0});
