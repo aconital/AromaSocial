@@ -26,15 +26,20 @@ module.exports=function(app,Parse) {
     app.get('/model/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Model');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var creator = JSON.parse(JSON.stringify(result.get('user')));
+                
                 res.render('model', {
                     path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
                     objectId: req.params.objectId,
-                    creatorId: result.get("user").id,
+                    creatorId: creator.objectId,
+                    creatorName: creator.username,
+                    creatorImg: creator.imgUrl,
                     access: result.get('access'),
                     description: result.get('abstract'),
                     hashtags: result.get('hashtags'),
@@ -84,6 +89,7 @@ module.exports=function(app,Parse) {
 
     app.post('/model/:objectId/picture', is_auth, function(req,res,next){
         var query = new Parse.Query("Model");
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
                 var bucket = new aws.S3();
@@ -113,7 +119,6 @@ module.exports=function(app,Parse) {
     app.post('/profile/:username/model', is_auth, function(req,res,next){
         var currentUser = req.user;
         if (currentUser.username == req.params.username) {
-            console.log("1");
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
@@ -121,18 +126,15 @@ module.exports=function(app,Parse) {
             // send to Parse
             var Model = Parse.Object.extend("Model");
             var model= new Model();
-            console.log("2");
             model.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
             model.set('abstract', reqBody.description);
             model.set('access', ["UBC"]);
-            console.log("3");
             model.set('collaborators',JSON.parse(reqBody.collaborators));
+            model.set('publication_date', new Date(reqBody.creationDate));
             model.set('image','/images/data.png');
             model.set('image_URL','/images/data.png');
             model.set('title',reqBody.title);
-            console.log("4");
             model.set('keywords',JSON.parse(reqBody.keywords));
-            console.log("5");
             model.set('license',reqBody.license);
 //			model.set('publication',reqBody.pubLink);
             model.set('number_cited',0);

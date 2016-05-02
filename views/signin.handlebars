@@ -1,10 +1,19 @@
+<script>
+    $(function() {
+        if ('{{Error}}'.length > 0) {
+            console.log('yo', '{{Error}}');
+            $( "#error" ).css( "display", "block" );
+        }
+    });
+</script>
 <div class="row">
-    <div class="col-md-offset-4 col-md-4">
+    <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6">
         <div class="panel panel-default panel-signup">
             <div class="panel-heading">Sign in</div>
             <div class="row">
-                <div class="alert alert-warning" id="error" style="visibility: hidden"></div></p>
-                <p class="bg-danger">{{Error}}</p>
+                <div id="error" class="alert alert-danger" style="display: none">
+                  <strong>Error:</strong> {{Error}}
+                </div>
             </div>
             <form name="form" method="post" action="/signin" novalidate="novalidate">
                 <div class="form-group">
@@ -24,7 +33,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-offset-4 col-md-4">
+    <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6">
         <hr/><span>
       <p class="text-center">No account? <a href="/signup">Sign up!</a></p></span>
     </div>

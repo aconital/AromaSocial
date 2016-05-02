@@ -470,11 +470,11 @@ module.exports=function(app,Parse) {
                     type: "book",
                     filename: book.attributes.filename,
                     title: book.attributes.title,
-                    hashtags: book.attributes.hashtags,
-                    date: book.createdAt,
+                    keywords: book.attributes.keywords,
+                    date: book.attributes.publication_date,
                     year: book.attributes.year,
-                    author: book.attributes.author,
-                    description: book.attributes.description,
+                    contributors: book.attributes.contributors,
+                    description: book.attributes.abstract,
                     id: book.id
                 });
             }));
@@ -485,11 +485,11 @@ module.exports=function(app,Parse) {
                     type: "conference",
                     filename: conferences.attributes.filename,
                     title: conferences.attributes.title,
-                    hashtags: conferences.attributes.hashtags,
-                    date: conferences.createdAt,
+                    keywords: conferences.attributes.keywords,
+                    date: conferences.attributes.publication_date,
                     year: conferences.attributes.year,
-                    author: conferences.attributes.author,
-                    description: conferences.attributes.description,
+                    contributors: conferences.attributes.contributors,
+                    description: conferences.attributes.abstract,
                     id: conferences.id
                 });
             }));
@@ -500,11 +500,11 @@ module.exports=function(app,Parse) {
                     type: "journal",
                     filename: journals.attributes.filename,
                     title: journals.attributes.title,
-                    hashtags: journals.attributes.hashtags,
-                    date: journals.createdAt,
+                    keywords: journals.attributes.keywords,
+                    date: journals.attributes.publication_date,
                     year: journals.attributes.year,
-                    author: journals.attributes.author,
-                    description: journals.attributes.description,
+                    contributors: journals.attributes.contributors,
+                    description: journals.attributes.abstract,
                     id: journals.id
                 });
             }));
@@ -515,11 +515,11 @@ module.exports=function(app,Parse) {
                     type: "patent",
                     filename: patent.attributes.filename,
                     title: patent.attributes.title,
-                    hashtags: patent.attributes.hashtags,
-                    date: patent.createdAt,
+                    keywords: patent.attributes.keywords,
+                    date: patent.attributes.publication_date,
                     year: patent.attributes.year,
-                    author: patent.attributes.author,
-                    description: patent.attributes.description,
+                    contributors: patent.attributes.contributors,
+                    description: patent.attributes.abstract,
                     id: patent.id
                 });
             }));
@@ -530,11 +530,11 @@ module.exports=function(app,Parse) {
                     type: "report",
                     filename: report.attributes.filename,
                     title: report.attributes.title,
-                    hashtags: report.attributes.hashtags,
-                    date: report.createdAt,
+                    keywords: report.attributes.keywords,
+                    date: report.attributes.publication_date,
                     year: report.attributes.year,
-                    author: report.attributes.author,
-                    description: report.attributes.description,
+                    contributors: report.attributes.contributors,
+                    description: report.attributes.abstract,
                     id: report.id
                 });
             }));
@@ -545,11 +545,11 @@ module.exports=function(app,Parse) {
                     type: "thesis",
                     filename: thesis.attributes.filename,
                     title: thesis.attributes.title,
-                    hashtags: thesis.attributes.hashtags,
-                    date: thesis.createdAt,
+                    keywords: thesis.attributes.keywords,
+                    date: thesis.attributes.publication_date,
                     year: thesis.attributes.year,
-                    author: thesis.attributes.author,
-                    description: thesis.attributes.description,
+                    contributors: thesis.attributes.contributors,
+                    description: thesis.attributes.abstract,
                     id: thesis.id
                 });
             }));
@@ -560,11 +560,11 @@ module.exports=function(app,Parse) {
                     type: "unpublished",
                     filename: unpublished.attributes.filename,
                     title: unpublished.attributes.title,
-                    hashtags: unpublished.attributes.hashtags,
-                    date: unpublished.createdAt,
+                    keywords: unpublished.attributes.keywords,
+                    date: unpublished.attributes.publication_date,
                     year: unpublished.attributes.year,
-                    author: unpublished.attributes.author,
-                    description: unpublished.attributes.description,
+                    contributors: unpublished.attributes.contributors,
+                    description: unpublished.attributes.abstract,
                     id: unpublished.id
                 });
             }));
@@ -859,7 +859,8 @@ module.exports=function(app,Parse) {
         var orgId0= req.body.orgId;
         var orgId1= req.params.objectId;
         if(orgId0==orgId1){
-            res.status(200).json({status: "Organization should not have itself as a connection!"})
+            res.status(200).json({status: "Organization should not have itself as a connection!"});
+            return;
         }
         //check the connection one way
         var query = new Parse.Query("RelationshipOrg");

@@ -257,7 +257,7 @@ var Profile = React.createClass ({
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
                         <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
-                        <ProfileMenu tabs={['About','Colleagues','Connections', 'Projects', 'Publications', 'Data', 'Models']} />
+                        <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
                     <div className="item-bottom-3">
                         {/*<input className="btn btn-panel" value="Message" />
@@ -365,6 +365,7 @@ var Connections = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <p>{person.about}</p>
                         </div>
                     </div>
                     )}
@@ -629,8 +630,8 @@ var About = React.createClass({
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
-        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
+        if (this.state.educations == "") { var arrayWE = [{company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
+        else { var newWE = {company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
@@ -862,6 +863,8 @@ var Projects = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
@@ -937,6 +940,7 @@ var Publications = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
+                item.date = (new Date(item.date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
             return (
@@ -949,8 +953,8 @@ var Publications = React.createClass({
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Contributors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
-                                <tr><td><b>Creation Date: </b></td><td>{item.date.toString()}</td></tr>
+                                <tr><td><b>Authors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
+                                <tr><td><b>Publication Date: </b></td><td>{item.date}</td></tr>
                                 <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
                             </table>
                         </table>
@@ -1029,6 +1033,7 @@ var Models = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
+                item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
             return (
@@ -1097,6 +1102,7 @@ var Data = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
+                item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
             return (
