@@ -859,7 +859,8 @@ module.exports=function(app,Parse) {
         var orgId0= req.body.orgId;
         var orgId1= req.params.objectId;
         if(orgId0==orgId1){
-            res.status(200).json({status: "Organization should not have itself as a connection!"})
+            res.status(200).json({status: "Organization should not have itself as a connection!"});
+            return;
         }
         //check the connection one way
         var query = new Parse.Query("RelationshipOrg");
