@@ -116,15 +116,15 @@ module.exports=function(app,Parse) {
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
                if(err) {
-                   return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
                }
 
                if(!user) {
-                   return res.render('signin', {page:'login',title: 'Sign In', errorMessage: info.message});
+                   return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
                }
                return req.logIn(user, function(err) {
                    if(err) {
-                       return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+                       return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
                    } else {
                        return res.redirect('/');
                    }
@@ -156,15 +156,18 @@ module.exports=function(app,Parse) {
       passport.authenticate('local', { successRedirect: '/',
           failureRedirect: '/signin'}, function(err, user, info) {
           if(err) {
-              return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+              console.log('first',err,user,info);
+              return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
           }
 
           if(!user) {
-              return res.render('signin', {page:'login',title: 'Sign In', errorMessage: info.message});
+              console.log('second',err,user,info);
+              return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
           }
           return req.logIn(user, function(err) {
               if(err) {
-                  return res.render('signin', {page:'login',title: 'Sign In', errorMessage: err.message});
+                  console.log('third',err,user,info);
+                  return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
               } else {
                   return res.redirect('/');
               }

@@ -6355,9 +6355,10 @@ textarea {
     float: left;
     display: none;
     min-width: 160px;
-    padding: 4px 0;
-    margin: 0 0 10px 25px;
+    padding: 4px 4px;
+    margin: 10px 10px 10px 25px;
     list-style: none;
+    color: white;
     background-color: #424242;
     border-color: #ccc;
     border-color: rgba(0, 0, 0, 0.2);
@@ -6382,7 +6383,7 @@ textarea {
     clear: both;
     font-weight: normal;
     line-height: 18px;
-    color: #555555;
+    color: white;
     white-space: nowrap;
     text-decoration: none;
 }
@@ -6487,4 +6488,12 @@ hr.style15 {
     border-radius: 3px;
     padding: 1px 3px;
     font: 8px Verdana;
+}
+
+.contain-image {
+  background-color: transparent !important;
+}
+
+.item-box-image-outside{
+  background-color: transparent !important;
 }

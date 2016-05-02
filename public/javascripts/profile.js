@@ -178,6 +178,8 @@ var Profile = React.createClass ({
 
         $.ajax({
             url: connectURL,
+            type: 'POST',
+            data: {userId: objectId},
             success: function(status) {
                 this.setState({status: status})
             }.bind(this),
@@ -195,7 +197,7 @@ var Profile = React.createClass ({
       $.ajax({
         url: connectURL,
         success: function(status) {
-            this.setState({status: "pending"});
+            this.setState({status: status});
         }.bind(this),
         error: function(xhr, status, err) {
             console.error("Couldn't retrieve people.");
@@ -363,6 +365,7 @@ var Connections = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <p>{person.about}</p>
                         </div>
                     </div>
                     )}
@@ -468,6 +471,7 @@ var About = React.createClass({
         if(JSON.parse(educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }
         return {
             summary: summary,
+            summary2: summary2,
             workExperience: workExperience,
             educations: educations,
             interests: interests,
@@ -484,7 +488,7 @@ var About = React.createClass({
     },
     submitSummary: function() {
         console.log(this.state.educations);
-        var dataForm = {summary: this.state.summary};
+        var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r)/gm,'\\n')};
         $.ajax({
             url: path + "/updateSummary",
             dataType: 'json',
@@ -694,7 +698,7 @@ var About = React.createClass({
 
                 <div id="resume-summary-item">
                     <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <p className="p-noneditable">{this.state.summary2}</p>}
                     </div>
                 </div>
                 </div>
@@ -948,7 +952,7 @@ var Publications = React.createClass({
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
                                 <tr><td><b>Contributors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
-                                <tr><td><b>Creation Date: </b></td><td>{item.date.toString()}</td></tr>
+                                <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
                                 <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
                             </table>
                         </table>

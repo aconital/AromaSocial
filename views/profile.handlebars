@@ -10,6 +10,7 @@
         current_location = '{{location}}',
         fullname = decodeEntities('{{fullname}}'),
         summary = decodeEntities('{{summary}}'),
+            summary2 = decodeEntities('{{summary}}'.replace('\n','<br />')),
         interests = '{{interests}}'.replace(/&quot;/g,'"'),
         interestsTag = '{{interestsTag}}'.replace(/&quot;/g,'"'),
         workExperience = '{{workExperience}}'.replace(/&quot;/g,'"'),

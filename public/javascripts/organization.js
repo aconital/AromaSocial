@@ -516,7 +516,6 @@ var People = React.createClass({
                             </div>
                             <div className="item-box-right">
                                 <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                                <span className="font-15">{person.workTitle} @ {person.company}</span>
                             </div>
                         </div>
                     )}
@@ -677,7 +676,7 @@ var Manage = React.createClass({
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname} - {person.username}</h3></a>
                             <span className="font-15">{person.title}</span><br/>
-                            <span className="font-15">{person.workTitle} @ {person.company}</span>
+
                         </div>
                     </div>
                 </div>
@@ -1113,57 +1112,62 @@ var Projects = React.createClass({
 });
 
 var Publications = React.createClass({
-  getInitialState: function() {
-    return {data: []};
-  },
-  componentDidMount : function(){
-    var peopleUrl= "/organization/"+objectId+"/publications";
+    getInitialState: function() {
+        return {data: []};
+        },
+        componentDidMount : function(){
+        var peopleUrl= "/organization/"+objectId+"/publications";
 
-    $.ajax({
-        url: peopleUrl,
-        success: function(publications) {
-            this.setState({data: publications});
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't Retrieve Publications!");
-        }.bind(this)
-    });
-  },
-  render: function() {
-      var itemsList = $.map(this.state.data,function(items) {
-          var type = items[0].type;
-          var typeList = [];
-          for (var i in items) {
-              var item = items[i];
-              typeList.push(item);
-          }
-          return (
-              <div>
-                  <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
+        $.ajax({
+            url: peopleUrl,
+            success: function(publications) {
+                this.setState({data: publications});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Publications!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var itemsList = $.map(this.state.data,function(items) {
+            var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_"," ")
+            var typeList = [];
+            for (var i in items) {
+                var item = items[i];
+                typeList.push(item);
+            }
+            console.log(typeList);
+            return (
+            <div>
+                <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                 {typeList.map(item =>
-                        <div className="item-box">
-                            <div key={item.id}>
-                                <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
-                                <span className="font-15">
-                                    <table className="item-box-table-info">
-                                        <tr><td><b>Description: </b></td><td>{item.description}</td></tr>
-                                    </table>
-                                </span>
-                            </div>
-                        </div>
+                <div className="item-box">
+                    <div key={item.id}>
+                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                        <span className="font-15">
+                        <table className="item-box-table-info">
+                            <table className="item-box-table-info">
+                                <tr><td><b>Contributors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
+                                <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
+                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                            </table>
+                        </table>
+                        </span>
+                    </div>
+                </div>
                 )} <div className="clear"></div>
-              </div>
-          );
-      });
-      return (
-          <div>
+            </div>
+            );
+        });
+        return (
+            <div>
                 {itemsList}
-          </div>
-      )
-  }
+            </div>
+        )
+    }
 });
 
-var Publication = React.createClass({
+var Publication = React.createClass({ //delete
     render: function() {
         if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
         else { var title = this.props.title; }
