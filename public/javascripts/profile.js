@@ -257,7 +257,7 @@ var Profile = React.createClass ({
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
                         <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
-                        <ProfileMenu tabs={['About','Colleagues','Connections', 'Projects', 'Publications', 'Data', 'Models']} />
+                        <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
                     <div className="item-bottom-3">
                         {/*<input className="btn btn-panel" value="Message" />
@@ -631,8 +631,8 @@ var About = React.createClass({
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
-        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
+        if (this.state.educations == "") { var arrayWE = [{company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
+        else { var newWE = {company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
