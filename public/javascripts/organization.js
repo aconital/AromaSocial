@@ -516,7 +516,6 @@ var People = React.createClass({
                             </div>
                             <div className="item-box-right">
                                 <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                                <span className="font-15">{person.workTitle} @ {person.company}</span>
                             </div>
                         </div>
                     )}
@@ -677,7 +676,7 @@ var Manage = React.createClass({
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname} - {person.username}</h3></a>
                             <span className="font-15">{person.title}</span><br/>
-                            <span className="font-15">{person.workTitle} @ {person.company}</span>
+
                         </div>
                     </div>
                 </div>
