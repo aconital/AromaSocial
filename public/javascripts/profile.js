@@ -951,7 +951,7 @@ var Publications = React.createClass({
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
                                 <tr><td><b>Contributors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
-                                <tr><td><b>Creation Date: </b></td><td>{item.date.toString()}</td></tr>
+                                <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
                                 <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
                             </table>
                         </table>

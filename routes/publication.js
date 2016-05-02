@@ -264,7 +264,7 @@ module.exports=function(app,Parse) {
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Conference',
-                    publication_date: result.get('year'),
+                    publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -295,7 +295,7 @@ module.exports=function(app,Parse) {
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Journal_Article',
-                    publication_date: result.get('year'),
+                    publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -326,7 +326,7 @@ module.exports=function(app,Parse) {
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Patent',
-                    publication_date: result.get('year'),
+                    publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -357,7 +357,7 @@ module.exports=function(app,Parse) {
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Report',
-                    publication_date: result.get('year'),
+                    publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -388,7 +388,7 @@ module.exports=function(app,Parse) {
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Thesis',
-                    publication_date: result.get('year'),
+                    publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -419,7 +419,7 @@ module.exports=function(app,Parse) {
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Unpublished',
-                    publication_date: result.get('year'),
+                    publication_date: result.get('publication_date'),
                     publication_code: result.get('publication_code'),
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
@@ -443,6 +443,7 @@ module.exports=function(app,Parse) {
             var pubBooks = Parse.Object.extend("Pub_Book");
             var query = new Parse.Query(pubBooks);
             query.equalTo('user',{ __type: "Pointer", className: "_User", objectId: profile});
+            query.descending("createdAt");
             query.find().then(function(books) {
                 console.log("Successfully retrieved " + books.length + " Books.");
                 // Do something with the returned Parse.Object values
@@ -453,7 +454,7 @@ module.exports=function(app,Parse) {
                         filename: object.attributes.filename,
                         title: object.attributes.title,
                         keywords: object.attributes.keywords,
-                        date: object.createdAt,
+                        date: object.attributes.publication_date,
                         year: object.attributes.year,
                         contributors: object.attributes.contributors,
                         description: object.attributes.abstract,
@@ -464,6 +465,7 @@ module.exports=function(app,Parse) {
                 var pubConference = Parse.Object.extend("Pub_Conference");
                 var query1 = new Parse.Query(pubConference);
                 query1.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                query1.descending("createdAt");
                 query1.find().then(function (conferences) {
                     console.log("Successfully retrieved " + conferences.length + " conferences.");
                     // Do something with the returned Parse.Object values
@@ -474,7 +476,7 @@ module.exports=function(app,Parse) {
                             filename: object.attributes.filename,
                             title: object.attributes.title,
                             keywords: object.attributes.keywords,
-                            date: object.createdAt,
+                            date: object.attributes.publication_date,
                             year: object.attributes.year,
                             contributors: object.attributes.contributors,
                             description: object.attributes.abstract,
@@ -496,7 +498,7 @@ module.exports=function(app,Parse) {
                                 filename: object.attributes.filename,
                                 title: object.attributes.title,
                                 keywords: object.attributes.keywords,
-                                date: object.createdAt,
+                                date: object.attributes.publication_date,
                                 year: object.attributes.year,
                                 contributors: object.attributes.contributors,
                                 description: object.attributes.abstract,
@@ -507,6 +509,7 @@ module.exports=function(app,Parse) {
                         var pubPatent = Parse.Object.extend("Pub_Patent");
                         var query3 = new Parse.Query(pubPatent);
                         query3.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                        query3.descending("createdAt");
                         query3.find().then(function (patents) {
                             console.log("Successfully retrieved " + patents.length + " patents.");
                             // Do something with the returned Parse.Object values
@@ -517,7 +520,7 @@ module.exports=function(app,Parse) {
                                     filename: object.attributes.filename,
                                     title: object.attributes.title,
                                     keywords: object.attributes.keywords,
-                                    date: object.createdAt,
+                                    date: object.attributes.publication_date,
                                     year: object.attributes.year,
                                     contributors: object.attributes.contributors,
                                     description: object.attributes.abstract,
@@ -528,6 +531,7 @@ module.exports=function(app,Parse) {
                             var pubReport = Parse.Object.extend("Pub_Report");
                             var query4 = new Parse.Query(pubReport);
                             query4.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                            query4.descending("createdAt");
                             query4.find().then(function (reports) {
                                 console.log("Successfully retrieved " + reports.length + " reports.");
                                 // Do something with the returned Parse.Object values
@@ -538,7 +542,7 @@ module.exports=function(app,Parse) {
                                         filename: object.attributes.filename,
                                         title: object.attributes.title,
                                         keywords: object.attributes.keywords,
-                                        date: object.createdAt,
+                                        date: object.attributes.publication_date,
                                         year: object.attributes.year,
                                         contributors: object.attributes.contributors,
                                         description: object.attributes.abstract,
@@ -549,6 +553,7 @@ module.exports=function(app,Parse) {
                                 var pubThesis = Parse.Object.extend("Pub_Thesis");
                                 var query4 = new Parse.Query(pubThesis);
                                 query4.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                                query4.descending("createdAt");
                                 query4.find().then(function (thesis) {
                                     console.log("Successfully retrieved " + thesis.length + " thesis.");
                                     // Do something with the returned Parse.Object values
@@ -559,7 +564,7 @@ module.exports=function(app,Parse) {
                                             filename: object.attributes.filename,
                                             title: object.attributes.title,
                                             keywords: object.attributes.keywords,
-                                            date: object.createdAt,
+                                            date: object.attributes.publication_date,
                                             year: object.attributes.year,
                                             contributors: object.attributes.contributors,
                                             description: object.attributes.abstract,
@@ -570,6 +575,7 @@ module.exports=function(app,Parse) {
                                     var pubUnpublished = Parse.Object.extend("Pub_Unpublished");
                                     var query5 = new Parse.Query(pubUnpublished);
                                     query5.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                                    query5.descending("createdAt");
                                     query5.find().then(function (unpublished) {
                                         console.log("Successfully retrieved " + unpublished.length + " unpublished.");
                                         // Do something with the returned Parse.Object values
@@ -580,7 +586,7 @@ module.exports=function(app,Parse) {
                                                 filename: object.attributes.filename,
                                                 title: object.attributes.title,
                                                 keywords: object.attributes.keywords,
-                                                date: object.createdAt,
+                                                date: object.attributes.publication_date,
                                                 year: object.attributes.year,
                                                 contributors: object.attributes.contributors,
                                                 description: object.attributes.abstract,
