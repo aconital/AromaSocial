@@ -7,15 +7,14 @@
         currentUserImg = '{{currentUserImg}}',
         objectId = '{{objectId}}',
         username = '{{username}}',
-        current_location = '{{location}}',
+        current_location = decodeEntities('{{location}}'),
         fullname = decodeEntities('{{fullname}}'),
         summary = decodeEntities('{{summary}}'),
-            summary2 = decodeEntities('{{summary}}'.replace('\n','<br />')),
-        interests = '{{interests}}'.replace(/&quot;/g,'"'),
-        interestsTag = '{{interestsTag}}'.replace(/&quot;/g,'"'),
-        workExperience = '{{workExperience}}'.replace(/&quot;/g,'"'),
-        educations = '{{educations}}'.replace(/&quot;/g,'"'),
-        projects = '{{projects}}'.replace(/&quot;/g,'"'),
+        interests = decodeEntities('{{interests}}'),
+        interestsTag = decodeEntities('{{interestsTag}}'),
+        workExperience = decodeEntities('{{workExperience}}'),
+        educations = decodeEntities('{{educations}}'),
+        projects = decodeEntities('{{projects}}'),
         profile_imgURL = '{{profile_imgURL}}';
 </script>
 <script type="text/jsx" src="/javascripts/profile.js"></script>
