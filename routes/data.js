@@ -93,6 +93,7 @@ module.exports=function(app,Parse) {
             data.set('collaborators', JSON.parse(reqBody.collaborators));
             data.set('description', reqBody.description);
             data.set('title',reqBody.title);
+            data.set('publication_date', new Date(reqBody.creationDate));
             data.set('keywords',JSON.parse(reqBody.keywords));
             data.set('image_URL','/images/data.png');
             data.set('license',reqBody.license);

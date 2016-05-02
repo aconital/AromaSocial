@@ -864,6 +864,8 @@ var Projects = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
@@ -939,6 +941,7 @@ var Publications = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
+                item.date = (new Date(item.date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
             return (
@@ -952,7 +955,7 @@ var Publications = React.createClass({
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
                                 <tr><td><b>Contributors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
-                                <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
+                                <tr><td><b>Publication Date: </b></td><td>{item.date}</td></tr>
                                 <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
                             </table>
                         </table>
@@ -1031,6 +1034,7 @@ var Models = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
+                item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
             return (
@@ -1099,6 +1103,7 @@ var Data = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
+                item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
             return (
