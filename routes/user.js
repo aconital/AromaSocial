@@ -113,29 +113,6 @@ module.exports=function(app,Parse) {
         }
     });
 
-    // app.get('/profile/:objectId/connection-status', is_auth, function (req, res, next) {
-    //     var currentUser = req.user;
-    //     var currentUserId = currentUser.id;
-    //     var otherUserId = req.params.objectId;
-    //     var status;
-    //     var connectQuery1 = new Parse.Query("RelationshipUser");
-    //     var connectQuery2 = new Parse.Query("RelationshipUser");
-    //     connectQuery1.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: otherUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: currentUserId});
-    //     connectQuery2.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: currentUserId}).equalTo("userId1", {__type: "Pointer", className: "_User", objectId: otherUserId});
-    //     var connectQuery = Parse.Query.or(connectQuery1, connectQuery2);
-    //     connectQuery.find({
-    //         success: function(result) {
-    //             if (result.length == 0) { status = "not-connected"; }
-    //             else if (result[0].attributes.verified == true) { status = "connected"; }
-    //             else { status = "pending"; }
-    //             res.json(status);
-    //         }, error: function(error) {
-    //             console.log(error);
-    //             res.render('index', {title: error, path: req.path});
-    //         }
-    //     });
-    // });
-
     app.post('/profile/:objectId/connection-status', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var otherUser = req.body.userId;
@@ -155,77 +132,42 @@ module.exports=function(app,Parse) {
         query1.equalTo('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id});
         query1.equalTo('userId0', { __type: "Pointer", className: "_User", objectId: otherUser});
 
-        // case where we sent the request
-        query1.find({
+
+        var connectQuery = Parse.Query.or(query0, query1);
+        connectQuery.first({
             success: function(result) {
-                console.log(result);
-                if (result.length == 0) {
+                if (result == undefined) {
                     console.log("NOT CONNECTED");
                     status = "not-connected"; 
                 }
-                else if (result[0].attributes.verified == true) {
-                    console.log("CONNECTED");
-                    status = "connected"; 
+                // request sent to us
+                else if (result.get('userId0').id == currentUser.id) {
+                    if (result.get('verified') == true) {
+                        console.log("CONNECTED");
+                        status = "connected"; 
+                    }
+                    else { 
+                        console.log("PENDING - but show connect to connect directly");
+                        status = "not-connected"; 
+                    }
                 }
-                else { 
-                    console.log("PENDING");
-                    status = "pending"; 
+                // we sent the request
+                else if (result.get('userId1').id == currentUser.id) {
+                    if (result.get('verified') == true) {
+                        console.log("CONNECTED");
+                        status = "connected"; 
+                    }
+                    else { 
+                        console.log("PENDING");
+                        status = "pending"; 
+                    }
                 }
                 res.json(status);
-                return;
             }, error: function(error) {
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
             }
         });
-
-        // case where the request was sent to us
-        query0.find({
-            success: function(result) {
-                console.log(result);
-                if (result.length == 0) {
-                    console.log("NOT CONNECTED");
-                    status = "not-connected"; 
-                }
-                else if (result[0].attributes.verified == true) {
-                    console.log("CONNECTED");
-                    status = "connected"; 
-                }
-                else { 
-                    console.log("PENDING - but show connect to connect directly");
-                    status = "not-connected"; 
-                }
-                res.json(status);
-                return;
-            }, error: function(error) {
-                console.log(error);
-                res.render('index', {title: error, path: req.path});
-            }
-        });
-
-
-        // var connectQuery = Parse.Query.or(query0, query1);
-        // connectQuery.find({
-        //     success: function(result) {
-        //         console.log(result);
-        //         if (result.length == 0) {
-        //             console.log("NOT CONNECTED");
-        //             status = "not-connected"; 
-        //         }
-        //         else if (result[0].attributes.verified == true) {
-        //             console.log("CONNECTED");
-        //             status = "connected"; 
-        //         }
-        //         else { 
-        //             console.log("PENDING");
-        //             status = "pending"; 
-        //         }
-        //         res.json(status);
-        //     }, error: function(error) {
-        //         console.log(error);
-        //         res.render('index', {title: error, path: req.path});
-        //     }
-        // });
     });
 
     app.get('/profile/:objectId/connections', is_auth, function (req, res, next) {
@@ -644,24 +586,6 @@ module.exports=function(app,Parse) {
             });
         }
     });
-
-    // app.get('/profile/:objectId/connect', is_auth, function (req, res, next) {
-    //     var userId= req.params.objectId;
-    //     var currentUser = req.user
-    //     var Relationship = Parse.Object.extend("RelationshipUser");
-    //     var relation = new Relationship();
-    //     relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
-    //     relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
-    //     relation.set('verified', false);
-    //     relation.save(null,{
-    //         success:function(){
-    //             res.json({success: "Requested Successfully"});
-    //         },
-    //         error:function(error){
-    //             res.json({error:error});
-    //         }
-    //     });
-    // });
 
     app.get('/profile/:objectId/connect', is_auth, function (req, res, next) {
         var userId= req.params.objectId;
