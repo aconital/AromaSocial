@@ -1,6 +1,6 @@
 // Use Parse.Cloud.define to define as many cloud functions as you want.
 // For example:
-Parse.Cloud.afterSave("Publication", function(request, response) {
+Parse.Cloud.afterSave("Pub_Book", function(request, response) {
 	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("user");
 	var pubId=request.object;
@@ -9,14 +9,14 @@ Parse.Cloud.afterSave("Publication", function(request, response) {
 	var feed = new newsFeed();
 	newsQuery.select("updatedAt");
 	newsQuery.equalTo("from", userId);
-	newsQuery.equalTo("pubId", pubId);
+	newsQuery.equalTo("pubBookId", pubId);
 	newsQuery.addDescending("updatedAt");
 	newsQuery.first({
 		success: function(result) {
 			if (result==undefined){
 				feed.set("from", userId);
-				feed.set("type", "pub");
-				feed.set("modId", pubId);
+				feed.set("type", "pub_book");
+				feed.set("pubBookId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
@@ -27,8 +27,8 @@ Parse.Cloud.afterSave("Publication", function(request, response) {
 			if (currentTime>limitTime) {
 				feed.set("from", userId);
 				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "pub");
-				feed.set("pubId", pubId);
+				feed.set("type", "pub_book");
+				feed.set("pubBookId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
@@ -37,14 +37,277 @@ Parse.Cloud.afterSave("Publication", function(request, response) {
 		error: function(error) {
 			//else simply insert it
 			feed.set("from", userId);
-			feed.set("type", "pub");
-			feed.set("pubId", pubId);
+			feed.set("type", "pub_book");
+			feed.set("pubBookdId", pubId);
 			feed.save();
 			response.success("Added Publication Newsfeed Entry");
 		}
 	});
 });
-
+Parse.Cloud.afterSave("Pub_Conference", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var pubId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("pubConferenceId", pubId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "pub_conference");
+				feed.set("pubConferenceId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "pub_conference");
+				feed.set("pubConferenceId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			response.success("Publication Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "pub_conference");
+			feed.set("pubConferenceId", pubId);
+			feed.save();
+			response.success("Added Publication Newsfeed Entry");
+		}
+	});
+});
+Parse.Cloud.afterSave("Pub_Journal_Article", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var pubId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("pubJournalId", pubId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "pub_journal");
+				feed.set("pubJournalId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "pub_journal");
+				feed.set("pubJournalId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			response.success("Publication Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "pub_journal");
+			feed.set("pubJournalId", pubId);
+			feed.save();
+			response.success("Added Publication Newsfeed Entry");
+		}
+	});
+});
+Parse.Cloud.afterSave("Pub_Patent", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var pubId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("pubJournalId", pubId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "pub_patent");
+				feed.set("pubPatentId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "pub_patent");
+				feed.set("pubPatentId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			response.success("Publication Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "pub_patent");
+			feed.set("pubPatentId", pubId);
+			feed.save();
+			response.success("Added Publication Newsfeed Entry");
+		}
+	});
+});
+Parse.Cloud.afterSave("Pub_Report", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var pubId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("pubReportId", pubId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "pub_report");
+				feed.set("pubReportId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "pub_report");
+				feed.set("pubReportId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			response.success("Publication Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "pub_report");
+			feed.set("pubReportId", pubId);
+			feed.save();
+			response.success("Added Publication Newsfeed Entry");
+		}
+	});
+});
+Parse.Cloud.afterSave("Pub_Thesis", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var pubId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("pubThesisId", pubId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "pub_thesis");
+				feed.set("pubThesisId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "pub_thesis");
+				feed.set("pubThesisId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			response.success("Publication Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "pub_thesis");
+			feed.set("pubThesisId", pubId);
+			feed.save();
+			response.success("Added Publication Newsfeed Entry");
+		}
+	});
+});
+Parse.Cloud.afterSave("Pub_Unpublished", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("user");
+	var pubId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.select("updatedAt");
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("pubUnpublishedId", pubId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("from", userId);
+				feed.set("type", "pub_unpublished");
+				feed.set("pubUnpublishedId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			//if found already in newsfeed  compare update times
+			var currentTime=new Date();
+			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
+			//if last updated within 5 minutes ignore
+			if (currentTime>limitTime) {
+				feed.set("from", userId);
+				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+				feed.set("type", "pub_unpublished");
+				feed.set("pubUnpublishedId", pubId);
+				feed.save();
+				response.success("Added Publication Newsfeed Entry");
+			}
+			response.success("Publication Entry Ignored");
+		},
+		error: function(error) {
+			//else simply insert it
+			feed.set("from", userId);
+			feed.set("type", "pub_unpublished");
+			feed.set("pubUnpublishedId", pubId);
+			feed.save();
+			response.success("Added Publication Newsfeed Entry");
+		}
+	});
+});
 Parse.Cloud.afterSave("Model", function(request, response) {
 	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("user");
@@ -242,12 +505,108 @@ Parse.Cloud.beforeDelete("Organization", function(request, response) {
 	}
 });
 
-Parse.Cloud.afterDelete("Publication", function(request) {
+Parse.Cloud.afterDelete("Pub_Book", function(request) {
 	Parse.Cloud.useMasterKey();
 	var pubId= request.object;
 	var NewsFeed = Parse.Object.extend("NewsFeed");
 	var query = new Parse.Query(NewsFeed);
-	query.equalTo("pubId", pubId);
+	query.equalTo("pubBookId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Pub_Conference", function(request) {
+	Parse.Cloud.useMasterKey();
+	var pubId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("pubConferenceId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Pub_Journal_Article", function(request) {
+	Parse.Cloud.useMasterKey();
+	var pubId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("pubJournalId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Pub_Patent", function(request) {
+	Parse.Cloud.useMasterKey();
+	var pubId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("pubPatentId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Pub_Report", function(request) {
+	Parse.Cloud.useMasterKey();
+	var pubId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("pubReportId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Pub_Thesis", function(request) {
+	Parse.Cloud.useMasterKey();
+	var pubId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("pubThesisId", pubId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Pub_Unpublished", function(request) {
+	Parse.Cloud.useMasterKey();
+	var pubId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("pubUnpublishedId", pubId);
 	query.first({
 		success: function(object) {
 			object.destroy();
