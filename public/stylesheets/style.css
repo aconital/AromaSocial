@@ -6386,6 +6386,7 @@ textarea {
     color: white;
     white-space: nowrap;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .ui-state-hover, .ui-state-active {
@@ -6398,7 +6399,25 @@ textarea {
     background-image: none;
 }
 
-ul.ui-autocomplete.ui-menu { z-index: 4000; }
+.ui-autocomplete-category {
+     font-weight: bold; 
+     text-align: center;
+     -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+     background-color: #b3b3b3;
+     color: black;  
+}
+
+.ui-state-focus {
+    background-color: #1a1a1a;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    outline:none;
+}
+
+ul.ui-autocomplete.ui-menu {
+  z-index: 4000; 
+}
 
 .gap-all {
   margin: 10px;
