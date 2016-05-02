@@ -470,6 +470,7 @@ var About = React.createClass({
         if(JSON.parse(educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }
         return {
             summary: summary,
+            summary2: summary2,
             workExperience: workExperience,
             educations: educations,
             interests: interests,
@@ -696,7 +697,7 @@ var About = React.createClass({
 
                 <div id="resume-summary-item">
                     <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <p className="p-noneditable">{this.state.summary}</p>}
+                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <p className="p-noneditable">{this.state.summary2}</p>}
                     </div>
                 </div>
                 </div>
