@@ -155,9 +155,8 @@ module.exports=function(app,Parse) {
         query1.equalTo('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id});
         query1.equalTo('userId0', { __type: "Pointer", className: "_User", objectId: otherUser});
 
-
-        var connectQuery = Parse.Query.or(query0, query1);
-        connectQuery.find({
+        // case where we sent the request
+        query1.find({
             success: function(result) {
                 console.log(result);
                 if (result.length == 0) {
@@ -173,11 +172,60 @@ module.exports=function(app,Parse) {
                     status = "pending"; 
                 }
                 res.json(status);
+                return;
             }, error: function(error) {
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
             }
         });
+
+        // case where the request was sent to us
+        query0.find({
+            success: function(result) {
+                console.log(result);
+                if (result.length == 0) {
+                    console.log("NOT CONNECTED");
+                    status = "not-connected"; 
+                }
+                else if (result[0].attributes.verified == true) {
+                    console.log("CONNECTED");
+                    status = "connected"; 
+                }
+                else { 
+                    console.log("PENDING - but show connect to connect directly");
+                    status = "not-connected"; 
+                }
+                res.json(status);
+                return;
+            }, error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+
+
+        // var connectQuery = Parse.Query.or(query0, query1);
+        // connectQuery.find({
+        //     success: function(result) {
+        //         console.log(result);
+        //         if (result.length == 0) {
+        //             console.log("NOT CONNECTED");
+        //             status = "not-connected"; 
+        //         }
+        //         else if (result[0].attributes.verified == true) {
+        //             console.log("CONNECTED");
+        //             status = "connected"; 
+        //         }
+        //         else { 
+        //             console.log("PENDING");
+        //             status = "pending"; 
+        //         }
+        //         res.json(status);
+        //     }, error: function(error) {
+        //         console.log(error);
+        //         res.render('index', {title: error, path: req.path});
+        //     }
+        // });
     });
 
     app.get('/profile/:objectId/connections', is_auth, function (req, res, next) {
