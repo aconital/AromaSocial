@@ -365,6 +365,7 @@ var Connections = React.createClass({
                         </div>
                         <div className="item-box-right">
                             <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <p>{person.about}</p>
                         </div>
                     </div>
                     )}

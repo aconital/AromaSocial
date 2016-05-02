@@ -171,65 +171,58 @@ module.exports=function(app,Parse) {
     });
 
     app.get('/profile/:objectId/connections', is_auth, function (req, res, next) {
-        var innerQuery = new Parse.Query(Parse.User);
-        innerQuery.equalTo("objectId",req.params.objectId);
-        var query = new Parse.Query('RelationshipUser');
-        query.matchesQuery("userId0",innerQuery)
-        query.include('userId1');
-        query.find({
-            success: function(result) {
+        var currentUser = req.user;
+        var people = [];
+        console.log("OBJ ID: ");
+        console.log(req.params.objectId);
+
+        var query0 = new Parse.Query("RelationshipUser");
+        var query1 = new Parse.Query("RelationshipUser");
+
+        query0.equalTo('userId0', { __type: "Pointer", className: "_User", objectId: req.params.objectId});
+        //query0.include('userId0');
+        query0.equalTo('verified', true);
+
+        query1.equalTo('userId1', { __type: "Pointer", className: "_User", objectId: req.params.objectId});
+        //query1.include('userId1');
+        query1.equalTo('verified', true);
 
 
-                var people =[];
-                for(var uo in result) {
+        var connectQuery = Parse.Query.or(query0, query1);
+        connectQuery.include('userId0');
+        connectQuery.include('userId1');
+        connectQuery.each( function(result) {
+                if (result == undefined) {
+                    console.log("No connections for this guy");
+                } else {
+                    var friend;
+                    if (result.get('userId1').id == req.params.objectId) {
+                        // we sent the request
+                        friend = result.get('userId0');
 
-                    var title= result[uo].attributes.title;
-                    var verified= result[uo].attributes.verified;
-                    var user= result[uo].attributes.userId1.attributes;
-                    var username= user.username;
-                    var fullname="";
-                    var company= "";
-                    var work_title= "";
-                    var userImgUrl= "/images/user.png";
-                    var workExperience= [];
-
-                    if(user.hasOwnProperty('fullname')){
-                        fullname=user.fullname;
+                    } else if (result.get('userId0').id == req.params.objectId) {
+                        // the request was sent to us
+                        friend = result.get('userId1');
                     }
-                    if(user.hasOwnProperty('imgUrl')){
-                        userImgUrl=user.imgUrl;
-                    }
-                    //getting first work experience, since there is no date on these objects
-                    if(user.hasOwnProperty('workExperience')){
-                        if(user.workExperience.length >0) {
-                            var workExperience = user.workExperience[0];
-                            company = workExperience.company;
-                            work_title = workExperience.title;
-                        }
-                    }
-                    //only show people who are verified by admin
-                    if(verified) {
-                        var person = {
-                            username:username,
-                            title: title,
-                            fullname: fullname,
-                            userImgUrl: userImgUrl,
-                            company: company,
-                            workTitle: work_title
-                        };
-                        people.push(person);
-                    }
+                    console.log("FRIEND IS: ");
+                    console.log(friend.get('username'));
+                    var person = {
+                        username: friend.get('username'),
+                        title: friend.get('title'),
+                        fullname: friend.get('fullname'),
+                        userImgUrl: friend.get('imgUrl'),
+                        about: friend.get('about')
+                    };
+                    people.push(person);
                 }
-                var filtered_people=  _.groupBy(people,'title');
-
+            }).then(function(response){
+                var filtered_people =  _.groupBy(people,'title');
                 res.json(filtered_people);
-            },
-            error: function(error) {
+            }, function(error){
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
-            }
+            });
         });
-    });
 
     app.get('/profile/:objectId/organizations', is_auth, function (req, res, next) {
 
@@ -690,6 +683,7 @@ module.exports=function(app,Parse) {
             var title= result.get('title');
             var user= result.get('userId1');
             var username= user.get('username');
+            var userId = user.id;
             var fullname= user.get('fullname');
             var userImgUrl= user.get('imgUrl');
             var verified= result.get('verified');
@@ -697,6 +691,7 @@ module.exports=function(app,Parse) {
             if(!verified) {
                 var person = {
                     username:username,
+                    userId: userId,
                     title: title,
                     fullname: fullname,
                     userImgUrl: userImgUrl
@@ -715,51 +710,30 @@ module.exports=function(app,Parse) {
         var mode= req.body.mode;
         var friendusername= person.username;
 
-        var innerQuery = new Parse.Query(Parse.User);
-        innerQuery.equalTo("username",friendusername);
+        console.log("FRIEND REQUEST DEBUGGING STUFF => ");
+        console.log(person);
 
-        var query = new Parse.Query('RelationshipUser');
-        query.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: req.user.id})
-        query.matchesQuery("userId1",innerQuery)
-        query.equalTo('verified',false)
+        var query = new Parse.Query("RelationshipUser");
+        query.equalTo("userId0", {__type: "Pointer", className: "_User", objectId: req.user.id});
+        query.equalTo("userId1", {__type: "Pointer", className: "_User", objectId: person.userId});
+        query.equalTo("verified", false);
+
         query.first({
             success: function(result) {
-                if(mode=="approve")
-                {
+                if (result == undefined) {
+                    console.log("Unexpected error. Cannot find RelationshipUser entry for friend request");
+                } else {
                     result.set("verified",true);
-                    result.save(null, {
-                        success:function(){
-                            var Relationship = Parse.Object.extend("RelationshipUser");
-                            var relation = new Relationship();
-
-                            relation.set('userId0',result.get("userId1"));
-                            relation.set('userId1', {__type: "Pointer", className: "_User", objectId: req.user.id});
-                            relation.set('verified', true);
-                            relation.save(null,{
-                                success:function(){
-                                    res.json({success:"approved"});
-                                },
-                                error:function(error){
-                                    res.json({error:error});
-                                }
-                            });
-
+                    result.save(null, { useMasterKey: true }).then(
+                        function(){
+                            //console.log("SAVE SUCCESS");
+                            res.status(200).json({status: "Friend request info uploaded successfully!"});
                         },
-                        error:function(error){
-                            res.json({error:error});
+                        function(error){
+                            console.log(error);
+                            res.status(500).json({status: "Error uploading friend request info"})
                         }
-                    });
-                }
-                else if(mode=="deny")
-                {
-                    result.destroy({
-                        success: function(model, response){
-                            res.json({scucess:"denied"});
-                        },
-                        error: function(model, response){
-                            res.json({error:error});
-                        }
-                    });
+                    );
                 }
             },
             error: function(error) {
@@ -767,8 +741,6 @@ module.exports=function(app,Parse) {
                 res.render('index', {title: error, path: req.path});
             }
         });
-
-
     });
 
     app.get('/profile/:objectId/equipments_list', is_auth, function (req, res, next) {
