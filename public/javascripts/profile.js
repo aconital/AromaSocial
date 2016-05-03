@@ -802,7 +802,7 @@ var AboutTabObject = React.createClass({
             }.bind(this)
         });
 
-        return;
+        //return;
     },
     render: function() {
         var startDate = this.props.start.replace(/-/g,'/');
