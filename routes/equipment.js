@@ -12,7 +12,7 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
 //**********************************************//
 //                                              //
-//                   PROJECT                    //
+//                  EQUIPMENT                   //
 //                                              //
 //**********************************************//
 
@@ -38,6 +38,7 @@ module.exports=function(app,Parse) {
                     description: result.get('description'),
                     instructions: result.get('instructions'),
                     image_URL: result.get('image_URL'),
+                    file_path: result.get('file_path'),
                     keywords: result.get('keywords'),
                     model: result.get('model'),
                     model_year: result.get('model_year'),
