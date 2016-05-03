@@ -32,7 +32,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
           query.include("pubUnpublishedId");
           query.include("pubPatentId");
           query.include("equipmentId");
-          query.include("projectId")
+          query.include("projectId");
           query.include("modId");
           query.include("datId");
           query.include('from');
@@ -55,11 +55,65 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                       }
                       var  type=object.attributes.type;
                       var  date=object.createdAt;
-
-                      if(type =="pub_book")
+                      if (type == "equipment") {
+                        if(object.attributes.equipmentId!=null && object.attributes.equipmentId.attributes !=null) {
+                          var equip = object.get("equipmentId");
+                          var objectId = equip.id;
+                          var title = equip.get("title");
+                          var imgUrl = equip.get("image_URL");
+                          var type = "equipment";
+                          var filePath = equip.get("file_path");
+                          var creationDate = equip.get("createdAt");
+                          var updateDate = equip.get("updatedAt");
+                          var description = equip.get("description");
+                          var keywords = equip.get("keywords");
+                          var instructions = equip.get("instructions");
+                          feeds.push({
+                            objId: objectId,
+                            fullname: fullname,
+                            username: username,
+                            userImg: userImg,
+                            date: creationDate,
+                            abstract: description,
+                            type:type,
+                            keywords:keywords,
+                            title: title,
+                          });
+                        }
+                      }
+                      else if (type == "project") {
+                        if(object.attributes.projectId!=null && object.attributes.projectId.attributes !=null) {
+                              var proj = object.get("projectId");
+                              var objectId = proj.id;
+                              var title = proj.get("title");
+                              var imgUrl = proj.get("image_URL");
+                              var type = "project";
+                              var filePath = proj.get("file_path");
+                              var creationDate = proj.get("createdAt");
+                              var startDate = proj.get("start_date");
+                              var endDate = proj.get("end_date");
+                              var updateDate = proj.get("updatedAt");
+                              var description = proj.get("description");
+                              var url = proj.get("URL");
+                              var keywords = proj.get("keywords");
+                              feeds.push({
+                                  objId: objectId,
+                                  fullname: fullname,
+                                  username: username,
+                                  userImg: userImg,
+                                  date: creationDate,
+                                  abstract: description,
+                                  url: url,
+                                  type:type,
+                                  keywords:keywords,
+                                  title: title,
+                              });
+                          }
+                      }
+                      else if(type =="pub_book")
                       { if(object.attributes.pubBookId!=null && object.attributes.pubBookId.attributes !=null)
                           {
-                              var objectId = object.get("pubBookId").get("objectId");
+                              var objectId = object.get("pubBookId").id;
                               var publication_date = object.get("pubBookId").get("publication_date") != null? object.get("pubBookId").get("publication_date"):"";
                               var abstract = object.get("pubBookId").get("abstract") != null? object.get("pubBookId").get("abstract"):"";
                               var author = object.get("pubBookId").get("author") != null? object.get("pubBookId").get("author"):"";
@@ -74,8 +128,9 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               var publisher = object.get("pubBookId").get("publisher") != null? object.get("pubBookId").get("publisher"):"";
                               var doi = object.get("pubBookId").get("doi") != null? object.get("pubBookId").get("doi"):"";
                               var edition = object.get("pubBookId").get("edition") != null? object.get("pubBookId").get("edition"):"";
+                              var type = object.get("pubBookId").get("type") != null? object.get("pubBookId").get("type"):"";
                               feeds.push({
-                                  objectId: objectId,
+                                  objId: objectId,
                                   fullname: fullname,
                                   username: username,
                                   userImg: userImg,
@@ -85,6 +140,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   chapter: chapter,
                                   filename:filename,
                                   url: url,
+                                  type:type,
                                   page: page,
                                   keywords:keywords,
                                   isbn: isbn,
@@ -97,7 +153,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                       }
                       else if(type == "pub_conference")
                       {   if(object.attributes.pubConferenceId!=null && object.attributes.pubConferenceId.attributes !=null)
-                          {   var objectId = object.get("pubConferenceId").get("objectId");
+                          {   var objectId = object.get("pubConferenceId").id;
                               var publication_date = object.get("pubConferenceId").get("publication_date") != null? object.get("pubConferenceId").get("publication_date"):"";
                               var abstract = object.get("pubConferenceId").get("abstract") != null? object.get("pubConferenceId").get("abstract"):"";
                               var filename = object.get("pubConferenceId").get("filename") != null? object.get("pubConferenceId").get("filename"):"";
@@ -116,7 +172,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               var doi = object.get("pubConferenceId").get("doi") != null? object.get("pubConferenceId").get("doi"):"";
 
                               feeds.push({
-                                  objectId: objectId,
+                                  objId: objectId,
                                   fullname: fullname,
                                   username: username,
                                   userImg: userImg,
@@ -130,6 +186,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   contributors: contributors,
                                   volume:volume,
                                   url: url,
+                                  type:type,
                                   conference_location: conference_location,
                                   keywords:keywords,
                                   conference: conference,
@@ -144,7 +201,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                       {
                           if(object.attributes.pubJournalId!=null && object.attributes.pubJournalId.attributes !=null)
                           {
-                              var objectId = object.get("pubJournalId").get("objectId");
+                              var objectId = object.get("pubJournalId").id;
                               var publication_date = object.get("pubJournalId").get("publication_date") != null? object.get("pubJournalId").get("publication_date"):"";
                               var abstract = object.get("pubJournalId").get("abstract") != null? object.get("pubJournalId").get("abstracts"):"";
                               var journal_volume = object.get("pubJournalId").get("journal_volume") != null? object.get("pubJournalId").get("journal_volume"):"";
@@ -163,7 +220,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               var doi = object.get("pubJournalId").get("doi") != null? object.get("pubJournalId").get("doi"):"";
 
                               feeds.push({
-                                  objectId: objectId,
+                                  objId: objectId,
                                   fullname: fullname,
                                   username: username,
                                   userImg: userImg,
@@ -190,7 +247,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                       {
                           if(object.attributes.pubPatentId!=null && object.attributes.pubPatentId.attributes !=null)
                           {
-                              var objectId = object.get("pubPatentId").get("objectId");
+                              var objectId = object.get("pubPatentId").id;
                               var publication_date = object.get("pubPatentId").get("publication_date") != null? object.get("pubPatentId").get("publication_date"):"";
                               var abstract = object.get("pubPatentId").get("abstract") != null? object.get("pubPatentId").get("abstracts"):"";
                               var patent_date = object.get("pubPatentId").get("patent_date") != null? object.get("pubPatentId").get("patent_date"):"";
@@ -207,7 +264,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               var reference_number = object.get("pubPatentId").get("reference_number") != null? object.get("pubPatentId").get("reference_number"):"";
                               var doi = object.get("pubPatentId").get("doi") != null? object.get("pubPatentId").get("doi"):"";
                               feeds.push({
-                                  objectId: objectId,
+                                  objId: objectId,
                                   fullname: fullname,
                                   username: username,
                                   userImg: userImg,
@@ -232,7 +289,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                       {
                           if(object.attributes.pubThesisId!=null && object.attributes.pubThesisId.attributes !=null)
                           {
-                              var objectId = object.get("pubThesisId").get("objectId");
+                              var objectId = object.get("pubThesisId").id;
                               var publication_date = object.get("pubThesisId").get("publication_date") != null? object.get("pubThesisId").get("publication_date"):"";
                               var abstract = object.get("pubThesisId").get("abstract") != null? object.get("pubThesisId").get("abstracts"):"";
                               var filename = object.get("pubThesisId").get("filename") != null? object.get("pubThesisId").get("filename"):"";
@@ -249,7 +306,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               var type = object.get("pubThesisId").get("type") != null? object.get("pubThesisId").get("type"):"";
                               var doi = object.get("pubThesisId").get("doi") != null? object.get("pubThesisId").get("doi"):"";
                               feeds.push({
-                                  objectId: objectId,
+                                  objId: objectId,
                                   fullname: fullname,
                                   username: username,
                                   userImg: userImg,
@@ -274,7 +331,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                       {
                           if(object.attributes.pubUnpublishedId!=null && object.attributes.pubUnpublishedId.attributes !=null)
                           {
-                              var objectId = object.get("pubUnpublishedId").get("objectId");
+                              var objectId = object.get("pubUnpublishedId").id;
                               var publication_date = object.get("pubUnpublishedId").get("publication_date") != null? object.get("pubUnpublishedId").get("publication_date"):"";
                               var abstract = object.get("pubUnpublishedId").get("abstract") != null? object.get("pubUnpublishedId").get("abstracts"):"";
                               var filename = object.get("pubUnpublishedId").get("filename") != null? object.get("pubUnpublishedId").get("filename"):"";
@@ -286,7 +343,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               var location = object.get("pubUnpublishedId").get("location") != null? object.get("pubUnpublishedId").get("location"):"";
                               var doi = object.get("pubUnpublishedId").get("doi") != null? object.get("pubUnpublishedId").get("doi"):"";
                               feeds.push({
-                                  objectId: objectId,
+                                  objId: objectId,
                                   fullname: fullname,
                                   username: username,
                                   userImg: userImg,
@@ -307,7 +364,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                       {
                           if(object.attributes.pubReportId!=null && object.attributes.pubReportId.attributes !=null)
                           {
-                              var objectId = object.get("pubReportId").get("objectId");
+                              var objectId = object.get("pubReportId").id;
                               var publication_date = object.get("pubReportId").get("publication_date") != null? object.get("pubReportId").get("publication_date"):"";
                               var report_location = object.get("pubReportId").get("report_location") != null? object.get("pubReportId").get("report_location"):"";
                               var abstract = object.get("pubReportId").get("abstract") != null? object.get("pubReportId").get("abstracts"):"";
@@ -323,7 +380,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               var type = object.get("pubReportId").get("type") != null? object.get("pubReportId").get("type"):"";
                                var doi = object.get("pubReportId").get("doi") != null? object.get("pubReportId").get("doi"):"";
                               feeds.push({
-                                  objectId: objectId,
+                                  objId: objectId,
                                   fullname: fullname,
                                   username: username,
                                   userImg: userImg,
