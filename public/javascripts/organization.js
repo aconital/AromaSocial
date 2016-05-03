@@ -255,7 +255,7 @@ var About = React.createClass({
         this.setState( changedState );
     },
     submitChange: function() {
-        var dataForm = {isAdmin: false, about: this.state.about};
+        var dataForm = {isAdmin: false, about: this.state.about.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
         var isAdminURL= "/organization/"+objectId+"/isAdmin";
         $.ajax({
             url: path + "/update",
@@ -550,7 +550,13 @@ var Manage = React.createClass({
         this.setState({[e.target.name]:e.target.value});
     },
     submitChange: function() {
-        var dataForm = {name: this.state.name, country: this.state.orgCountry, prov: this.state.orgProv, city: this.state.orgCity, street: this.state.orgStreet, postalcode: this.state.orgPostalcode, website: this.state.orgWebsite};
+        var dataForm = {name: this.state.name,
+                        country: this.state.orgCountry,
+                        prov: this.state.orgProv,
+                        city: this.state.orgCity,
+                        street: this.state.orgStreet,
+                        postalcode: this.state.orgPostalcode,
+                        website: this.state.orgWebsite};
 
         $.ajax({
             url: path + "/update",
