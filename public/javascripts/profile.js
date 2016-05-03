@@ -1243,7 +1243,9 @@ var PublicationAddForm = React.createClass({
 			</tr></table></div>
 		);
 		var bookChapterTitle = (
-			<Input type="text" placeholder="Chapter Title:" name="chapter" onChange={this.handleChange} value={this.state.book_chapter} />
+            <div>
+			<Input type="text" placeholder="Chapter Title:" name="book_chapter" onChange={this.handleChange} value={this.state.book_chapter} />
+            </div>
 		);
 		var bookDetailFields = (
 			<div><Input type="text" placeholder="Publisher:" name="book_publisher" required onChange={this.handleChange} value={this.state.book_publisher} />
@@ -1299,7 +1301,8 @@ var PublicationAddForm = React.createClass({
 					return bookDetailFields;
 					break;
 				case "Pub_Chapter":
-					showBookChapterTitle(true);
+					//showBookChapterTitle(true);
+                    //showBookChapterTitle("Pub_Chapter");
 					return bookDetailFields;
 					break;
 				case "Pub_Conference":
