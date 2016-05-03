@@ -826,31 +826,21 @@ module.exports=function(app,Parse) {
         var orgId= req.params.objectId;
         var currentUser = req.user;
         if(currentUser) {
-            var query1 = new Parse.Query('Relationship');
-            query1.equalTo("userId", currentUser);
-            query1.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: orgId});
-            query1.equalTo('verified',true);
-            query1.first({
-                success: function(result) {
-
-                   result.destroy({
-                       success: function(model, response){
-                           res.json({success: "Left Successfully"});
-                       },
-                       error: function(model, response){
-                           res.json({error:error});
-                       }
-                   });
-                },
-                error: function(error) {
-                    console.log(error);
-                    res.render('index', {title: error, path: req.path});
-                }
+            var query = new Parse.Query('Relationship');
+            query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id} );
+            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: orgId});
+            query.equalTo('verified',true);
+            query.first(function(result) {
+                if(!(result==undefined)){
+                    console.log("result found");
+                    result.destroy();
+                };
+            }).then(function(){
+                res.status(200).json({status: "Successfully left organization!"});
+            }, function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
             });
-        }
-        else
-        {
-            res.json({error: "Please Sign In!"})
         }
     });
 
