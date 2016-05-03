@@ -46,12 +46,16 @@ module.exports=function(app,Parse) {
 
 
     app.get('/beta', function (req, res, next) {
-        if (!req.isAuthenticated()) {
-            res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
+            res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: ""});
+    });
+    app.post('/beta', function (req, res, next) {
+        var code = req.body.code;
+        if(code === "Fom2016") {
+            req.session.code=code;
+            res.redirect("/signin");
         }
-        else {
-            res.redirect('/');
-        }
+        else
+         res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
     });
 
   // EMAIL API
@@ -88,7 +92,7 @@ module.exports=function(app,Parse) {
    * SIGN UP
    *
    ********************************************/
-  app.get('/signup', function (req, res, next) {
+  app.get('/signup',hasBetaCode, function (req, res, next) {
       if (!req.isAuthenticated()) {
           res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
       }
@@ -98,10 +102,7 @@ module.exports=function(app,Parse) {
    });
 
     app.post('/signup', function (req, res, next) {
-        if(req.body.code!='Fom2016'){
-            return res.redirect('/');
-        }
-        console.log("is this fireing");
+
      var user = new Parse.User();
      user.set("username", req.body.username);
      user.set("password", req.body.password);
@@ -151,7 +152,7 @@ module.exports=function(app,Parse) {
    * SIGN IN
    *
    ********************************************/
-  app.get('/signin', function (req, res, next) {
+  app.get('/signin',hasBetaCode, function (req, res, next) {
 	if (!req.isAuthenticated()) {
     	res.render('signin', {title: 'Login', path: req.path});
 	} else {
@@ -408,4 +409,11 @@ app.get('/auth/linkedin/callback',function(req,res){
         }
         return randomString;
     };
+    function hasBetaCode(req,res,next)
+    {
+        if(req.session.code === "Fom2016")
+         next()
+        else
+        res.redirect("/beta");
+    }
 };
