@@ -709,7 +709,7 @@ module.exports=function(app,Parse) {
                 relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
                 relation.set('isAdmin', true);
                 relation.set('verified', true);
-                relation.set('title', 'TODO');
+                relation.set('title', 'Members');
                 relation.save(null);
             }).then(function(response) {
                 // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
@@ -772,7 +772,7 @@ module.exports=function(app,Parse) {
             relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id });
             relation.set('isAdmin', false);
             relation.set('verified', false);
-            relation.set('title', 'TODO');
+            relation.set('title', 'Members');
             relation.save(null,{
                 success:function(){
                     res.json({success: "Joined Successfully"});
