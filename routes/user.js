@@ -679,7 +679,6 @@ module.exports=function(app,Parse) {
         query.include('userId1')
         query.equalTo("userId0",{__type: "Pointer", className: "_User", objectId: currentUser.id})
         query.each(function(result) {
-            console.log("In each");
             var title= result.get('title');
             var user= result.get('userId1');
             var username= user.get('username');

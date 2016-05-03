@@ -30,7 +30,6 @@ module.exports=function(app,Parse) {
 
     app.get('/data/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        console.log('hi');
         var query = new Parse.Query('Data');
         query.include('user');
         query.get(req.params.objectId,{
@@ -63,7 +62,6 @@ module.exports=function(app,Parse) {
                         access: result.get('author'),
                         collaborators: JSON.stringify(result.get('collaborators')),
                         description: result.get('description'),
-                        hashtags: result.get('hashtags'),
                         title: result.get('title'),
                         license: result.get('license'),
                         filename: result.get('filename'),
@@ -169,7 +167,7 @@ module.exports=function(app,Parse) {
                 if (req.body.title) {
                     result.set("title", req.body.title);
                     result.set("description", req.body.description);
-                    // result.set("filename", req.body.filename);
+                    result.set("url", req.body.url);
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
                     // console.log(req.body.filename);
