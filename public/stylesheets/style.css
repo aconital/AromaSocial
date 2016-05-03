@@ -276,7 +276,8 @@ th {
   font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; }
+  -moz-osx-font-smoothing: grayscale; 
+}
 
 .glyphicon-asterisk:before {
   content: "\2a"; }
@@ -368,6 +369,10 @@ th {
 
 .glyphicon-road:before {
   content: "\e024"; }
+
+.glyphicon.glyphicon-download {
+    font-size: 45px;
+}
 
 .glyphicon-download-alt:before {
   content: "\e025"; }
@@ -5780,7 +5785,12 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 .contain-panel-big-p { width:100%; height:100%; border:solid; border-radius:4px; margin-top:20px; margin-bottom:15px; padding:0px 10px; }
 .contain-panel-big-p2 { width:100%; height:100%; border:solid; border-radius:4px; padding:0px 10px; }
 .contain-panel-big-image2 { width:40%; border:solid; border-radius:4px; border-color: var(--foreground-color); }
-.corner {position:absolute;margin:0px;top:31px;right:30px;}
+.corner {
+  position:absolute;
+  margin:10px;
+  top:15px;
+  right:30px;
+}
 .space {margin-left:10px;}
 .deleted {display:none;}
 .comment-picture {width:9%; padding-right:1%; }
