@@ -1211,10 +1211,10 @@ var PublicationAddForm = React.createClass({
          fileType: '',
          title: '',
          description: '',
-         collaborators: fullname,
+         collaborators: [fullname],
         creationDate: '',
          description: '',
-         keywords: '',
+         keywords: [],
          url: '',
          doi: '',
         // end common form fields
@@ -1349,11 +1349,11 @@ var PublicationAddForm = React.createClass({
 				</Input>
 				{showBookChapterTitle(this.state.type)}
                 <Input type="text" placeholder={titleLabel} name="title" required onChange={this.handleChange} value={this.state.title} />
-                <Input type="text" placeholder="Collaborators:" name="collaborators" required onChange={this.handleChange} value={this.state.collaborators} />
+                <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Abstract:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <Input type="text" placeholder="Keywords:" required name="keywords" onChange={this.handleChange} value={this.state.keywords} />
+                <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1371,14 +1371,17 @@ var PublicationAddForm = React.createClass({
 	    var changedState = {};
 	    changedState[e.target.name] = e.target.value;
 	    this.setState( changedState );
-	},
-
+	},  
+    handleKeyChange: function(e) {
+        var changedState = {};
+        changedState['keywords'] = e;
+        this.setState(changedState);
+    },
     handleCollabKeyChange: function(e) { // TODO delete or fix
         var changedState = {};
         changedState['collaborators'] = e;
         this.setState(changedState);
     },
-
     pullAuthors: function(authors) {
         return authors.map(function(author) {
             return author.given + ' ' + author.family;
@@ -1395,10 +1398,10 @@ var PublicationAddForm = React.createClass({
 				var entry = data.message;
 				this.setState({
 					title: entry.title[0],
-					collaborators: (entry.hasOwnProperty('author') ? self.pullAuthors(data.message.author).join(", ") : ''),
+					collaborators: (entry.hasOwnProperty('author') ? self.pullAuthors(data.message.author): []),
 					creationDate: entry.created['date-time'].split('T')[0],//entry['published-print']['date-parts'][0],
 					url: entry.URL,
-					keywords: (entry.hasOwnProperty('subject') ? entry.subject.join(", ") : ''),
+					keywords: (entry.hasOwnProperty('subject') ? entry.subject:[]),
 					autoFillStatus: "",
 				});
 				this.fillDetails(entry, null);
@@ -1537,9 +1540,9 @@ var PublicationAddForm = React.createClass({
 	handleSubmitData: function(e) {
         e.preventDefault();
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
-        				collaborators: this.state.collaborators, creationDate: this.state.creationDate,
+        				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
-        				keywords: this.state.keywords, title: this.state.title, type: this.state.type};
+        				keywords: JSON.stringify(this.state.keywords), title: this.state.title, type: this.state.type};
 		this.fillDetails({type:this.state.type}, pubForm);
 
 		$.ajax({

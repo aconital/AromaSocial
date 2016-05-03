@@ -6532,3 +6532,11 @@ hr.style15 {
 .item-box-image-outside{
   background-color: transparent !important;
 }
+
+.limit-text {
+  display: block;
+  width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
