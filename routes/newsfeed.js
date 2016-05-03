@@ -32,7 +32,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
           query.include("pubUnpublishedId");
           query.include("pubPatentId");
           query.include("equipmentId");
-          query.include("projectId")
+          query.include("projectId");
           query.include("modId");
           query.include("datId");
           query.include('from');
@@ -74,7 +74,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   var doi = object.get("pubBookId").get("doi") != null ? object.get("pubBookId").get("doi") : "";
                                   var edition = object.get("pubBookId").get("edition") != null ? object.get("pubBookId").get("edition") : "";
                                   feeds.push({
-                                      objectId: objectId,
+                                      objId: objectId,
                                       fullname: fullname,
                                       username: username,
                                       userImg: userImg,
@@ -115,7 +115,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   var doi = object.get("pubConferenceId").get("doi") != null ? object.get("pubConferenceId").get("doi") : "";
 
                                   feeds.push({
-                                      objectId: objectId,
+                                      objId: objectId,
                                       fullname: fullname,
                                       username: username,
                                       userImg: userImg,
@@ -137,6 +137,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                       conference_volume: conference_volume,
 
                                   });
+
                               }
                               break;
                           case "pub_journal":
@@ -160,7 +161,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   var doi = object.get("pubJournalId").get("doi") != null ? object.get("pubJournalId").get("doi") : "";
 
                                   feeds.push({
-                                      objectId: objectId,
+                                      objId: objectId,
                                       fullname: fullname,
                                       username: username,
                                       userImg: userImg,
@@ -202,7 +203,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   var reference_number = object.get("pubPatentId").get("reference_number") != null ? object.get("pubPatentId").get("reference_number") : "";
                                   var doi = object.get("pubPatentId").get("doi") != null ? object.get("pubPatentId").get("doi") : "";
                                   feeds.push({
-                                      objectId: objectId,
+                                      objId: objectId,
                                       fullname: fullname,
                                       username: username,
                                       userImg: userImg,
@@ -242,7 +243,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   var type = object.get("pubThesisId").get("type") != null ? object.get("pubThesisId").get("type") : "";
                                   var doi = object.get("pubThesisId").get("doi") != null ? object.get("pubThesisId").get("doi") : "";
                                   feeds.push({
-                                      objectId: objectId,
+                                      objId: objectId,
                                       fullname: fullname,
                                       username: username,
                                       userImg: userImg,
@@ -277,7 +278,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   var location = object.get("pubUnpublishedId").get("location") != null ? object.get("pubUnpublishedId").get("location") : "";
                                   var doi = object.get("pubUnpublishedId").get("doi") != null ? object.get("pubUnpublishedId").get("doi") : "";
                                   feeds.push({
-                                      objectId: objectId,
+                                      objId: objectId,
                                       fullname: fullname,
                                       username: username,
                                       userImg: userImg,
@@ -312,7 +313,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                                   var type = object.get("pubReportId").get("type") != null ? object.get("pubReportId").get("type") : "";
                                   var doi = object.get("pubReportId").get("doi") != null ? object.get("pubReportId").get("doi") : "";
                                   feeds.push({
-                                      objectId: objectId,
+                                      objId: objectId,
                                       fullname: fullname,
                                       username: username,
                                       userImg: userImg,
@@ -424,12 +425,58 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               break;
                           case "project":
                               if (object.attributes.projectId != null && object.attributes.projectId.attributes != null) {
-                                  var datItem = object.attributes.projectId.attributes;
+                                   var proj = object.get("projectId");
+                              var objectId = proj.id;
+                              var title = proj.get("title");
+                              var imgUrl = proj.get("image_URL");
+                              var type = "project";
+                              var filePath = proj.get("file_path");
+                              var creationDate = proj.get("createdAt");
+                              var startDate = proj.get("start_date");
+                              var endDate = proj.get("end_date");
+                              var updateDate = proj.get("updatedAt");
+                              var description = proj.get("description");
+                              var url = proj.get("URL");
+                              var keywords = proj.get("keywords");
+                              feeds.push({
+                                  objId: objectId,
+                                  fullname: fullname,
+                                  username: username,
+                                  userImg: userImg,
+                                  date: creationDate,
+                                  abstract: description,
+                                  url: url,
+                                  type:type,
+                                  keywords:keywords,
+                                  title: title,
+                              });
                               }
                               break;
                           case "equipment":
                               if (object.attributes.equipmentId != null && object.attributes.equipmentId.attributes != null) {
-                                  var datItem = object.attributes.equipmentId.attributes;
+
+                           var equip = object.get("equipmentId");
+                          var objectId = equip.id;
+                          var title = equip.get("title");
+                          var imgUrl = equip.get("image_URL");
+                          var type = "equipment";
+                          var filePath = equip.get("file_path");
+                          var creationDate = equip.get("createdAt");
+                          var updateDate = equip.get("updatedAt");
+                          var description = equip.get("description");
+                          var keywords = equip.get("keywords");
+                          var instructions = equip.get("instructions");
+                          feeds.push({
+                            objId: objectId,
+                            fullname: fullname,
+                            username: username,
+                            userImg: userImg,
+                            date: creationDate,
+                            abstract: description,
+                            type:type,
+                            keywords:keywords,
+                            title: title,
+                          });
                               }
                               break;
                           default:
