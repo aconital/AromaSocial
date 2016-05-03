@@ -1,0 +1,24 @@
+
+
+<div style="text-align: center; display: block; margin-left: auto; margin-right: auto; margin-bottom: 150px; margin-top: 30px;">
+    <img  src="/images/beta.png" width="200px" height="200px">
+    <p style=" margin-top:30px;color: #50788F; font-size: 18px; font-weight: 600;">Syncholar is currently in the closed Beta stage! </p>
+    <p style="color: #50788F; font-size: 18px; font-weight: 600;"> Enter your invitation code to signup:</p>
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4 col-sm-offset-3 col-sm-6">
+            {{#if Error}}
+            <div class="alert alert-danger" >Error: {{Error}} </div>
+            {{/if}}
+            <form name="form" method="post" action="/beta" novalidate="novalidate">
+                <div class="form-group">
+                    <label for="Code" class="control-label">Invitation Code</label>
+                    <input type="text" name="code" id="code" placeholder="Secret code" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
+                   <br>
+                    <input type="submit" value="Submit" name="submit" id="submit" class="btn btn-primary"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
