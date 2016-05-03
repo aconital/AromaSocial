@@ -76,25 +76,122 @@ var NewsFeedList = React.createClass({
   showMore: function() {
     var itemType = this.props.type;
     var author = this.props.author;
+    console.log("TYPE FOR THIS GUY: ");
+    console.log(itemType);
+    console.log(this.props);
+    switch (itemType) {
+      case "pub":
+        window.location.href="/publication/" + this.props.objId['objectId'];
+        break;
+      case "mod":
+        window.location.href="/model/" + this.props.objId['objectId'];
+        break;
+      case "dat":
+        window.location.href="/data/" + this.props.objId['objectId'];
+        break;
+      case "project":
+        window.location.href="/project/" + this.props.objId;
+        break;
+      case "book":
+        window.location.href="/publication/book/" + this.props.objId;
+        break;
+      case "conference":
+        window.location.href="/publication/conference/" + this.props.objId;
+        break;
+      case "journal":
+        window.location.href="/publication/journal/" + this.props.objId;
+        break;
+      case "patent":
+        window.location.href="/publication/patent/" + this.props.objId;
+        break;
+      case "report":
+        window.location.href="/publication/report/" + this.props.objId;
+        break;
+      case "thesis":
+        window.location.href="/publication/thesis/" + this.props.objId;
+        break;
+      case "unpublished":
+        window.location.href="/publication/unpublished/" + this.props.objId;
+        break;
+      case "equipment":
+        window.location.href="/equipment/" + this.props.objId;
+        break;
+      default:
+        break;
+    }
 
-    if (itemType == "pub") {
-      window.location.href="/publication/" + this.props.objId['objectId'];
-    }
-    else if (itemType == "mod") {
-      window.location.href="/model/" + this.props.objId['objectId'];
-    }
+    // if (itemType == "pub") {
+    //   window.location.href="/publication/" + this.props.objId['objectId'];
+    // }
+    // else if (itemType == "mod") {
+    //   window.location.href="/model/" + this.props.objId['objectId'];
+    // }
 
-    else if (itemType == "dat") {
-      window.location.href="/data/" + this.props.objId['objectId'];
-    }
+    // else if (itemType == "dat") {
+    //   window.location.href="/data/" + this.props.objId['objectId'];
+    // }
     return false;
   },
 
   render: function() {
     var date = moment(this.props.date).format("MMMM D, YYYY");
-    if (this.props.type=="pub"){ type="Publication"; typeLink="publication"; }
-    else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
-     else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
+    switch (this.props.type) {
+      case "pub":
+        type="Publication"; 
+        typeLink="publication";
+        break;
+      case "mod":
+        type="Model"; 
+        typeLink="model";
+        break;
+      case "dat":
+        type="Data"; 
+        typeLink="data";
+        break;
+      case "project":
+        type="Project"; 
+        typeLink="project";
+        break;
+      case "book":
+        type="Book"; 
+        typeLink="publication";
+        break;
+      case "conference":
+        type="Conference";
+        typeLink="publication";
+        break;
+      case "journal":
+        type="Journal";
+        typeLink="publication"
+        break;
+      case "patent":
+        type="Patent";
+        typeLink="publication"
+        break;
+      case "report":
+        type="Report";
+        typeLink="publication"
+        break;
+      case "thesis":
+        type="Thesis";
+        typeLink="publication"
+        break;
+      case "unpublished":
+        type="Publication (Unpublished)";
+        typeLink="publication"
+        break;
+      case "equipment":
+        type="Equipment";
+        typeLink="equipment"
+        break;
+      default:
+        type="Default"; 
+        typeLink="default";
+        break;
+    }
+    // if (this.props.type=="pub"){ type="Publication"; typeLink="publication"; }
+    // else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
+    // else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
     if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
     else { var title = this.props.title; }
 	return (
@@ -175,18 +272,59 @@ var Update = React.createClass({
       author = this.props.username;
     }
 
-    if (itemType == "pub") {
-      window.location.href="/publication/" + this.props.objId['objectId'];
-      //showPublicationNewsFeed(this.props.itemId, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username, this.props.img);
-    }
-    else if (itemType == "mod") {
-      window.location.href="/model/" + this.props.objId['objectId'];
-      //showModelNewsFeed();
+    switch (itemType) {
+      case "pub":
+        window.location.href="/publication/" + this.props.objId['objectId'];
+        break;
+      case "mod":
+        window.location.href="/model/" + this.props.objId['objectId'];
+        break;
+      case "dat":
+        window.location.href="/data/" + this.props.objId['objectId'];
+        break;
+      case "project":
+        window.location.href="/project/" + this.props.objId;
+        break;
+      case "book":
+        window.location.href="/publication/book/" + this.props.objId;
+        break;
+      case "conference":
+        window.location.href="/publication/conference/" + this.props.objId;
+        break;
+      case "journal":
+        window.location.href="/publication/journal/" + this.props.objId;
+        break;
+      case "patent":
+        window.location.href="/publication/patent/" + this.props.objId;
+        break;
+      case "report":
+        window.location.href="/publication/report/" + this.props.objId;
+        break;
+      case "thesis":
+        window.location.href="/publication/thesis/" + this.props.objId;
+        break;
+      case "unpublished":
+        window.location.href="/publication/unpublished/" + this.props.objId;
+        break;
+      case "equipment":
+        window.location.href="/equipment/" + this.props.objId;
+        break;
+      default:
+        break;
     }
 
-    else if (itemType == "data") {
-      window.location.href="/data/" + this.props.objId['objectId'];
-    }
+    // if (itemType == "pub") {
+    //   window.location.href="/publication/" + this.props.objId['objectId'];
+    //   //showPublicationNewsFeed(this.props.itemId, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username, this.props.img);
+    // }
+    // else if (itemType == "mod") {
+    //   window.location.href="/model/" + this.props.objId['objectId'];
+    //   //showModelNewsFeed();
+    // }
+
+    // else if (itemType == "data") {
+    //   window.location.href="/data/" + this.props.objId['objectId'];
+    // }
   },
   showPublication: function(){
     var author = this.props.author;
