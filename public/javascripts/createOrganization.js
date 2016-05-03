@@ -13,25 +13,26 @@ var CreateOrganization = React.createClass({
         };
     },
 	render: function() {
+		var req = <span>Name <Required content="*"/></span>;
 		return (
 			<div id="createOrganization"><Grid>
 				<Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
 				<Row className="show-grid">
 					<Col xs={9} xsOffset={2} md={6} mdOffset={3}>
 						<Panel header="Create homepage for your research lab or network" >
-							<p>Once you have created the home page, remember to connect to your home department, instituation, sponsors, etc. and more importantly invite your members to connect.  </p>
+							<p>Once you have created the home page, remember to connect to your home department, institution, sponsors, etc. and more importantly invite your members to connect.  </p>
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
-										<Input type="text" id="name" name="name"  label="Name" required placeholder="Name" onChange={this.handleChange} value={this.state.name} />
-										<Input type="file" name="picture" label="Profile Image" help="Please upload the organization's logo."
+										<Input type="text" id="name" name="name"  label={req} required placeholder="Name" onChange={this.handleChange} value={this.state.name} />
+										<Input type="file" name="picture" label="Logo" help="Please upload an image format (png, jpg, or gif)."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-										<Input type="textarea" name="description" label="About" placeholder="Description of organization" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
+										<Input type="textarea" name="description" label="About" placeholder="Describe your lab or network" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
 										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
-										<div class="col-md-3">
+
 											<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
-										</div>
+
 											<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
 										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
 										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />

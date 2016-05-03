@@ -257,7 +257,7 @@ var Profile = React.createClass ({
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
                         <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
-                        <ProfileMenu tabs={['About','Colleagues','Connections', 'Projects', 'Publications', 'Data', 'Models']} />
+                        <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Data', 'Models']} />
                     </div>
                     <div className="item-bottom-3">
                         {/*<input className="btn btn-panel" value="Message" />
@@ -471,7 +471,6 @@ var About = React.createClass({
         if(JSON.parse(educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }
         return {
             summary: summary,
-            summary2: summary2,
             workExperience: workExperience,
             educations: educations,
             interests: interests,
@@ -488,7 +487,7 @@ var About = React.createClass({
     },
     submitSummary: function() {
         console.log(this.state.educations);
-        var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r)/gm,'\\n')};
+        var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
         $.ajax({
             url: path + "/updateSummary",
             dataType: 'json',
@@ -599,12 +598,12 @@ var About = React.createClass({
         console.log(interestsChange);
         var interestsTemp = JSON.parse(this.state.interests);
         interestsTemp[index] = interestsChange;
-        var interestsTemp = JSON.stringify(interestsTemp);
+        var interestsTemp = JSON.stringify(interestsTemp).replace(/\\\"/g,"'")
         this.setState({interests: interestsTemp});
     },
     handleTagsInputChange: function(e) {
         var changedState = {};
-        changedState['interestsTag'] = JSON.stringify(e);
+        changedState['interestsTag'] = JSON.stringify(e).replace(/\\\"/g,"'");
         this.setState(changedState, function(){ this.submitTags() }.bind(this));
     },
     addInterest: function() {
@@ -631,8 +630,8 @@ var About = React.createClass({
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
-        else { var newWE = {company:"Organization Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
+        if (this.state.educations == "") { var arrayWE = [{company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
+        else { var newWE = {company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
@@ -698,7 +697,7 @@ var About = React.createClass({
 
                 <div id="resume-summary-item">
                     <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <p className="p-noneditable">{this.state.summary2}</p>}
+                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <pre className="p-noneditable">{this.state.summary}</pre>}
                     </div>
                 </div>
                 </div>
@@ -954,7 +953,7 @@ var Publications = React.createClass({
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Contributors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
+                                <tr><td><b>Authors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
                                 <tr><td><b>Publication Date: </b></td><td>{item.date}</td></tr>
                                 <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
                             </table>

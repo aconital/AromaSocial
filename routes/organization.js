@@ -709,7 +709,7 @@ module.exports=function(app,Parse) {
                 relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
                 relation.set('isAdmin', true);
                 relation.set('verified', true);
-                relation.set('title', 'TODO');
+                relation.set('title', 'Members');
                 relation.save(null);
             }).then(function(response) {
                 // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
@@ -772,7 +772,7 @@ module.exports=function(app,Parse) {
             relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id });
             relation.set('isAdmin', false);
             relation.set('verified', false);
-            relation.set('title', 'TODO');
+            relation.set('title', 'Members');
             relation.save(null,{
                 success:function(){
                     res.json({success: "Joined Successfully"});
@@ -859,7 +859,8 @@ module.exports=function(app,Parse) {
         var orgId0= req.body.orgId;
         var orgId1= req.params.objectId;
         if(orgId0==orgId1){
-            res.status(200).json({status: "Organization should not have itself as a connection!"})
+            res.status(200).json({status: "Organization should not have itself as a connection!"});
+            return;
         }
         //check the connection one way
         var query = new Parse.Query("RelationshipOrg");

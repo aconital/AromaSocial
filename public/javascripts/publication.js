@@ -78,7 +78,7 @@ var Publication = React.createClass ({
     },
     submitChange: function() {
         var self = this;
-        var dataForm = {pub_class: this.state.pub_class, title: this.state.title, abstract: this.state.abstract};
+        var dataForm = {pub_class: this.state.pub_class, title: this.state.title, abstract: this.state.abstract.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
         
         this.state.fields.forEach(function(element, index, array) {
             if ((element == 'keywords' || element == 'contributors' || element == 'supervisors') && (typeof self.state[element] === 'string')) {
@@ -179,8 +179,16 @@ var Publication = React.createClass ({
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
                     {fileExists}
                     <p className="p-noneditable"><strong>Abstract:</strong></p>
-                    {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <p className="p-non-editable-bottom-wrap">{this.state.abstract}</p>}
+                    {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{this.state.abstract}</pre>}
                 </div>
+
+                <div className="item-panel">
+                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Uploaded By</h3>
+                    <div className="item-authors-div">
+                        <a href={creator} className="nostyle"><img src={avatar} className="contain-panel-small-image"/></a>
+                    </div>
+                </div>
+                
                 <div className="item-panel">
                     <h3 className="no-margin h3-item-wrap h3-item-spacing">Information</h3>
 
@@ -191,12 +199,6 @@ var Publication = React.createClass ({
                     </table></div>
                 </div>
 
-                <div className="item-panel">
-                    <h3 className="no-margin h3-item-wrap h3-item-spacing">Uploaded By</h3>
-                    <div className="item-authors-div">
-                        <a href={creator} className="nostyle"><img src={avatar} className="contain-panel-small-image"/></a>
-                    </div>
-                </div>
             </div>
         </div>
         );

@@ -37,6 +37,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
           query.include("datId");
           query.include('from');
           query.descending("createdAt");
+          //query.limit(20);
           query.find({
               success: function(results) {
                   console.log("Successfully retrieved " + results.length + " feed.");
@@ -418,7 +419,7 @@ app.get('/newsfeeddata', is_auth,function (req, res, next) {
                               feeds.push({
                                   username: username,
                                   userImg: userImg,
-                                  //fullname: fullname,
+                                  fullname: fullname,
                                   type:type,
                                   date:date,
                                   filename: filename,
