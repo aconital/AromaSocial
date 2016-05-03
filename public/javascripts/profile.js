@@ -944,7 +944,7 @@ var Publications = React.createClass({
                 typeList.push(item);
             }
             return (
-            <div>
+                <div>
                 <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                 {typeList.map(item =>
                 <div className="item-box">
@@ -955,7 +955,7 @@ var Publications = React.createClass({
                             <table className="item-box-table-info">
                                 <tr><td><b>Authors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
                                 <tr><td><b>Publication Date: </b></td><td>{item.date}</td></tr>
-                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                                {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
                         </span>
@@ -1053,7 +1053,7 @@ var Models = React.createClass({
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                                 <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
-                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                              {/*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                             </span>
                         </div>
@@ -1122,7 +1122,7 @@ var Data = React.createClass({
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                                 <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
-                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                              {/*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                             </span>
                         </div>

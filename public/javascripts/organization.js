@@ -844,7 +844,7 @@ var Equipments = React.createClass({
                             <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                             <span className="font-15">
                             <table className="item-box-right-tags">
-                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                            {/* <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                             </span>
                         </div>
@@ -1099,7 +1099,7 @@ var Projects = React.createClass({
                             <table className="item-box-right-tags">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;})}</td></tr>
                                 <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
-                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                            {/*}   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </div>
                     </div>
@@ -1158,7 +1158,7 @@ var Publications = React.createClass({
                             <table className="item-box-table-info">
                                 <tr><td><b>Contributors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
                                 <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
-                                <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                              {/*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
                         </span>
@@ -1272,7 +1272,7 @@ var Datum = React.createClass({
                         <table className="item-box-table-info">
                             <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                             <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
-                            <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                        {/*}   <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                         </table>
                     </span>
                 </div>
@@ -1360,7 +1360,7 @@ var Model = React.createClass({
                     <table className="item-box-table-info">
                         <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                         <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
-                        <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>
+                    {/*}    <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                     </table>
                 </span>
                 </div>
