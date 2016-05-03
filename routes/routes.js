@@ -45,7 +45,14 @@ function sendEmail ( _name, _email, _subject, _message) {
 module.exports=function(app,Parse) {
 
 
-
+    app.get('/beta', function (req, res, next) {
+        if (!req.isAuthenticated()) {
+            res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
+        }
+        else {
+            res.redirect('/');
+        }
+    });
 
   // EMAIL API
   app.post('/sendemail', function(req, res, next){
