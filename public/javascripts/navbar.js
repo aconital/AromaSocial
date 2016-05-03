@@ -65,7 +65,6 @@ var FriendRequest = React.createClass({
                                 <a href={'/profile/'+person.username} className="body-link">
                                     <b><h3 className="no-margin-padding margin-top-5">{person.fullname}</h3></b>
                                 </a>
-                                <div className="no-margin-padding margin-top-5">{person.work_title} @ {person.company}</div>
                             </div>
                             <div className="friend-request-right">
                                <button className="btn btn-primary friend-request-button" onClick={this.pending_action.bind(this,person,"approve")} id="pending-action">Accept</button>

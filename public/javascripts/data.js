@@ -165,7 +165,14 @@ var Data = React.createClass ({
     render: function() {
         console.log(this.state.keywords, this.state.creator);
         var creator = (this.state.creator) ? '/profile/' + this.state.creator.username : '',
-            avatar = (this.state.creator) ? this.state.creator.imgUrl : '';
+            avatar = (this.state.creator) ? this.state.creator.imgUrl : '',
+            fileExists;
+
+        if (this.state.filename || false) {
+            fileExists = <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
+        } else {
+            fileExists = <h2 className="corner"></h2>;
+        }
 
         return (
         <div className="content-wrap-item-page">
@@ -186,7 +193,7 @@ var Data = React.createClass ({
 
                 <div className="item-panel">
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" style={{width:'90%'}} onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
-                    <h2 className="corner"><a href={this.state.path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>
+                    {fileExists}
                     <div className="contain-panel-big-item-image">
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </div>

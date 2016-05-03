@@ -772,7 +772,7 @@ module.exports=function(app,Parse) {
             relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id });
             relation.set('isAdmin', false);
             relation.set('verified', false);
-            relation.set('title', 'TODO');
+            relation.set('title', 'Members');
             relation.save(null,{
                 success:function(){
                     res.json({success: "Joined Successfully"});

@@ -17,20 +17,21 @@ Parse.Cloud.afterSave("Project", function(request, response) {
 				feed.set("projectId", projId);
 				feed.save();
 				response.success("Added Project Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "project");
+					feed.set("projectId", projId);
+					feed.save();
+					response.success("Added Project Newsfeed Entry");
+				} else
+					response.success("Project Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "project");
-				feed.set("projectId", projId);
-				feed.save();
-				response.success("Added Project Newsfeed Entry");
-			}
-			response.success("Project Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -61,20 +62,21 @@ Parse.Cloud.afterSave("Pub_Book", function(request, response) {
 				feed.set("pubBookId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "pub_book");
+					feed.set("pubBookId", pubId);
+					feed.save();
+					response.success("Added Publication Newsfeed Entry");
+				} else
+					response.success("Publication Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "pub_book");
-				feed.set("pubBookId", pubId);
-				feed.save();
-				response.success("Added Publication Newsfeed Entry");
-			}
-			response.success("Publication Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -105,20 +107,21 @@ Parse.Cloud.afterSave("Pub_Conference", function(request, response) {
 				feed.set("pubConferenceId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "pub_conference");
+					feed.set("pubConferenceId", pubId);
+					feed.save();
+					response.success("Added Publication Newsfeed Entry");
+				} else
+					response.success("Publication Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "pub_conference");
-				feed.set("pubConferenceId", pubId);
-				feed.save();
-				response.success("Added Publication Newsfeed Entry");
-			}
-			response.success("Publication Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -149,20 +152,22 @@ Parse.Cloud.afterSave("Pub_Journal_Article", function(request, response) {
 				feed.set("pubJournalId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "pub_journal");
+					feed.set("pubJournalId", pubId);
+					feed.save();
+					response.success("Added Publication Newsfeed Entry");
+				}
+				else
+					response.success("Publication Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "pub_journal");
-				feed.set("pubJournalId", pubId);
-				feed.save();
-				response.success("Added Publication Newsfeed Entry");
-			}
-			response.success("Publication Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -193,20 +198,21 @@ Parse.Cloud.afterSave("Pub_Patent", function(request, response) {
 				feed.set("pubPatentId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "pub_patent");
+					feed.set("pubPatentId", pubId);
+					feed.save();
+					response.success("Added Publication Newsfeed Entry");
+				} else
+					response.success("Publication Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "pub_patent");
-				feed.set("pubPatentId", pubId);
-				feed.save();
-				response.success("Added Publication Newsfeed Entry");
-			}
-			response.success("Publication Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -237,20 +243,21 @@ Parse.Cloud.afterSave("Pub_Report", function(request, response) {
 				feed.set("pubReportId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "pub_report");
+					feed.set("pubReportId", pubId);
+					feed.save();
+					response.success("Added Publication Newsfeed Entry");
+				} else
+					response.success("Publication Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "pub_report");
-				feed.set("pubReportId", pubId);
-				feed.save();
-				response.success("Added Publication Newsfeed Entry");
-			}
-			response.success("Publication Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -281,20 +288,21 @@ Parse.Cloud.afterSave("Pub_Thesis", function(request, response) {
 				feed.set("pubThesisId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "pub_thesis");
+					feed.set("pubThesisId", pubId);
+					feed.save();
+					response.success("Added Publication Newsfeed Entry");
+				} else
+					response.success("Publication Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "pub_thesis");
-				feed.set("pubThesisId", pubId);
-				feed.save();
-				response.success("Added Publication Newsfeed Entry");
-			}
-			response.success("Publication Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -325,7 +333,7 @@ Parse.Cloud.afterSave("Pub_Unpublished", function(request, response) {
 				feed.set("pubUnpublishedId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
-			}
+			}else{
 			//if found already in newsfeed  compare update times
 			var currentTime=new Date();
 			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
@@ -337,8 +345,9 @@ Parse.Cloud.afterSave("Pub_Unpublished", function(request, response) {
 				feed.set("pubUnpublishedId", pubId);
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
-			}
+			}else
 			response.success("Publication Entry Ignored");
+			}
 		},
 		error: function(error) {
 			//else simply insert it
@@ -369,21 +378,22 @@ Parse.Cloud.afterSave("Equipment", function(request, response) {
 				feed.set("equipmentId", equipId);
 				feed.save();
 				response.success("Added Equipment Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "equipment");
+					feed.set("equipmentId", equipId);
+					feed.save();
+					response.success("Added Equipment Newsfeed Entry");
+				} else
+					response.success("Equipment Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "equipment");
-				feed.set("equipmentId", equipId);
-				feed.save();
-				response.success("Added Equipment Newsfeed Entry");
-			}
-			response.success("Equipment Entry Ignored");
-		},
+			},
 		error: function(error) {
 			//else simply insert it
 			feed.set("from", userId);
@@ -414,20 +424,21 @@ Parse.Cloud.afterSave("Model", function(request, response) {
 				feed.set("modId", datId);
 				feed.save();
 				response.success("Added Model Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "mod");
+					feed.set("modId", modId);
+					feed.save();
+					response.success("Added Model Newsfeed Entry");
+				} else
+					response.success("Model Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "mod");
-				feed.set("modId", modId);
-				feed.save();
-				response.success("Added Model Newsfeed Entry");
-			}
-			response.success("Model Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it
@@ -459,20 +470,21 @@ Parse.Cloud.afterSave("Data", function(request, response) {
 				feed.set("datId", datId);
 				feed.save();
 				response.success("Added Data Newsfeed Entry");
+			}else {
+				//if found already in newsfeed  compare update times
+				var currentTime = new Date();
+				var limitTime = new Date(result.updatedAt.getTime() + 5 * 60000);
+				//if last updated within 5 minutes ignore
+				if (currentTime > limitTime) {
+					feed.set("from", userId);
+					//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
+					feed.set("type", "dat");
+					feed.set("datId", datId);
+					feed.save();
+					response.success("Added Data Newsfeed Entry");
+				} else
+					response.success("Data Entry Ignored");
 			}
-			//if found already in newsfeed  compare update times
-			var currentTime=new Date();
-			var limitTime=new Date (result.updatedAt.getTime() + 5*60000);
-			//if last updated within 5 minutes ignore
-			if (currentTime>limitTime) {
-				feed.set("from", userId);
-				//feed.set("type", "Will update: Limit =" + limitTime + "Current = " + currentTime);
-				feed.set("type", "dat");
-				feed.set("datId", datId);
-				feed.save();
-				response.success("Added Data Newsfeed Entry");
-			}
-			response.success("Data Entry Ignored");
 		},
 		error: function(error) {
 			//else simply insert it

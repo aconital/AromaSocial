@@ -144,7 +144,7 @@ module.exports=function(app,Parse) {
                         bucket.putObject(fileParams, function (err, response) {
                             if (err) { console.log("Project File Upload Error:", err); }
                             else {
-                                data.set('file_path', awsLink + s3KeyP);
+                                data.set('filename', awsLink + s3KeyP);
                                 data.save();
                             }
                         });
@@ -169,10 +169,10 @@ module.exports=function(app,Parse) {
                 if (req.body.title) {
                     result.set("title", req.body.title);
                     result.set("description", req.body.description);
-                    result.set("filename", req.body.filename);
+                    // result.set("filename", req.body.filename);
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
-                    console.log(req.body.filename);
+                    // console.log(req.body.filename);
                 }
                 if (req.body.keywords) {
                     result.set("keywords",JSON.parse(req.body.keywords)); 
