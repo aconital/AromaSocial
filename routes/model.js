@@ -42,12 +42,10 @@ module.exports=function(app,Parse) {
                     creatorImg: creator.imgUrl,
                     access: result.get('access'),
                     description: result.get('abstract'),
-                    hashtags: result.get('hashtags'),
                     title: result.get('title'),
-                    image: result.get('image'),
+                    image: result.get('image'), // TODO fix this shitty naming
                     image_URL: result.get('image_URL'),
                     collaborators: JSON.stringify(result.get('collaborators')),
-                    filename: result.get('filename'),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
                     createdAt: result.get('createdAt'),
@@ -71,7 +69,7 @@ module.exports=function(app,Parse) {
                     result.set("abstract", req.body.description);
                     result.set("feature", req.body.feature);
                     result.set("other", req.body.other);
-                    result.set("filename", req.body.filename);
+                    result.set("url", req.body.url);
                     result.set("license", req.body.license);
                     result.set("publication_date", req.body.publication_date);
                 }

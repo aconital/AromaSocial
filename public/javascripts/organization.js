@@ -1,5 +1,3 @@
-Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
-Parse.serverURL = 'http://52.33.206.191:1337/parse/';
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
@@ -9,22 +7,22 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 var Organization = React.createClass ({
     getInitialState: function() {
         return {    isAdmin: [],
-                    status: '',
-                    organization_imgURL: [organization_imgURL],
-                    showModal: false};
+            status: '',
+            organization_imgURL: [organization_imgURL],
+            showModal: false};
     },
     componentWillMount: function() {
-      var connectURL= "/organization/"+objectId+"/join-status";
+        var connectURL= "/organization/"+objectId+"/join-status";
 
-      $.ajax({
-        url: connectURL,
-        success: function(status) {
-            this.setState({status: status})
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't retrieve people.");
-        }.bind(this)
-      });
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                this.setState({status: status})
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't retrieve people.");
+            }.bind(this)
+        });
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -51,30 +49,30 @@ var Organization = React.createClass ({
         })
     },
     clickJoin: function() {
-      var connectURL= "/organization/"+objectId+"/join";
+        var connectURL= "/organization/"+objectId+"/join";
 
-      $.ajax({
-        url: connectURL,
-        success: function(status) {
-            this.setState({status: "pending"});
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't retrieve people.");
-        }.bind(this)
-      });
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                this.setState({status: "pending"});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't retrieve people.");
+            }.bind(this)
+        });
     },
     clickLeave: function() {
-      var connectURL= "/organization/"+objectId+"/leave";
+        var connectURL= "/organization/"+objectId+"/leave";
 
-      $.ajax({
-        url: connectURL,
-        success: function(status) {
-            this.setState({status: "not-joined"});
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't retrieve people.");
-        }.bind(this)
-      });
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                this.setState({status: "not-joined"});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't retrieve people.");
+            }.bind(this)
+        });
     },
     submitPicture: function() { //todo export utils
         var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
@@ -87,7 +85,7 @@ var Organization = React.createClass ({
             processData: false,
             success: function(data) {
                 console.log(data.status);
-				this.setState({organization_imgURL: this.state.picture});
+                this.setState({organization_imgURL: this.state.picture});
                 this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
@@ -96,31 +94,31 @@ var Organization = React.createClass ({
         });
         return;
     },
-	handlePicture: function(e) { //todo export utils
-		var self = this,
-			reader = new FileReader(),
-			file = e.target.files[0],
-			extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+    handlePicture: function(e) { //todo export utils
+        var self = this,
+            reader = new FileReader(),
+            file = e.target.files[0],
+            extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
 
-		reader.onload = function(upload) {
-			self.setState({
-				picture: upload.target.result,
-				pictureType: extension,
-			});
-		}
-		reader.readAsDataURL(file);
-	},
+        reader.onload = function(upload) {
+            self.setState({
+                picture: upload.target.result,
+                pictureType: extension,
+            });
+        }
+        reader.readAsDataURL(file);
+    },
 
     render: function() {
         var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "joined") {
-             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
+            joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
         else if (this.state.status == "pending") {
-             joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+            joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-joined") {
-             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
+            joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
         }
         if(this.state.isAdmin)
             return (
@@ -142,11 +140,11 @@ var Organization = React.createClass ({
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <a href="#" onClick={this.clickOpen}>
-									<div className="edit-overlay-div">
-										<img src={this.state.organization_imgURL} className="contain-image" />
-										<div className="edit-overlay-background">
-										<span className="glyphicon glyphicon-edit edit-overlay"></span></div>
-									</div>
+                                    <div className="edit-overlay-div">
+                                        <img src={this.state.organization_imgURL} className="contain-image" />
+                                        <div className="edit-overlay-background">
+                                            <span className="glyphicon glyphicon-edit edit-overlay"></span></div>
+                                    </div>
                                 </a>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2">
@@ -160,30 +158,30 @@ var Organization = React.createClass ({
             );
         //not admin
         else
-        return (
-            <div>
-                <div className="content-wrap">
-                    <div className="item-bottom">
-                        <div className="item-bottom-1">
-                            <img src={this.state.organization_imgURL} className="contain-image" />
-                            {/*
-                            <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                            <div className="side-panel"><h5>RATINGS</h5></div>
-                            <div className="side-panel"><h5>OTHERS</h5></div>
-                            */}
-                        </div>
-                        <div id="item-bottom-2-organization" className="item-bottom-2">
-                            <div className="interact-buttons-wrap">
-                                {joinButton}
+            return (
+                <div>
+                    <div className="content-wrap">
+                        <div className="item-bottom">
+                            <div className="item-bottom-1">
+                                <img src={this.state.organization_imgURL} className="contain-image" />
+                                {/*
+                                 <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                                 <div className="side-panel"><h5>RATINGS</h5></div>
+                                 <div className="side-panel"><h5>OTHERS</h5></div>
+                                 */}
                             </div>
-                            <h1 className="no-margin-padding align-left h1-title">{name}</h1>
-                            <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                            <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                            <div id="item-bottom-2-organization" className="item-bottom-2">
+                                <div className="interact-buttons-wrap">
+                                    {joinButton}
+                                </div>
+                                <h1 className="no-margin-padding align-left h1-title">{name}</h1>
+                                <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
+                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
     }
 });
 
@@ -198,16 +196,16 @@ var OrganizationMenu = React.createClass ({
         var self = this;
 
         var tabMap = {0: <About objectId={objectId}/>,
-                1: <People />,
-                2: <Connections  />,
-                3: <Equipments objectId={objectId}/>,
-                4: <Projects objectId={objectId}/>,
-                // 4: <Knowledge/>,
-                5: <Publications objectId={objectId}/>,
-                6: <Data objectId={objectId}/>,
-                7: <Models objectId={objectId}/>,
-                8: <Manage objectId={objectId}/>
-                };
+            1: <People />,
+            2: <Connections  />,
+            3: <Equipments objectId={objectId}/>,
+            4: <Projects objectId={objectId}/>,
+            // 4: <Knowledge/>,
+            5: <Publications objectId={objectId}/>,
+            6: <Data objectId={objectId}/>,
+            7: <Models objectId={objectId}/>,
+            8: <Manage objectId={objectId}/>
+        };
         return (
             <div>
                 <div id="tabs">
@@ -217,9 +215,9 @@ var OrganizationMenu = React.createClass ({
                             if (self.state.focused == index) {
                                 style = "selected-tab";
                             }
-                        return <li id={style}>
+                            return <li id={style}>
                                 <a href="#" onClick={self.clicked.bind(self, index)} id={style}>{tab}</a>
-                               </li>;
+                            </li>;
                         })}
                     </ul>
                 </div>
@@ -276,14 +274,7 @@ var About = React.createClass({
         return(
             <div>
                 <div className="organization-table-div">
-                    <table className="organization-table-info">
-                        <tbody>
-                        <tr>
-
-                            {(this.state.isAdmin) ? <td><textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea></td> : <td>{about}</td>}
-                        </tr>
-                        </tbody>
-                    </table>
+                    {(this.state.isAdmin) ? <textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea> : <pre>{about}</pre>}
                 </div>
             </div>
         );
@@ -384,7 +375,7 @@ var AddConnection = React.createClass({
     componentDidMount : function(){
         var component = this;
         var autocomplete=<script>
-        $(function() {
+            $(function() {
             $('.auto2').autocomplete({
                 source: function(req, res) {
                     $.ajax({
@@ -477,73 +468,73 @@ var People = React.createClass({
         return {data: []};
     },
     componentDidMount : function(){
-      var peopleUrl= "/organization/"+objectId+"/people";
-      console.log("PEOPLE COMPONENT MOUNTED");
-      console.log(peopleUrl);
-      $.ajax({
-          url: peopleUrl,
-          success: function(data) {
-              console.log("PEOPLE RECEIVED: ");
-              console.log(data);
-              this.setState({data: data});
-          }.bind(this),
-          error: function(xhr, status, err) {
-              console.error("Couldn't Retrieve People");
-          }.bind(this)
-      });
-  },
-  render: function() {
+        var peopleUrl= "/organization/"+objectId+"/people";
+        console.log("PEOPLE COMPONENT MOUNTED");
+        console.log(peopleUrl);
+        $.ajax({
+            url: peopleUrl,
+            success: function(data) {
+                console.log("PEOPLE RECEIVED: ");
+                console.log(data);
+                this.setState({data: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve People");
+            }.bind(this)
+        });
+    },
+    render: function() {
 
-      var peopleList = $.map(this.state.data,function(objects) {
-          var role= objects[0].title;
-          var plist=[];
-          for(var i in objects) {
-              var person = objects[i];
-              plist.push(person);
-          }
+        var peopleList = $.map(this.state.data,function(objects) {
+            var role= objects[0].title;
+            var plist=[];
+            for(var i in objects) {
+                var person = objects[i];
+                plist.push(person);
+            }
 
-          return (
+            return (
                 <div id="items-list">
                     <div className="clear"></div>
                     <div><h2 className="margin-top-bottom-5">{role}</h2></div>
                     <div className="clear"></div>
                     {plist.map(person =>
-                        <div className="item-box" key={person.username} id="item-list">
-                            <div className="item-box-left">
-                                <div className="item-box-image-outside">
-                                    <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image" /></a>
+                            <div className="item-box" key={person.username} id="item-list">
+                                <div className="item-box-left">
+                                    <div className="item-box-image-outside">
+                                        <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image" /></a>
+                                    </div>
+                                </div>
+                                <div className="item-box-right">
+                                    <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
                                 </div>
                             </div>
-                            <div className="item-box-right">
-                                <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-                            </div>
-                        </div>
                     )}
                 </div>
-          );
-      });
-    return (
-      <div>
-          {peopleList}
-      </div>
-    )
-  }
+            );
+        });
+        return (
+            <div>
+                {peopleList}
+            </div>
+        )
+    }
 });
 
 var Manage = React.createClass({
     getInitialState: function() {
         return {
-             orgCountry: orgCountry,
+            orgCountry: orgCountry,
             orgProv: orgProv,
             orgCity: orgCity,
             orgStreet: orgStreet,
             orgPostalcode: orgPostalcode,
             orgWebsite: orgWebsite,
-             organization_imgURL: organization_imgURL,
-             cover_imgURL: cover_imgURL,
-             pendingPeople: [],
-             pendingOrganizations: [],
-             admins: []
+            organization_imgURL: organization_imgURL,
+            cover_imgURL: cover_imgURL,
+            pendingPeople: [],
+            pendingOrganizations: [],
+            admins: []
         };
     },
     handleChange: function(e) {
@@ -551,12 +542,12 @@ var Manage = React.createClass({
     },
     submitChange: function() {
         var dataForm = {name: this.state.name,
-                        country: this.state.orgCountry,
-                        prov: this.state.orgProv,
-                        city: this.state.orgCity,
-                        street: this.state.orgStreet,
-                        postalcode: this.state.orgPostalcode,
-                        website: this.state.orgWebsite};
+            country: this.state.orgCountry,
+            prov: this.state.orgProv,
+            city: this.state.orgCity,
+            street: this.state.orgStreet,
+            postalcode: this.state.orgPostalcode,
+            website: this.state.orgWebsite};
 
         $.ajax({
             url: path + "/update",
@@ -721,26 +712,26 @@ var Manage = React.createClass({
                             <td><b>Country: </b></td>
                             <td><input type="text" className="p-editable" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
                         </tr>
-                            <tr>
-                                <td><b>State/Province: </b></td>
-                                <td><input type="text" className="p-editable" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
-                            </tr>
-                            <tr>
-                                <td><b>City: </b></td>
-                                <td><input type="text" className="p-editable" name="orgCity" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
-                            </tr>
-                            <tr>
-                                <td><b>Street Address: </b></td>
-                                <td><input type="text" className="p-editable" name="orgStreet" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
-                            </tr>
-                            <tr>
-                                <td><b>Zip/Postal code: </b></td>
-                                <td><input type="text" className="p-editable" name="orgPostalcode" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
-                            </tr>
-                            <tr>
-                                <td><b>Website URL: </b></td>
-                                <td><input type="text" className="p-editable" name="orgWebsite" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
-                            </tr>
+                        <tr>
+                            <td><b>State/Province: </b></td>
+                            <td><input type="text" className="p-editable" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
+                        </tr>
+                        <tr>
+                            <td><b>City: </b></td>
+                            <td><input type="text" className="p-editable" name="orgCity" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
+                        </tr>
+                        <tr>
+                            <td><b>Street Address: </b></td>
+                            <td><input type="text" className="p-editable" name="orgStreet" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
+                        </tr>
+                        <tr>
+                            <td><b>Zip/Postal code: </b></td>
+                            <td><input type="text" className="p-editable" name="orgPostalcode" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
+                        </tr>
+                        <tr>
+                            <td><b>Website URL: </b></td>
+                            <td><input type="text" className="p-editable" name="orgWebsite" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
+                        </tr>
                         <tr>
                             <td><b>Admins: </b></td>
                             <td><div>{adminsList}</div></td>
@@ -772,23 +763,23 @@ var Manage = React.createClass({
 });
 
 var NewsAndEvents = React.createClass({
-  render: function() {
-    return (
-      <div>
-        News And Events
-      </div>
-    )
-  }
+    render: function() {
+        return (
+            <div>
+                News And Events
+            </div>
+        )
+    }
 });
 
 var Knowledge = React.createClass({
-  render: function() {
-    return (
-      <div>
-        Knowledge
-      </div>
-    )
-  }
+    render: function() {
+        return (
+            <div>
+                Knowledge
+            </div>
+        )
+    }
 });
 
 var Equipments = React.createClass({
@@ -861,12 +852,12 @@ var Equipments = React.createClass({
                     <EquipmentAddForm submitSuccess={this.clickClose} />
                 </Modal>
                 <div className="item-search-div">
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                        {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
-                    </tr>
-                </table>
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                        </tr>
+                    </table>
                 </div>
                 {itemsList}
             </div>
@@ -899,113 +890,113 @@ var EquipmentAddForm = React.createClass({
             organizationId: objectId
         };
     },
-	render: function() {
-	    if (this.state.alertVisible) {
-	        var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
-	    } else {var alert = "";}
-		return (
-		<div>
-            <div id="scriptContainer"></div>
-            <form className="form" onSubmit={this.handleSubmitData}>
-                <Modal.Body>
-                    {alert}
-                    <div className="well" style={this.buttonStyles}>
-                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{background: this.state.pictureFeedback}}>
-                            Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-                        </Button>
-                        <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
-                            Select Files... <input type="file" onChange={this.handleFile} />
-                        </Button>
-                    </div>
-                    <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
-                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
-                    <Input type="textarea" placeholder="Instructions:" name="instructions" onChange={this.handleChange} value={this.state.instructions} />
-                    <Input type="text" placeholder="Model:" name="model" onChange={this.handleChange} value={this.state.model} />
-                    <Input type="text" placeholder="Model Year:" name="model_year" onChange={this.handleChange} value={this.state.model_year} />
-                    <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
-                </Modal.Body>
-                <Modal.Footer>
-                    <input className="full-button" type="submit" value="Submit"/>
-                </Modal.Footer>
-            </form>
-        </div>
-		);
-	},
+    render: function() {
+        if (this.state.alertVisible) {
+            var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
+        } else {var alert = "";}
+        return (
+            <div>
+                <div id="scriptContainer"></div>
+                <form className="form" onSubmit={this.handleSubmitData}>
+                    <Modal.Body>
+                        {alert}
+                        <div className="well" style={this.buttonStyles}>
+                            <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={{background: this.state.pictureFeedback}}>
+                                Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                            </Button>
+                            <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
+                                Select Files... <input type="file" onChange={this.handleFile} />
+                            </Button>
+                        </div>
+                        <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
+                        <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                        <Input type="textarea" placeholder="Instructions:" name="instructions" onChange={this.handleChange} value={this.state.instructions} />
+                        <Input type="text" placeholder="Model:" name="model" onChange={this.handleChange} value={this.state.model} />
+                        <Input type="text" placeholder="Model Year:" name="model_year" onChange={this.handleChange} value={this.state.model_year} />
+                        <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <input className="full-button" type="submit" value="Submit"/>
+                    </Modal.Footer>
+                </form>
+            </div>
+        );
+    },
     handleAlertDismiss() {
         this.setState({alertVisible: false});
     },
     handleAlertShow() {
         this.setState({alertVisible: true});
     },
-	handleChange: function(e) {
-	    var changedState = {};
-	    changedState[e.target.name] = e.target.value;
-	    this.setState( changedState );
-	},
+    handleChange: function(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
     handleKeyChange: function(e) {
         var changedState = {};
         changedState['keywords'] = e;
         this.setState(changedState);
     },
-	handleSubmitData: function(e) {
+    handleSubmitData: function(e) {
         e.preventDefault();
 
         var dataForm = {    file: this.state.file,
-                            picture: this.state.picture,
-                            organizationId: this.state.organizationId,
-        				    fileType: this.state.fileType,
-                            pictureType: this.state.pictureType,
-        				    description: this.state.description,
-                            instructions: this.state.instructions,
-                            model: this.state.model,
-        				    model_year: this.state.model_year,
-                            keywords: JSON.stringify(this.state.keywords),
-                            title: this.state.title};
-		                    console.log(JSON.stringify(dataForm));
+            picture: this.state.picture,
+            organizationId: this.state.organizationId,
+            fileType: this.state.fileType,
+            pictureType: this.state.pictureType,
+            description: this.state.description,
+            instructions: this.state.instructions,
+            model: this.state.model,
+            model_year: this.state.model_year,
+            keywords: JSON.stringify(this.state.keywords),
+            title: this.state.title};
+        console.log(JSON.stringify(dataForm));
 
         var isValidForm = this.validateForm();
-		if (isValidForm.length === 0) {
-			var endpoint = "/equipment";
-			var dataFormORIG = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
-				fileType: this.state.fileType, pictureType: this.state.pictureType,
-				description: this.state.description, instructions: this.state.instructions, model: this.state.model,
-				model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
+        if (isValidForm.length === 0) {
+            var endpoint = "/equipment";
+            var dataFormORIG = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
+                fileType: this.state.fileType, pictureType: this.state.pictureType,
+                description: this.state.description, instructions: this.state.instructions, model: this.state.model,
+                model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
 
-			$.ajax({
-				url: path + endpoint,
-				dataType: 'json',
-				contentType: "application/json; charset=utf-8",
-				type: 'POST',
-				data: JSON.stringify(dataForm),
-				processData: false,
-				success: function(data) {
-				    console.log(data);
-				    this.close();
-				}.bind(this),
-				error: function(xhr, status, err) {
-					console.error(path + endpoint, status, err.toString());
-				}.bind(this)
-			});
-		}
-		else {
-			var message = 'Project could not be added!';
-			if (isValidForm.indexOf('KEYWORDS') > -1) {
-				message += ' Please specify at least one keyword.';
-			}
-			this.setState({formFeedback: message, alertVisible: true});
-		}
+            $.ajax({
+                url: path + endpoint,
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                type: 'POST',
+                data: JSON.stringify(dataForm),
+                processData: false,
+                success: function(data) {
+                    console.log(data);
+                    this.close();
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error(path + endpoint, status, err.toString());
+                }.bind(this)
+            });
+        }
+        else {
+            var message = 'Project could not be added!';
+            if (isValidForm.indexOf('KEYWORDS') > -1) {
+                message += ' Please specify at least one keyword.';
+            }
+            this.setState({formFeedback: message, alertVisible: true});
+        }
         return;
     },
 
-	showPictureUpload(fromModel) {
-	    if (fromModel) {
+    showPictureUpload(fromModel) {
+        if (fromModel) {
             return '';
-	    }
-	    return 'none';
-	},
+        }
+        return 'none';
+    },
 
-	openFileUpload() {
-	    var input = $(this),
+    openFileUpload() {
+        var input = $(this),
             numFiles = input.get(0).files ? input.get(0).files.length : 1,
             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
         input.trigger('fileselect', [numFiles, label]);
@@ -1015,20 +1006,20 @@ var EquipmentAddForm = React.createClass({
             console.log(label);
             return input;
         });
-	},
+    },
 
-	handleFile: function(e) {
+    handleFile: function(e) {
         var self = this;
         var reader = new FileReader();
         var file = e.target.files[0];
         var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
 
         reader.onload = function(upload) {
-          self.setState({
-            file: upload.target.result,
-            fileType: extension,
-            fileFeedback: {background: '#dff0d8'}
-          });
+            self.setState({
+                file: upload.target.result,
+                fileType: extension,
+                fileFeedback: {background: '#dff0d8'}
+            });
         }
         reader.readAsDataURL(file);
     },
@@ -1040,22 +1031,22 @@ var EquipmentAddForm = React.createClass({
         var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
 
         reader.onload = function(upload) {
-         self.setState({
-           picture: upload.target.result,
-           pictureType: extension,
-           pictureFeedback: '#dff0d8'
-         });
+            self.setState({
+                picture: upload.target.result,
+                pictureType: extension,
+                pictureFeedback: '#dff0d8'
+            });
         }
         reader.readAsDataURL(file);
     },
 
-	validateForm: function() {
-		var issues = []
-		if (this.state.keywords.length<1) {
-			issues.push("KEYWORDS");
-		}
-		return issues;
-	},
+    validateForm: function() {
+        var issues = []
+        if (this.state.keywords.length<1) {
+            issues.push("KEYWORDS");
+        }
+        return issues;
+    },
 });
 
 var Projects = React.createClass({
@@ -1109,9 +1100,9 @@ var Projects = React.createClass({
         return (
             <div>
                 <div className="item-search-div">
-                <table className="item-search-field" width="100%">
-                    {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                </table>
+                    <table className="item-search-field" width="100%">
+                        {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
+                    </table>
                 </div>
                 {itemsList}
             </div>
@@ -1122,8 +1113,8 @@ var Projects = React.createClass({
 var Publications = React.createClass({
     getInitialState: function() {
         return {data: []};
-        },
-        componentDidMount : function(){
+    },
+    componentDidMount : function(){
         var peopleUrl= "/organization/"+objectId+"/publications";
 
         $.ajax({
@@ -1147,12 +1138,12 @@ var Publications = React.createClass({
             }
             console.log(typeList);
             return (
-            <div>
-                <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
-                {typeList.map(item =>
-                <div className="item-box">
-                    <div key={item.id}>
-                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                <div>
+                    <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
+                    {typeList.map(item =>
+                            <div className="item-box">
+                                <div key={item.id}>
+                                    <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
@@ -1162,10 +1153,10 @@ var Publications = React.createClass({
                             </table>
                         </table>
                         </span>
-                    </div>
+                                </div>
+                            </div>
+                    )} <div className="clear"></div>
                 </div>
-                )} <div className="clear"></div>
-            </div>
             );
         });
         return (
@@ -1181,7 +1172,7 @@ var Publication = React.createClass({ //delete
         if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
         else { var title = this.props.title; }
         return (
-                <div className="item-box">
+            <div className="item-box">
                 <div className="publication-box-left publication-box-left-full">
                     <a href={"/publication/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
@@ -1189,15 +1180,15 @@ var Publication = React.createClass({ //delete
                     {this.props.publication_code}
                 </div>
                 {/*
-                <div className="publication-box-right">
-                    <h5>Information</h5><br/>
-                    ## Syncholar Factor<br/>
-                    ## Times Cited<br/>
-                    ## Views<br/>
-                    ## Impact Factor
-                </div>
-                */}
-                </div>
+                 <div className="publication-box-right">
+                 <h5>Information</h5><br/>
+                 ## Syncholar Factor<br/>
+                 ## Times Cited<br/>
+                 ## Views<br/>
+                 ## Impact Factor
+                 </div>
+                 */}
+            </div>
         )
     }
 });
@@ -1205,53 +1196,53 @@ var Publication = React.createClass({ //delete
 
 
 var Data = React.createClass({
-  getInitialState: function() {
-    return {data: []};
-  },
-  componentDidMount : function(){
-    var peopleUrl= "/organization/"+objectId+"/datas";
+    getInitialState: function() {
+        return {data: []};
+    },
+    componentDidMount : function(){
+        var peopleUrl= "/organization/"+objectId+"/datas";
 
-    $.ajax({
-        url: peopleUrl,
-        success: function(datas) {
-            this.setState({data: datas});
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't Retrieve Data!");
-        }.bind(this)
-    });
-  },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <div className="item-search-div">
-          <table className="item-search-field" width="100%">
-            <tbody>
-              <tr>
-                  <td className="padding-right">
-                      {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                  </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        {this.state.data.map(function(item) {
-            return (<Datum objectId={item.objectId}
-                                    collaborators={item.collaborators}
-                                    title={item.title}
-                                    image_URL={item.image_URL}
-                                    keywords={item.keywords}
-                                    number_cited={item.number_cited}
-                                    number_syncholar_factor={item.number_syncholar_factor}
-                                    license={item.license}
-                                    access={item.access}
-                                    abstract={item.description}
-                                    start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
-        })}
-      </div>
-    );
-  }
+        $.ajax({
+            url: peopleUrl,
+            success: function(datas) {
+                this.setState({data: datas});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Data!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var rows = [];
+        return (
+            <div>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tbody>
+                        <tr>
+                            <td className="padding-right">
+                                {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {this.state.data.map(function(item) {
+                    return (<Datum objectId={item.objectId}
+                                   collaborators={item.collaborators}
+                                   title={item.title}
+                                   image_URL={item.image_URL}
+                                   keywords={item.keywords}
+                                   number_cited={item.number_cited}
+                                   number_syncholar_factor={item.number_syncholar_factor}
+                                   license={item.license}
+                                   access={item.access}
+                                   abstract={item.description}
+                                   start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
+                })}
+            </div>
+        );
+    }
 });
 
 var Datum = React.createClass({
@@ -1260,7 +1251,7 @@ var Datum = React.createClass({
         else { var title = this.props.title; }
         console.log(this.props);
         return (
-                <div className="item-box">
+            <div className="item-box">
                 <div className="item-box-left">
                     <div className="item-box-image-outside">
                         <a href={"/data/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="item-box-image" /></a>
@@ -1277,55 +1268,55 @@ var Datum = React.createClass({
                     </span>
                 </div>
                 {/*
-                <div className="model-box-right">
-                    <h5>Information</h5><br/>
-                    {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                    {this.props.number_cited} Times Cited<br/>
-                    {this.props.license}<br/>
-                    {this.props.access.map(function(item, i){
-                        if (i == 0) {return item;}
-                        else {return ", " + item;}
-                    })} <br/> Uses This
-                </div>
-                */}
-                </div>
+                 <div className="model-box-right">
+                 <h5>Information</h5><br/>
+                 {this.props.number_syncholar_factor} Syncholar Factor<br/>
+                 {this.props.number_cited} Times Cited<br/>
+                 {this.props.license}<br/>
+                 {this.props.access.map(function(item, i){
+                 if (i == 0) {return item;}
+                 else {return ", " + item;}
+                 })} <br/> Uses This
+                 </div>
+                 */}
+            </div>
         )
     }
 });
 
 var Models = React.createClass({
-  getInitialState: function() {
-    return {data: []};
-  },
-  componentDidMount : function(){
-    var peopleUrl= "/organization/"+objectId+"/models";
-    $.ajax({
-        url: peopleUrl,
-        success: function(models) {
-            this.setState({data: models});
-        }.bind(this),
-        error: function(xhr, status, err) {
-            console.error("Couldn't Retrieve Publications!");
-        }.bind(this)
-    });
-  },
-  render: function() {
-    var rows = [];
-    return (
-      <div>
-        <div className="item-search-div">
-          <table className="item-search-field" width="100%">
-            <tbody>
-              <tr>
-                  <td className="padding-right">
-                      {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                  </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        {this.state.data.map(function(model) {
-          return (<Model objectId={model.objectId}
+    getInitialState: function() {
+        return {data: []};
+    },
+    componentDidMount : function(){
+        var peopleUrl= "/organization/"+objectId+"/models";
+        $.ajax({
+            url: peopleUrl,
+            success: function(models) {
+                this.setState({data: models});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve Publications!");
+            }.bind(this)
+        });
+    },
+    render: function() {
+        var rows = [];
+        return (
+            <div>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tbody>
+                        <tr>
+                            <td className="padding-right">
+                                {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {this.state.data.map(function(model) {
+                    return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
                                    image_URL={model.image_URL}
@@ -1336,11 +1327,11 @@ var Models = React.createClass({
                                    access={model.access}
                                    abstract={model.abstract}
                                    start_date={(new Date(model.createdAt)).toUTCString().slice(0,-12)} />);
-        })}
-        {rows}
-      </div>
-    );
-  }
+                })}
+                {rows}
+            </div>
+        );
+    }
 });
 
 var Model = React.createClass({
@@ -1354,8 +1345,8 @@ var Model = React.createClass({
                         <a href={"/model/" + this.props.objectId} className="body-image"><img src={this.props.image_URL} className="item-box-image" /></a>
                     </div>
                 </div>
-            <div className="item-box-right">
-                <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                <div className="item-box-right">
+                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
                 <span className="font-15">
                     <table className="item-box-table-info">
                         <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
@@ -1369,7 +1360,4 @@ var Model = React.createClass({
     }
 });
 
-
-
 ReactDOM.render(<Organization />, document.getElementById('content'));
-

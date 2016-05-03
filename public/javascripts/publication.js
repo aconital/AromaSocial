@@ -227,7 +227,6 @@ var InfoEditField = React.createClass({
         }
     },
     render: function() {
-        var inliner = {whiteSpace:'nowrap'};
         var capitalized = this.props.name.capitalize();
 
         return (
@@ -242,7 +241,6 @@ var InfoEditField = React.createClass({
 
 var InfoField = React.createClass({
     render: function() {
-        var inliner = {whiteSpace:'nowrap'};
         var capitalized = this.props.name.capitalize();
         var element;
         
