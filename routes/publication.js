@@ -622,10 +622,10 @@ module.exports=function(app,Parse) {
             var pub = new PubType();
             var pubClass = reqBody.type; // save field before being overwritten
 
-            pub.set('contributors',reqBody.collaborators.split(/\s*,\s*/g));
+            pub.set('contributors',JSON.parse(reqBody.collaborators));
             pub.set('abstract',reqBody.description);
             pub.set('filename',"");
-            pub.set('keywords',reqBody.keywords.split(/\s*,\s*/g));
+            pub.set('keywords',JSON.parse(reqBody.keywords));
             pub.set('url',reqBody.url);
             pub.set('title',reqBody.title);
 			pub.set('doi',reqBody.doi);
@@ -766,20 +766,21 @@ module.exports=function(app,Parse) {
         var query = new Parse.Query(req.body.pub_class); // xhange to req-bosy.type
         query.get(req.params.objectId,{
             success: function(result) {
-                if (req.body.title) {
-                    // everything in data form
-                    var keys = Object.keys(req.body);
-                    for (var i=0; i<keys.length; i++) {
-                        if (keys[i] !== 'pub_class') {
-                            if (keys[i] == ('publication_date')) {
-                                result.set(keys[i], new Date(req['body'][keys[i]]));
-                            } else {
-                                result.set(keys[i], req['body'][keys[i]]);
-                            }
+                // everything in data form
+                var keys = Object.keys(req.body);
+                for (var i=0; i<keys.length; i++) {
+                    console.log(keys[i], req['body'][keys[i]], typeof req['body'][keys[i]]);
+                    if (keys[i] !== 'pub_class') {
+                        if (keys[i] == ('publication_date')) {
+                            result.set(keys[i], new Date(req['body'][keys[i]]));
+                        // } else if (keys[i] == ('keywords') || keys[i] == ('contributors') || keys[i] == ('supervisors')) {
+                        //     result.set(keys[i],JSON.parse(req['body'][keys[i]])); 
+                        } else {
+                            result.set(keys[i], req['body'][keys[i]]);
                         }
                     }
                 }
-                else if (req.body.keywords) {result.set("keywords",JSON.parse(req.body.keywords)); }
+                
                 result.save(null, {
                     success:function(obj) {
                         console.log("Pub update successfully saved");

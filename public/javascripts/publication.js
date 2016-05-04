@@ -41,7 +41,6 @@ var Publication = React.createClass ({
         var fetchPath = "/publication/"+objectId;
         var staticFields = ['createdAt','updatedAt','user','abstract','filename','objectId','updatePath','title', 'type'];
 
-        // var fetchFields = 
         $.ajax({
             url: fetchPath,
             data: {"pub_class": this.state.pub_class},
@@ -69,11 +68,9 @@ var Publication = React.createClass ({
         });
     },
     handleChange: function(e) {
-        // console.log(e.target.name);
         this.setState({[e.target.name]:e.target.value});
     },
     handleChildChange: function(state) {
-        // console.log(state);
         this.setState(state);
     },
     submitChange: function() {
@@ -86,7 +83,7 @@ var Publication = React.createClass ({
             contentType: "application/json; charset=utf-8",
             type: 'POST',
             data: JSON.stringify(dataForm),
-            // processData: false,
+            processData: false,
             success: function(data) {
                 this.setState({data: data});
             }.bind(this),
@@ -95,8 +92,9 @@ var Publication = React.createClass ({
             }.bind(this)
         });
     },
-    submitChildChange: function(state) { // TODO delete
-        var dataForm = state;
+    submitChildChange: function(state) {
+        var dataForm = state; // only posts the updated field.
+        dataForm['pub_class'] = this.state.pub_class;
 
         $.ajax({
             url: this.state.updatePath + "/update",
@@ -104,9 +102,8 @@ var Publication = React.createClass ({
             contentType: "application/json; charset=utf-8",
             type: 'POST',
             data: JSON.stringify(dataForm),
-            // processData: false,
+            processData: false,
             success: function(data) {
-                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -122,7 +119,7 @@ var Publication = React.createClass ({
             fileExists = this.state.filename || false,
             creator = (this.state.user) ? '/profile/' + this.state.user.username : '',
             avatar = (this.state.user) ? this.state.user.imgUrl : '',
-            details;
+            details; // holds dynamically-filled information table
 
         if (this.state.filename || false) {
             fileExists = <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
@@ -132,7 +129,7 @@ var Publication = React.createClass ({
 
         if (currentUserId == creatorId) {
             details = keys.map(function(name) {
-                    return <InfoEditField key={name} name={name} initVal={self.state[name]} handleChange={self.handleChildChange} submitChange={self.submitChange} />;
+                    return <InfoEditField key={name} name={name} initVal={self.state[name]} handleChange={self.handleChildChange} submitChange={self.submitChildChange} />;
             });
         } else {
             var details = keys.map(function(name) {
@@ -182,13 +179,17 @@ var InfoEditField = React.createClass({
         };
     },
     handleChange: function(e){
-        var option = {[this.state.name]: e.target.value};
-        this.setState({currVal: e.target.value});
-        this.props.handleChange(option);
+        if (this.state.isTags) {
+            var option = e;
+        } else {
+            var option = e.target.value;
+        }
+
+        this.setState({currVal: option});
+        this.props.handleChange({[this.state.name]: option});
     },
-    // TODO: tag and update changes in progress; expect updating to be broken for the night
-    submitChange: function(){
-        console.log(this.state.lastVal,this.state.currVal);
+    submitChange: function(){ 
+        // only submit if there is a change to the value to reduce superfluous call to back-end.
         if (this.state.lastVal != this.state.currVal) {
             this.props.submitChange({[this.state.name]: this.state.currVal});
             this.setState({lastVal: this.state.currVal});
@@ -199,13 +200,12 @@ var InfoEditField = React.createClass({
     render: function() {
         var capitalized = this.props.name.capitalize();
         var element;
-        // TODO comments errwhere
+
+        // set the left-hand side of Information table. Parse obj properties stored as Array need to use ReactTagsInput.
         if (this.state.isTags) {
-            var tagArray = this.props.initVal;
-            var tagsElement = tagArray.map(function(item) { 
-                return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;
-            });
-            element = ( <ReactTagsInput className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} value={tagsElement} /> );
+            var tagsElement = this.props.initVal;
+
+            element = ( <ReactTagsInput className="l-editable-input" type="text" id="{this.props.name}" name="{this.props.name}" ref="tags" onChange={this.handleChange} onBlur={this.submitChange} value={tagsElement} /> );
         } else {
             element = ( <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal} /> );
         }
