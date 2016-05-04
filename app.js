@@ -92,7 +92,7 @@ require('./routes/group')(app,Parse,io);
 require('./routes/report')(app,Parse,io);
 
 io.on('connection', function(socket){
-    console.log ("socket connected");
+
 });
 
 //===============PASSPORT=================
@@ -110,7 +110,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
             else {
                 Parse.User.logIn(username, password, {
                     success: function(user) {
-
+                        io.join(user.attributes.username);
                         return done(null, user.attributes.username);
                     },
                     error: function(user, error) {
