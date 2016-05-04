@@ -177,15 +177,18 @@ var InfoEditField = React.createClass({
         return {
             name: this.props.name,
             lastVal: this.props.initVal,
-            currVal: this.props.initVal
+            currVal: this.props.initVal,
+            isTags: (typeof this.props.initVal !== 'string') ? true : false
         };
     },
-    handleKeyChange: function(e) {
-        var option = {[this.state.name]: e};
-        this.setState({currVal: e});
+    handleChange: function(e){
+        var option = {[this.state.name]: e.target.value};
+        this.setState({currVal: e.target.value});
         this.props.handleChange(option);
     },
+    // TODO: tag and update changes in progress; expect updating to be broken for the night
     submitChange: function(){
+        console.log(this.state.lastVal,this.state.currVal);
         if (this.state.lastVal != this.state.currVal) {
             this.props.submitChange({[this.state.name]: this.state.currVal});
             this.setState({lastVal: this.state.currVal});
@@ -195,12 +198,24 @@ var InfoEditField = React.createClass({
     },
     render: function() {
         var capitalized = this.props.name.capitalize();
+        var element;
+        // TODO comments errwhere
+        if (this.state.isTags) {
+            var tagArray = this.props.initVal;
+            var tagsElement = tagArray.map(function(item) { 
+                return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;
+            });
+            element = ( <ReactTagsInput className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} value={tagsElement} /> );
+        } else {
+            element = ( <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal} /> );
+        }
 
         return (
             <tr className="no-margin">
                 <td className="publication-table-info-left"><label htmlFor="{this.props.name}">{capitalized}:</label></td>
                 <td className="publication-table-info-right">
-                    <ReactTagsInput type="textarea" id="{this.props.name}" name="{this.props.name}" onChange={this.handleKeyChange} value={this.props.initVal} /></td>
+                    {element}
+                </td>
             </tr>
         );
     },
