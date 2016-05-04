@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/stylesheets/form.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/newsfeed.css">
+    <link rel="stylesheet" href="/stylesheets/footer.css">
     <link rel="stylesheet" href="/stylesheets/profile-organization.css">
     <link rel="stylesheet" href="/stylesheets/profile-organization-item.css">
     <link rel="stylesheet" href="/stylesheets/style-extra.css">
@@ -99,26 +100,67 @@
     <a href="/report" rel="tooltip" title="Report a problem or share an opinion" class="report-button"><img alt="RT" src="/images/bug.png" width="40"></a>
     {{/if}}
 </div>
-const tooltip = (
-<Tooltip><strong>Holy guacamole!</strong> Check this info.</Tooltip>
-);
-<div class="container container-footer">
-    <footer>
-        <div class="container">
-            {{#if user}}
-            <hr class="style14" style="margin-top:35px;">
-            {{else}}
-            {{/if}}
-            <div class="footer-nav">
-                <div class="row">
-                    <div class="col-sm-5" style="margin:auto !important;float:none;text-align:center;padding:10px;">
-                        <p><font size="2">&copy; 2016 Syncholar.com. All rights reserved.</font> </p>
-                    </div>
-                </div>
-            </div>
+
+
+
+<footer class="footer-distributed">
+
+    <div class="footer-left">
+
+        <img alt="RT" src="/images/logo.png" width="30"><span style="color: white;font-size: 15px; font-weight: 600;"> Syncholar </span>
+
+        <p class="footer-links">
+            <a href="#">Home</a>
+            .
+            <a href="#">Blog</a>
+            .
+            <a href="#">Pricing</a>
+            .
+            <a href="#">About</a>
+
+        </p>
+
+        <p class="footer-company-name">Syncholar Inc. &copy; 2016</p>
+    </div>
+
+    <div class="footer-center">
+
+        <div>
+            <i class="fa fa-map-marker"></i>
+            <p><span>2424 Main Mall</span> Vancouver, Canada</p>
         </div>
-    </footer>
-</div>
+
+        <div>
+            <i class="fa fa-phone"></i>
+            <p>+1 604 123 4567</p>
+        </div>
+
+        <div>
+            <i class="fa fa-envelope"></i>
+            <p><a href="mailto:syncholar@gmail.com">syncholar@gmail.com</a></p>
+        </div>
+
+    </div>
+
+    <div class="footer-right">
+
+        <p class="footer-company-about">
+            <span>About the company</span>
+           Knowledge Shared is knowledge Gained!
+        </p>
+
+        <div class="footer-icons">
+
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-linkedin"></i></a>
+            <a href="#"><i class="fa fa-github"></i></a>
+
+        </div>
+
+    </div>
+
+</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <script src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js"> </script>
