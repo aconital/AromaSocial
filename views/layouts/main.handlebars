@@ -51,7 +51,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/create/organization">Create Research Lab or Network</a></li>
-                            <li><a href="/report">Report Problem</a></li>
+                            <li><a href="/report">Report Problem, share idea</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -96,9 +96,12 @@
     </nav>
     {{{body}}}
     {{#if user}}
-    <a href="/report" class="report-button">Report Problem</a>
+    <a href="/report" rel="tooltip" title="Report a problem or share an opinion" class="report-button"><img alt="RT" src="/images/bug.png" width="40"></a>
     {{/if}}
 </div>
+const tooltip = (
+<Tooltip><strong>Holy guacamole!</strong> Check this info.</Tooltip>
+);
 <div class="container container-footer">
     <footer>
         <div class="container">
