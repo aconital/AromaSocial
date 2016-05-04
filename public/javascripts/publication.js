@@ -79,14 +79,6 @@ var Publication = React.createClass ({
     submitChange: function() {
         var self = this;
         var dataForm = {pub_class: this.state.pub_class, title: this.state.title, abstract: this.state.abstract.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
-        
-        this.state.fields.forEach(function(element, index, array) {
-            if ((element == 'keywords' || element == 'contributors' || element == 'supervisors') && (typeof self.state[element] === 'string')) {
-                dataForm[element] = self.state[element].split(/\s*,\s*/g);
-            } else {
-                dataForm[element] = self.state[element];
-            }
-        });
 
         $.ajax({
             url: this.state.updatePath + "/update",
@@ -123,31 +115,7 @@ var Publication = React.createClass ({
         });
 
     },
-    handleTagsInputChange: function(e) { // TODO delete
-        var keywordsSubmit = (JSON.stringify(e));
-        this.setState({keywords:keywordsSubmit}, function(){ console.log(this.state.keywords); this.submitArrayChange(); }.bind(this));
-    },
-    submitArrayChange: function() { // TODOdelete
-        var dataForm = { keywords: this.state.keywords };
 
-        $.ajax({
-            url: this.state.updatePath + "/update",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.state.updatePath + "/update", status, err.toString());
-            }.bind(this)
-        });
-
-        return;
-    },
     render: function() {
         var self = this,
             keys = (this.state.fields) ? this.state.fields : [],
@@ -181,7 +149,6 @@ var Publication = React.createClass ({
                     <p className="p-noneditable"><strong>Abstract:</strong></p>
                     {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{this.state.abstract}</pre>}
                 </div>
-
                 <div className="item-panel">
                     <h3 className="no-margin h3-item-wrap h3-item-spacing">Uploaded By</h3>
                     <div className="item-authors-div">
@@ -213,9 +180,9 @@ var InfoEditField = React.createClass({
             currVal: this.props.initVal
         };
     },
-    handleChange: function(e){
-        var option = {[this.state.name]: e.target.value};
-        this.setState({currVal: e.target.value});
+    handleKeyChange: function(e) {
+        var option = {[this.state.name]: e};
+        this.setState({currVal: e});
         this.props.handleChange(option);
     },
     submitChange: function(){
@@ -233,7 +200,7 @@ var InfoEditField = React.createClass({
             <tr className="no-margin">
                 <td className="publication-table-info-left"><label htmlFor="{this.props.name}">{capitalized}:</label></td>
                 <td className="publication-table-info-right">
-                    <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal} /></td>
+                    <ReactTagsInput type="textarea" id="{this.props.name}" name="{this.props.name}" onChange={this.handleKeyChange} value={this.props.initVal} /></td>
             </tr>
         );
     },

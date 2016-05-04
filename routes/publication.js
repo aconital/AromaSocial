@@ -194,11 +194,11 @@ module.exports=function(app,Parse) {
         query.find({
             success: function(result) {
                 var pubObject = JSON.parse(JSON.stringify(result[0]));
-                var userEnv = {updatePath: req.path,
-                    publication_date: pubObject.publication_date.iso.slice(0,10),
-                    user: {username: pubObject.user.username,
-                           imgUrl: pubObject.user.imgUrl}}; // NOTE: currently just the uploader of file
-                console.log(pubObject);
+                var userEnv = { updatePath: req.path,
+                                publication_date: pubObject.publication_date.iso.slice(0,10),
+                                user: {username: pubObject.user.username,
+                                imgUrl: pubObject.user.imgUrl}}; // NOTE: currently just the uploader of file
+                                console.log(pubObject);
                 // merge the Parse object and fields for current user
                 var rendered = _.extend(pubObject, userEnv);
 
@@ -223,7 +223,7 @@ module.exports=function(app,Parse) {
                     creatorId: JSON.parse(JSON.stringify(result.get("user"))).objectId,
                     objectId: req.params.objectId,
                     title: result.get('title'),
-                    contributors: JSON.stringify(result.get('contributors')),
+                    contributors: result.get('contributors'),
                     author: result.get('author'),
                     abstract: result.get('abstract'),
                     filename: result.get('filename'),
@@ -260,7 +260,7 @@ module.exports=function(app,Parse) {
                     description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
-                    keywords: JSON.stringify(result.get('keywords')),
+                    keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Conference',
@@ -291,7 +291,7 @@ module.exports=function(app,Parse) {
                     description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
-                    keywords: JSON.stringify(result.get('keywords')),
+                    keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Journal_Article',
@@ -322,7 +322,7 @@ module.exports=function(app,Parse) {
                     description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
-                    keywords: JSON.stringify(result.get('keywords')),
+                    keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Patent',
@@ -349,11 +349,11 @@ module.exports=function(app,Parse) {
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
-                    collaborators: JSON.stringify(result.get('collaborators')),
+                    collaborators: result.get('collaborators'),
                     description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
-                    keywords: JSON.stringify(result.get('keywords')),
+                    keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Report',
@@ -384,7 +384,7 @@ module.exports=function(app,Parse) {
                     description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
-                    keywords: JSON.stringify(result.get('keywords')),
+                    keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Thesis',
@@ -415,7 +415,7 @@ module.exports=function(app,Parse) {
                     description: result.get('abstract'),
                     filename: result.get('filename'),
                     license: result.get('license'),
-                    keywords: JSON.stringify(result.get('keywords')),
+                    keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
                     groupies: result.get('groupies'),
                     pub_class: 'Pub_Unpublished',
