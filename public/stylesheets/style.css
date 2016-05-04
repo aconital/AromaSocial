@@ -6535,8 +6535,20 @@ hr.style15 {
 
 .limit-text {
   display: block;
+  font-size: 13px;
   width: 200px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+.hide-if-empty span:empty {
+  display: none;
+}
+
+.nfHeader {
+  color: #4B0082;
+  font-size: 17px;
+}
+
+
