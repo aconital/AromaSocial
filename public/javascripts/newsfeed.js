@@ -204,13 +204,12 @@ var NewsFeedList = React.createClass({
             <a href={"/profile/" + this.props.userName} className="nostyle"><h3 className="non-inline">{this.props.fullname}</h3></a>
             <h4 className="black non-inline">Added a {type} on {date}</h4>
             <div className="item-box">
-                {(this.props.type=="pub") ? "" : <div className="item-box-left"><img src={this.props.image_URL} className="contain-image-preview" /></div>}
+                {(this.props.type=="book" || this.props.type=="conference" || this.props.type=="journal" || this.props.type=="patent" || this.props.type=="report" || this.props.type=="thesis" || this.props.type=="unpublished") ? <div className="item-box-left"><img src="/images/paper.png" className="contain-image-preview" /></div> : <div className="item-box-left"><img src={this.props.image_URL} className="contain-image-preview" /></div>}
             <div className="item-box-right">
-                <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top">{title}</h3></a>
-                <span className="font-15">{this.props.description}</span>
+                <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top nfHeader">{title}</h3></a>
+                {(this.props.description=="undefined" || this.props.description=="") ? <div></div>:<pre className="hide-if-empty"> <span className="font-15 limit-text">{this.props.description}</span></pre>}
             </div>
             </div>
-
           </div>
         </div>
       </div>

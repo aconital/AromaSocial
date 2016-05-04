@@ -18,8 +18,8 @@ var CreateReport = React.createClass({
                 <Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
                 <Row className="show-grid">
                     <Col xs={9} xsOffset={2} md={6} mdOffset={3}>
-                        <Panel header="Report a Problem">
-                            <p>Description and instructions go here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <Panel header="Report a Problem or share your opinion!">
+                            <p>Please describe the problem clearly. If you are not sure which section of the website.</p> <p>We love to hear your opinion about features we currently provide and the ones you would like to see. Please do share here!</p>
                             <ListGroup id="reportForm" fill>
                                 <ListGroupItem>
                                     <form onSubmit={this.handleSubmitData}>
@@ -55,16 +55,16 @@ var CreateReport = React.createClass({
                                             <option value="Equipment Profile">Equipment Profile</option>
                                             <option value="Project Profile">Project Profile</option>
                                         </Input>
-                                        <Input type="select" name="assignTo" label="Assign to" onChange={this.handleChange} value={this.state.assignTo}>
+                                    {/*      <Input type="select" name="assignTo" label="Assign to" onChange={this.handleChange} value={this.state.assignTo}>
                                             <option value="Anyone">Anyone</option>
                                             <option value="Saeed">Saeed</option>
                                             <option value="Newton">Newton</option>
                                             <option value="Lisa">Lisa</option>
                                             <option value="Shariq">Shariq</option>
                                             <option value="Hirad">Hirad</option>
-                                        </Input>
+                                        </Input>*/}
                                         <label htmlFor="Describe">Description <Required content="*"/></label>
-                                        <Input type="textarea" name="description" placeholder="Description of the problem" onChange={this.handleChange} value={this.state.description} />
+                                        <Input type="textarea" name="description" placeholder="Please describe clearly" onChange={this.handleChange} value={this.state.description} />
                                         <ButtonInput className="center-block" type="submit" value="Submit Report" />
                                     </form>
                                 </ListGroupItem>
