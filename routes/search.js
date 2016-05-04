@@ -28,7 +28,7 @@ function sendSearchFeed(res, searchResults) {
 }
 
 
-module.exports=function(app,Parse) {
+module.exports=function(app,Parse,io) {
     var searchResults = [];
     /*******************************************
          *

@@ -27,7 +27,7 @@ var encodeHtmlEntity = function(str) {
   return buf.join('');
 };
 
-module.exports=function(app,Parse) {
+module.exports=function(app,Parse,io) {
 
     // app.get('/allpublications', function(req, res, next) {
     //     var currentUser = req.user;

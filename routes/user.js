@@ -13,7 +13,7 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
-module.exports=function(app,Parse) {
+module.exports=function(app,Parse,io) {
     app.get('/allusers', function(req, res, next) {
         var q = new Parse.Query("User");
         q.find({
