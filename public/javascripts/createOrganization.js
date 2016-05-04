@@ -90,9 +90,17 @@ var CreateOrganization = React.createClass({
 		e.preventDefault();
 		var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
-			var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType,
-				description: this.state.description, name: this.state.name, location: this.state.location, country: this.state.country,
-				prov: this.state.prov, city: this.state.city, street: this.state.street, postalcode: this.state.postalcode, website: this.state.website};
+			var dataForm = {picture: this.state.picture,
+							pictureType: this.state.pictureType,
+							description: this.state.description.replace(/(\r\n|\n|\r|\\)/gm,'\\n'),
+							name: this.state.name,
+							location: this.state.location,
+							country: this.state.country,
+							prov: this.state.prov,
+							city: this.state.city,
+							street: this.state.street,
+							postalcode: this.state.postalcode,
+							website: this.state.website};
 			this.setState({createStatus: 'In progress...'});
 
 			$.ajax({
