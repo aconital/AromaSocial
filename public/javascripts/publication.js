@@ -205,7 +205,7 @@ var InfoEditField = React.createClass({
         if (this.state.isTags) {
             var tagsElement = this.props.initVal;
 
-            element = ( <ReactTagsInput className="l-editable-input" type="text" id="{this.props.name}" name="{this.props.name}" ref="tags" onChange={this.handleChange} onBlur={this.submitChange} value={tagsElement} /> );
+            element = ( <ReactTagsInput className="l-editable-input" type="text" id="{this.props.name}" name="{this.props.name}" ref="tags" placeholder="" onChange={this.handleChange} onBlur={this.submitChange} value={tagsElement} /> );
         } else {
             element = ( <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal} /> );
         }

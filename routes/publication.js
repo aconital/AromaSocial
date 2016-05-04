@@ -769,7 +769,6 @@ module.exports=function(app,Parse,io) {
                 // everything in data form
                 var keys = Object.keys(req.body);
                 for (var i=0; i<keys.length; i++) {
-                    console.log(keys[i], req['body'][keys[i]], typeof req['body'][keys[i]]);
                     if (keys[i] !== 'pub_class') {
                         if (keys[i] == ('publication_date')) {
                             result.set(keys[i], new Date(req['body'][keys[i]]));
