@@ -20,6 +20,7 @@ var ReactDOM = require('react-dom');
 var ReactBootstrap = require('react-bootstrap');
 var TagsInput = require('react-tagsinput');
 var Loading = require('react-loading');
+var socket_io    = require( "socket.io" );
 var exphbs = require('express-handlebars');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
@@ -27,6 +28,8 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local');
 
 var app = express();
+var io           = socket_io();
+app.io           = io;
 
 Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
 Parse.serverURL = 'http://52.33.206.191:1337/parse/';
@@ -75,18 +78,26 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./routes/routes')(app,Parse);
-require('./routes/organization')(app,Parse);
-require('./routes/user')(app,Parse);
-require('./routes/equipment')(app,Parse);
-require('./routes/project')(app,Parse);
-require('./routes/publication')(app,Parse);
-require('./routes/data')(app,Parse);
-require('./routes/model')(app,Parse);
-require('./routes/newsfeed')(app,Parse);
-require('./routes/search')(app,Parse);
-require('./routes/group')(app,Parse);
-require('./routes/report')(app,Parse);
+require('./routes/routes')(app,Parse,io);
+require('./routes/organization')(app,Parse,io);
+require('./routes/user')(app,Parse,io);
+require('./routes/equipment')(app,Parse,io);
+require('./routes/project')(app,Parse,io);
+require('./routes/publication')(app,Parse,io);
+require('./routes/data')(app,Parse,io);
+require('./routes/model')(app,Parse,io);
+require('./routes/newsfeed')(app,Parse,io);
+require('./routes/search')(app,Parse,io);
+require('./routes/group')(app,Parse,io);
+require('./routes/report')(app,Parse,io);
+
+io.on('connection', function(socket){
+
+    socket.on('registerUser', function (data) {
+       socket.join(data.username);
+    });
+
+});
 
 //===============PASSPORT=================
 // Use the LocalStrategy within Passport to login/�signin� users.
@@ -103,7 +114,6 @@ passport.use(new LocalStrategy(function(username, password, done) {
             else {
                 Parse.User.logIn(username, password, {
                     success: function(user) {
-
                         return done(null, user.attributes.username);
                     },
                     error: function(user, error) {

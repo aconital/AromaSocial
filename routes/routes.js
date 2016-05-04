@@ -42,7 +42,7 @@ function sendEmail ( _name, _email, _subject, _message) {
   });
 }
 
-module.exports=function(app,Parse) {
+module.exports=function(app,Parse,io) {
 
 
     app.get('/beta', function (req, res, next) {

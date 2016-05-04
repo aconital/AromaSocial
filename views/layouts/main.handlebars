@@ -11,11 +11,14 @@
     <link rel="stylesheet" href="/stylesheets/form.css">
     <link rel="stylesheet" href="/stylesheets/style.css">
     <link rel="stylesheet" href="/stylesheets/newsfeed.css">
+    <link rel="stylesheet" href="/stylesheets/footer.css">
     <link rel="stylesheet" href="/stylesheets/profile-organization.css">
     <link rel="stylesheet" href="/stylesheets/profile-organization-item.css">
     <link rel="stylesheet" href="/stylesheets/style-extra.css">
+    <link rel="stylesheet" href="/stylesheets/tag-it.css">
+    <link rel="stylesheet" href="/javascripts/react-tag-input/example/reactTags.css">
 
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
@@ -51,7 +54,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/create/organization">Create Research Lab or Network</a></li>
-                            <li><a href="/report">Report Problem</a></li>
+                            <li><a href="/report">Report Problem, share idea</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -96,26 +99,69 @@
     </nav>
     {{{body}}}
     {{#if user}}
-    <a href="/report" class="report-button">Report Problem</a>
+    <a href="/report" rel="tooltip" title="Report a problem or share an opinion" class="report-button"><i class="fa fa-bug" aria-hidden="true"></i></a>
     {{/if}}
 </div>
-<div class="container container-footer">
-    <footer>
-        <div class="container">
-            {{#if user}}
-            <hr class="style14" style="margin-top:35px;">
-            {{else}}
-            {{/if}}
-            <div class="footer-nav">
-                <div class="row">
-                    <div class="col-sm-5" style="margin:auto !important;float:none;text-align:center;padding:10px;">
-                        <p><font size="2">&copy; 2016 Syncholar.com. All rights reserved.</font> </p>
-                    </div>
-                </div>
-            </div>
+
+
+
+<footer class="footer-distributed">
+
+    <div class="footer-left">
+
+        <img alt="RT" src="/images/logo.png" width="30"><span style="color: white;font-size: 15px; font-weight: 600;"> Syncholar </span>
+
+        <p class="footer-links">
+            <a href="#">Home</a>
+            .
+            <a href="#">About</a>
+            .
+            <a href="#">Privacy</a>
+            .
+            <a href="#">Terms</a>
+
+        </p>
+
+        <p class="footer-company-name">Syncholar Inc. &copy; 2016</p>
+    </div>
+
+    <div class="footer-center">
+
+        <div>
+            <i class="fa fa-map-marker"></i>
+            <p><span>2424 Main Mall</span> Vancouver, Canada</p>
         </div>
-    </footer>
-</div>
+
+        <div>
+            <i class="fa fa-phone"></i>
+            <p>+1 604 123 4567</p>
+        </div>
+
+        <div>
+            <i class="fa fa-envelope"></i>
+            <p><a href="mailto:syncholar@gmail.com">syncholar@gmail.com</a></p>
+        </div>
+
+    </div>
+
+    <div class="footer-right">
+
+        <p class="footer-company-about">
+            <span>About the company</span>
+           Knowledge Shared is knowledge Gained!
+        </p>
+
+        <div class="footer-icons">
+
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-linkedin"></i></a>
+            <a href="#"><i class="fa fa-instagram"></i></a>
+        </div>
+
+    </div>
+
+</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <script src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js"> </script>
@@ -124,8 +170,15 @@
 <script src="https://www.parsecdn.com/js/parse-react.js"></script>
 <script type="text/jsx" src="/javascripts/navbar.js"></script>
 <script src="/javascripts/autocomplete.js"></script>
-
 <script src="/javascripts/sweetalert/dist/sweetalert.min.js"></script>
+{{#if user}}
+    <script src="/javascripts/socket.io.min.js"> </script>
+    <script>
+        var socket = io.connect('127.0.0.1:3000');
+         socket.emit("registerUser",{username:'{{user.username}}' });
+
+    </script>
+{{/if}}
 <link rel="stylesheet" href="/javascripts/sweetalert/dist/sweetalert.css">
 
 <script>
@@ -167,7 +220,5 @@
 <script type="text/javascript" src="/javascripts/react-tag-input/example/vendor/ReactDND.min.js"></script>
 <script src="/javascripts/react-tag-input/dist/reactTags.min.js"></script>
 <script src="/javascripts/tag-it.js"></script>
-<link rel="stylesheet" href="/stylesheets/tag-it.css">
-<link rel="stylesheet" href="/javascripts/react-tag-input/example/reactTags.css">
 </body>
 </html>

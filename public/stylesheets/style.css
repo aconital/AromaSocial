@@ -6535,22 +6535,27 @@ hr.style15 {
 
 .report-button{
   position:fixed;
-  bottom: 3%;
-  right:2%;
+  bottom: 5%;
+  right:5%;
   text-decoration: none;
-  background-color: #009688   ;
-  padding: 14px 24px;
+  background-color: #f44336      ;
   border: 0 none;
-  font-size: 12px;
+  font-size: 20px;
+  padding-top: 12px;
+  color: white;
   font-weight: 700;
   letter-spacing: 1px;
-  color: white;
   text-transform: uppercase;
+  display:block;
+  width:50px;
+  height:50px;
+  border-radius:50px;
+  text-align:center;
 }
 .report-button:hover
 { color: white;
   text-decoration: none;
-  background-color: #00bfa5 ;
+  background-color: #b71c1c   ;
 }
 
 

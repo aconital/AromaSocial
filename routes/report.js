@@ -10,7 +10,7 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 
-module.exports=function(app,Parse) {
+module.exports=function(app,Parse,io) {
     app.get('/report', is_auth, function (req, res, next) {
         return res.render('report', { title: 'Report', path: req.path});
     });

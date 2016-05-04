@@ -16,7 +16,7 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 //                                              //
 //**********************************************//
 
-module.exports=function(app,Parse) {
+module.exports=function(app,Parse,io) {
 
     app.get('/equipment', is_auth, function (req, res, next) {
         res.render('equipment', {title: 'Equipment', path: req.path});
