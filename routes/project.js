@@ -68,7 +68,7 @@ module.exports=function(app,Parse) {
             project.set('end_date',req.body.endDate);
             project.set('keywords',JSON.parse(req.body.keywords));
             project.set('image_URL','/images/data.png');
-            project.set('file_path','/images/data.png');
+            project.set('file_path','');
             project.set('client',req.body.client);
             project.set('link_to_resources',req.body.link_to_resources);
             project.set('URL',req.body.url);

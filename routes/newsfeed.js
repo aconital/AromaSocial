@@ -74,10 +74,11 @@ module.exports=function(app,Parse) {
                                 username: username,
                                 userImg: userImg,
                                 date: creationDate,
-                                abstract: description,
+                                description: description,
                                 type:type,
                                 keywords:keywords,
                                 title: title,
+                                image_URL: imgUrl
                             });
                         }
                     }
@@ -102,11 +103,12 @@ module.exports=function(app,Parse) {
                                 username: username,
                                 userImg: userImg,
                                 date: creationDate,
-                                abstract: description,
+                                description: description,
                                 url: url,
                                 type:type,
                                 keywords:keywords,
                                 title: title,
+                                image_URL: imgUrl
                             });
                         }
                     }
@@ -128,14 +130,14 @@ module.exports=function(app,Parse) {
                         var publisher = object.get("pubBookId").get("publisher") != null? object.get("pubBookId").get("publisher"):"";
                         var doi = object.get("pubBookId").get("doi") != null? object.get("pubBookId").get("doi"):"";
                         var edition = object.get("pubBookId").get("edition") != null? object.get("pubBookId").get("edition"):"";
-                        var type = object.get("pubBookId").get("type") != null? object.get("pubBookId").get("type"):"";
+                        var type = "book"
                         feeds.push({
                             objId: objectId,
                             fullname: fullname,
                             username: username,
                             userImg: userImg,
                             publication_date:publication_date,
-                            abstract:abstract,
+                            description:abstract,
                             author: author,
                             chapter: chapter,
                             filename:filename,
@@ -146,8 +148,7 @@ module.exports=function(app,Parse) {
                             isbn: isbn,
                             doi:doi,
                             title: title,
-                            edition: edition,
-
+                            edition: edition
                         });
                     }
                     }
@@ -166,7 +167,7 @@ module.exports=function(app,Parse) {
                         var contributors = object.get("pubConferenceId").get("contributors") != null? object.get("pubConferenceId").get("contributors"):[];
                         var conference_location = object.get("pubConferenceId").get("conference_location") != null? object.get("pubConferenceId").get("conference_location"):"";
                         var volume = object.get("pubConferenceId").get("volume") != null? object.get("pubConferenceId").get("volume"):"";
-                        var type = object.get("pubConferenceId").get("type") != null? object.get("pubConferenceId").get("type"):"";
+                        var type = "conference";
                         var conference = object.get("pubConferenceId").get("conference") != null? object.get("pubConferenceId").get("conference"):"";
                         var conference_volume = object.get("pubConferenceId").get("conference_volume") != null? object.get("pubConferenceId").get("conference_volume"):"";
                         var doi = object.get("pubConferenceId").get("doi") != null? object.get("pubConferenceId").get("doi"):"";
@@ -181,7 +182,7 @@ module.exports=function(app,Parse) {
                             location:location,
                             collaborators:collaborators,
                             filename:filename,
-                            abstract:abstract,
+                            description:abstract,
                             author: author,
                             contributors: contributors,
                             volume:volume,
@@ -216,7 +217,7 @@ module.exports=function(app,Parse) {
                             var contributors = object.get("pubJournalId").get("contributors") != null? object.get("pubJournalId").get("contributors"):[];
                             var issue = object.get("pubJournalId").get("issue") != null? object.get("pubJournalId").get("issue"):"";
                             var volume = object.get("pubJournalId").get("volume") != null? object.get("pubJournalId").get("volume"):"";
-                            var type = object.get("pubJournalId").get("type") != null? object.get("pubJournalId").get("type"):"";
+                            var type = "journal";
                             var doi = object.get("pubJournalId").get("doi") != null? object.get("pubJournalId").get("doi"):"";
 
                             feeds.push({
@@ -225,7 +226,7 @@ module.exports=function(app,Parse) {
                                 username: username,
                                 userImg: userImg,
                                 publication_date:publication_date,
-                                abstract:abstract,
+                                description:abstract,
                                 journal_volume:journal_volume,
                                 filename:filename,
                                 keywords:keywords,
@@ -260,7 +261,7 @@ module.exports=function(app,Parse) {
                             var title = object.get("pubPatentId").get("title") != null? object.get("pubPatentId").get("title"):"";
                             var location = object.get("pubPatentId").get("location") != null? object.get("pubPatentId").get("location"):"";
                             var contributors = object.get("pubPatentId").get("contributors") != null? object.get("pubPatentId").get("contributors"):[];
-                            var type = object.get("pubPatentId").get("type") != null? object.get("pubPatentId").get("type"):"";
+                            var type = "patent";
                             var reference_number = object.get("pubPatentId").get("reference_number") != null? object.get("pubPatentId").get("reference_number"):"";
                             var doi = object.get("pubPatentId").get("doi") != null? object.get("pubPatentId").get("doi"):"";
                             feeds.push({
@@ -269,7 +270,7 @@ module.exports=function(app,Parse) {
                                 username: username,
                                 userImg: userImg,
                                 publication_date:publication_date,
-                                abstract:abstract,
+                                description:abstract,
                                 filename:filename,
                                 keywords:keywords,
                                 url:url,
@@ -303,7 +304,7 @@ module.exports=function(app,Parse) {
                             var title = object.get("pubThesisId").get("title") != null? object.get("pubThesisId").get("title"):"";
                             var page = object.get("pubThesisId").get("page") != null? object.get("pubThesisId").get("page"):"";
                             var contributors = object.get("pubThesisId").get("contributors") != null? object.get("pubThesisId").get("contributors"):[];
-                            var type = object.get("pubThesisId").get("type") != null? object.get("pubThesisId").get("type"):"";
+                            var type = "thesis";
                             var doi = object.get("pubThesisId").get("doi") != null? object.get("pubThesisId").get("doi"):"";
                             feeds.push({
                                 objId: objectId,
@@ -311,7 +312,7 @@ module.exports=function(app,Parse) {
                                 username: username,
                                 userImg: userImg,
                                 publication_date:publication_date,
-                                abstract:abstract,
+                                description:abstract,
                                 filename:filename,
                                 keywords:keywords,
                                 url:url,
@@ -339,7 +340,7 @@ module.exports=function(app,Parse) {
                             var url = object.get("pubUnpublishedId").get("url") != null? object.get("pubUnpublishedId").get("url"):"#";
                             var title = object.get("pubUnpublishedId").get("title") != null? object.get("pubUnpublishedId").get("title"):"";
                             var contributors = object.get("pubUnpublishedId").get("contributors") != null? object.get("pubUnpublishedId").get("contributors"):[];
-                            var type = object.get("pubUnpublishedId").get("type") != null? object.get("pubUnpublishedId").get("type"):"";
+                            var type = "unpublished";
                             var location = object.get("pubUnpublishedId").get("location") != null? object.get("pubUnpublishedId").get("location"):"";
                             var doi = object.get("pubUnpublishedId").get("doi") != null? object.get("pubUnpublishedId").get("doi"):"";
                             feeds.push({
@@ -348,7 +349,7 @@ module.exports=function(app,Parse) {
                                 username: username,
                                 userImg: userImg,
                                 publication_date:publication_date,
-                                abstract:abstract,
+                                description:abstract,
                                 filename:filename,
                                 keywords:keywords,
                                 url:url,
@@ -377,7 +378,7 @@ module.exports=function(app,Parse) {
                             var report_number = object.get("pubReportId").get("report_number") != null? object.get("pubReportId").get("type"):"";
                             var location = object.get("pubReportId").get("location") != null? object.get("pubReportId").get("location"):"";
                             var publisher = object.get("pubReportId").get("publisher") != null? object.get("pubReportId").get("publisher"):"";
-                            var type = object.get("pubReportId").get("type") != null? object.get("pubReportId").get("type"):"";
+                            var type = "report";
                             var doi = object.get("pubReportId").get("doi") != null? object.get("pubReportId").get("doi"):"";
                             feeds.push({
                                 objId: objectId,
@@ -385,7 +386,7 @@ module.exports=function(app,Parse) {
                                 username: username,
                                 userImg: userImg,
                                 publication_date:publication_date,
-                                abstract:abstract,
+                                description:abstract,
                                 filename:filename,
                                 keywords:keywords,
                                 url:url,
