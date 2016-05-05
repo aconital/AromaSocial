@@ -94,7 +94,14 @@ require('./routes/report')(app,Parse,io);
 io.on('connection', function(socket){
 
     socket.on('registerUser', function (data) {
-       socket.join(data.username);
+
+       socket.join(data.userId,function(){
+           console.log(socket.rooms);
+       });
+    });
+    socket.on("friendrequest",function(data){
+        console.log("hahaha");
+        console.log(data);
     });
 
 });
