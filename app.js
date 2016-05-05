@@ -26,10 +26,13 @@ var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
+var helmet = require('helmet')
 
 var app = express();
 var io           = socket_io();
 app.io           = io;
+
+app.use(helmet());
 
 Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
 Parse.serverURL = 'http://52.33.206.191:1337/parse/';
