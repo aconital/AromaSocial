@@ -579,10 +579,16 @@ module.exports=function(app,Parse,io) {
             });
         }
     });
-
+/*    app.get('/testsocket',function(req,res,next){
+        var currentUser= "YY4wFrLrbn";
+        var userId = "1hX2oMe3Xf";
+        io.to(userId).emit('friendrequest',{data:currentUser});
+        res.sendStatus(200);
+    });*/
     app.get('/profile/:objectId/connect', is_auth, function (req, res, next) {
         var userId= req.params.objectId;
         var currentUser = req.user
+
         var Relationship = Parse.Object.extend("RelationshipUser");
         //var relation = new Relationship();
 
@@ -598,13 +604,11 @@ module.exports=function(app,Parse,io) {
                 relation.set('userId1', { __type: "Pointer", className: "_User", objectId: currentUser.id });
                 relation.set('userId0', { __type: "Pointer", className: "_User", objectId: userId });
 
-                console.log("No entry found for: ");
-                console.log(currentUser.id);
-                console.log(userId);
                 relation.set('verified', false);
 
                 relation.save(null,{
                     success:function(){
+                        io.to(userId).emit('friendrequest',{data:currentUser});
                         res.json({success: "Requested Successfully"});
                     },
                     error:function(error){
@@ -614,10 +618,7 @@ module.exports=function(app,Parse,io) {
                 res.json("pending");
 
             } else {
-                // entry exists
-                console.log("Entry found for: ");
-                console.log(currentUser.id);
-                console.log(userId);
+
                 result.set('verified', true);              
                 result.save(null,{
                     success:function(){
@@ -671,6 +672,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    //gets the list of friend requests
     app.get('/friendrequest', is_auth, function(req,res,next){
         var currentUser= req.user;
         var people =[];
@@ -722,17 +724,34 @@ module.exports=function(app,Parse,io) {
                 if (result == undefined) {
                     console.log("Unexpected error. Cannot find RelationshipUser entry for friend request");
                 } else {
-                    result.set("verified",true);
-                    result.save(null, { useMasterKey: true }).then(
-                        function(){
-                            //console.log("SAVE SUCCESS");
-                            res.status(200).json({status: "Friend request info uploaded successfully!"});
-                        },
-                        function(error){
-                            console.log(error);
-                            res.status(500).json({status: "Error uploading friend request info"})
-                        }
-                    );
+                    //user denied
+                    if(mode == "deny")
+                    {
+                        result.destroy({
+                            success: function(myObject) {
+                                res.status(200).json({status: "Friend request info uploaded successfully!"});
+                            },
+                            error: function(myObject, error) {
+                                console.log(error);
+                                res.status(500).json({status: "Error uploading friend request info"})
+                            }
+                        });
+                    }
+                    //accepted
+                    else
+                    {
+                        result.set("verified", true);
+                        result.save(null, {useMasterKey: true}).then(
+                            function () {
+                                //console.log("SAVE SUCCESS");
+                                res.status(200).json({status: "Friend request info uploaded successfully!"});
+                            },
+                            function (error) {
+                                console.log(error);
+                                res.status(500).json({status: "Error uploading friend request info"})
+                            }
+                        );
+                    }
                 }
             },
             error: function(error) {

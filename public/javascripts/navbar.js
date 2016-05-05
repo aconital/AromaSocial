@@ -1,6 +1,7 @@
 /**
  * Created by hroshandel on 2016-01-19.
  */
+
 var FriendRequest = React.createClass({
     getInitialState: function() {
         return {data: []};
@@ -19,8 +20,11 @@ var FriendRequest = React.createClass({
         });
     },
     componentDidMount : function(){
-       setInterval( this.loadRequests, 5000);
-
+        this.loadRequests();
+        socket.on('friendrequest', this._friendrequest);
+    },
+    _friendrequest(data){
+        this.loadRequests();
     },
     pending_action:function(person,action)
     {
@@ -102,9 +106,12 @@ var Notification = React.createClass({
         });
     },
     componentDidMount : function(){
-        setInterval( this.loadRequests, 5000);
+    socket.on('friendrequest', this._friendrequest);
 
-    },
+     },
+    _friendrequest(data){
+         console.log(data);
+     },
     render: function() {
 
         if(this.state.data.length >0)

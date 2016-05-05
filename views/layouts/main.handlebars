@@ -28,6 +28,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trianglify/0.2.1/trianglify.min.js"></script>
     <script src="/javascripts/react-tagsinput/react-tagsinput.js"></script>
+    <script src="/javascripts/socket.io.min.js"> </script>
     <script type="text/javascript">
         function decodeEntities(encodedString) {
             var textArea = document.createElement('textarea');
@@ -38,6 +39,13 @@
 
 </head>
 <body>
+{{#if user}}
+
+    <script>
+        var socket = io();
+        socket.emit("registerUser",{userId:'{{user.id}}' });
+    </script>
+{{/if}}
 
 <div class="container">
     <nav class="navbar navbar-default">
@@ -97,6 +105,8 @@
             </div>
         </div>
     </nav>
+
+
     {{{body}}}
     {{#if user}}
     <a href="/report" rel="tooltip" title="Report a problem or share an opinion" class="report-button"><i class="fa fa-bug" aria-hidden="true"></i></a>
@@ -171,14 +181,7 @@
 <script type="text/jsx" src="/javascripts/navbar.js"></script>
 <script src="/javascripts/autocomplete.js"></script>
 <script src="/javascripts/sweetalert/dist/sweetalert.min.js"></script>
-{{#if user}}
-    <script src="/javascripts/socket.io.min.js"> </script>
-    <script>
-        var socket = io.connect('127.0.0.1:3000');
-         socket.emit("registerUser",{username:'{{user.username}}' });
 
-    </script>
-{{/if}}
 <link rel="stylesheet" href="/javascripts/sweetalert/dist/sweetalert.css">
 
 <script>
