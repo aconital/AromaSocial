@@ -129,12 +129,12 @@ module.exports=function(app,Parse,io) {
      user.signUp(null, {
         success: function (user) {
             var mailOptions = {
-                from: 'Syncholar <support@syncholar.com>', // sender address
+                from: 'Syncholar  <support@syncholar.com>', // sender address
                 to: req.body.email, // list of receivers
                 subject: 'Verify Email - Syncholar', // Subject line
                 text: '', // plaintext body
-                html: '<h2><p>Welcome to Syncholar '+req.body.fullname+',</p> </h2>'+ '<p>Please click on the link below to verify your email address:</p>'+
-                '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p>Syncholar Team</p>'
+                html: '<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
+                '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>'
             };
             sendEmail(mailOptions);
            passport.authenticate('local', { successRedirect: '/',
@@ -300,9 +300,9 @@ app.get('/auth/linkedin/callback',function(req,res){
                                               to: result.attributes.email, // list of receivers
                                               subject: 'Connecting Linkedin to your account', // Subject line
                                               text: '', // plaintext body
-                                              html: '<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> Please click on the following link to connect your linkedin to your account:' +
+                                              html: '<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
                                                     '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
-                                         +' ,</p> <br>------------------------------------- <br> Syncholar Team' // html body
+                                         +' ,</p><p> <br>--------------------<br> Syncholar Team</p>' // html body
                                           };
                                          sendEmail(mailOptions);
                                          res.redirect('/auth/linkedin/verify');
