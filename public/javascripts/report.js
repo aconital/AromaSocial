@@ -19,7 +19,7 @@ var CreateReport = React.createClass({
                 <Row className="show-grid">
                     <Col xs={9} xsOffset={2} md={6} mdOffset={3}>
                         <Panel header="Report a Problem or share your opinion!">
-                            <p>Please describe the problem clearly. If you are not sure which section of the website.</p> <p>We love to hear your opinion about features we currently provide and the ones you would like to see. Please do share here!</p>
+                            <p>Please describe the problem clearly.</p> <p>We love to hear your opinion about features we currently provide and the ones you would like to see. Please do share here!</p>
                             <ListGroup id="reportForm" fill>
                                 <ListGroupItem>
                                     <form onSubmit={this.handleSubmitData}>

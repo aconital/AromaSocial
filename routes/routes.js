@@ -297,8 +297,9 @@ app.get('/auth/linkedin/callback',function(req,res){
                                               to: result.attributes.email, // list of receivers
                                               subject: 'Connecting Linkedin to your account', // Subject line
                                               text: '', // plaintext body
-                                              html: '<h2><p>Hi '+result.attributes.fullname+',</p> Please click on the following link to connect your linkedin to your account:</h2>' +
-                                                    '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
+                                              html: '<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> Please click on the following link to connect your linkedin to your account:' +
+                                                    '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
+                                         +' ,</p> <br>------------------------------------- <br> Syncholar Team' // html body
                                           };
                                          sendEmail(mailOptions);
                                          res.redirect('/auth/linkedin/verify');
@@ -339,8 +340,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                                       to: email, // list of receivers
                                                       subject: 'Welcome To Syncholar', // Subject line
                                                       text: '', // plaintext body
-                                                      html: '<h2><p>Welcome to Syncholar '+name+',</p> </h2>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
-                                                          '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p>Syncholar Team</p>'
+                                                      html: '<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
+                                                          '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>'
                                                   };
                                                   sendEmail(mailOptions);
                                                   req.login(u.attributes.username,function (err) {
