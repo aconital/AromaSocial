@@ -344,6 +344,6 @@ function showPublicationNewsFeed(pubid, datatype, title, year, postid, filename,
   var works = document.getElementById("content");
   React.unmountComponentAtNode(works);
   var search = false;
-  React.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+  ReactDOM.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
     description={description} author={author} year={year} pubid={pubid} search={search} user={user} profilepic={profilepic}/>, document.getElementById("content"));
 }
