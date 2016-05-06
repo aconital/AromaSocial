@@ -15,7 +15,7 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 //var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://syncholar.com/auth/linkedin/callback');
 
-var isauth = require('../utils/helpers').isauth;
+var is_auth = require('../utils/helpers').is_auth;
 var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
 
@@ -410,10 +410,10 @@ app.get('/auth/linkedin/callback',function(req,res){
         });
 
     });
-    app.get("/verify-email")
-    {
+    app.get("/verify-email", function (req,res,next) {
+
         res.render("verify-email");
-    }
+    });
     app.get("/verify-email/:activation",function(req,res,next){
         var code= req.params.activation;
         var query = new Parse.Query(Parse.User);

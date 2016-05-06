@@ -4,7 +4,9 @@
 /************************************
  * HELPER FUNCTIONS
  *************************************/
-function is_auth(req,res,next){
+module.exports = {
+
+    is_auth: function (req,res,next){
     if (!req.isAuthenticated()) {
         res.redirect('/');
     }else if(!req.user.emailVerified)
@@ -15,8 +17,8 @@ function is_auth(req,res,next){
         res.locals.user = req.user;
         next();
     }
-};
-function randomString(len, charSet) {
+},
+randomString: function (len, charSet) {
     charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var randomString = '';
     for (var i = 0; i < len; i++) {
@@ -24,11 +26,13 @@ function randomString(len, charSet) {
         randomString += charSet.substring(randomPoz,randomPoz+1);
     }
     return randomString;
-};
-function hasBetaCode(req,res,next)
+},
+hasBetaCode: function (req,res,next)
 {
     if(req.session.code === "Fom2016")
         next()
     else
         res.redirect("/beta");
 }
+
+};
