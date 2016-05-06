@@ -106,6 +106,7 @@ module.exports=function(app,Parse,io) {
 
     app.post('/signup', function (req, res, next) {
 
+     var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
      var user = new Parse.User();
      user.set("username", req.body.username);
      user.set("password", req.body.password);
@@ -119,11 +120,20 @@ module.exports=function(app,Parse,io) {
      user.set("about", "");
      user.set("projects", []);
      user.set("workExperience", []);
+     user.set("email_token",email_code)
      
      console.log(req.body.username);
      user.signUp(null, {
         success: function (user) {
-           console.log("sucessful signup");
+            var mailOptions = {
+                from: 'Syncholar <support@syncholar.com>', // sender address
+                to: email, // list of receivers
+                subject: 'Verify Email - Syncholar', // Subject line
+                text: '', // plaintext body
+                html: '<h2><p>Welcome to Syncholar '+req.body.fullname+',</p> </h2>'+ '<p>Please click on the link below to verify your email address:</p>'+
+                '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p>Syncholar Team</p>'
+            };
+            sendEmail(mailOptions);
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
                if(err) {
@@ -313,6 +323,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("imgUrl", pictureUrl);
                                   user.set("about",about);
                                   user.set("interestsTag", []);
+                                  user.set("emailVerified",true);
                                   user.set("interests", []);
                                   user.set("summary", "");
                                   user.set("educations", []);
@@ -388,6 +399,30 @@ app.get('/auth/linkedin/callback',function(req,res){
                    });
 
                }
+            },
+            error: function (error) {
+                res.render('signin', {Error: error.message, path: req.path});
+            }
+        });
+
+    });
+    app.get("/verify-email/:activation",function(req,res,next){
+        var code= req.params.activation;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("email_token", code);
+        query.first({
+            success: function (user) {
+                if(user)
+                {
+                    user.set("emailVerified",true);
+                    user.save(null,{ useMasterKey: true }).then(function() {
+                        res.redirect("/");
+                    },function(error)
+                    {
+                        res.render('signin', {Error: error.message, path: req.path});
+                    });
+
+                }
             },
             error: function (error) {
                 res.render('signin', {Error: error.message, path: req.path});
