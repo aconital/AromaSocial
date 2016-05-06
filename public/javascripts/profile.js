@@ -2139,7 +2139,7 @@ var Required = React.createClass({
 	},
 });
 
-React.render(<Profile
+ReactDOM.render(<Profile
     locations={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
     roles={["Treasurer At FFABNET"]}
     connections={["BiofuelNet","FFABNet","IIE","INFORMS"]}
