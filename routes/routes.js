@@ -121,13 +121,12 @@ module.exports=function(app,Parse,io) {
      user.set("projects", []);
      user.set("workExperience", []);
      user.set("email_token",email_code)
-     
-     console.log(req.body.username);
+
      user.signUp(null, {
         success: function (user) {
             var mailOptions = {
                 from: 'Syncholar <support@syncholar.com>', // sender address
-                to: email, // list of receivers
+                to: req.body.email, // list of receivers
                 subject: 'Verify Email - Syncholar', // Subject line
                 text: '', // plaintext body
                 html: '<h2><p>Welcome to Syncholar '+req.body.fullname+',</p> </h2>'+ '<p>Please click on the link below to verify your email address:</p>'+
