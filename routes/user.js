@@ -582,7 +582,7 @@ module.exports=function(app,Parse,io) {
 /*    app.get('/testsocket',function(req,res,next){
         var currentUser= "YY4wFrLrbn";
         var userId = "1hX2oMe3Xf";
-        io.to(userId).emit('friendrequest',{data:currentUser});
+        io.to(userId).emit('friendrequest',{data:curretUser});
         res.sendStatus(200);
     });*/
     app.get('/profile/:objectId/connect', is_auth, function (req, res, next) {
