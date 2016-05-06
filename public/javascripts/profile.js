@@ -2139,9 +2139,4 @@ var Required = React.createClass({
 	},
 });
 
-ReactDOM.render(<Profile
-    locations={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
-    roles={["Treasurer At FFABNET"]}
-    connections={["BiofuelNet","FFABNet","IIE","INFORMS"]}
-    interests={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}
-    news={["INFORMS","IIASA","FRESH LAB"]}/>, document.getElementById('content'));
+ReactDOM.render(<Profile />, document.getElementById('content'));
