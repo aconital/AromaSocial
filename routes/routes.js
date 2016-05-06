@@ -89,7 +89,11 @@ module.exports=function(app,Parse,io) {
   app.get('/', function(req, res, next) {
       if(!req.isAuthenticated()) {
           res.render('home');
-      } else {
+      }else if(!req.user.emailVerified || req.user.emailVerified == undefined )
+      {
+          res.redirect('/verify-email');
+      }
+      else {
           res.render('newsfeed', { user: req.user});
       }
   });

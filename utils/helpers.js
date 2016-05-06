@@ -9,11 +9,12 @@ module.exports = {
     is_auth: function (req,res,next){
     if (!req.isAuthenticated()) {
         res.redirect('/');
-    }else if(!req.user.emailVerified)
+    }else if(!req.user.emailVerified || req.user.emailVerified == undefined )
     {
         res.redirect('/verify-email');
     }
     else {
+    console.log("***************"+req.user.emailVerified);
         res.locals.user = req.user;
         next();
     }
