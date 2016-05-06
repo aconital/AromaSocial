@@ -4,6 +4,8 @@ var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
+var Tooltip = ReactBootstrap.Tooltip;
+var Carousel = ReactBootstrap.Carousel;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 // require('autocomplete.js').UserAutocomplete();
 String.prototype.capitalize = function() {
