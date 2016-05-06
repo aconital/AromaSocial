@@ -15,6 +15,10 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 //var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://syncholar.com/auth/linkedin/callback');
 
+var isauth = require('../utils/helpers').isauth;
+var randomString= require('../utils/helpers').randomString;
+var hasBetaCode= require('../utils/helpers').hasBetaCode;
+
 var smtpConfig = {
     host: 'smtp.gmail.com',
     port: 465,
@@ -406,6 +410,10 @@ app.get('/auth/linkedin/callback',function(req,res){
         });
 
     });
+    app.get("/verify-email")
+    {
+        res.render("verify-email");
+    }
     app.get("/verify-email/:activation",function(req,res,next){
         var code= req.params.activation;
         var query = new Parse.Query(Parse.User);
@@ -430,31 +438,5 @@ app.get('/auth/linkedin/callback',function(req,res){
         });
 
     });
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else {
-            res.locals.user = req.user;
-            next();
-        }
-    };
-    function randomString(len, charSet) {
-        charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var randomString = '';
-        for (var i = 0; i < len; i++) {
-            var randomPoz = Math.floor(Math.random() * charSet.length);
-            randomString += charSet.substring(randomPoz,randomPoz+1);
-        }
-        return randomString;
-    };
-    function hasBetaCode(req,res,next)
-    {
-        if(req.session.code === "Fom2016")
-         next()
-        else
-        res.redirect("/beta");
-    }
+
 };

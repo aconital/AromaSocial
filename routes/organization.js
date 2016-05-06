@@ -12,6 +12,7 @@ var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+var isauth = require('../utils/helpers').isauth;
 
 module.exports=function(app,Parse,io) {
 
@@ -992,22 +993,5 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
 
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else { res.locals.user = req.user;
-            res.locals.user = req.user;
-            next();
-        }
-    };
-/*
-    function connectedOrg(req,res,next){
-
-        .json()
-        next();
-    };*/
 };

@@ -11,7 +11,9 @@ var _= require('underscore');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
+var isauth = require('../utils/helpers').isauth;
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+var isauth = require('../utils/helpers').isauth;
 
 module.exports=function(app,Parse,io) {
     app.get('/allusers', function(req, res, next) {
@@ -39,7 +41,7 @@ module.exports=function(app,Parse,io) {
      * PROFILE
      *
      ********************************************/
-    app.get('/profile/:username', is_auth, function (req, res, next) {
+    app.get('/profile/:username', helper.is_auth, function (req, res, next) {
         var currentUser = req.user;
         var linkUser = req.params.username;
         //if (!linkUser) return;
@@ -992,18 +994,6 @@ module.exports=function(app,Parse,io) {
         res.json(JSON.stringify(data_list));
     });
 
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
-
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else { res.locals.user = req.user;
-            res.locals.user = req.user;
-            next();
-        }
-    };
 
 
 }
