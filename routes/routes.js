@@ -15,6 +15,10 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 //var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://syncholar.com/auth/linkedin/callback');
 
+var is_auth = require('../utils/helpers').is_auth;
+var randomString= require('../utils/helpers').randomString;
+var hasBetaCode= require('../utils/helpers').hasBetaCode;
+
 var smtpConfig = {
     host: 'smtp.gmail.com',
     port: 465,
@@ -85,7 +89,11 @@ module.exports=function(app,Parse,io) {
   app.get('/', function(req, res, next) {
       if(!req.isAuthenticated()) {
           res.render('home');
-      } else {
+      }else if(!req.user.emailVerified || req.user.emailVerified == undefined )
+      {
+          res.redirect('/verify-email');
+      }
+      else {
           res.render('newsfeed', { user: req.user});
       }
   });
@@ -106,6 +114,7 @@ module.exports=function(app,Parse,io) {
 
     app.post('/signup', function (req, res, next) {
 
+     var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
      var user = new Parse.User();
      user.set("username", req.body.username);
      user.set("password", req.body.password);
@@ -119,11 +128,19 @@ module.exports=function(app,Parse,io) {
      user.set("about", "");
      user.set("projects", []);
      user.set("workExperience", []);
-     
-     console.log(req.body.username);
+     user.set("email_token",email_code)
+
      user.signUp(null, {
         success: function (user) {
-           console.log("sucessful signup");
+            var mailOptions = {
+                from: 'Syncholar  <support@syncholar.com>', // sender address
+                to: req.body.email, // list of receivers
+                subject: 'Verify Email - Syncholar', // Subject line
+                text: '', // plaintext body
+                html: '<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
+                '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>'
+            };
+            sendEmail(mailOptions);
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
                if(err) {
@@ -287,8 +304,9 @@ app.get('/auth/linkedin/callback',function(req,res){
                                               to: result.attributes.email, // list of receivers
                                               subject: 'Connecting Linkedin to your account', // Subject line
                                               text: '', // plaintext body
-                                              html: '<h2><p>Hi '+result.attributes.fullname+',</p> Please click on the following link to connect your linkedin to your account:</h2>' +
-                                                    '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
+                                              html: '<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
+                                                    '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
+                                         +' ,</p><p> <br>--------------------<br> Syncholar Team</p>' // html body
                                           };
                                          sendEmail(mailOptions);
                                          res.redirect('/auth/linkedin/verify');
@@ -313,6 +331,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("imgUrl", pictureUrl);
                                   user.set("about",about);
                                   user.set("interestsTag", []);
+                                  user.set("emailVerified",true);
                                   user.set("interests", []);
                                   user.set("summary", "");
                                   user.set("educations", []);
@@ -328,8 +347,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                                       to: email, // list of receivers
                                                       subject: 'Welcome To Syncholar', // Subject line
                                                       text: '', // plaintext body
-                                                      html: '<h2><p>Welcome to Syncholar '+name+',</p> </h2>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
-                                                          '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p>Syncholar Team</p>'
+                                                      html: '<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
+                                                          '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>'
                                                   };
                                                   sendEmail(mailOptions);
                                                   req.login(u.attributes.username,function (err) {
@@ -395,31 +414,33 @@ app.get('/auth/linkedin/callback',function(req,res){
         });
 
     });
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else {
-            res.locals.user = req.user;
-            next();
-        }
-    };
-    function randomString(len, charSet) {
-        charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var randomString = '';
-        for (var i = 0; i < len; i++) {
-            var randomPoz = Math.floor(Math.random() * charSet.length);
-            randomString += charSet.substring(randomPoz,randomPoz+1);
-        }
-        return randomString;
-    };
-    function hasBetaCode(req,res,next)
-    {
-        if(req.session.code === "Fom2016")
-         next()
-        else
-        res.redirect("/beta");
-    }
+    app.get("/verify-email", function (req,res,next) {
+
+        res.render("verify-email");
+    });
+    app.get("/verify-email/:activation",function(req,res,next){
+        var code= req.params.activation;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("email_token", code);
+        query.first({
+            success: function (user) {
+                if(user)
+                {
+                    user.set("emailVerified",true);
+                    user.save(null,{ useMasterKey: true }).then(function() {
+                        res.redirect("/");
+                    },function(error)
+                    {
+                        res.render('signin', {Error: error.message, path: req.path});
+                    });
+
+                }
+            },
+            error: function (error) {
+                res.render('signin', {Error: error.message, path: req.path});
+            }
+        });
+
+    });
+
 };
