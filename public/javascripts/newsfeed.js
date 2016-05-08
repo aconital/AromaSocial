@@ -55,7 +55,7 @@ var NewsFeed = React.createClass({
                     </div>
                     <div className="col-xs-4">
                       <div className = "panel search-panel your-groups">
-                        <h4 className="white">ORGANIZATIONS</h4>
+                        <h4 className="white">Your Labs & Networks</h4>
                           {this.state.organizations.map(function(item) {
                               return (<div className="list-group">
                                   <a href={"organization/" + item.orgName} className="list-group-item groups-list">&#x25cf; {item.orgName.split(".")[0]}</a>
