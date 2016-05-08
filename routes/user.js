@@ -546,7 +546,9 @@ module.exports=function(app,Parse,io) {
                                     if (workExperienceTemp[i].key == req.body.key) {
                                         var changedWE = {
                                             key: req.body.key,
+                                            field: req.body.field,
                                             title: req.body.title,
+                                            major: req.body.major,
                                             company: req.body.company,
                                             description: req.body.description,
                                             start: req.body.start,
@@ -564,6 +566,8 @@ module.exports=function(app,Parse,io) {
                                         var changedWE = {
                                             key: req.body.key,
                                             title: req.body.title,
+                                            field: req.body.field,
+                                            major: req.body.major,
                                             company: req.body.company,
                                             description: req.body.description,
                                             start: req.body.start,

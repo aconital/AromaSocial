@@ -6042,7 +6042,7 @@ color: var(--white-color);
 .summary-margin-top{margin-top:5px;}
 
 .fifty-fifty{width:50%;}
-.h4-resume-item{margin:0px;font-weight:normal;}
+.h4-resume-item{margin:0px;font-weight:normal; }
 .extend-bottom{display:block;height:60px;width:100%;}
 
 .legend-top{font-size:15px;}
@@ -6582,4 +6582,13 @@ hr.style15 {
   font-size: 17px;
 }
 
+.workeducationDate {
+  float:right;
+}
+.profile_date_editable{
+  color: #a8a8a8;
+}
 
+.profile_workedu_margin{
+  padding-top: 10px ;
+}
