@@ -228,7 +228,7 @@ var Profile = React.createClass ({
              connectButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-connected") {
-             connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
+                 connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
         }
         else { console.log("Nothing"); }
         return (

@@ -29,6 +29,9 @@ var NewsFeed = React.createClass({
           }.bind(this)
       });
   },
+  createOrg: function() {
+    window.location = '/create/organization';
+  },
 
   render: function() {
       return (
@@ -54,7 +57,11 @@ var NewsFeed = React.createClass({
                       })}
                     </div>
                     <div className="col-xs-4">
-                      <div className = "panel search-panel your-groups">
+
+                      <div className = "panel search-panel your-groups createorg_btn">
+                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network">Create Research Lab or Network</button>;
+                          </div>
+                        <div className = "panel search-panel your-groups">
                         <h4 className="white">Your Labs & Networks</h4>
                           {this.state.organizations.map(function(item) {
                               return (<div className="list-group">
@@ -62,6 +69,7 @@ var NewsFeed = React.createClass({
                               </div>);
                           })}
                     </div>
+
                   </div>
               </div>
         </div>

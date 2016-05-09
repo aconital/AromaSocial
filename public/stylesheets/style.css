@@ -6605,3 +6605,7 @@ hr.style15 {
   cursor: default;
   background-color: var(--foreground-color) !important;
 }
+
+.createorg_btn{
+  font-size: large;
+}
