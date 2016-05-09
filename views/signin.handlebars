@@ -14,12 +14,12 @@
                   <strong>Error:</strong> {{Error}}
                 </div>
             </div>
-            <form name="form" method="post" action="/signin" novalidate="novalidate">
+            <form name="form" method="post" action="/signin">
                 <div class="form-group">
                     <label for="username" class="control-label">E-mail</label>
-                    <input type="text" name="username" id="username" placeholder="Email" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
+                    <input type="email" name="username" id="username" placeholder="Email" unique-username="unique-username" required aria-required="true" ng-model="username" autofocus="autofocus" class="form-control"/>
                     <label for="password" class="control-label">Password</label>
-                    <input type="password" name="password" id="password" ng-model="password" required="required" match="verification" class="form-control"/>
+                    <input type="password" name="password" id="password" ng-model="password" required aria-required="true" match="verification" class="form-control"/>
                     <br>
                     <input type="submit" value="Sign in" name="submit" id="submit" class="btn btn-primary"/>
                 </div>

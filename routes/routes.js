@@ -105,6 +105,10 @@ module.exports=function(app,Parse,io) {
    });
 
   app.post('/signup', function (req, res, next) {
+    // if (req.body.firstname == undefined || req.body.lastname == undefined || req.body.email == undefined || req.body.password == undefined || req.body.verification == undefined) {
+    //   return false;
+    // }
+
     var fullname = req.body.firstname + " " + req.body.lastname;
     var username = req.body.firstname + "_" + req.body.lastname;
 
