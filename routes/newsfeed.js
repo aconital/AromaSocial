@@ -455,9 +455,9 @@ module.exports=function(app,Parse,io) {
                             var author ="";
                             var description ="";
                             var objectId = object.attributes.datId;
-                            var image_URL = datItem.image_URL;
-                            if (datItem.filename != null) {
-                                filename = datItem.filename;
+                            var image_URL = datItem.picture.url();
+                            if (datItem.file != undefined) {
+                                filename = datItem.file.url();
                             }
                             if (datItem.title != null) {
                                 title = datItem.title;
