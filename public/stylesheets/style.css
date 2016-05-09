@@ -6319,7 +6319,6 @@ div.react-tagsinput {
  }
 #pending-action
  { margin-right: 10px;
-   cursor: not-allowed;
    text-decoration: none;
 
  }
@@ -6338,7 +6337,6 @@ div.react-tagsinput {
 .pending:hover {
   background-color: var(--foreground-hover-color);
   border-color: var(--foreground-hover-color);
-  cursor: not-allowed !important;
 }
 
 textarea {
