@@ -41,15 +41,16 @@ module.exports=function(app,Parse,io) {
      * ORGANIZATION
      *
      ********************************************/
-    app.get('/organization/:objectId', is_auth, function (req, res, next) {
+    app.get('/organization/:name', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Organization');
-        query.get(req.params.objectId,{
+        query.equalTo("name", req.params.name);
+        query.first({
             success: function(result) {
                 res.render('organization', {title: 'Organization', path: req.path,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
-                    objectId: req.params.objectId,
+                    objectId: result.id,
                     name: result.get('name'),
                     about: result.get('about'),
                     location: result.get('location'),
@@ -667,81 +668,113 @@ module.exports=function(app,Parse,io) {
 
     app.post('/create/organization', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var objectId;
-        if (currentUser) {
-            var Organization = Parse.Object.extend("Organization");
-            var org = new Organization();
-            org.set('cover_imgURL', '/images/banner.png'); // default. replace later
-            org.set('profile_imgURL', '/images/organization.png');
-            org.set('name', req.body.name);
-           // org.set('location', req.body.location ? req.body.location : '');
-            org.set('about', req.body.description ? req.body.description : 'About Organization');
-            org.set('country', req.body.country ? req.body.country : '');
-            org.set('prov', req.body.prov ? req.body.prov : '');
-            org.set('city', req.body.city ? req.body.city : '');
-            org.set('street', req.body.street ? req.body.street : '');
-            org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
-            org.set('website', req.body.website ? req.body.website : '');
+        var orgName = req.body.name.toLowerCase() + ".1";
 
-            var location= '';
-            if (req.body.city ) {
-                location = req.body.city;
-            } if (req.body.prov) {
-                if(location!='')
-                    location = location +', ' +req.body.prov;
-                else
-                    location = req.body.prov;
-            } if (req.body.country) {
-                if(location!='')
-                    location = location +', ' +req.body.country;
-                else
-                    location = req.body.country;
+        // check if name already exists in db
+        var Organization = Parse.Object.extend("Organization");
+        var maxIndexSoFar = 0;
+        var query = new Parse.Query(Organization);
+        query.startsWith("name", req.body.name.toLowerCase());
+        query.each(function(result) {
+            console.log("DEBUG: Result => ", result);
+            var str = result.get("name");
+            console.log("NAME is ==>> ", str);
+            var strArr = str.split(".");
+            var index = parseInt(strArr[1]);
+            console.log("INDEX: ", index);
+            if (maxIndexSoFar < index) {
+                maxIndexSoFar = index;
             }
-            org.set('location', location);
+        }).then(function() {
+            console.log("Max index in db: ", maxIndexSoFar);
+            if (maxIndexSoFar == 0) {
+                // no match in db, all good
+                //orgName = req.body.name + "." + 1;
+            } else {
+                // update orgName to use next index
+                var newIndex = maxIndexSoFar + 1;
+                orgName = req.body.name.toLowerCase() + "." + newIndex;
+            }
+        }, function(error) {
+            console.log("ERROR THROWN: ");
+            console.log(error);
+        }).then(function() {
+            var objectId;
+            if (currentUser) {
+                //var Organization = Parse.Object.extend("Organization");
+                var org = new Organization();
+                org.set('cover_imgURL', '/images/banner.png'); // default. replace later
+                org.set('profile_imgURL', '/images/organization.png');
+                org.set('name', orgName);
+               // org.set('location', req.body.location ? req.body.location : '');
+                org.set('about', req.body.description ? req.body.description : 'About Organization');
+                org.set('country', req.body.country ? req.body.country : '');
+                org.set('prov', req.body.prov ? req.body.prov : '');
+                org.set('city', req.body.city ? req.body.city : '');
+                org.set('street', req.body.street ? req.body.street : '');
+                org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
+                org.set('website', req.body.website ? req.body.website : '');
 
-            org.save(null).then(function(response) {
-                objectId = response.id;
-                // create new Relationship object between organization and admin
-                console.log('Object ID retrieved/path name updated successfully');
-                var Relationship = Parse.Object.extend("Relationship");
-                var relation = new Relationship();
-                relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id});
-                relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
-                relation.set('isAdmin', true);
-                relation.set('verified', true);
-                relation.set('title', 'Members');
-                relation.save(null);
-            }).then(function(response) {
-                // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
-                // if provided. FOR LATER: also support cover image.
-                if (req.body.picture) {
-                    // encode file
-                    var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
-                    // upload files to S3
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    bucket.putObject(params, function (err, response) {
-                        if (err) {
-                            console.log("S3 Upload Error:", err); }
-                        else {
-                            // update file path in parse object
-                            org.set('profile_imgURL', awsLink + params.Key);
-                            org.save(null).then(function(){
-                                res.status(200).json({status:"OK", location: objectId});
-                            })
-                        };
-                    });
+                var location= '';
+                if (req.body.city ) {
+                    location = req.body.city;
+                } if (req.body.prov) {
+                    if(location!='')
+                        location = location +', ' +req.body.prov;
+                    else
+                        location = req.body.prov;
+                } if (req.body.country) {
+                    if(location!='')
+                        location = location +', ' +req.body.country;
+                    else
+                        location = req.body.country;
                 }
-                else {
-                    res.status(200).json({status:"OK", location: objectId});
-                }
-            }, function(error) {
-                console.log('Failed to create new organization, with error code: ' + error.message);
-                res.status(500).json({status: "Creating organization failed. " + error.message});
-            });
+                org.set('location', location);
 
-        } else {
-            res.status(403).json({status:"Please login!"});
-        }
+                org.save(null).then(function(response) {
+                    objectId = response.id;
+                    // create new Relationship object between organization and admin
+                    console.log('Object ID retrieved/path name updated successfully');
+                    var Relationship = Parse.Object.extend("Relationship");
+                    var relation = new Relationship();
+                    relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id});
+                    relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
+                    relation.set('isAdmin', true);
+                    relation.set('verified', true);
+                    relation.set('title', 'Members');
+                    relation.save(null);
+                }).then(function(response) {
+                    // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
+                    // if provided. FOR LATER: also support cover image.
+                    if (req.body.picture) {
+                        // encode file
+                        var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
+                        // upload files to S3
+                        var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+                        bucket.putObject(params, function (err, response) {
+                            if (err) {
+                                console.log("S3 Upload Error:", err); }
+                            else {
+                                // update file path in parse object
+                                org.set('profile_imgURL', awsLink + params.Key);
+                                org.save(null).then(function(){
+                                    res.status(200).json({status:"OK", location: orgName});
+                                })
+                            };
+                        });
+                    }
+                    else {
+                        res.status(200).json({status:"OK", location: orgName});
+                    }
+                }, function(error) {
+                    console.log('Failed to create new organization, with error code: ' + error.message);
+                    res.status(500).json({status: "Creating organization failed. " + error.message});
+                });
+
+            } else {
+                res.status(403).json({status:"Please login!"});
+            }
+        })
     });
 
     app.get('/manage/organization', is_auth, function (req, res, next) {
