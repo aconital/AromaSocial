@@ -2943,6 +2943,8 @@ select[multiple].input-lg,
   touch-action: manipulation;
   cursor: pointer;
   background-image: none;
+  background-color: var(--foreground-color);
+  color: #ffffff;
   border: 1px solid transparent;
   white-space: nowrap;
   padding: 6px 12px;
@@ -2958,7 +2960,8 @@ select[multiple].input-lg,
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
   .btn:hover, .btn:focus, .btn.focus {
-    color: #333;
+    color: #ffffff;
+    background-color: var(--foreground-hover-color);
     text-decoration: none; }
   .btn:active, .btn.active {
     outline: 0;
@@ -6316,7 +6319,7 @@ div.react-tagsinput {
  }
 #pending-action
  { margin-right: 10px;
-   cursor: pointer;
+   cursor: not-allowed;
    text-decoration: none;
 
  }
@@ -6335,6 +6338,7 @@ div.react-tagsinput {
 .pending:hover {
   background-color: var(--foreground-hover-color);
   border-color: var(--foreground-hover-color);
+  cursor: not-allowed !important;
 }
 
 textarea {
@@ -6591,4 +6595,9 @@ hr.style15 {
 
 .profile_workedu_margin{
   padding-top: 10px ;
+}
+
+.pending_btn {
+  cursor: default;
+  background-color: var(--foreground-color) !important;
 }

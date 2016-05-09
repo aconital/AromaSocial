@@ -225,7 +225,7 @@ var Profile = React.createClass ({
              connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
         }
         else if (this.state.status == "pending") {
-             connectButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+             connectButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-connected") {
              connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
@@ -437,9 +437,9 @@ var Organizations = React.createClass({
             if(!this.state.isMe)
             {
                 if (matchingOrg == null)
-                    join = (<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);
+                    join = (<div><button onClick={this.clickJoin.bind(this,org)} className="btn btn-right-side " value="Join">Join</button></div>);  /*(<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);*/
                 else if (!matchingOrg.verified)
-                    join = (<div><a>Request Pending</a></div>);
+                    join = (<div><button className="btn btn-right-side pending_btn" value="Pending">Pending</button></div>);/*(<div><a>Request Pending</a></div>);*/
             }
             return (
                 <div className="item-box" key={org.orgId} id="item-list">

@@ -117,7 +117,7 @@ var Organization = React.createClass ({
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
         else if (this.state.status == "pending") {
-            joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+            joinButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-joined") {
             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
