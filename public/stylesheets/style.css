@@ -6606,6 +6606,25 @@ hr.style15 {
   background-color: var(--foreground-color) !important;
 }
 
+.createorg_panel{
+  margin-top: 25px;
+  border: none;
+}
 .createorg_btn{
+  -webkit-transition: background-color 3000ms linear;
+  -moz-transition: background-color 3000ms linear;
+  -o-transition: background-color 3000ms linear;
+  -ms-transition: background-color 3000ms linear;
+  transition: background-color 300ms linear;
   font-size: large;
+  border: none;
+  background-color:#00897b  ;
+}
+.createorg_btn:hover{
+  background-color:#004d40 ;
+  -webkit-transition: background-color 3000ms linear;
+  -moz-transition: background-color 3000ms linear;
+  -o-transition: background-color 3000ms linear;
+  -ms-transition: background-color 3000ms linear;
+  transition: background-color 300ms linear;
 }

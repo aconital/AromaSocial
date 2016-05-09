@@ -58,9 +58,9 @@ var NewsFeed = React.createClass({
                     </div>
                     <div className="col-xs-4">
 
-                      <div className = "panel search-panel your-groups createorg_btn">
-                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network">Create Research Lab or Network</button>;
-                          </div>
+                      <div className = "createorg_panel">
+                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><i className="fa fa-plus" aria-hidden="true"></i> Create Research Lab or Network</button>
+                      </div>
                         <div className = "panel search-panel your-groups">
                         <h4 className="white">Your Labs & Networks</h4>
                           {this.state.organizations.map(function(item) {
