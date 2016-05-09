@@ -56,6 +56,12 @@ audio:not([controls]) {
 template {
   display: none; }
 
+pre{
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+
+
 a {
   background-color: transparent; }
 
