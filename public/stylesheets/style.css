@@ -57,7 +57,10 @@ template {
   display: none; }
 
 a {
-  background-color: transparent; }
+  background-color: transparent; 
+  cursor: pointer;
+  cursor: hand;
+}
 
 a:active,
 a:hover {

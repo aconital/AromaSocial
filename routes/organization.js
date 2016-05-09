@@ -688,8 +688,7 @@ module.exports=function(app,Parse,io) {
         }).then(function() {
             console.log("Max index in db: ", maxIndexSoFar);
             if (maxIndexSoFar == 0) {
-                // no match in db, all good
-                //orgName = req.body.name + "." + 1;
+                // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first organization)
             } else {
                 // update orgName to use next index
                 var newIndex = maxIndexSoFar + 1;

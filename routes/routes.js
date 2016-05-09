@@ -104,50 +104,84 @@ module.exports=function(app,Parse,io) {
       }
    });
 
-    app.post('/signup', function (req, res, next) {
+  app.post('/signup', function (req, res, next) {
+    var fullname = req.body.firstname + " " + req.body.lastname;
+    var username = req.body.firstname + "_" + req.body.lastname + ".1";
 
-     var user = new Parse.User();
-     user.set("username", req.body.username);
-     user.set("password", req.body.password);
-     user.set("fullname", req.body.fullname);
-     user.set("email", req.body.email);
-     user.set("imgUrl", "/images/user.png");
-     user.set("interestsTag", []);
-     user.set("interests", []);
-     user.set("summary", "");
-     user.set("educations", []);
-     user.set("about", "");
-     user.set("projects", []);
-     user.set("workExperience", []);
-     
-     console.log(req.body.username);
-     user.signUp(null, {
-        success: function (user) {
-           console.log("sucessful signup");
-           passport.authenticate('local', { successRedirect: '/',
-               failureRedirect: '/signin'}, function(err, user, info) {
-               if(err) {
-                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
-               }
-
-               if(!user) {
-                   return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
-               }
-               return req.logIn(user, function(err) {
+    // check if username already exists in db
+    // var Organization = Parse.Object.extend("Organization");
+    var maxIndexSoFar = 0;
+    var query = new Parse.Query(Parse.User);
+    query.startsWith("username", req.body.firstname + "_" + req.body.lastname);
+    query.each(function(result) {
+        console.log("DEBUG: Result => ", result);
+        var str = result.get("username");
+        console.log("NAME is ==>> ", str);
+        var strArr = str.split(".");
+        var index = parseInt(strArr[1]);
+        console.log("INDEX: ", index);
+        if (maxIndexSoFar < index) {
+            maxIndexSoFar = index;
+        }
+    }).then(function() {
+          console.log("Max index in db: ", maxIndexSoFar);
+          if (maxIndexSoFar == 0) {
+              // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first user)
+          } else {
+              // update orgName to use next index
+              var newIndex = maxIndexSoFar + 1;
+              username = req.body.firstname + "_" + req.body.lastname + "." + newIndex;
+          }
+      }, function(error) {
+          console.log("ERROR THROWN: ");
+          console.log(error);
+    }).then(function() {
+         var user = new Parse.User();
+         user.set("username", username);
+         user.set("password", req.body.password);
+         user.set("firstname", req.body.firstname);
+         user.set("lastname", req.body.lastname);
+         user.set("fullname", fullname);
+         user.set("email", req.body.email);
+         user.set("imgUrl", "/images/user.png");
+         user.set("interestsTag", []);
+         user.set("interests", []);
+         user.set("summary", "");
+         user.set("educations", []);
+         user.set("about", "");
+         user.set("projects", []);
+         user.set("workExperience", []);
+         
+         console.log(username);
+         user.signUp(null, {
+            success: function (user) {
+               console.log("sucessful signup");
+               passport.authenticate('local', { successRedirect: '/',
+                   failureRedirect: '/signin'}, function(err, user, info) {
                    if(err) {
                        return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
-                   } else {
-                       return res.redirect('/');
                    }
-               });
-           })(req, res, next);
-       },
-       error: function (user, error) {
-         // Show the error message somewhere and let the user try again.
-         res.render('signup', {Error: error.message, path: req.path});
-       }
-     });
 
+                   if(!user) {
+                       return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
+                   }
+                   return req.logIn(user, function(err) {
+                       if(err) {
+                           return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
+                       } else {
+                           return res.redirect('/');
+                       }
+                   });
+               })(req, res, next);
+           },
+           error: function (user, error) {
+             // Show the error message somewhere and let the user try again.
+             console.log(error);
+             res.render('signup', {Error: error.message, path: req.path});
+           }
+         });
+
+    });
    });
 
   /*******************************************
