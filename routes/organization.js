@@ -12,6 +12,7 @@ var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+var is_auth = require('../utils/helpers').is_auth;
 
 module.exports=function(app,Parse,io) {
 
@@ -97,7 +98,7 @@ module.exports=function(app,Parse,io) {
                 };
                 people.push(person);
             }
-        }).then(function(){            
+        }).then(function(){
             console.log("PEOPLE: ");
             console.log(JSON.stringify(people));
             var filtered_people=  _.groupBy(people,'title');
@@ -261,7 +262,7 @@ module.exports=function(app,Parse,io) {
             }
         });
     });
-    
+
     app.post('/organization/:objectId/pending_organization_action/', function (req, res, next) {
         var organizationId = req.body.organizationId;
         var orgId = req.params.objectId;
@@ -578,7 +579,7 @@ module.exports=function(app,Parse,io) {
             res.status(500).json({status: "Publication retrieval failed. " + error.message});
         });
     });
-    
+
     app.get('/organization/:objectId/datas', function (req, res, next) {
         var datas =[];
         var query = new Parse.Query('Relationship');
@@ -601,7 +602,7 @@ module.exports=function(app,Parse,io) {
             console.log(error);
         });
     });
-    
+
     app.get('/organization/:objectId/models', function (req, res, next) {
         var models =[];
         var query = new Parse.Query('Relationship');
@@ -674,7 +675,7 @@ module.exports=function(app,Parse,io) {
             org.set('cover_imgURL', '/images/banner.png'); // default. replace later
             org.set('profile_imgURL', '/images/organization.png');
             org.set('name', req.body.name);
-           // org.set('location', req.body.location ? req.body.location : '');
+            // org.set('location', req.body.location ? req.body.location : '');
             org.set('about', req.body.description ? req.body.description : 'About Organization');
             org.set('country', req.body.country ? req.body.country : '');
             org.set('prov', req.body.prov ? req.body.prov : '');
@@ -749,10 +750,10 @@ module.exports=function(app,Parse,io) {
         if (currentUser) {
             res.render('organization',
                 {
-                currentUsername: currentUser.username,
-                currentUserImg: currentUser.imgUrl,
-                isCreate: false,
-                isManage: true}
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    isCreate: false,
+                    isManage: true}
             );
         }
         else {
@@ -884,91 +885,91 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-     app.get('/organization/:objectId/equipments_list', is_auth, function (req, res, next) {
-         var innerQuery = new Parse.Query("Organization");
-         innerQuery.equalTo("objectId",req.params.objectId);
-         var queryEquipment = new Parse.Query('Equipment');
-         queryEquipment.matchesQuery('organization',innerQuery);
-         queryEquipment.find({
-             success: function(results) {
-                 var equipments = [];
-                 for (var i in results) {
-                     var keywords = [""];
-                     var objectId = results[i].id;
-                     var title = results[i].attributes.title;
-                     var description = results[i].attributes.description;
-                     var image_URL = results[i].attributes.image_URL;
-                     if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
-                     var equipment = {
-                         objectId: objectId,
-                         title: title,
-                         description: description,
-                         image_URL: image_URL,
-                         keywords: keywords
-                     }; equipments.push(equipment);
-                 }
-                 res.json(equipments);
-             },
-             error: function(error) {
-                 console.log(error);
-                 res.render('index', {title: error, path: req.path});
-             }
-         });
-     });
+    app.get('/organization/:objectId/equipments_list', is_auth, function (req, res, next) {
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",req.params.objectId);
+        var queryEquipment = new Parse.Query('Equipment');
+        queryEquipment.matchesQuery('organization',innerQuery);
+        queryEquipment.find({
+            success: function(results) {
+                var equipments = [];
+                for (var i in results) {
+                    var keywords = [""];
+                    var objectId = results[i].id;
+                    var title = results[i].attributes.title;
+                    var description = results[i].attributes.description;
+                    var image_URL = results[i].attributes.image_URL;
+                    if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
+                    var equipment = {
+                        objectId: objectId,
+                        title: title,
+                        description: description,
+                        image_URL: image_URL,
+                        keywords: keywords
+                    }; equipments.push(equipment);
+                }
+                res.json(equipments);
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
 
-     app.get('/organization/:objectId/projects_list', is_auth, function (req, res, next) {
-         var projects = [];
-         var query = new Parse.Query('Relationship');
-         query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
-         query.each(function(relationships) {
-             var queryProjects = new Parse.Query('Project');
-             queryProjects.equalTo("user", relationships.get("userId"));
-             queryProjects.each(function (results) {
-                 var collaborators = ["N/A"];
-                 var locations = ["N/A"];
-                 var keywords = ["N/A"];
-                 var objectId = results.id;
-                 var title = results.attributes.title;
-                 var description = results.attributes.description;
-                 var image_URL = results.attributes.image_URL;
-                 var start_date = "N/A";
-                 var end_date = "N/A";
-                 if (results.attributes.collaborators !== undefined) {
-                     collaborators = results.attributes.collaborators;
-                 }
-                 if (results.attributes.locations !== undefined) {
-                     locations = results.attributes.locations;
-                 }
-                 if (results.attributes.keywords !== undefined) {
-                     keywords = results.attributes.keywords;
-                 }
-                 if (results.attributes.start_date !== undefined) {
-                     start_date = results.attributes.start_date;
-                 }
-                 if (results.attributes.end_date !== undefined) {
-                     end_date = results.attributes.end_date;
-                 }
-                 var project = {
-                     objectId: objectId,
-                     title: title,
-                     description: description,
-                     image_URL: image_URL,
-                     collaborators: collaborators,
-                     locations: locations,
-                     keywords: keywords,
-                     start_date: start_date,
-                     end_date: end_date
-                 }
-                 projects.push(project);
-             }).then(function () {
-                 console.log(projects);
-                 res.json(projects);
-             }, function (error) {
-                 console.log(error);
-                 res.render('index', {title: error, path: req.path});
-             });
-         });
-     });
+    app.get('/organization/:objectId/projects_list', is_auth, function (req, res, next) {
+        var projects = [];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
+        query.each(function(relationships) {
+            var queryProjects = new Parse.Query('Project');
+            queryProjects.equalTo("user", relationships.get("userId"));
+            queryProjects.each(function (results) {
+                var collaborators = ["N/A"];
+                var locations = ["N/A"];
+                var keywords = ["N/A"];
+                var objectId = results.id;
+                var title = results.attributes.title;
+                var description = results.attributes.description;
+                var image_URL = results.attributes.image_URL;
+                var start_date = "N/A";
+                var end_date = "N/A";
+                if (results.attributes.collaborators !== undefined) {
+                    collaborators = results.attributes.collaborators;
+                }
+                if (results.attributes.locations !== undefined) {
+                    locations = results.attributes.locations;
+                }
+                if (results.attributes.keywords !== undefined) {
+                    keywords = results.attributes.keywords;
+                }
+                if (results.attributes.start_date !== undefined) {
+                    start_date = results.attributes.start_date;
+                }
+                if (results.attributes.end_date !== undefined) {
+                    end_date = results.attributes.end_date;
+                }
+                var project = {
+                    objectId: objectId,
+                    title: title,
+                    description: description,
+                    image_URL: image_URL,
+                    collaborators: collaborators,
+                    locations: locations,
+                    keywords: keywords,
+                    start_date: start_date,
+                    end_date: end_date
+                }
+                projects.push(project);
+            }).then(function () {
+                console.log(projects);
+                res.json(projects);
+            }, function (error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            });
+        });
+    });
 
     app.get('/organization/:objectId/isAdmin', is_auth, function (req, res, next) {
         var currentUser = req.user;
@@ -992,22 +993,5 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
-
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else { res.locals.user = req.user;
-            res.locals.user = req.user;
-            next();
-        }
-    };
-/*
-    function connectedOrg(req,res,next){
-
-        .json()
-        next();
-    };*/
+  
 };

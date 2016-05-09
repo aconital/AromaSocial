@@ -29,6 +29,9 @@ var NewsFeed = React.createClass({
           }.bind(this)
       });
   },
+  createOrg: function() {
+    window.location = '/create/organization';
+  },
 
   render: function() {
       return (
@@ -54,14 +57,19 @@ var NewsFeed = React.createClass({
                       })}
                     </div>
                     <div className="col-xs-4">
-                      <div className = "panel search-panel your-groups">
-                        <h4 className="white">ORGANIZATIONS</h4>
+
+                      <div className = "createorg_panel">
+                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><i className="fa fa-plus" aria-hidden="true"></i> Create Research Lab or Network</button>
+                      </div>
+                        <div className = "panel search-panel your-groups">
+                        <h4 className="white">Your Labs & Networks</h4>
                           {this.state.organizations.map(function(item) {
                               return (<div className="list-group">
-                                  <a href={"organization/" + item.orgId} className="list-group-item groups-list">&#x25cf; {item.orgName}</a>
+                                  <a href={"organization/" + item.orgId} className="list-group-item groups-list">&#x25cf; {item.orgName.split(".")[0]}</a>
                               </div>);
                           })}
                     </div>
+
                   </div>
               </div>
         </div>
@@ -344,6 +352,6 @@ function showPublicationNewsFeed(pubid, datatype, title, year, postid, filename,
   var works = document.getElementById("content");
   React.unmountComponentAtNode(works);
   var search = false;
-  React.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+  ReactDOM.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
     description={description} author={author} year={year} pubid={pubid} search={search} user={user} profilepic={profilepic}/>, document.getElementById("content"));
 }

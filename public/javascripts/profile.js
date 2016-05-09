@@ -4,6 +4,8 @@ var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
+var Tooltip = ReactBootstrap.Tooltip;
+var Carousel = ReactBootstrap.Carousel;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 // require('autocomplete.js').UserAutocomplete();
 String.prototype.capitalize = function() {
@@ -223,10 +225,10 @@ var Profile = React.createClass ({
              connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
         }
         else if (this.state.status == "pending") {
-             connectButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+             connectButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-connected") {
-             connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
+                 connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
         }
         else { console.log("Nothing"); }
         return (
@@ -435,9 +437,9 @@ var Organizations = React.createClass({
             if(!this.state.isMe)
             {
                 if (matchingOrg == null)
-                    join = (<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);
+                    join = (<div><button onClick={this.clickJoin.bind(this,org)} className="btn btn-right-side " value="Join">Join</button></div>);  /*(<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);*/
                 else if (!matchingOrg.verified)
-                    join = (<div><a>Request Pending</a></div>);
+                    join = (<div><button className="btn btn-right-side pending_btn" value="Pending">Pending</button></div>);/*(<div><a>Request Pending</a></div>);*/
             }
             return (
                 <div className="item-box" key={org.orgId} id="item-list">
@@ -608,20 +610,20 @@ var About = React.createClass({
     },
     addInterest: function() {
         if (JSON.parse(this.state.interests).length > 0) {
-            var result = this.state.interests.substring(0,this.state.interests.length-1) + ',"Add Another interests!"]';
+            var result = this.state.interests.substring(0,this.state.interests.length-1) + ',""]';
         }
         else {
-            var result = '["Add an Interest!"]';
+            var result = '[""]';
         }
         this.setState({interests:result, hideInterests: "show"}, function(){this.submitInterests()}.bind(this));
     },
     addWork: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
         if (this.state.workExperience == "") {
-            var arrayWE = [{company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"}];
+            var arrayWE = [{company:"",description:"",end:"",key: randomNumber,start:"",title:"",major:"",field:"work"}];
         }
         else {
-            var newWE = {company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"};
+            var newWE = {company:"",description:"",end:"",key: randomNumber,start:"",title:"", major:"",field:"work"};
             var arrayWE = JSON.parse(this.state.workExperience);
             arrayWE.push(newWE);
         }
@@ -630,8 +632,8 @@ var About = React.createClass({
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
-        else { var newWE = {company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
+        if (this.state.educations == "") { var arrayWE = [{company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"}]; }
+        else { var newWE = {company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
@@ -674,19 +676,19 @@ var About = React.createClass({
         if (this.state.workExperience != "") {
             var WEItems = JSON.parse(this.state.workExperience);
             WEItems.forEach(function(item) {
-                workExperience_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
+                workExperience_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                educations_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
+                educations_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.interests != "") {
             JSON.parse(this.state.interests).map(function(item, i) {
                 interests_data.push (<div className="about-item-hr">
-                        {(currentUsername == username) ? <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
+                        {(currentUsername == username) ? <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} placeholder="Add interest" contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
                         {(currentUsername == username) ? <div className="div-minus-interests"><h4 className="no-margin"><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                      </div>);
             }, this);
@@ -762,7 +764,9 @@ var AboutTabObject = React.createClass({
     getInitialState: function() {
         return {
             key: this.props.identifier,
+            field: this.props.field,
             title: this.props.title,
+            major: this.props.major,
             company: this.props.company,
             description: this.props.description,
             start: this.props.start,
@@ -784,7 +788,7 @@ var AboutTabObject = React.createClass({
         this.props.updateChanges();
     },
     submitObjectChange: function(index) {
-        var dataForm = {key: this.state.key, action: this.state.action, title: this.state.title,
+        var dataForm = {key: this.state.key, field:this.state.field, action: this.state.action, title: this.state.title, major: this.state.major,
                         company: this.state.company, description: this.state.description,
                         start: this.state.start, end: this.state.end, type: this.state.type};
         $.ajax({
@@ -808,19 +812,73 @@ var AboutTabObject = React.createClass({
         var startDate = this.props.start.replace(/-/g,'/');
         var endDate = this.props.end.replace(/-/g,'/');
         if (this.state.display=="");
-            return(
+        if (this.state.field=="work") { //if work field, use work placeholders
+            return (
                 <div className={"about-item-hr relative " + this.state.display} >
-                    {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
-                        <h4 className="h4-resume-item">
-                        <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
-                        <span>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}</span>
+                    {(currentUsername == username) ? <div className="div-minus">
+                        <h4>
+                            <a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link">
+                                <span aria-hidden="true" className="glyphicon glyphicon-minus"></span>
+                            </a>
                         </h4>
-                        <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
-                            &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
-                        {(currentUsername == username) ? <div className="no-margin r-editable-50"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></div> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+                    </div> : "" }
+                    <h5 className="h4-resume-item display-inline-block">
+                        <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" placeholder="Company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
+                        {(currentUsername == username) ? <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+                            <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/>
+                        </span> : (startDate=="") ? <span  className="no-margin workeducationDate"> <b>{endDate}</b> </span>: (endDate=="")?"":<span  className="no-margin workeducationDate">&nbsp;-&nbsp;<b>{endDate}</b> </span>
+                            }
+                         {(currentUsername == username) ? <span className="r-editable profile_date_editable">to: &nbsp;&nbsp;
+                             <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/>
+                         </span> : <span className="no-margin workeducationDate">
+                             <b>{startDate} </b>
+                         </span>}
+                    </h5>
+
+                    <p className="no-margin">
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" placeholder="Position" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/></span>: <span>{this.state.title}</span>}
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="major" placeholder="Department / Group" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.major}/></span> : (this.state.title=="") ? <span>{this.state.major}</span>:(this.state.major=="")?"":<span>, &nbsp;{this.state.major}</span>}
+                    </p>
+                        {(currentUsername == username) ? <div className="r-editable-50">
+                            <textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea>
+                        </div> : <p className="no-margin">{this.state.description}</p>}
 
                 </div>
-        )
+            )
+        }else{ //if field is education, use education placeholders
+            return (
+                <div className={"about-item-hr relative " + this.state.display} >
+                    {(currentUsername == username) ? <div className="div-minus">
+                        <h4>
+                            <a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link">
+                                <span aria-hidden="true" className="glyphicon glyphicon-minus"></span>
+                            </a>
+                        </h4>
+                    </div> : "" }
+                    <h5 className="h4-resume-item display-inline-block ">
+                        <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" placeholder="Institution" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
+                        {(currentUsername == username) ? <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+                            <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/>
+                        </span> : (startDate=="") ? <span  className="no-margin workeducationDate"> <b>{endDate}</b> </span>: (endDate=="")?"":<span  className="no-margin workeducationDate">&nbsp;-&nbsp;<b>{endDate}</b> </span>
+                        }
+                         {(currentUsername == username) ? <span className="r-editable profile_date_editable">to: &nbsp;&nbsp;
+                             <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/>
+                         </span> : <span className="no-margin workeducationDate">
+                             <b>{startDate} </b>
+                         </span>}
+                    </h5>
+
+                    <p className="no-margin">
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" placeholder="Degree" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/></span>: <span>{this.state.title}</span>}
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="major" placeholder="Major" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.major}/></span> : (this.state.title=="") ? <span>{this.state.major}</span>:(this.state.major=="")?"":<span>, &nbsp;{this.state.major}</span>}
+                    </p>
+                        {(currentUsername == username) ? <div className="r-editable-50">
+                            <textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea>
+                        </div> : <p className="no-margin">{this.state.description}</p>}
+
+                </div>
+            )
+        }
     }
 });
 
@@ -2139,9 +2197,4 @@ var Required = React.createClass({
 	},
 });
 
-React.render(<Profile
-    locations={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
-    roles={["Treasurer At FFABNET"]}
-    connections={["BiofuelNet","FFABNet","IIE","INFORMS"]}
-    interests={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}
-    news={["INFORMS","IIASA","FRESH LAB"]}/>, document.getElementById('content'));
+ReactDOM.render(<Profile />, document.getElementById('content'));

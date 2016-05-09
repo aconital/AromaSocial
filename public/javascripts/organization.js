@@ -111,11 +111,13 @@ var Organization = React.createClass ({
 
     render: function() {
         var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
+        var orgNameArr = name.split(".");
+        var orgName = orgNameArr[0];
         if (this.state.status == "joined") {
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
         else if (this.state.status == "pending") {
-            joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+            joinButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-joined") {
             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
@@ -150,7 +152,7 @@ var Organization = React.createClass ({
                             <div id="item-bottom-2-organization" className="item-bottom-2">
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -176,7 +178,7 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
                     </div>
