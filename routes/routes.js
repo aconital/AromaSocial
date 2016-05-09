@@ -128,7 +128,7 @@ module.exports=function(app,Parse,io) {
           if (maxIndexSoFar == 0) {
               // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first user)
           } else {
-              // update orgName to use next index
+              // update username to use next index
               var newIndex = maxIndexSoFar + 1;
               username = req.body.firstname + "_" + req.body.lastname + "." + newIndex;
           }
@@ -151,6 +151,7 @@ module.exports=function(app,Parse,io) {
          user.set("about", "");
          user.set("projects", []);
          user.set("workExperience", []);
+         // user.set("emailVerified", false);
          
          console.log(username);
          user.signUp(null, {
