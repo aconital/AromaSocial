@@ -668,11 +668,11 @@ module.exports=function(app,Parse,io) {
 
     app.post('/create/organization', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var orgName = req.body.name.toLowerCase() + ".1";
+        var orgName = req.body.name.toLowerCase();
 
         // check if name already exists in db
         var Organization = Parse.Object.extend("Organization");
-        var maxIndexSoFar = 0;
+        var maxIndexSoFar = -1;
         var query = new Parse.Query(Organization);
         query.startsWith("name", req.body.name.toLowerCase());
         query.each(function(result) {
@@ -680,6 +680,12 @@ module.exports=function(app,Parse,io) {
             var str = result.get("name");
             console.log("NAME is ==>> ", str);
             var strArr = str.split(".");
+            if (strArr.length == 0 || strArr[1] == undefined) {
+                if (str == orgName) {
+                    orgName += ".0";
+                }
+                return;
+            }
             var index = parseInt(strArr[1]);
             console.log("INDEX: ", index);
             if (maxIndexSoFar < index) {
@@ -687,7 +693,7 @@ module.exports=function(app,Parse,io) {
             }
         }).then(function() {
             console.log("Max index in db: ", maxIndexSoFar);
-            if (maxIndexSoFar == 0) {
+            if (maxIndexSoFar == -1) {
                 // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first organization)
             } else {
                 // update orgName to use next index

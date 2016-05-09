@@ -106,18 +106,24 @@ module.exports=function(app,Parse,io) {
 
   app.post('/signup', function (req, res, next) {
     var fullname = req.body.firstname + " " + req.body.lastname;
-    var username = req.body.firstname + "_" + req.body.lastname + ".1";
+    var username = req.body.firstname + "_" + req.body.lastname;
 
     // check if username already exists in db
     // var Organization = Parse.Object.extend("Organization");
-    var maxIndexSoFar = 0;
+    var maxIndexSoFar = -1;
     var query = new Parse.Query(Parse.User);
-    query.startsWith("username", req.body.firstname + "_" + req.body.lastname);
+    query.startsWith("username", username);
     query.each(function(result) {
         console.log("DEBUG: Result => ", result);
         var str = result.get("username");
         console.log("NAME is ==>> ", str);
         var strArr = str.split(".");
+        if (strArr.length == 0 || strArr[1] == undefined) {
+            if (str == username) {
+                username += ".0";
+            }
+            return;
+        }
         var index = parseInt(strArr[1]);
         console.log("INDEX: ", index);
         if (maxIndexSoFar < index) {
@@ -125,7 +131,7 @@ module.exports=function(app,Parse,io) {
         }
     }).then(function() {
           console.log("Max index in db: ", maxIndexSoFar);
-          if (maxIndexSoFar == 0) {
+          if (maxIndexSoFar == -1) {
               // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first user)
           } else {
               // update username to use next index

@@ -119,6 +119,9 @@ passport.use(new LocalStrategy(function(email, password, done) {
     queryUsername.equalTo("email", email);
     queryUsername.first({
       success: function (user) {
+        if (user == undefined) {
+          return;
+        }
         username = user.get("username");
         console.log("Retrieved username: ", username);
       },
