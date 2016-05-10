@@ -646,7 +646,11 @@ module.exports=function(app,Parse,io) {
                         admins.push(admin);
                     }
                 }
-                res.json(admins);
+                if (req.query.getCount === 'true') {
+                    res.json(admins.length);
+                } else {
+                    res.json(admins);
+                }
             },
             error: function (error) {
                 console.log(error);
@@ -823,6 +827,7 @@ module.exports=function(app,Parse,io) {
             res.json({error: "Please Sign In!"})
         }
     });
+
     app.get('/organization/:objectId/leave', is_auth, function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = req.user;
