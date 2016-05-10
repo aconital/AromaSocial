@@ -56,6 +56,12 @@ audio:not([controls]) {
 template {
   display: none; }
 
+pre{
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+
+
 a {
   background-color: transparent; }
 
@@ -2943,6 +2949,8 @@ select[multiple].input-lg,
   touch-action: manipulation;
   cursor: pointer;
   background-image: none;
+  background-color: var(--foreground-color);
+  color: #ffffff;
   border: 1px solid transparent;
   white-space: nowrap;
   padding: 6px 12px;
@@ -2958,7 +2966,8 @@ select[multiple].input-lg,
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
   .btn:hover, .btn:focus, .btn.focus {
-    color: #333;
+    color: #ffffff;
+    background-color: var(--foreground-hover-color);
     text-decoration: none; }
   .btn:active, .btn.active {
     outline: 0;
@@ -6042,7 +6051,7 @@ color: var(--white-color);
 .summary-margin-top{margin-top:5px;}
 
 .fifty-fifty{width:50%;}
-.h4-resume-item{margin:0px;font-weight:normal;}
+.h4-resume-item{margin:0px;font-weight:normal; }
 .extend-bottom{display:block;height:60px;width:100%;}
 
 .legend-top{font-size:15px;}
@@ -6316,7 +6325,6 @@ div.react-tagsinput {
  }
 #pending-action
  { margin-right: 10px;
-   cursor: pointer;
    text-decoration: none;
 
  }
@@ -6582,4 +6590,51 @@ hr.style15 {
   font-size: 17px;
 }
 
+.workeducationDate {
+  float:right;
+}
+.profile_date_editable{
+  color: #a8a8a8;
+}
 
+.profile_workedu_margin{
+  padding-top: 10px ;
+}
+
+.pending_btn {
+  cursor: default;
+  background-color: var(--foreground-color) !important;
+}
+
+.createorg_panel{
+  margin-top: 25px;
+  border: none;
+}
+.createorg_btn{
+  -webkit-transition: background-color 3000ms linear;
+  -moz-transition: background-color 3000ms linear;
+  -o-transition: background-color 3000ms linear;
+  -ms-transition: background-color 3000ms linear;
+  transition: background-color 300ms linear;
+  font-size: large;
+  border: none;
+  background-color:#1e88e5   ;
+}
+.createorg_btn:hover{
+  background-color:#1565c0   ;
+  -webkit-transition: background-color 3000ms linear;
+  -moz-transition: background-color 3000ms linear;
+  -o-transition: background-color 3000ms linear;
+  -ms-transition: background-color 3000ms linear;
+  transition: background-color 300ms linear;
+}
+.btn.btn-default.pull-right.submit
+{ width: 100%;
+  border: none;
+  color: white;
+  background-color: #1e88e5;
+}
+.btn.btn-default.pull-right.submit:hover
+{
+  background-color: #1565c0;
+}

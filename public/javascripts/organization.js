@@ -9,7 +9,8 @@ var Organization = React.createClass ({
         return {    isAdmin: [],
             status: '',
             organization_imgURL: [organization_imgURL],
-            showModal: false};
+            showModal: false,
+            errorText: 'Could not complete operation.'};
     },
     componentWillMount: function() {
         var connectURL= "/organization/"+objectId+"/join-status";
@@ -62,17 +63,32 @@ var Organization = React.createClass ({
         });
     },
     clickLeave: function() {
+        var self = this;
         var connectURL= "/organization/"+objectId+"/leave";
+        var adminURL = "/organization/"+objectId+"/admins";
 
         $.ajax({
-            url: connectURL,
-            success: function(status) {
-                this.setState({status: "not-joined"});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't retrieve people.");
-            }.bind(this)
+            url: adminURL,
+            data: {getCount: true},
+        }).done(function(count) {
+            if (self.state.isAdmin && count < 2) {
+                self.setState({errorText: "Can't leave network with no admins! Either delete network or add an administrator."});
+                $("#error-dialog").show();
+                setTimeout(function() { $("#error-dialog").hide(); }, 5000);
+            } else {
+                $.ajax({
+                    url: connectURL,
+                }).done(function(status) {
+                    console.log(status);
+                    self.setState({status: "not-joined"});
+                }).fail(function(xhr, status, error) {
+                    console.log(status + ': ' + error);
+                });;
+            }
+        }).fail(function(xhr, status, err) {
+            console.log(status + ': ' + error);
         });
+
     },
     submitPicture: function() { //todo export utils
         var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
@@ -117,7 +133,7 @@ var Organization = React.createClass ({
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
         else if (this.state.status == "pending") {
-            joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+            joinButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-joined") {
             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
@@ -139,6 +155,11 @@ var Organization = React.createClass ({
                         </Modal.Footer>
                     </Modal>
                     <div className="content-wrap">
+                        <div id="error-dialog">
+                            <div className="alert alert-danger">
+                                <strong>Error:</strong> <span id="error-string">{this.state.errorText}</span>
+                            </div>
+                        </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <a href="#" onClick={this.clickOpen}>
@@ -150,9 +171,12 @@ var Organization = React.createClass ({
                                 </a>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2">
-                                <h1 className="no-margin-padding align-left h1-title">{orgName}</h1>
+                                <div className="interact-buttons-wrap">
+                                    {joinButton}
+                                </div>
+                                <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -163,6 +187,11 @@ var Organization = React.createClass ({
             return (
                 <div>
                     <div className="content-wrap">
+                        <div id="error-dialog">
+                            <div className="alert alert-danger">
+                                <strong>Error:</strong> <span id="error-string">{this.state.errorText}</span>
+                            </div>
+                        </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <img src={this.state.organization_imgURL} className="contain-image" />
@@ -176,9 +205,9 @@ var Organization = React.createClass ({
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{orgName}</h1>
+                                <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
                     </div>

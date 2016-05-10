@@ -94,7 +94,7 @@ module.exports=function(app,Parse,io) {
   app.get('/', function(req, res, next) {
       if(!req.isAuthenticated()) {
           res.render('home');
-      }else if(!req.user.emailVerified || req.user.emailVerified == undefined )
+      }else if(req.user.emailVerified != true )
       {
           res.redirect('/verify-email');
       }
@@ -102,8 +102,14 @@ module.exports=function(app,Parse,io) {
           res.render('newsfeed', { user: req.user});
       }
   });
+    /********
+     * PRIVACY & TERMS
+     */
+    app.get('/privacy', function(req, res, next) {
+        res.render("privacy");
+    });
 
-  /*******************************************
+    /*******************************************
    *
    * SIGN UP
    *
@@ -133,6 +139,7 @@ module.exports=function(app,Parse,io) {
      user.set("about", "");
      user.set("projects", []);
      user.set("workExperience", []);
+     user.set("emailVerified",false);
      user.set("email_token",email_code)
 
      user.signUp(null, {
