@@ -2197,4 +2197,6 @@ var Required = React.createClass({
 	},
 });
 
-ReactDOM.render(<Profile />, document.getElementById('content'));
+$( window ).load(function() {
+    ReactDOM.render(<Profile />, document.getElementById('content'));
+});
