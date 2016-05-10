@@ -6,7 +6,7 @@
  *************************************/
 module.exports = {
 
-    is_auth: function (req,res,next){
+is_auth: function (req,res,next){
     if (!req.isAuthenticated()) {
         res.redirect('/');
     }else if(!req.user.emailVerified || req.user.emailVerified == undefined )
@@ -30,10 +30,15 @@ randomString: function (len, charSet) {
 },
 hasBetaCode: function (req,res,next)
 {
-    if(req.session.code === "Fom2016")
-        next()
-    else
-        res.redirect("/beta");
+    if(req.session.code === "Fom2016") {
+        next();
+    } else {
+        console.log("==========================");
+        console.log("DEBUG: REQ URL => ", req.url);
+        console.log("==========================");
+        var str = encodeURIComponent(req.url);
+        res.redirect("/beta?redLink=" + str);
+    }
 }
 
 };

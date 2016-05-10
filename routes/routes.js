@@ -51,19 +51,24 @@ function sendEmail (option) {
 
 module.exports=function(app,Parse,io) {
 
+  app.get('/beta', function (req, res, next) {
+    var rl = req.query.redLink;
+    console.log("redLink in /beta get: ", rl);
+    res.render('beta', {title: 'Syncholar Beta', redLink: rl, path: req.path, Error: ""});
+  });
 
-    app.get('/beta', function (req, res, next) {
-            res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: ""});
-    });
-    app.post('/beta', function (req, res, next) {
-        var code = req.body.code;
-        if(code === "Fom2016") {
-            req.session.code=code;
-            res.redirect("/signin");
-        }
-        else
-         res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
-    });
+  app.post('/beta', function (req, res, next) {
+      var code = req.body.code;
+      var redLink = req.body.redLink;
+      console.log("RedLink in /beta POST => ", redLink);
+      if(code === "Fom2016") {
+          req.session.code=code;
+          // res.redirect("/signin");
+          res.redirect(redLink);
+      }
+      else
+       res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
+  });
 
   // EMAIL API
   app.post('/sendemail', function(req, res, next){
@@ -112,7 +117,7 @@ module.exports=function(app,Parse,io) {
       }
    });
 
-    app.post('/signup', function (req, res, next) {
+  app.post('/signup', function (req, res, next) {
 
      var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
      var user = new Parse.User();
@@ -173,11 +178,11 @@ module.exports=function(app,Parse,io) {
    *
    ********************************************/
   app.get('/signin',hasBetaCode, function (req, res, next) {
-	if (!req.isAuthenticated()) {
-    	res.render('signin', {title: 'Login', path: req.path});
-	} else {
-		res.redirect('/');
-	}
+  	if (!req.isAuthenticated()) {
+      	res.render('signin', {title: 'Login', path: req.path});
+  	} else {
+  		res.redirect('/');
+  	}
   });
 
   app.post('/signin', function (req, res, next) {
