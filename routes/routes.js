@@ -97,8 +97,14 @@ module.exports=function(app,Parse,io) {
           res.render('newsfeed', { user: req.user});
       }
   });
+    /********
+     * PRIVACY & TERMS
+     */
+    app.get('/privacy', function(req, res, next) {
+        res.render("privacy");
+    });
 
-  /*******************************************
+    /*******************************************
    *
    * SIGN UP
    *
