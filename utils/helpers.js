@@ -4,6 +4,9 @@
 /************************************
  * HELPER FUNCTIONS
  *************************************/
+var SparkPost = require('sparkpost');
+var sp = new SparkPost('5c4cf399a6bbc1f2bd87a881d08756458b0834cb');
+
 module.exports = {
 
 is_auth: function (req,res,next){
@@ -38,6 +41,28 @@ hasBetaCode: function (req,res,next)
         var str = encodeURIComponent(req.url);
         res.redirect("/beta?redLink=" + str);
     }
-}
+},
+    sendMail:function(subject,html,to)
+    {
+        sp.transmissions.send({
+            transmissionBody: {
+                content: {
+                    from: 'support@syncholar.com',
+                    subject: subject,
+                    html: html
+                },
+                recipients: [
+                    {address: to}
+                ]
+            }
+        }, function(err, res) {
+            if (err) {
+                console.log('Whoops! Something went wrong');
+                console.log(err);
+            } else {
+                console.log('Woohoo! You just sent your first mailing!');
+            }
+        });
+    }
 
 };
