@@ -61,7 +61,6 @@ module.exports=function(app,Parse,io) {
         equipment.set('description', req.body.description);
         equipment.set('title',req.body.title);
         equipment.set('keywords',JSON.parse(req.body.keywords));
-        equipment.set('image_URL','/images/testtube.png');
         equipment.set('instructions',req.body.instructions);
         equipment.set('model_year',req.body.model_year);
         equipment.set('model',req.body.model);
