@@ -153,8 +153,6 @@ var Profile = React.createClass ({
     },
     handleSubmitData: function() {
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
-
-        var $this = this;
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -162,7 +160,6 @@ var Profile = React.createClass ({
             type: 'POST',
             data: JSON.stringify(dataForm),
             success: function(status) {
-                console.log(status);
                 this.setState({profile_imgURL: this.state.picture});
                 this.clickClose();
             }.bind(this),

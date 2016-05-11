@@ -60,7 +60,7 @@ module.exports=function(app,Parse,io) {
                     street: result.get('street'),
                     postalcode: result.get('postalcode'),
                     website: result.get('website'),
-                    organization_imgURL: result.get('profile_imgURL'),
+                    organization_imgURL: result.get('picture').url(),
                     cover_imgURL: result.get('cover_imgURL')
                 });
             },

@@ -27,8 +27,13 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query('Equipment');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('equipment', {
                     title: 'Equipment',
+                    path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
@@ -38,7 +43,7 @@ module.exports=function(app,Parse,io) {
                     description: result.get('description'),
                     instructions: result.get('instructions'),
                     image_URL: result.get('picture').url(),
-                    file_path: result.get('file').url(),
+                    file_path: filename,
                     keywords: result.get('keywords'),
                     model: result.get('model'),
                     model_year: result.get('model_year'),

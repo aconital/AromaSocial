@@ -69,10 +69,7 @@ var Project = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function(e) {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_project_picture_" + randomNumber + "." + this.state.pictureType;
-        var $this = this;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -81,6 +78,8 @@ var Project = React.createClass ({
             data: JSON.stringify(dataForm),
             processData: false,
             success: function(data) {
+                this.setState({image_URL: this.state.picture});
+                this.clickClose();
                 console.log(data);
             }.bind(this),
             error: function(xhr, status, err) {
