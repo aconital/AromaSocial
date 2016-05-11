@@ -61,7 +61,9 @@ module.exports=function(app,Parse,io) {
                             var equip = object.get("equipmentId");
                             var objectId = equip.id;
                             var title = equip.get("title");
-                            var imgUrl = equip.get("image_URL");
+                            // var imgUrl = equip.get("image_URL");
+                            var picture = equip.get("picture").url();
+                            //var file = equip.get("file").url();
                             var type = "equipment";
                             var filePath = equip.get("file_path");
                             var creationDate = equip.get("createdAt");
@@ -79,7 +81,7 @@ module.exports=function(app,Parse,io) {
                                 type:type,
                                 keywords:keywords,
                                 title: title,
-                                image_URL: imgUrl
+                                picture: picture
                             });
                         }
                     }
@@ -88,7 +90,9 @@ module.exports=function(app,Parse,io) {
                             var proj = object.get("projectId");
                             var objectId = proj.id;
                             var title = proj.get("title");
-                            var imgUrl = proj.get("image_URL");
+                            //var imgUrl = proj.get("image_URL");
+                            var picture = proj.get("picture").url();
+                            //var file = proj.get("file").url();
                             var type = "project";
                             var filePath = proj.get("file_path");
                             var creationDate = proj.get("createdAt");
@@ -109,7 +113,7 @@ module.exports=function(app,Parse,io) {
                                 type:type,
                                 keywords:keywords,
                                 title: title,
-                                image_URL: imgUrl
+                                picture: picture
                             });
                         }
                     }
@@ -131,7 +135,7 @@ module.exports=function(app,Parse,io) {
                         var publisher = object.get("pubBookId").get("publisher") != null? object.get("pubBookId").get("publisher"):"";
                         var doi = object.get("pubBookId").get("doi") != null? object.get("pubBookId").get("doi"):"";
                         var edition = object.get("pubBookId").get("edition") != null? object.get("pubBookId").get("edition"):"";
-                        var type = "book"
+                        var type = "book";
                         feeds.push({
                             objId: objectId,
                             fullname: fullname,
@@ -410,7 +414,7 @@ module.exports=function(app,Parse,io) {
                             var author ="";
                             var description ="";
                             var objectId = object.attributes.modId;
-                            var image_URL = modItem.image_URL;
+                            var picture = modItem.picture.url();
                             if (modItem.filename != null) {
                                 filename = modItem.filename;
                             }
@@ -442,24 +446,21 @@ module.exports=function(app,Parse,io) {
                                 hashtags: hashtags,
                                 title: title,
                                 objId: objectId,
-                                image_URL: image_URL
+                                picture: picture
                             });
                         }
                     }
                     else if (type == "dat") {
                         if (object.attributes.datId != null && object.attributes.datId.attributes != null) {
                             var datItem = object.attributes.datId.attributes;
-                            var filename ="";
+                            var filename = datItem.filename;
                             var title ="";
                             var hashtags ="";
                             var year ="";
                             var author ="";
                             var description ="";
                             var objectId = object.attributes.datId;
-                            var image_URL = datItem.picture.url();
-                            if (datItem.file != undefined) {
-                                filename = datItem.file.url();
-                            }
+                            var picture = datItem.picture.url();
                             if (datItem.title != null) {
                                 title = datItem.title;
                             }
@@ -488,7 +489,7 @@ module.exports=function(app,Parse,io) {
                                 hashtags: hashtags,
                                 title: title,
                                 objId: objectId,
-                                image_URL: image_URL
+                                picture: picture
                             });
                         }
                     }
