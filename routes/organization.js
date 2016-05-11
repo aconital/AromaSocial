@@ -47,6 +47,7 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query('Organization');
         query.get(req.params.objectId,{
             success: function(result) {
+                notifyadmins(req.params.objectId)
                 res.render('organization', {title: 'Organization', path: req.path,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
@@ -762,6 +763,9 @@ module.exports=function(app,Parse,io) {
             relation.set('title', 'Members');
             relation.save(null,{
                 success:function(){
+
+                    io.to(userId).emit('friendrequest',{data:currentUser});
+
                     res.json({success: "Joined Successfully"});
                 },
                 error:function(error){
@@ -964,5 +968,29 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    function notifyadmins(orgId)
+    {
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",orgId);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery)
+        query.equalTo("isAdmin",true)
+        query.find({
+            success: function(results) {
+
+              if(results !=null)
+              {
+                  for(var i=0;i<results.length;i++)
+                  {
+                      var adminId= results[i].get("userId").id;
+                      io.to(adminId).emit('orgrequest',{data:currentUser});
+                  }
+              }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
 
 };
