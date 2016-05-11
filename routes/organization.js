@@ -88,7 +88,7 @@ module.exports=function(app,Parse,io) {
             var fullname=user.get('fullname');
             //var company= "";
             //var work_title= "";
-            var userImgUrl=user.get('imgUrl');
+            var userImgUrl=user.get('picture').url();
             var work_experience= [];
             if(verified) {
                 var person = {
@@ -342,7 +342,7 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query("Organization");
         query.get(req.params.objectId).then(function (result) {
             if (req.body.picture != null && result != undefined) {
-                var pictureName = req.params.objectId + "_org_picture." + req.body.pictureType;
+                var pictureName = "org_picture." + req.body.pictureType;
                 var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
                 var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
                 pictureFile.save().then(function () {
@@ -391,13 +391,9 @@ module.exports=function(app,Parse,io) {
                 var orgId = results[uo].attributes.orgId1.id;
                 var name = "N/A";
                 var location = connected_orgs.location;
-                var orgImgUrl = "/images/organization.png";
+                var orgImgUrl = onnected_orgs.picture.url()
                 if (connected_orgs.hasOwnProperty('name')) {
                     name = connected_orgs.name;
-                }
-
-                if (connected_orgs.hasOwnProperty('profile_imgURL')) {
-                    orgImgUrl = connected_orgs.profile_imgURL;
                 }
                 var org = {
                     orgId: orgId,
@@ -427,13 +423,9 @@ module.exports=function(app,Parse,io) {
                     var orgId = results[uo].attributes.orgId0.id;
                     var name = "N/A";
                     var location = connected_orgs.location;
-                    var orgImgUrl = "/images/organization.png";
+                    var orgImgUrl = connected_orgs.picture.url();
                     if (connected_orgs.hasOwnProperty('name')) {
                         name = connected_orgs.name;
-                    }
-
-                    if (connected_orgs.hasOwnProperty('profile_imgURL')) {
-                        orgImgUrl = connected_orgs.profile_imgURL;
                     }
                     //only orgs that are verified
                     if (verified) {
@@ -467,7 +459,6 @@ module.exports=function(app,Parse,io) {
                 //var book = JSON.stringify(books);
                 pubs.push({
                     type: "book",
-                    filename: book.attributes.file.url(),
                     title: book.attributes.title,
                     keywords: book.attributes.keywords,
                     date: book.attributes.publication_date,
@@ -482,7 +473,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryConference.each(function (conferences){
                 pubs.push({
                     type: "conference",
-                    filename: conferences.attributes.file.url(),
                     title: conferences.attributes.title,
                     keywords: conferences.attributes.keywords,
                     date: conferences.attributes.publication_date,
@@ -497,7 +487,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryJournal.each(function (journals){
                 pubs.push({
                     type: "journal",
-                    filename: journals.attributes.file.url(),
                     title: journals.attributes.title,
                     keywords: journals.attributes.keywords,
                     date: journals.attributes.publication_date,
@@ -512,7 +501,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryPatent.each(function (patent){
                 pubs.push({
                     type: "patent",
-                    filename: patent.attributes.file.url(),
                     title: patent.attributes.title,
                     keywords: patent.attributes.keywords,
                     date: patent.attributes.publication_date,
@@ -527,7 +515,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryReport.each(function (report){
                 pubs.push({
                     type: "report",
-                    filename: report.attributes.file.url(),
                     title: report.attributes.title,
                     keywords: report.attributes.keywords,
                     date: report.attributes.publication_date,
@@ -542,7 +529,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryThesis.each(function (thesis){
                 pubs.push({
                     type: "thesis",
-                    filename: thesis.attributes.file.url(),
                     title: thesis.attributes.title,
                     keywords: thesis.attributes.keywords,
                     date: thesis.attributes.publication_date,
@@ -557,7 +543,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryUnpublished.each(function (unpublished){
                 pubs.push({
                     type: "unpublished",
-                    filename: unpublished.attributes.file.url(),
                     title: unpublished.attributes.title,
                     keywords: unpublished.attributes.keywords,
                     date: unpublished.attributes.publication_date,
@@ -675,8 +660,6 @@ module.exports=function(app,Parse,io) {
         var objectId;
         var Organization = Parse.Object.extend("Organization");
         var org = new Organization();
-        org.set('cover_imgURL', '/images/banner.png'); // default. replace later
-        org.set('profile_imgURL', '/images/organization.png');
         org.set('name', req.body.name);
         // org.set('location', req.body.location ? req.body.location : '');
         org.set('about', req.body.description ? req.body.description : 'About Organization');
@@ -703,7 +686,7 @@ module.exports=function(app,Parse,io) {
         org.set('location', location);
         var promises = [];
         if (req.body.picture != null) {
-            var pictureName = req.params.username + "_org_picture." + req.body.pictureType;
+            var pictureName = "org_picture." + req.body.pictureType;
             var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
             var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
             promises.push(pictureFile.save().then(function () {
@@ -881,7 +864,6 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query('Equipment');
         query.equalTo("organization", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.each(function(equipment) {
-            var promise = Parse.Promise.as();
             equipments.push(equipment);
         }).then(function(){
             //var filtered_models=  _.groupBy(models,'type');
@@ -899,42 +881,7 @@ module.exports=function(app,Parse,io) {
         query.each(function(relationships) {
             var queryProjects = new Parse.Query('Project');
             queryProjects.equalTo("user", relationships.get("userId"));
-            queryProjects.each(function (results) {
-                var collaborators = ["N/A"];
-                var locations = ["N/A"];
-                var keywords = ["N/A"];
-                var objectId = results.id;
-                var title = results.attributes.title;
-                var description = results.attributes.description;
-                var image_URL = results.attributes.file.url();
-                var start_date = "N/A";
-                var end_date = "N/A";
-                if (results.attributes.collaborators !== undefined) {
-                    collaborators = results.attributes.collaborators;
-                }
-                if (results.attributes.locations !== undefined) {
-                    locations = results.attributes.locations;
-                }
-                if (results.attributes.keywords !== undefined) {
-                    keywords = results.attributes.keywords;
-                }
-                if (results.attributes.start_date !== undefined) {
-                    start_date = results.attributes.start_date;
-                }
-                if (results.attributes.end_date !== undefined) {
-                    end_date = results.attributes.end_date;
-                }
-                var project = {
-                    objectId: objectId,
-                    title: title,
-                    description: description,
-                    image_URL: image_URL,
-                    collaborators: collaborators,
-                    locations: locations,
-                    keywords: keywords,
-                    start_date: start_date,
-                    end_date: end_date
-                }
+            queryProjects.each(function (project) {
                 projects.push(project);
             }).then(function () {
                 console.log(projects);

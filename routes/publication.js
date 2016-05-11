@@ -227,7 +227,7 @@ module.exports=function(app,Parse,io) {
                     contributors: result.get('contributors'),
                     author: result.get('author'),
                     abstract: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     keywords: result.get('keywords'),
                     url: result.get('url'),
                     title: result.get('title'),
@@ -259,7 +259,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -290,7 +290,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -451,7 +451,6 @@ module.exports=function(app,Parse,io) {
                     var object = books[i];
                     pubs.push({
                         type: "book",
-                        filename: object.attributes.file.url(),
                         title: object.attributes.title,
                         keywords: object.attributes.keywords,
                         date: object.attributes.publication_date,
@@ -473,7 +472,6 @@ module.exports=function(app,Parse,io) {
                         var object = conferences[i];
                         pubs.push({
                             type: "conference",
-                            filename: object.attributes.file.url(),
                             title: object.attributes.title,
                             keywords: object.attributes.keywords,
                             date: object.attributes.publication_date,
@@ -495,7 +493,6 @@ module.exports=function(app,Parse,io) {
                             var object = journals[i];
                             pubs.push({
                                 type: "journal",
-                                filename: object.attributes.file.url(),
                                 title: object.attributes.title,
                                 keywords: object.attributes.keywords,
                                 date: object.attributes.publication_date,
@@ -517,7 +514,6 @@ module.exports=function(app,Parse,io) {
                                 var object = patents[i];
                                 pubs.push({
                                     type: "patent",
-                                    filename: object.attributes.file.url(),
                                     title: object.attributes.title,
                                     keywords: object.attributes.keywords,
                                     date: object.attributes.publication_date,
@@ -539,7 +535,6 @@ module.exports=function(app,Parse,io) {
                                     var object = reports[i];
                                     pubs.push({
                                         type: "report",
-                                        filename: object.attributes.file.url(),
                                         title: object.attributes.title,
                                         keywords: object.attributes.keywords,
                                         date: object.attributes.publication_date,
@@ -561,7 +556,6 @@ module.exports=function(app,Parse,io) {
                                         var object = thesis[i];
                                         pubs.push({
                                             type: "thesis",
-                                            filename: object.attributes.file.url(),
                                             title: object.attributes.title,
                                             keywords: object.attributes.keywords,
                                             date: object.attributes.publication_date,
@@ -583,7 +577,6 @@ module.exports=function(app,Parse,io) {
                                             var object = unpublished[i];
                                             pubs.push({
                                                 type: "unpublished",
-                                                filename: object.attributes.file.url(),
                                                 title: object.attributes.title,
                                                 keywords: object.attributes.keywords,
                                                 date: object.attributes.publication_date,
@@ -690,7 +683,7 @@ module.exports=function(app,Parse,io) {
             }
             var promises = [];
             if (req.body.file != null) {
-                var fileName = req.params.username + "_publication_picture." + req.body.fileType;
+                var fileName = "publication_file." + req.body.fileType;
                 var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
                 var fileFile = new Parse.File(fileName, {base64: fileBuff});
                 promises.push(fileFile.save().then(function () {

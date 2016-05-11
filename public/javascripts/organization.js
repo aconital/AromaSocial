@@ -859,7 +859,7 @@ var Equipments = React.createClass({
                     <div>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/equipment/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
@@ -1113,7 +1113,7 @@ var Projects = React.createClass({
                     <div key={item.objectId}>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/project/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
