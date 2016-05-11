@@ -229,7 +229,9 @@ var Data = React.createClass ({
     }
 });
 
-ReactDOM.render(<Data />, document.getElementById('content'));
+$( window ).load(function() {
+    ReactDOM.render(<Data />, document.getElementById('content'));
+});
 
 
 var Models = React.createClass({

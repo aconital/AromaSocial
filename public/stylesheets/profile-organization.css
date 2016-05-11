@@ -225,6 +225,13 @@
 .h1-title { padding-top: 25px !important; }
 .h1-title-solo { padding-top: 25px !important; padding-bottom: 25px !important; }
 .h3-title { padding-bottom: 25px !important; }
+
+#error-dialog {
+    display:none;
+    top: 60px;
+    left:0;
+}
+
 .interact-buttons-wrap {
     position:absolute;
     border-radius: 4px;

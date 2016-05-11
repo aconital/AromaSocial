@@ -1417,7 +1417,7 @@ var PublicationAddForm = React.createClass({
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
 
 				<Modal.Footer>
-					<Input className="btn btn-default pull-right" type="submit" value="Continue" />
+					<Input className="btn btn-default pull-right submit" type="submit" value="Continue" />
 					<div className="form-feedback"></div>
 				</Modal.Footer>
             </form>
@@ -1780,7 +1780,7 @@ var ResourceAddForm = React.createClass({
                     </div>
   */}
                     <Modal.Footer>
-                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                        <Input className="btn btn-default pull-right submit" type="submit" value="Continue" />
                     </Modal.Footer>
                 </form>
             </div>
@@ -2057,7 +2057,7 @@ var ProjectAddForm = React.createClass({
                     {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="full-button" type="submit" value="Submit"/>
+                    <input className="btn btn-default pull-right submit" type="submit" value="Submit"/>
                 </Modal.Footer>
             </form>
 		</div>
@@ -2197,4 +2197,6 @@ var Required = React.createClass({
 	},
 });
 
-ReactDOM.render(<Profile />, document.getElementById('content'));
+$( window ).load(function() {
+    ReactDOM.render(<Profile />, document.getElementById('content'));
+});

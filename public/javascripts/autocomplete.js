@@ -1,5 +1,6 @@
 // ALL
 $(function() {
+  if ($('.auto').length != 0) {
     $('.auto').catcomplete({
             source: function(req, res) {
               var r = []; 
@@ -85,7 +86,8 @@ $(function() {
              return $("<li></li>").data("ui-autocomplete-item", item)
                      .append("<a>" + "<img height='40' width='40' src='" + item.imgsrc + "' />&nbsp" + item.label + "</a>")
                      .appendTo(ul);
-     };   
+     };
+    }   
 });
 
 // $( "#SearchInput" ).autocomplete({ .... }).data( "autocomplete" )._renderItem = function( ul, item ) {

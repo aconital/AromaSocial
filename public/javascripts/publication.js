@@ -248,7 +248,9 @@ var InfoField = React.createClass({
     },
 });
 
-ReactDOM.render(<Publication
-    groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
-    keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,
-    document.getElementById('content'));
+$( window ).load(function() {
+    ReactDOM.render(<Publication
+        groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
+        keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,
+        document.getElementById('content'));
+});
