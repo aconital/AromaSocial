@@ -113,14 +113,12 @@ module.exports=function(app,Parse,io) {
    });
 
     app.post('/signup', function (req, res, next) {
-
      var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
      var user = new Parse.User();
      user.set("username", req.body.username);
      user.set("password", req.body.password);
      user.set("fullname", req.body.fullname);
      user.set("email", req.body.email);
-     user.set("imgUrl", "/images/user.png");
      user.set("interestsTag", []);
      user.set("interests", []);
      user.set("summary", "");
@@ -130,7 +128,6 @@ module.exports=function(app,Parse,io) {
      user.set("workExperience", []);
      user.set("emailVerified",false);
      user.set("email_token",email_code)
-
      user.signUp(null, {
         success: function (user) {
             var mailOptions = {

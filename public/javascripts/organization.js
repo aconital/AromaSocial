@@ -1233,13 +1233,7 @@ var Data = React.createClass({
                     return (<Datum objectId={item.objectId}
                                    collaborators={item.collaborators}
                                    title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description}
+                                   image_URL={item.picture.url}
                                    start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
                 })}
             </div>
@@ -1321,7 +1315,7 @@ var Models = React.createClass({
                     return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
-                                   image_URL={model.image_URL}
+                                   image_URL={model.picture.url}
                                    keywords={model.keywords}
                                    number_cited={model.number_cited}
                                    number_syncholar_factor={model.number_syncholar_factor}

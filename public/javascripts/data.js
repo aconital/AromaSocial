@@ -3,7 +3,7 @@ var Button = ReactBootstrap.Button;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Data = React.createClass ({
-    getInitialState: function() {
+    getInitialState: function(){
      return {
         title: title,
         description: description,

@@ -31,7 +31,10 @@ module.exports=function(app,Parse,io) {
         query.get(req.params.objectId,{
             success: function(result) {
                 var creator = JSON.parse(JSON.stringify(result.get('user')));
-                
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('model', {
                     path: req.path,
                     currentUserId: currentUser.id,
@@ -44,8 +47,8 @@ module.exports=function(app,Parse,io) {
                     access: result.get('access'),
                     description: result.get('abstract'),
                     title: result.get('title'),
-                    image: result.get('image'), // TODO fix this shitty naming
-                    image_URL: result.get('image_URL'),
+                    image: filename, // TODO fix this shitty naming
+                    image_URL: result.get('picture').url(),
                     collaborators: JSON.stringify(result.get('collaborators')),
                     license: result.get('license'),
                     keywords: JSON.stringify(result.get('keywords')),
@@ -88,123 +91,70 @@ module.exports=function(app,Parse,io) {
 
     app.post('/model/:objectId/picture', is_auth, function(req,res,next){
         var query = new Parse.Query("Model");
-        query.include('user');
-        query.get(req.params.objectId,{
-            success: function(result) {
-                var bucket = new aws.S3();
-                var s3KeyP = req.params.objectId + "_model_picture_" + req.body.randomNumber + "." + req.body.pictureType;
-                var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                var pictureParams = {
-                    Bucket: 'syncholar',
-                    Key: s3KeyP,
-                    Body: pictureBuff,
-                    ContentEncoding: 'base64',
-                    ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                };
-                bucket.putObject(pictureParams, function (err, data) {
-                    if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
-                    else {
-                        console.log('Uploaded Image to S3!');
-                        result.set("image_URL",awsLink + s3KeyP);
-                        result.save();
+        query.get(req.params.objectId).then(function(result) {
+            if (req.body.picture != null && result != undefined) {
+                var pictureName = req.params.objectId + "_model_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                pictureFile.save().then(function() {
+                    result.set('picture', pictureFile)
+                    result.save().then(function(){
                         res.status(200).json({status: "Picture Uploaded Successfully!"});
-                    }
+                    });
                 });
+            }
+            else{
+                res.status(500).json({status: "Picture Upload Failed!"});
             }
         });
     });
 
-    app.post('/profile/:username/model', is_auth, function(req,res,next){
+    app.post('/profile/:username/model', is_auth, function(req,res,next) {
         var currentUser = req.user;
+        var Model = Parse.Object.extend("Model");
+        var model = new Model();
         if (currentUser.username == req.params.username) {
             var objectId;
             var now = moment();
             var formatted = now.format('YYYY_MM_DD-HH_mm_ss');
             var reqBody = req.body;
             // send to Parse
-            var Model = Parse.Object.extend("Model");
-            var model= new Model();
-            model.set('user',{ __type: "Pointer", className: "_User", objectId: req.user.id});
+            model.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
             model.set('abstract', reqBody.description);
             model.set('access', ["UBC"]);
-            model.set('collaborators',JSON.parse(reqBody.collaborators));
+            model.set('collaborators', JSON.parse(reqBody.collaborators));
             model.set('publication_date', new Date(reqBody.creationDate));
-            model.set('image','/images/data.png');
-            model.set('image_URL','/images/data.png');
-            model.set('title',reqBody.title);
-            model.set('keywords',JSON.parse(reqBody.keywords));
-            model.set('license',reqBody.license);
+            model.set('title', reqBody.title);
+            model.set('keywords', JSON.parse(reqBody.keywords));
+            model.set('license', reqBody.license);
 //			model.set('publication',reqBody.pubLink);
-            model.set('number_cited',0);
-            model.set('number_syncholar_factor',1);
-            model.save(null, {
-                success: function(response) {
-                    console.log("6");
-                    // Execute any logic that should take place after the object is saved.
-                    objectId = response.id;
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    // encode file
-                    if (reqBody.picture != null) {
-                        var s3Key = req.params.username + "_" + objectId + "." + reqBody.pictureType;
-                        var contentType = reqBody.picture.match(/^data:(\w+\/.+);base64,/);
-                        var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                        var fileParams = {
-                            Key: s3Key,
-                            Body: fileBuff,
-                            ContentEncoding: 'base64',
-                            ContentType: (contentType ? contentType[1] : 'text/plain')
-                        };
-                        console.log(contentType);
-                        // upload files to S3
-                        bucket.putObject(fileParams, function (err, data) {
-                            if (err) { console.log("Model Upload Error:", err); }
-                            else {
-                                console.log('uploading to s3');
-                                // update file name in parse object
-                                model.set('image_URL', awsLink + s3Key);
-                                model.save();
-                            }
-                        });
-                        console.log("7");
-                    }
-                    console.log(objectId);
-                    // encode picture NOTE: Parse object currently does not differentiate between image and file.
-                    // Only file (saved in image_URL) is accessible on website
-                    if (reqBody.file != null) {
-                        var s3KeyP = req.params.username + "_" + objectId + "_pic." + reqBody.fileType;
-                        var contentTypeP = reqBody.file.match(/^data:(\w+\/.+);base64,/);
-                        var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                        var pictureParams = {
-                            Key: s3KeyP,
-                            Body: pictureBuff,
-                            ContentEncoding: 'base64',
-                            ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                        };
-                        console.log("8");
-                        bucket.putObject(pictureParams, function (err, data) {
-                            if (err) { console.log("Model image Upload Error:", err); }
-                            else {
-                                console.log('uploading to s3');
-
-                                // update file name in parse object
-                                model.set('image', awsLink + s3KeyP);
-                                model.save();
-                            }
-                        });
-                    }
-                    res.status(200).json({status: "Model uploaded successfully!"});
-                },
-                error: function(response, error) {
-                    console.log('Failed to create new object, with error code: ' + error.message);
-                    res.status(500).json({status: "Creating model object failed. " + error.message});
-                }
+            model.set('number_cited', 0);
+            model.set('number_syncholar_factor', 1);
+            var promises = [];
+            if (req.body.picture != null) {
+                var pictureName = "model_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                promises.push(pictureFile.save().then(function () {
+                    model.set('picture', pictureFile)
+                }));
+            }
+            if (req.body.file != null) {
+                var fileName = "model_file." + req.body.fileType;
+                var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var fileFile = new Parse.File(fileName, {base64: fileBuff});
+                promises.push(fileFile.save().then(function () {
+                    model.set('file', fileFile)
+                }));
+            }
+            return Parse.Promise.when(promises).then(function (res1, res2) {
+                model.save().then(function () {
+                    res.json({status: "Success in creating data"})
+                })
+            }, function (error) {
+                console.log('Failed to create new object, with error code: ' + error.message);
+                res.status(500).json({status: "Creating data object failed. " + error.message});
             });
-        } else {
-            res.render('profile', {Error: 'Model Upload Failed!'});
-            res.status(500).json({status: "Model Upload Failed! " + error.message});
         }
     });
-
-
 };

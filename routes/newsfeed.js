@@ -449,7 +449,7 @@ module.exports=function(app,Parse,io) {
                     else if (type == "dat") {
                         if (object.attributes.datId != null && object.attributes.datId.attributes != null) {
                             var datItem = object.attributes.datId.attributes;
-                            var filename ="";
+                            var filename =datItem.file.url();
                             var title ="";
                             var hashtags ="";
                             var year ="";
@@ -457,9 +457,6 @@ module.exports=function(app,Parse,io) {
                             var description ="";
                             var objectId = object.attributes.datId;
                             var image_URL = datItem.picture.url();
-                            if (datItem.file != undefined) {
-                                filename = datItem.file.url();
-                            }
                             if (datItem.title != null) {
                                 title = datItem.title;
                             }

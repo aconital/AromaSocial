@@ -370,42 +370,22 @@ module.exports=function(app,Parse,io) {
 
     app.post('/profile/:username/picture', is_auth,function(req,res,next){
         var currentUser = req.user;
-        var linkUser = req.params.username;
-        if(currentUser.username == linkUser) {
-            var bucket = new aws.S3();
-            var s3KeyP = req.params.username + "_profile_picture_" + req.body.randomNumber + "." + req.body.pictureType;
-            console.log(s3KeyP);
-            var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-            var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-            var pictureParams = {
-                Bucket: 'syncholar',
-                Key: s3KeyP,
-                Body: pictureBuff,
-                ContentEncoding: 'base64',
-                ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-            };
-            bucket.putObject(pictureParams, function (err, data) {
-                if (err) {
-                    console.log("Profile Picture (Image) Upload Error:", err);
+        if(currentUser.username == req.params.username) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(function (result) {
+                if (req.body.picture != null && result != undefined) {
+                    var pictureName = "user_picture." + req.body.pictureType;
+                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                    var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                    pictureFile.save().then(function () {
+                        result.set('picture', pictureFile)
+                        result.save().then(function () {
+                            res.status(200).json({status: "Picture Uploaded Successfully!"});
+                        });
+                    });
                 }
                 else {
-                    var query = new Parse.Query(Parse.User);
-                    query.get(currentUser.id).then(
-                        function (result) {
-                            if (result != undefined) {
-                                result.set("imgUrl",awsLink + s3KeyP);
-                                result.save(null, { useMasterKey: true }).then(
-                                    function(){
-                                        //console.log("SAVE SUCCESS");
-                                        res.status(200).json({status: "Info Uploaded Successfully!"});
-                                    },
-                                    function(error){
-                                        console.log(error);
-                                        res.status(500).json({status: "Error uploading summary"})
-                                    }
-                                );
-                            }
-                        });
+                    res.status(500).json({status: "Picture Upload Failed!"});
                 }
             });
         }
@@ -782,7 +762,7 @@ module.exports=function(app,Parse,io) {
                     var objectId = results[i].id;
                     var title = results[i].attributes.title;
                     var description = results[i].attributes.description;
-                    var image_URL = results[i].attributes.image_URL;
+                    var image_URL = results[i].attributes.picture.url();
                     if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
                     var equipment = {
                         objectId: objectId,
@@ -818,7 +798,7 @@ module.exports=function(app,Parse,io) {
                     var objectId = results[i].id;
                     var title = results[i].get('title');
                     var description = results[i].get('description');
-                    var image_URL = results[i].get('image_URL');
+                    var image_URL = results[i].get('picture').url();
                     var start_date = "N/A";
                     var end_date = "N/A";
                     if (results[i].get('collaborators') !== undefined) { collaborators = results[i].get('collaborators'); }
@@ -905,18 +885,15 @@ module.exports=function(app,Parse,io) {
                     var keywords = [];
                     var description = results[i].get('description');
                     var collaborators = results[i].get('collaborators');
-                    var image_URL = results[i].get('image_URL');
+                    var image_URL = results[i].get('picture').url();
                     var type = "Other";
-
                     var license = results[i].get('license');
                     var publication_date = results[i].get('publication_date');
                     var url = results[i].get('url');
-
                     if (results[i].get('title')) { title = results[i].get('title'); }
                     if (results[i].get('type')) { type = results[i].get('type'); }
                     if (results[i].get('publication_code')) { publication_code = results[i].get('publication_code'); }
                     if (results[i].get('keywords') !== undefined) { keywords = results[i].get('keywords'); }
-
                     var datum = {
                         objectId: objectId,
                         title: title,
@@ -953,7 +930,7 @@ module.exports=function(app,Parse,io) {
             var title = model.get('title');
             var description = model.get('abstract');
             var collaborators = model.get('collaborators');
-            var image_URL = model.get('image_URL');
+            var image_URL = model.get('picture').url();
             var keywords = model.get('keywords');
             var type = "Other";
             var publication_date = model.get('publication_date');
@@ -997,7 +974,4 @@ module.exports=function(app,Parse,io) {
         data_list.push(currentUser.workExperience);
         res.json(JSON.stringify(data_list));
     });
-
-
-
 }

@@ -338,26 +338,23 @@ module.exports=function(app,Parse,io) {
     });
 
     app.post('/organization/:objectId/updatePicture', function(req,res,next){
-        if(req.body.picture && req.body.pictureType){
-            query = new Parse.Query("Organization");
-            query.get(req.params.objectId).then(function (result) {
-                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_");
-                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
-                bucket.putObject(params, function (err, response) {
-                    if (err) {
-                        console.log("S3 Upload Error:", err);
-                    }
-                    else {
-                        result.set("profile_imgURL", awsLink + params.Key);
-                        result.save();
+        var query = new Parse.Query("Organization");
+        query.get(req.params.objectId).then(function (result) {
+            if (req.body.picture != null && result != undefined) {
+                var pictureName = req.params.objectId + "_org_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                pictureFile.save().then(function () {
+                    result.set('picture', pictureFile)
+                    result.save().then(function () {
                         res.status(200).json({status: "Picture Uploaded Successfully!"});
-                    }
+                    });
                 });
-            });
-        }
-        else{
-            res.status(200).json({status: "No picture suplied!"})
-        }
+            }
+            else {
+                res.status(500).json({status: "Picture Upload Failed!"});
+            }
+        });
     });
 
     app.get('/organization/:objectId/join-status', is_auth, function (req, res, next) {
@@ -469,7 +466,7 @@ module.exports=function(app,Parse,io) {
                 //var book = JSON.stringify(books);
                 pubs.push({
                     type: "book",
-                    filename: book.attributes.filename,
+                    filename: book.attributes.file.url(),
                     title: book.attributes.title,
                     keywords: book.attributes.keywords,
                     date: book.attributes.publication_date,
@@ -484,7 +481,7 @@ module.exports=function(app,Parse,io) {
             promises.push(queryConference.each(function (conferences){
                 pubs.push({
                     type: "conference",
-                    filename: conferences.attributes.filename,
+                    filename: conferences.attributes.file.url(),
                     title: conferences.attributes.title,
                     keywords: conferences.attributes.keywords,
                     date: conferences.attributes.publication_date,
@@ -499,7 +496,7 @@ module.exports=function(app,Parse,io) {
             promises.push(queryJournal.each(function (journals){
                 pubs.push({
                     type: "journal",
-                    filename: journals.attributes.filename,
+                    filename: journals.attributes.file.url(),
                     title: journals.attributes.title,
                     keywords: journals.attributes.keywords,
                     date: journals.attributes.publication_date,
@@ -514,7 +511,7 @@ module.exports=function(app,Parse,io) {
             promises.push(queryPatent.each(function (patent){
                 pubs.push({
                     type: "patent",
-                    filename: patent.attributes.filename,
+                    filename: patent.attributes.file.url(),
                     title: patent.attributes.title,
                     keywords: patent.attributes.keywords,
                     date: patent.attributes.publication_date,
@@ -529,7 +526,7 @@ module.exports=function(app,Parse,io) {
             promises.push(queryReport.each(function (report){
                 pubs.push({
                     type: "report",
-                    filename: report.attributes.filename,
+                    filename: report.attributes.file.url(),
                     title: report.attributes.title,
                     keywords: report.attributes.keywords,
                     date: report.attributes.publication_date,
@@ -544,7 +541,7 @@ module.exports=function(app,Parse,io) {
             promises.push(queryThesis.each(function (thesis){
                 pubs.push({
                     type: "thesis",
-                    filename: thesis.attributes.filename,
+                    filename: thesis.attributes.file.url(),
                     title: thesis.attributes.title,
                     keywords: thesis.attributes.keywords,
                     date: thesis.attributes.publication_date,
@@ -559,7 +556,7 @@ module.exports=function(app,Parse,io) {
             promises.push(queryUnpublished.each(function (unpublished){
                 pubs.push({
                     type: "unpublished",
-                    filename: unpublished.attributes.filename,
+                    filename: unpublished.attributes.file.url(),
                     title: unpublished.attributes.title,
                     keywords: unpublished.attributes.keywords,
                     date: unpublished.attributes.publication_date,
@@ -597,6 +594,7 @@ module.exports=function(app,Parse,io) {
             return promise;
         }).then(function(){
             //var filtered_models=  _.groupBy(models,'type');
+            console.log(datas);
             res.json(datas);
         }, function(error) {
             console.log(error);
@@ -620,6 +618,7 @@ module.exports=function(app,Parse,io) {
             return promise;
         }).then(function(){
             //var filtered_models=  _.groupBy(models,'type');
+            console.log(models);
             res.json(models);
         }, function(error) {
             console.log(error);
@@ -669,38 +668,45 @@ module.exports=function(app,Parse,io) {
     app.post('/create/organization', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var objectId;
-        if (currentUser) {
-            var Organization = Parse.Object.extend("Organization");
-            var org = new Organization();
-            org.set('cover_imgURL', '/images/banner.png'); // default. replace later
-            org.set('profile_imgURL', '/images/organization.png');
-            org.set('name', req.body.name);
-            // org.set('location', req.body.location ? req.body.location : '');
-            org.set('about', req.body.description ? req.body.description : 'About Organization');
-            org.set('country', req.body.country ? req.body.country : '');
-            org.set('prov', req.body.prov ? req.body.prov : '');
-            org.set('city', req.body.city ? req.body.city : '');
-            org.set('street', req.body.street ? req.body.street : '');
-            org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
-            org.set('website', req.body.website ? req.body.website : '');
-
-            var location= '';
-            if (req.body.city ) {
-                location = req.body.city;
-            } if (req.body.prov) {
-                if(location!='')
-                    location = location +', ' +req.body.prov;
-                else
-                    location = req.body.prov;
-            } if (req.body.country) {
-                if(location!='')
-                    location = location +', ' +req.body.country;
-                else
-                    location = req.body.country;
-            }
-            org.set('location', location);
-
-            org.save(null).then(function(response) {
+        var Organization = Parse.Object.extend("Organization");
+        var org = new Organization();
+        org.set('cover_imgURL', '/images/banner.png'); // default. replace later
+        org.set('profile_imgURL', '/images/organization.png');
+        org.set('name', req.body.name);
+        // org.set('location', req.body.location ? req.body.location : '');
+        org.set('about', req.body.description ? req.body.description : 'About Organization');
+        org.set('country', req.body.country ? req.body.country : '');
+        org.set('prov', req.body.prov ? req.body.prov : '');
+        org.set('city', req.body.city ? req.body.city : '');
+        org.set('street', req.body.street ? req.body.street : '');
+        org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
+        org.set('website', req.body.website ? req.body.website : '');
+        var location= '';
+        if (req.body.city ) {
+            location = req.body.city;
+        } if (req.body.prov) {
+            if(location!='')
+                location = location +', ' +req.body.prov;
+            else
+                location = req.body.prov;
+        } if (req.body.country) {
+            if(location!='')
+                location = location +', ' +req.body.country;
+            else
+                location = req.body.country;
+        }
+        org.set('location', location);
+        var promises = [];
+        if (req.body.picture != null) {
+            var pictureName = req.params.username + "_org_picture." + req.body.pictureType;
+            var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+            var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+            promises.push(pictureFile.save().then(function () {
+                org.set('picture', pictureFile)
+            }));
+        }
+        return Parse.Promise.when(promises).then(function (res1, res2) {
+            org.save().then(function(response) {
                 objectId = response.id;
                 // create new Relationship object between organization and admin
                 console.log('Object ID retrieved/path name updated successfully');
@@ -713,36 +719,12 @@ module.exports=function(app,Parse,io) {
                 relation.set('title', 'Members');
                 relation.save(null);
             }).then(function(response) {
-                // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
-                // if provided. FOR LATER: also support cover image.
-                if (req.body.picture) {
-                    // encode file
-                    var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
-                    // upload files to S3
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    bucket.putObject(params, function (err, response) {
-                        if (err) {
-                            console.log("S3 Upload Error:", err); }
-                        else {
-                            // update file path in parse object
-                            org.set('profile_imgURL', awsLink + params.Key);
-                            org.save(null).then(function(){
-                                res.status(200).json({status:"OK", location: objectId});
-                            })
-                        };
-                    });
-                }
-                else {
-                    res.status(200).json({status:"OK", location: objectId});
-                }
-            }, function(error) {
-                console.log('Failed to create new organization, with error code: ' + error.message);
-                res.status(500).json({status: "Creating organization failed. " + error.message});
+                res.status(200).json({status: "OK", location: objectId});
             });
-
-        } else {
-            res.status(403).json({status:"Please login!"});
-        }
+        }, function(error) {
+            console.log('Failed to create new organization, with error code: ' + error.message);
+            res.status(500).json({status: "Creating organization failed. " + error.message});
+        });
     });
 
     app.get('/manage/organization', is_auth, function (req, res, next) {
@@ -886,34 +868,18 @@ module.exports=function(app,Parse,io) {
     });
 
     app.get('/organization/:objectId/equipments_list', is_auth, function (req, res, next) {
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",req.params.objectId);
-        var queryEquipment = new Parse.Query('Equipment');
-        queryEquipment.matchesQuery('organization',innerQuery);
-        queryEquipment.find({
-            success: function(results) {
-                var equipments = [];
-                for (var i in results) {
-                    var keywords = [""];
-                    var objectId = results[i].id;
-                    var title = results[i].attributes.title;
-                    var description = results[i].attributes.description;
-                    var image_URL = results[i].attributes.image_URL;
-                    if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
-                    var equipment = {
-                        objectId: objectId,
-                        title: title,
-                        description: description,
-                        image_URL: image_URL,
-                        keywords: keywords
-                    }; equipments.push(equipment);
-                }
-                res.json(equipments);
-            },
-            error: function(error) {
-                console.log(error);
-                res.render('index', {title: error, path: req.path});
-            }
+        var equipments =[];
+        var query = new Parse.Query('Equipment');
+        query.equalTo("organization", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        query.each(function(equipment) {
+            var promise = Parse.Promise.as();
+            equipments.push(equipment);
+        }).then(function(){
+            //var filtered_models=  _.groupBy(models,'type');
+            console.log(equipments);
+            res.json(equipments);
+        }, function(error) {
+            console.log(error);
         });
     });
 
@@ -931,7 +897,7 @@ module.exports=function(app,Parse,io) {
                 var objectId = results.id;
                 var title = results.attributes.title;
                 var description = results.attributes.description;
-                var image_URL = results.attributes.image_URL;
+                var image_URL = results.attributes.file.url();
                 var start_date = "N/A";
                 var end_date = "N/A";
                 if (results.attributes.collaborators !== undefined) {
