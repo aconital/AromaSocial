@@ -133,6 +133,6 @@ var Project = React.createClass ({
     }
 });
 
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<Project/>,document.getElementById('content'));
 });

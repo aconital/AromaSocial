@@ -248,7 +248,7 @@ var InfoField = React.createClass({
     },
 });
 
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<Publication
         groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
         keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,

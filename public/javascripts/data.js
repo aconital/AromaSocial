@@ -229,7 +229,7 @@ var Data = React.createClass ({
     }
 });
 
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<Data />, document.getElementById('content'));
 });
 

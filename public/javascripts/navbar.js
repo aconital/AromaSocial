@@ -85,7 +85,7 @@ var FriendRequest = React.createClass({
     }
 });
 
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<FriendRequest />, document.getElementById('friendrequest'));
 });
 
@@ -123,7 +123,7 @@ var Notification = React.createClass({
 
     }
 });
-$( window ).load(function() {
+$( document ).ready(function() {
     //if (document.getElementById('notification-request') != null) {
         ReactDOM.render(<Notification />, document.getElementById('notification-request'));
     //}

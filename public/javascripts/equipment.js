@@ -136,6 +136,6 @@ var Equipment = React.createClass ({
         );
     }
 });
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<Equipment />,document.getElementById('content'));
 });

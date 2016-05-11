@@ -135,6 +135,6 @@ var Required = React.createClass({
     },
 });
 
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<CreateReport />, document.getElementById('content'));
 });

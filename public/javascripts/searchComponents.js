@@ -358,7 +358,7 @@ var SearchFeed = React.createClass({
  if (isNode) {
    exports.SearchFeed = SearchFeed;
  } else {
-  $( window ).load(function() {
+  $( document ).ready(function() {
     ReactDOM.render(React.createElement(SearchFeed, {}), document.getElementById('reactSearchContainer'));
   });
  }

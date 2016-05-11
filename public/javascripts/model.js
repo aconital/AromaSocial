@@ -228,6 +228,6 @@ var Model = React.createClass ({
         );
     }
 });
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<Model/>, document.getElementById('content'));
 });

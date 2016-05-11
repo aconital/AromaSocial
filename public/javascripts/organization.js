@@ -1385,6 +1385,6 @@ var Model = React.createClass({
     }
 });
 
-$( window ).load(function() {
+$( document ).ready(function() {
     ReactDOM.render(<Organization />, document.getElementById('content'));
 });
