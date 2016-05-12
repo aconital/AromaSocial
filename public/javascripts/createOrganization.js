@@ -8,6 +8,8 @@ var CreateOrganization = React.createClass({
     getInitialState: function() {
      return {
      	createStatus:'',
+     	buttonInputText:'Create New Organization',
+     	buttonInputDisabled:false,
         // form
         picture: null, pictureType: '', name: '', description: '', location: '', prov: '', country: '', city: '', street: '', postalcode: '', website: ''
         };
@@ -37,7 +39,7 @@ var CreateOrganization = React.createClass({
 										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
 										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />
 
-										<ButtonInput className="center-block" type="submit" value="Create New Organization" />
+										<ButtonInput className="center-block" type="submit" disabled={this.state.buttonInputDisabled} value={this.state.buttonInputText} />
 									</form>
 								</ListGroupItem>
 								<ListGroupItem style={{textAlign:'center'}}>{this.state.createStatus}</ListGroupItem>
@@ -102,6 +104,9 @@ var CreateOrganization = React.createClass({
 							postalcode: this.state.postalcode,
 							website: this.state.website};
 			this.setState({createStatus: 'In progress...'});
+
+			this.setState({buttonInputText: "Please Wait. Creating..."});
+			this.setState({buttonInputDisabled: true});
 
 			$.ajax({
 				url: '/create/organization',

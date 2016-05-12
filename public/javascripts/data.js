@@ -9,6 +9,8 @@ var Data = React.createClass ({
         description: description,
         objectId: objectId,
         image_URL: image_URL,
+        imgSubmitText: "Upload",
+        imgSubmitDisabled: false,
 
         fromModelTab: false,
         pictureChosen: null,
@@ -107,6 +109,8 @@ var Data = React.createClass ({
       this.setState({ showModal: true });
     },
     clickClose() {
+      this.setState({ imgSubmitText: "Upload" });
+      this.setState({ imgSubmitDisabled: false });
       this.setState({ showModal: false});
     },
     openFileUpload() {
@@ -137,7 +141,16 @@ var Data = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function(e) {
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
+// <<<<<<< HEAD
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
+        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_data_picture_" + randomNumber + "." + this.state.pictureType;
+        this.setState({ imgSubmitText: "Uploading. Give us a sec..." });
+        this.setState({ imgSubmitDisabled: true });
+        var $this = this;
+// =======
+//         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
+// >>>>>>> 066d0da34bc0c5a8d4507a6417069090ac217e26
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -156,6 +169,9 @@ var Data = React.createClass ({
         }).then(function(){
             $this.clickClose();
             $this.setState({image_URL:changeImgURL});
+        }, function(err) {
+            $this.setState({ imgSubmitText: "Error. Please select an image and click me again." });
+            $this.setState({ imgSubmitDisabled: false });
         });
 
         return;
@@ -200,7 +216,7 @@ var Data = React.createClass ({
                         </div>
                   </Modal.Body>
                   <Modal.Footer>
-                    <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
+                    <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData}/>
                   </Modal.Footer>
                 </Modal>
 

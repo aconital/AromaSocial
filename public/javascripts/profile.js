@@ -106,11 +106,15 @@ var CustomTags = React.createClass({
 });
 
 /* TEST REACT TAGS END */
+
+
 var Profile = React.createClass ({
     getInitialState: function() {
       return { showModal: false,
             username: [username],
             profile_imgURL: [profile_imgURL],
+            imgSubmitText:'Upload',
+            imgSubmitDisabled:false,
 
             fromModelTab: false,
             pictureChosen: null,
@@ -122,6 +126,8 @@ var Profile = React.createClass ({
       this.setState({ showModal: true });
     },
     clickClose() {
+      this.setState({ imgSubmitText: "Upload" });
+      this.setState({ imgSubmitDisabled: false });
       this.setState({ showModal: false});
     },
     openFileUpload() {
@@ -152,7 +158,18 @@ var Profile = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function() {
+// <<<<<<< HEAD
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
+        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.username + "_profile_picture_" + randomNumber + "." + this.state.pictureType;
+        var that = this;
+        this.setState({imgSubmitText: "Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled: true});
+
+        var $this = this;
+// =======
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
+// >>>>>>> 066d0da34bc0c5a8d4507a6417069090ac217e26
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -166,6 +183,17 @@ var Profile = React.createClass ({
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
             }.bind(this)
+// <<<<<<< HEAD
+        }).then(function(){
+            $this.clickClose();
+            $this.setState({profile_imgURL:changeImgURL});
+            that.setState({ imgSubmitText: "Upload" });
+            that.setState({ imgSubmitDisabled: false });
+        }, function(err) {
+            that.setState({ imgSubmitText: "Error. Please select an image and click me again." });
+            that.setState({ imgSubmitDisabled: false });
+// =======
+// >>>>>>> 066d0da34bc0c5a8d4507a6417069090ac217e26
         });
         return;
     },
@@ -238,7 +266,7 @@ var Profile = React.createClass ({
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
+                    <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData} />
                 </Modal.Footer>
             </Modal>
             <div className="content-wrap">
@@ -898,6 +926,8 @@ var Projects = React.createClass({
         this.setState({ showModal: true });
     },
     clickClose() {
+        this.setState({ imgSubmitText: "Upload" });
+        this.setState({ imgSubmitDisabled: false });
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
@@ -1267,7 +1297,8 @@ var PublicationAddForm = React.createClass({
         formFeedback: '',
         fileFeedback: {},
         autoFillStatus: '',
-
+        submitButtonText: 'Continue',
+        submitButtonDisabled: false,
         // field labels
         labels: {title: 'Title', collaborators: 'Collaborators', creationDate: 'Publication Date', description: 'Abstract',
         		 keywords: 'Keywords', url: 'URL', doi: 'DOI (Digital Object Identifier', // common
@@ -1428,7 +1459,7 @@ var PublicationAddForm = React.createClass({
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
 
 				<Modal.Footer>
-					<Input className="btn btn-default pull-right submit" type="submit" value="Continue" />
+					<Input className="btn btn-default pull-right submit" type="submit" disabled={this.state.submitButtonDisabled} value={this.state.submitButtonText} />
 					<div className="form-feedback"></div>
 				</Modal.Footer>
             </form>
@@ -1608,6 +1639,8 @@ var PublicationAddForm = React.createClass({
 
 	handleSubmitData: function(e) {
         e.preventDefault();
+        this.setState({submitButtonText: "Please wait. We're uploading..."});
+        this.setState({submitButtonDisabled: true});
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
         				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
@@ -1683,6 +1716,8 @@ var ResourceAddForm = React.createClass({
         return {
             alertVisible: false,
             fromModelTab: false,
+            submitButtonText: 'Continue',
+            submitButtonDisabled: false,
             buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
             formFeedback: '',
             fileFeedback: {},
@@ -1791,7 +1826,7 @@ var ResourceAddForm = React.createClass({
                     </div>
   */}
                     <Modal.Footer>
-                        <Input className="btn btn-default pull-right submit" type="submit" value="Continue" />
+                        <Input ref="submitButton" className="btn btn-default pull-right submit" type="submit" disabled={this.state.submitButtonDisabled} value={this.state.submitButtonText} />
                     </Modal.Footer>
                 </form>
             </div>
@@ -1801,20 +1836,6 @@ var ResourceAddForm = React.createClass({
         var changedState = {};
         changedState[type] = ids;
         this.setState(changedState);
-        // console.log("Type: ");
-        // console.log(type);
-        // console.log("Name: ");
-        // console.log(name);
-        // console.log("Recorded Id: ");
-        // console.log(id);
-        // var changedState = {};
-        // changedState[type] = id;
-        // this.setState(changedState);
-        // console.log("THIS STATE NAME: ");
-        // console.log(this.state[name]);
-        // var changedState = {};
-        // changedState[type] = id;
-        // this.setState({ collaborators: this.state[type].concat([id]) });
     },
 	handleChange: function(e) {
 	    var changedState = {};
@@ -1832,7 +1853,10 @@ var ResourceAddForm = React.createClass({
         this.setState(changedState);
     },
 	handleSubmitData: function(e) {
+        console.log(e);
         e.preventDefault();
+        this.setState({submitButtonText: "Please Wait. We're uploading"});
+        this.setState({submitButtonDisabled: true});
         var endpoint = this.props.fromModelTab ? "/model" : "/data";
         var dataForm = {picture: this.state.picture,
                         pictureType: this.state.pictureType,
@@ -1963,7 +1987,8 @@ var ProjectAddForm = React.createClass({
         formFeedback: '',
         fileFeedback: {},
         pictureFeedback: '',
-
+        submitButtonText: "Continue",
+        submitButtonDisabled: false,
         // form
          picture: null,
          file: null,
@@ -2068,7 +2093,7 @@ var ProjectAddForm = React.createClass({
                     {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="btn btn-default pull-right submit" type="submit" value="Submit"/>
+                    <input className="btn btn-default pull-right submit" type="submit" disabled={this.state.submitButtonDisabled} value={this.state.submitButtonText}/>
                 </Modal.Footer>
             </form>
 		</div>
@@ -2097,7 +2122,8 @@ var ProjectAddForm = React.createClass({
     },
 	handleSubmitData: function(e) {
         e.preventDefault();
-
+        this.setState({submitButtonText: "Please wait. We're uploading..."});
+        this.setState({submitButtonDisabled: true});
         var dataForm = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
         				collaborators: JSON.stringify(this.state.collaborators), startDate: this.state.startDate, endDate: this.state.endDate,
