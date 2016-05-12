@@ -3,16 +3,22 @@ var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+var Carousel = ReactBootstrap.Carousel
 
 var Organization = React.createClass ({
     getInitialState: function() {
         return {    isAdmin: [],
             status: '',
             organization_imgURL: [organization_imgURL],
-            showModal: false};
+            showModal: false,
+            modalMode: 1, //the active carousel item, values =1,2,3
+            carousel_1_img: {carousel_1_img},
+            carousel_2_img: {carousel_2_img},
+            carousel_3_img: {carousel_3_img}}
     },
     componentWillMount: function() {
         var connectURL= "/organization/"+objectId+"/join-status";
+        var orgURL= "/organization/"+objectId;
 
         $.ajax({
             url: connectURL,
@@ -74,6 +80,7 @@ var Organization = React.createClass ({
             }.bind(this)
         });
     },
+
     submitPicture: function() { //todo export utils
         var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
@@ -86,6 +93,7 @@ var Organization = React.createClass ({
             success: function(data) {
                 console.log(data.status);
                 this.setState({organization_imgURL: this.state.picture});
+
                 this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
@@ -103,7 +111,7 @@ var Organization = React.createClass ({
         reader.onload = function(upload) {
             self.setState({
                 picture: upload.target.result,
-                pictureType: extension,
+                pictureType: extension
             });
         }
         reader.readAsDataURL(file);
@@ -178,6 +186,7 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
+
                                 <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
@@ -197,7 +206,7 @@ var OrganizationMenu = React.createClass ({
     render: function() {
         var self = this;
 
-        var tabMap = {0: <About objectId={objectId}/>,
+        var tabMap = {0: <About objectId={objectId} />,
             1: <People />,
             2: <Connections  />,
             3: <Equipments objectId={objectId}/>,
@@ -233,7 +242,19 @@ var OrganizationMenu = React.createClass ({
 
 var About = React.createClass({
     getInitialState: function(){
-        return {about: {about}};
+        return {about: about,
+            carousel_1_img:{carousel_1_img},
+            carousel_1_head: carousel_1_head,
+            carousel_1_body: carousel_1_body,
+            carousel_2_img: {carousel_2_img},
+            carousel_2_head: carousel_2_head,
+            carousel_2_body: carousel_2_body,
+            carousel_3_img: {carousel_3_img},
+            carousel_3_head: carousel_3_head,
+            carousel_3_body: carousel_3_body,
+            showModal: false,
+            modalMode : 1 //the active carousel item, values =1,2,3
+        };
     },
     componentDidMount : function() {
         var isAdminURL= "/organization/"+objectId+"/isAdmin";
@@ -249,13 +270,30 @@ var About = React.createClass({
             }.bind(this)
         });
     },
+    handlePicture: function(e) { //todo export utils
+        var self = this,
+            reader = new FileReader(),
+            file = e.target.files[0],
+            extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+            self.setState({
+                picture: upload.target.result,
+                pictureType: extension
+            });
+        }
+        reader.readAsDataURL(file);
+    },
     handleChange: function(e) {
         var changedState = {};
         changedState[e.target.name] = e.target.value;
         this.setState( changedState );
     },
     submitChange: function() {
-        var dataForm = {isAdmin: false, about: this.state.about.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
+        var dataForm = {isAdmin: false, about: this.state.about.replace(/(\r\n|\n|\r|\\)/gm,'\\n'),
+                        carousel_1_head: this.state.carousel_1_head, carousel_1_body: this.state.carousel_1_body,
+                        carousel_2_head: this.state.carousel_2_head, carousel_2_body: this.state.carousel_2_body,
+                        carousel_3_head: this.state.carousel_3_head, carousel_3_body: this.state.carousel_3_body };
         var isAdminURL= "/organization/"+objectId+"/isAdmin";
         $.ajax({
             url: path + "/update",
@@ -272,15 +310,172 @@ var About = React.createClass({
             }.bind(this)
         });
     },
+
+    submitCarouselPicture_1: function() { //todo export utils
+        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        $.ajax({
+            url: path + "/updateCarouselPicture_1",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log(data.status);
+                this.setState({carousel_1_img: this.state.picture});
+
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateCarouselPicture_1", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitCarouselPicture_2: function() { //todo export utils
+        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        $.ajax({
+            url: path + "/updateCarouselPicture_2",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log(data.status);
+                this.setState({carousel_2_img: this.state.picture});
+
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateCarouselPicture_2", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitCarouselPicture_3: function() { //todo export utils
+        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        $.ajax({
+            url: path + "/updateCarouselPicture_3",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log(data.status);
+                this.setState({carousel_3_img: this.state.picture});
+
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateCarouselPicture_3", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    clickOpen(modalMode) {
+        this.setState({modalMode : modalMode});
+        console.log(modalMode);
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false});
+    },
     render: function() {
-        return(
+
+        if (this.state.isAdmin)
+            return (
+                <div>
+                    <Modal show={this.state.showModal} onHide={this.clickClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Update Carousel Picture</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <div id="field1-container">
+                                <input className="form-control" type="file" name="publication-upload" id="picture" required="required" placeholder="File" onChange={this.handlePicture} />
+                            </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            {(this.state.modalMode == 1)? <input className="publication-button" type="submit" value="Submit" onClick={this.submitCarouselPicture_1} />: ""}
+                            {(this.state.modalMode == 2)? <input className="publication-button" type="submit" value="Submit" onClick={this.submitCarouselPicture_2} />: ""}
+                            {(this.state.modalMode == 3)? <input className="publication-button" type="submit" value="Submit" onClick={this.submitCarouselPicture_3} />: ""}
+                        </Modal.Footer>
+                    </Modal>
+                    <Carousel>
+
+                        <Carousel.Item>
+                            <img src={carousel_1_img} />
+                            <Carousel.Caption>
+
+                                <Button onClick={()=>this.clickOpen(1)} bsStyle="primary">Change picture</Button>
+                                <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_1_head" placeholder="Image Title" name="carousel_1_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_1_head}</textarea></h3>
+                                <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_1_body" placeholder="Image Description" name="carousel_1_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_1_body}</textarea></p>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <img src={carousel_2_img}/>
+                            <Carousel.Caption>
+                                <Button onClick={()=>this.clickOpen(2)} bsStyle="primary">Change picture</Button>
+                                <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_2_head" placeholder="Image Title" name="carousel_2_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_2_head}</textarea></h3>
+                                <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_2_body" placeholder="Image Description" name="carousel_2_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_2_body}</textarea></p>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <img src={carousel_3_img}/>
+                            <Carousel.Caption>
+                                <Button onClick={()=>this.clickOpen(3)} bsStyle="primary">Change picture</Button>
+                                <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_3_head" placeholder="Image Title" name="carousel_3_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_3_head}</textarea></h3>
+                                <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_3_body" placeholder="Image Description" name="carousel_3_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_3_body}</textarea></p>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+
+                    </Carousel>
+                    <div className="organization-table-div">
+
+                        <textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea>
+                    </div>
+                </div>
+
+        ) ;
+        //not admin
+        else
+        return (
             <div>
+            {(carousel_1_img != "/images/carousel.png" || carousel_2_img != "/images/carousel.png" || carousel_3_img != "/images/carousel.png")?
+             <Carousel>
+                   {(carousel_1_img != "/images/carousel.png")?
+                        <Carousel.Item>
+                            <img src={carousel_1_img}/>
+                            <Carousel.Caption>
+                                <h3>{carousel_1_head}</h3>
+                                <p>{carousel_1_body}</p>
+                            </Carousel.Caption>
+                        </Carousel.Item> :"" }
+                    {(carousel_2_img != "/images/carousel.png")?
+                        <Carousel.Item>
+                            <img src={carousel_2_img}/>
+                            <Carousel.Caption>
+                                <h3>{carousel_2_head}</h3>
+                                <p>{carousel_2_body}</p>
+                            </Carousel.Caption>
+                        </Carousel.Item> :"" }
+                    {(carousel_3_img != "/images/carousel.png")?
+                        <Carousel.Item>
+                            <img src={carousel_3_img}/>
+                            <Carousel.Caption>
+                                <h3>{carousel_3_head}</h3>
+                                <p>{carousel_3_body}</p>
+                            </Carousel.Caption>
+                        </Carousel.Item> :"" }
+                </Carousel> : ""}
                 <div className="organization-table-div">
-                    {(this.state.isAdmin) ? <textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea> : <pre>{about}</pre>}
+
+                    <pre>{about}</pre>
                 </div>
             </div>
         );
-    },
+    }
 
 })
 
@@ -371,7 +566,7 @@ var AddConnection = React.createClass({
             joinOrganization: '',
             organizationId: '',
             joinType: '',
-            formFeedback: '',
+            formFeedback: ''
         }
     },
     componentDidMount : function(){
@@ -462,7 +657,7 @@ var AddConnection = React.createClass({
             }.bind(this)
         });
         return;
-    },
+    }
 });
 
 var People = React.createClass({
@@ -533,7 +728,7 @@ var Manage = React.createClass({
             orgPostalcode: orgPostalcode,
             orgWebsite: orgWebsite,
             organization_imgURL: organization_imgURL,
-            cover_imgURL: cover_imgURL,
+
             pendingPeople: [],
             pendingOrganizations: [],
             admins: []
@@ -1048,7 +1243,7 @@ var EquipmentAddForm = React.createClass({
             issues.push("KEYWORDS");
         }
         return issues;
-    },
+    }
 });
 
 var Projects = React.createClass({
@@ -1092,7 +1287,7 @@ var Projects = React.createClass({
                             <table className="item-box-right-tags">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;})}</td></tr>
                                 <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
-                            {/*}   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                            {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </div>
                     </div>
@@ -1151,7 +1346,7 @@ var Publications = React.createClass({
                             <table className="item-box-table-info">
                                 <tr><td><b>Contributors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
                                 <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
-                              {/*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                             { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
                         </span>
@@ -1265,7 +1460,7 @@ var Datum = React.createClass({
                         <table className="item-box-table-info">
                             <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                             <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
-                        {/*}   <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                        {/*   <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                         </table>
                     </span>
                 </div>
@@ -1353,7 +1548,7 @@ var Model = React.createClass({
                     <table className="item-box-table-info">
                         <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                         <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
-                    {/*}    <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                    { /*    <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                     </table>
                 </span>
                 </div>

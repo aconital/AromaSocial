@@ -61,7 +61,15 @@ module.exports=function(app,Parse,io) {
                     postalcode: result.get('postalcode'),
                     website: result.get('website'),
                     organization_imgURL: result.get('profile_imgURL'),
-                    cover_imgURL: result.get('cover_imgURL')
+                    carousel_1_img: result.get('carousel_1_img'),
+                    carousel_1_head: result.get('carousel_1_head'),
+                    carousel_1_body: result.get('carousel_1_body'),
+                    carousel_2_img: result.get('carousel_2_img'),
+                    carousel_2_head: result.get('carousel_2_head'),
+                    carousel_2_body: result.get('carousel_2_body'),
+                    carousel_3_img: result.get('carousel_3_img'),
+                    carousel_3_head: result.get('carousel_3_head'),
+                    carousel_3_body: result.get('carousel_3_body')
                 });
             },
             error: function(error) {
@@ -331,12 +339,91 @@ module.exports=function(app,Parse,io) {
                     location = req.body.country;
             }
             result.set('location', location);
-
+            result.set("carousel_1_head", req.body.carousel_1_head);
+            result.set("carousel_1_body", req.body.carousel_1_body);
+            result.set("carousel_2_head", req.body.carousel_2_head);
+            result.set("carousel_2_body", req.body.carousel_2_body);
+            result.set("carousel_3_head", req.body.carousel_3_head);
+            result.set("carousel_3_body", req.body.carousel_3_body);
             result.save();
             res.status(200).json({status: "Updated Successfully!"});
         });
     });
 
+    app.post('/organization/:objectId/updateCarouselPicture_1', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(1);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel1");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_1_img", awsLink + params.Key);
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
+    app.post('/organization/:objectId/updateCarouselPicture_2', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(2);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel2");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_2_img", awsLink + params.Key);
+
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
+    app.post('/organization/:objectId/updateCarouselPicture_3', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(3);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel3");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_3_img", awsLink + params.Key);
+
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
     app.post('/organization/:objectId/updatePicture', function(req,res,next){
         if(req.body.picture && req.body.pictureType){
             query = new Parse.Query("Organization");
@@ -348,7 +435,8 @@ module.exports=function(app,Parse,io) {
                         console.log("S3 Upload Error:", err);
                     }
                     else {
-                        result.set("profile_imgURL", awsLink + params.Key);
+                            result.set("profile_imgURL", awsLink + params.Key);
+
                         result.save();
                         res.status(200).json({status: "Picture Uploaded Successfully!"});
                     }
@@ -672,11 +760,20 @@ module.exports=function(app,Parse,io) {
         if (currentUser) {
             var Organization = Parse.Object.extend("Organization");
             var org = new Organization();
-            org.set('cover_imgURL', '/images/banner.png'); // default. replace later
             org.set('profile_imgURL', '/images/organization.png');
+            org.set('carousel_1_img','/images/carousel.png');
+            org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');
+            org.set('carousel_1_body',req.body.carousel_1_body ? req.body.carousel_1_body : '');
+            org.set('carousel_2_img','/images/carousel.png');
+            org.set('carousel_2_head',req.body.carousel_2_head ? req.body.carousel_2_head : '');
+            org.set('carousel_2_body',req.body.carousel_2_body ? req.body.carousel_2_body : '');
+            org.set('carousel_3_img','/images/carousel.png');
+            org.set('carousel_3_head',req.body.carousel_3_head ? req.body.carousel_3_head : '');
+            org.set('carousel_3_body',req.body.carousel_3_body ? req.body.carousel_3_body : '');
+
             org.set('name', req.body.name);
             // org.set('location', req.body.location ? req.body.location : '');
-            org.set('about', req.body.description ? req.body.description : 'About Organization');
+            org.set('about', req.body.description ? req.body.description : '');
             org.set('country', req.body.country ? req.body.country : '');
             org.set('prov', req.body.prov ? req.body.prov : '');
             org.set('city', req.body.city ? req.body.city : '');
