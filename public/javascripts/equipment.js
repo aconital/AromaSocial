@@ -10,6 +10,8 @@ var Equipment = React.createClass ({
         description: description,
         image_URL: image_URL,
         file_path: file_path,
+        imgSubmitText: "Upload",
+        imgSubmitDisabled: false,
 
         showModal: false
         };
@@ -42,6 +44,8 @@ var Equipment = React.createClass ({
       this.setState({ showModal: true });
     },
     clickClose() {
+      this.setState({imgSubmitText:"Upload"});
+      this.setState({imgSubmitDisabled:false});
       this.setState({ showModal: false});
     },
     openFileUpload() {
@@ -75,7 +79,8 @@ var Equipment = React.createClass ({
         var randomNumber = Math.floor(Math.random() * 100000000);
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
         var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_equipment_picture_" + randomNumber + "." + this.state.pictureType;
-
+        this.setState({imgSubmitText:"Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled:true});
         var $this = this;
         $.ajax({
             url: path + "/picture",
@@ -93,6 +98,9 @@ var Equipment = React.createClass ({
         }).then(function(){
             $this.clickClose();
             $this.setState({image_URL:changeImgURL});
+        }, function(err) {
+            $this.setState({imgSubmitText: "Error. Please select an image and click me again."});
+            $this.setState({imgSubmitDisabled: false});
         });
 
         return;
@@ -118,7 +126,7 @@ var Equipment = React.createClass ({
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
+                    <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData}/>
                 </Modal.Footer>
             </Modal>
             <div className="content-wrap-item-page-100">

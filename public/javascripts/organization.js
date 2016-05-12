@@ -10,6 +10,8 @@ var Organization = React.createClass ({
             status: '',
             organization_imgURL: [organization_imgURL],
             showModal: false,
+            imgSubmitText: 'Upload',
+            imgSubmitDisabled: false,
             errorText: 'Could not complete operation.'};
     },
     componentWillMount: function() {
@@ -29,6 +31,8 @@ var Organization = React.createClass ({
         this.setState({ showModal: true });
     },
     clickClose() {
+        this.setState({ imgSubmitText: "Upload" });
+        this.setState({ imgSubmitDisabled: false });
         this.setState({ showModal: false});
     },
     componentDidMount : function() {
@@ -92,6 +96,9 @@ var Organization = React.createClass ({
     },
     submitPicture: function() { //todo export utils
         var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        this.setState({imgSubmitText: "Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled:true});
+        var that = this;
         $.ajax({
             url: path + "/updatePicture",
             dataType: 'json',
@@ -107,6 +114,12 @@ var Organization = React.createClass ({
             error: function(xhr, status, err) {
                 console.error(path + "/update", status, err.toString());
             }.bind(this)
+        }).then(function() {
+            that.setState({imgSubmitText: "Upload"});
+            that.setState({imgSubmitDisabled:false});
+        }, function(err) {
+            that.setState({imgSubmitText: "Error. Please select an image and click me again."});
+            that.setState({imgSubmitDisabled:false});
         });
         return;
     },
@@ -151,7 +164,7 @@ var Organization = React.createClass ({
                             </div>
                         </Modal.Body>
                         <Modal.Footer>
-                            <input className="publication-button" type="submit" value="Submit" onClick={this.submitPicture} />
+                            <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.submitPicture} />
                         </Modal.Footer>
                     </Modal>
                     <div className="content-wrap">
@@ -898,6 +911,8 @@ var Equipments = React.createClass({
 
 var EquipmentAddForm = React.createClass({
     close: function(e) {
+        this.setState({imgSubmitText: 'Continue'});
+        this.setState({imgSubmitDisabled: false});
         this.props.submitSuccess();
     },
     getInitialState: function() {
@@ -907,6 +922,8 @@ var EquipmentAddForm = React.createClass({
             formFeedback: '',
             fileFeedback: {},
             pictureFeedback: '',
+            imgSubmitText: 'Continue',
+            imgSubmitDisabled: false,
             // form
             picture: null,
             file: null,
@@ -947,7 +964,7 @@ var EquipmentAddForm = React.createClass({
                         <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                     </Modal.Body>
                     <Modal.Footer>
-                        <input className="full-button" type="submit" value="Submit"/>
+                        <input className="full-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText}/>
                     </Modal.Footer>
                 </form>
             </div>
@@ -993,6 +1010,10 @@ var EquipmentAddForm = React.createClass({
                 description: this.state.description, instructions: this.state.instructions, model: this.state.model,
                 model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
 
+            this.setState({imgSubmitText: 'Creating Equipment. Give us a sec...'});
+            this.setState({imgSubmitDisabled: true});
+            var that = this;
+
             $.ajax({
                 url: path + endpoint,
                 dataType: 'json',
@@ -1007,6 +1028,12 @@ var EquipmentAddForm = React.createClass({
                 error: function(xhr, status, err) {
                     console.error(path + endpoint, status, err.toString());
                 }.bind(this)
+            }).then(function(){
+                that.setState({imgSubmitText: 'Continue'});
+                that.setState({imgSubmitDisabled: false});
+            }, function(err) {
+                that.setState({imgSubmitText: 'Error. Check fields and try again'});
+                that.setState({imgSubmitDisabled: false});
             });
         }
         else {
