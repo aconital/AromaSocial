@@ -91,7 +91,7 @@ var Organization = React.createClass ({
 
     },
     submitPicture: function() { //todo export utils
-        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/updatePicture",
             dataType: 'json',

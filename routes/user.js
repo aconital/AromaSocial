@@ -373,7 +373,7 @@ module.exports=function(app,Parse,io) {
                     var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
                     pictureFile.save().then(function () {
                         result.set('picture', pictureFile)
-                        result.save().then(function () {
+                        result.save(null, { useMasterKey: true }).then(function () {
                             res.status(200).json({status: "Picture Uploaded Successfully!"});
                         });
                     });

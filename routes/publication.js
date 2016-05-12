@@ -29,27 +29,6 @@ var encodeHtmlEntity = function(str) {
 };
 
 module.exports=function(app,Parse,io) {
-
-    // app.get('/allpublications', function(req, res, next) {
-    //     var currentUser = req.user;
-    //     var query = new Parse.Query('Publication');
-    //     query.find({
-    //         success: function(items) {
-    //             var results = [];
-    //             for (var i = 0; i < items.length; i++) {
-    //                 var obj = items[i];
-    //                 results.push(obj);
-    //             }
-    //             console.log("RESULTS ARE: ");
-    //             console.log(results);
-    //             res.send(results);
-    //         },
-    //         error: function(error) {
-    //             console.log("Error while getting all publications");
-    //         }
-    //     });
-    // });
-
     
     app.get('/allpublications', function(req, res, next) {
         var currentUser = req.user;
@@ -600,6 +579,28 @@ module.exports=function(app,Parse,io) {
                 })
             })
         })
+    });
+
+    app.delete('/publication/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var pubClass = req.query.pub_class;
+        console.log(pubClass)
+        if (currentUser) {
+            var Publication = Parse.Object.extend(pubClass);
+            var query = new Parse.Query(Publication);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete publication"});
+        }
     });
 
     app.post('/profile/:username/publication', function(req,res,next){

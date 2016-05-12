@@ -52,7 +52,7 @@ module.exports=function(app,Parse,io) {
                     if(object.attributes.from!=null) {
                         username = object.attributes.from.attributes.username;
                         fullname = object.attributes.from.attributes.fullname;
-                        userImg = object.attributes.from.attributes.imgUrl;
+                        userImg = object.attributes.from.attributes.picture.url();
                     }
                     var  type=object.attributes.type;
                     var  date=object.createdAt;

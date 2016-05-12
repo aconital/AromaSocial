@@ -58,6 +58,26 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    app.delete('/project/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        if (currentUser) {
+            var Project = Parse.Object.extend("Project");
+            var query = new Parse.Query(Project);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete project"});
+        }
+    });
+
     app.post('/profile/:username/project', is_auth, function(req,res,next){
         if (req.user.username == req.params.username) {
             var now = moment();
