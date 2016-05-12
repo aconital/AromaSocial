@@ -69,8 +69,8 @@ module.exports=function(app,Parse,io) {
                     carousel_2_body: result.get('carousel_2_body'),
                     carousel_3_img: result.get('carousel_3_img'),
                     carousel_3_head: result.get('carousel_3_head'),
-                    carousel_3_body: result.get('carousel_3_body')
-                    organization_imgURL: result.get('picture').url(),
+                    carousel_3_body: result.get('carousel_3_body'),
+                    organization_imgURL: result.get('picture').url()
                 });
             },
             error: function(error) {

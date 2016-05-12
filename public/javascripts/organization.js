@@ -3,7 +3,7 @@ var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
-var Carousel = ReactBootstrap.Carousel
+var Carousel = ReactBootstrap.Carousel;
 
 var Organization = React.createClass ({
     getInitialState: function() {
@@ -14,7 +14,7 @@ var Organization = React.createClass ({
             modalMode: 1, //the active carousel item, values =1,2,3
             carousel_1_img: {carousel_1_img},
             carousel_2_img: {carousel_2_img},
-            carousel_3_img: {carousel_3_img}}
+            carousel_3_img: {carousel_3_img},
             errorText: 'Could not complete operation.'};
     },
     componentWillMount: function() {
@@ -75,7 +75,7 @@ var Organization = React.createClass ({
 
         $.ajax({
             url: adminURL,
-            data: {getCount: true},
+            data: {getCount: true}
         }).done(function(count) {
             if (self.state.isAdmin && count < 2) {
                 self.setState({errorText: "Can't leave network with no admins! Either delete network or add an administrator."});
@@ -83,13 +83,13 @@ var Organization = React.createClass ({
                 setTimeout(function() { $("#error-dialog").hide(); }, 5000);
             } else {
                 $.ajax({
-                    url: connectURL,
+                    url: connectURL
                 }).done(function(status) {
                     console.log(status);
                     self.setState({status: "not-joined"});
                 }).fail(function(xhr, status, error) {
                     console.log(status + ': ' + error);
-                });;
+                });
             }
         }).fail(function(xhr, status, err) {
             console.log(status + ': ' + error);
@@ -310,6 +310,7 @@ var About = React.createClass({
         }
         reader.readAsDataURL(file);
     },
+
     handleChange: function(e) {
         var changedState = {};
         changedState[e.target.name] = e.target.value;
