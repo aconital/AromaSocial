@@ -152,5 +152,6 @@ var Required = React.createClass({
 		);
 	},
 });
-
-ReactDOM.render(<CreateOrganization />, document.getElementById('content'));
+$( document ).ready(function() {
+	ReactDOM.render(<CreateOrganization />, document.getElementById('content'));
+});

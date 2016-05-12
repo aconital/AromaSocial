@@ -112,19 +112,19 @@ var Publication = React.createClass ({
         });
 
     },
-
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteEntry.bind(this),
     render: function() {
         var self = this,
             keys = (this.state.fields) ? this.state.fields : [],
             fileExists = this.state.filename || false,
             creator = (this.state.user) ? '/profile/' + this.state.user.username : '',
             avatar = (this.state.user) ? this.state.user.imgUrl : '',
-            details; // holds dynamically-filled information table
+            details, // holds dynamically-filled information table
+            fileExists;
 
         if (this.state.filename || false) {
-            fileExists = <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
-        } else {
-            fileExists = <h2 className="corner"></h2>;
+            fileExists = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         if (currentUserId == creatorId) {
@@ -142,7 +142,10 @@ var Publication = React.createClass ({
             <div className="content-wrap-item-page-100">
                 <div className="item-panel">
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
-                    {fileExists}
+                    <h2 className="corner">
+                        {fileExists}
+                        {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
+                    </h2>
                     <p className="p-noneditable"><strong>Abstract:</strong></p>
                     {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{this.state.abstract}</pre>}
                 </div>
@@ -248,7 +251,9 @@ var InfoField = React.createClass({
     },
 });
 
-ReactDOM.render(<Publication
-    groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
-    keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,
-    document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Publication
+        groups={["FRESH Lab","Forest Resource Management","Faculty of Forestry","UBC"]}
+        keywords={["Techno-Economic Assessment","Bio-Fuels","Bio-Energy","Supply Chain Management"]}/>,
+        document.getElementById('content'));
+});

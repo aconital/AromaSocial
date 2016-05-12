@@ -27,8 +27,14 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query('Equipment');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('equipment', {
+                    path: req.path,
                     title: 'Equipment',
+                    path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
@@ -37,8 +43,8 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     description: result.get('description'),
                     instructions: result.get('instructions'),
-                    image_URL: result.get('image_URL'),
-                    file_path: result.get('file_path'),
+                    image_URL: result.get('picture').url(),
+                    file_path: filename,
                     keywords: result.get('keywords'),
                     model: result.get('model'),
                     model_year: result.get('model_year'),
@@ -52,6 +58,26 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    app.delete('/equipment/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        if (currentUser) {
+            var Equipment = Parse.Object.extend("Equipment");
+            var query = new Parse.Query(Equipment);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete equipment"});
+        }
+    });
+
     app.post('/organization/:objectId/equipment', is_auth, function(req,res,next){
         var now = moment();
         var Equipment = Parse.Object.extend("Equipment");
@@ -61,57 +87,34 @@ module.exports=function(app,Parse,io) {
         equipment.set('description', req.body.description);
         equipment.set('title',req.body.title);
         equipment.set('keywords',JSON.parse(req.body.keywords));
-        equipment.set('image_URL','/images/testtube.png');
         equipment.set('instructions',req.body.instructions);
         equipment.set('model_year',req.body.model_year);
         equipment.set('model',req.body.model);
-        equipment.save(null).then(
-            function(response) {
-                var objectId = response.id;
-                var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                if (req.body.picture!=null) {
-                    var s3Key = req.params.organizationId + "_equipment_picture_" + objectId + "." + req.body.pictureType;
-                    var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                    var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                    var fileParams = {
-                        Key: s3Key,
-                        Body: fileBuff,
-                        ContentEncoding: 'base64',
-                        ContentType: (contentType ? contentType[1] : 'text/plain')
-                    };
-                    bucket.putObject(fileParams, function (err, data) {
-                        if (err) { console.log("Equipment Image Upload Error:", err); }
-                        else {
-                            equipment.set('image_URL', awsLink + s3Key);
-                            equipment.save();
-                        }
-                    });
-                }
-                if (req.body.file!=null) {
-                    var s3KeyP = req.params.organizationId + "_equipment_file_" + objectId + "." + req.body.fileType;
-                    var contentTypeP = req.body.file.match(/^data:(\w+\/.+);base64,/);
-                    var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                    var pictureParams = {
-                        Key: s3KeyP,
-                        Body: pictureBuff,
-                        ContentEncoding: 'base64',
-                        ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                    };
-                    bucket.putObject(pictureParams, function (err, data) {
-                        if (err) { console.log("Equipment File Upload Error:", err); }
-                        else {
-                            equipment.set('file_path', awsLink + s3KeyP);
-                            equipment.save();
-                        }
-                    });
-                }
-                res.json({status: 'Equipment Uploaded!'});
-            },
-            function(response, error) {
-                console.log('Failed to create new object, with error code: ' + error.message);
-                res.json({status: "Creating equipment object failed. " + error.message});
-            }
-        );
+        var promises = [];
+        if (req.body.picture != null) {
+            var pictureName = req.params.username + "_equipment_picture." + req.body.pictureType;
+            var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+            var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+            promises.push(pictureFile.save().then(function () {
+                equipment.set('picture', pictureFile)
+            }));
+        }
+        if (req.body.file != null) {
+            var fileName = req.params.username + "_equipment_picture." + req.body.fileType;
+            var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+            var fileFile = new Parse.File(fileName, {base64: fileBuff});
+            promises.push(fileFile.save().then(function () {
+                equipment.set('file', fileFile)
+            }));
+        }
+        return Parse.Promise.when(promises).then(function (res1, res2) {
+            equipment.save().then(function () {
+                res.json({status: "Success in creating data"})
+            })
+        }, function (error) {
+            console.log('Failed to create new object, with error code: ' + error.message);
+            res.status(500).json({status: "Creating equipment object failed. " + error.message});
+        });
     });
 
     app.post('/equipment/:objectId/update', is_auth, function(req,res,next){
@@ -127,35 +130,23 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.post('/equipment/:objectId/picture', is_auth, function(req,res,next){
+    app.post('/equipment/:objectId/picture', is_auth, function(req,res,next) {
         var query = new Parse.Query("Equipment");
-        query.get(req.params.objectId,{
-            success: function(result) {
-                var bucket = new aws.S3();
-
-                var s3KeyP = req.params.objectId + "_equipment_picture_" + req.body.randomNumber + "." + req.body.pictureType;
-                var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                var pictureParams = {
-                    Bucket: 'syncholar',
-                    Key: s3KeyP,
-                    Body: pictureBuff,
-                    ContentEncoding: 'base64',
-                    ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                };
-
-                bucket.putObject(pictureParams, function (err, data) {
-                    if (err) { console.log("Profile Picture (Image) Upload Error:", err); }
-                    else {
-                        console.log('Uploaded Image to S3!');
-                        result.set("image_URL",awsLink + s3KeyP);
-                        result.save();
+        query.get(req.params.objectId).then(function (result) {
+            if (req.body.picture != null && result != undefined) {
+                var pictureName = req.params.objectId + "_equipment_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                pictureFile.save().then(function () {
+                    result.set('picture', pictureFile)
+                    result.save().then(function () {
                         res.status(200).json({status: "Picture Uploaded Successfully!"});
-                    }
+                    });
                 });
+            }
+            else {
+                res.status(500).json({status: "Picture Upload Failed!"});
             }
         });
     });
-
-
 };

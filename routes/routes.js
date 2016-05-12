@@ -15,6 +15,7 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 //var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://syncholar.com/auth/linkedin/callback');
 
+var sendMail = require('../utils/helpers').sendMail;
 var is_auth = require('../utils/helpers').is_auth;
 var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
@@ -28,42 +29,27 @@ var smtpConfig = {
         pass: 'Fomsummer2016'
     }
 };
-var transporter = nodemailer.createTransport('smtps://support%40syncholar.com:Fomsummer2016@smtp.gmail.com');
-
-// setup e-mail data with unicode symbols
-var mailOptions = {
-    from: 'Syncholar 👥 <foo@blurdybloop.com>', // sender address
-    to: 'hiradroshandel@yahoo.com', // list of receivers
-    subject: 'Syncholar Test Invite', // Subject line
-    text: 'Testing nodemailer', // plaintext body
-    html: '<h2>You just got invited! �?�</h2>' // html body
-};
-
-function sendEmail (option) {
-  // send mail with defined transport object
-  transporter.sendMail(option, function(error, info){
-      if(error){
-          return console.log(error);
-      }
-      console.log('Message sent: ' + info.response);
-  });
-}
 
 module.exports=function(app,Parse,io) {
 
+  app.get('/beta', function (req, res, next) {
+    var rl = req.query.redLink;
+    console.log("redLink in /beta get: ", rl);
+    res.render('beta', {title: 'Syncholar Beta', redLink: rl, path: req.path, Error: ""});
+  });
 
-    app.get('/beta', function (req, res, next) {
-            res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: ""});
-    });
-    app.post('/beta', function (req, res, next) {
-        var code = req.body.code;
-        if(code === "Fom2016") {
-            req.session.code=code;
-            res.redirect("/signin");
-        }
-        else
-         res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
-    });
+  app.post('/beta', function (req, res, next) {
+      var code = req.body.code;
+      var redLink = req.body.redLink;
+      console.log("RedLink in /beta POST => ", redLink);
+      if(code === "Fom2016") {
+          req.session.code=code;
+          // res.redirect("/signin");
+          res.redirect(redLink);
+      }
+      else
+       res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
+  });
 
   // EMAIL API
   app.post('/sendemail', function(req, res, next){
@@ -74,6 +60,7 @@ module.exports=function(app,Parse,io) {
 
     // checks go here
     console.log("SENDING EMAIL!!");
+
     sendEmail(name, email, subject, msg);
     next();
   });
@@ -97,6 +84,12 @@ module.exports=function(app,Parse,io) {
           res.render('newsfeed', { user: req.user});
       }
   });
+    /********
+     * PRIVACY & TERMS
+     */
+    app.get('/privacy', function(req, res, next) {
+        res.render("privacy");
+    });
 
   /*******************************************
    *
@@ -113,14 +106,12 @@ module.exports=function(app,Parse,io) {
    });
 
     app.post('/signup', function (req, res, next) {
-
      var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
      var user = new Parse.User();
      user.set("username", req.body.username);
      user.set("password", req.body.password);
      user.set("fullname", req.body.fullname);
      user.set("email", req.body.email);
-     user.set("imgUrl", "/images/user.png");
      user.set("interestsTag", []);
      user.set("interests", []);
      user.set("summary", "");
@@ -130,18 +121,13 @@ module.exports=function(app,Parse,io) {
      user.set("workExperience", []);
      user.set("emailVerified",false);
      user.set("email_token",email_code)
-
      user.signUp(null, {
         success: function (user) {
-            var mailOptions = {
-                from: 'Syncholar  <support@syncholar.com>', // sender address
-                to: req.body.email, // list of receivers
-                subject: 'Verify Email - Syncholar', // Subject line
-                text: '', // plaintext body
-                html: '<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
-                '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>'
-            };
-            sendEmail(mailOptions);
+
+            var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
+                '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
+            sendMail("verify Email - Syncholar",emailBody,req.body.email);
+
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
                if(err) {
@@ -174,11 +160,11 @@ module.exports=function(app,Parse,io) {
    *
    ********************************************/
   app.get('/signin',hasBetaCode, function (req, res, next) {
-	if (!req.isAuthenticated()) {
-    	res.render('signin', {title: 'Login', path: req.path});
-	} else {
-		res.redirect('/');
-	}
+  	if (!req.isAuthenticated()) {
+      	res.render('signin', {title: 'Login', path: req.path});
+  	} else {
+  		res.redirect('/');
+  	}
   });
 
   app.post('/signin', function (req, res, next) {
@@ -300,16 +286,12 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   var activation_code= randomString(3)+result.id+randomString(3);
                                   result.set("activation_code",activation_code);
                                   result.save(null, { useMasterKey: true }).then(function() {
-                                      var mailOptions = {
-                                              from: 'Syncholar <support@syncholar.com>', // sender address
-                                              to: result.attributes.email, // list of receivers
-                                              subject: 'Connecting Linkedin to your account', // Subject line
-                                              text: '', // plaintext body
-                                              html: '<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
-                                                    '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
-                                         +' ,</p><p> <br>--------------------<br> Syncholar Team</p>' // html body
-                                          };
-                                         sendEmail(mailOptions);
+
+                                      var emailBody ='<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
+                                      '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
+                                      +' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
+                                          sendMail('Connecting Linkedin to your account',emailBody,result.attributes.email);
+
                                          res.redirect('/auth/linkedin/verify');
 
                                       },function(error) {
@@ -343,15 +325,11 @@ app.get('/auth/linkedin/callback',function(req,res){
                                       success: function (user) {
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
-                                                  var mailOptions = {
-                                                      from: 'Syncholar <support@syncholar.com>', // sender address
-                                                      to: email, // list of receivers
-                                                      subject: 'Welcome To Syncholar', // Subject line
-                                                      text: '', // plaintext body
-                                                      html: '<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
-                                                          '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>'
-                                                  };
-                                                  sendEmail(mailOptions);
+
+                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
+                                                      '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
+                                                  sendMail('Welcome To Syncholar',emailBody,email);
+
                                                   req.login(u.attributes.username,function (err) {
                                                       if (!err)
                                                           res.redirect('/');

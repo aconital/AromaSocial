@@ -15,6 +15,7 @@ var Organization = React.createClass ({
             carousel_1_img: {carousel_1_img},
             carousel_2_img: {carousel_2_img},
             carousel_3_img: {carousel_3_img}}
+            errorText: 'Could not complete operation.'};
     },
     componentWillMount: function() {
         var connectURL= "/organization/"+objectId+"/join-status";
@@ -68,21 +69,35 @@ var Organization = React.createClass ({
         });
     },
     clickLeave: function() {
+        var self = this;
         var connectURL= "/organization/"+objectId+"/leave";
+        var adminURL = "/organization/"+objectId+"/admins";
 
         $.ajax({
-            url: connectURL,
-            success: function(status) {
-                this.setState({status: "not-joined"});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't retrieve people.");
-            }.bind(this)
+            url: adminURL,
+            data: {getCount: true},
+        }).done(function(count) {
+            if (self.state.isAdmin && count < 2) {
+                self.setState({errorText: "Can't leave network with no admins! Either delete network or add an administrator."});
+                $("#error-dialog").show();
+                setTimeout(function() { $("#error-dialog").hide(); }, 5000);
+            } else {
+                $.ajax({
+                    url: connectURL,
+                }).done(function(status) {
+                    console.log(status);
+                    self.setState({status: "not-joined"});
+                }).fail(function(xhr, status, error) {
+                    console.log(status + ': ' + error);
+                });;
+            }
+        }).fail(function(xhr, status, err) {
+            console.log(status + ': ' + error);
         });
-    },
 
+    },
     submitPicture: function() { //todo export utils
-        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/updatePicture",
             dataType: 'json',
@@ -93,7 +108,6 @@ var Organization = React.createClass ({
             success: function(data) {
                 console.log(data.status);
                 this.setState({organization_imgURL: this.state.picture});
-
                 this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
@@ -147,6 +161,11 @@ var Organization = React.createClass ({
                         </Modal.Footer>
                     </Modal>
                     <div className="content-wrap">
+                        <div id="error-dialog">
+                            <div className="alert alert-danger">
+                                <strong>Error:</strong> <span id="error-string">{this.state.errorText}</span>
+                            </div>
+                        </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <a href="#" onClick={this.clickOpen}>
@@ -158,6 +177,9 @@ var Organization = React.createClass ({
                                 </a>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2">
+                                <div className="interact-buttons-wrap">
+                                    {joinButton}
+                                </div>
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                                 <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
@@ -171,6 +193,11 @@ var Organization = React.createClass ({
             return (
                 <div>
                     <div className="content-wrap">
+                        <div id="error-dialog">
+                            <div className="alert alert-danger">
+                                <strong>Error:</strong> <span id="error-string">{this.state.errorText}</span>
+                            </div>
+                        </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <img src={this.state.organization_imgURL} className="contain-image" />
@@ -186,7 +213,6 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-
                                 <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
@@ -1025,7 +1051,7 @@ var Equipments = React.createClass({
                     <div>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/equipment/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
@@ -1279,7 +1305,7 @@ var Projects = React.createClass({
                     <div key={item.objectId}>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/project/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
@@ -1428,13 +1454,7 @@ var Data = React.createClass({
                     return (<Datum objectId={item.objectId}
                                    collaborators={item.collaborators}
                                    title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description}
+                                   image_URL={item.picture.url}
                                    start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
                 })}
             </div>
@@ -1516,7 +1536,7 @@ var Models = React.createClass({
                     return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
-                                   image_URL={model.image_URL}
+                                   image_URL={model.picture.url}
                                    keywords={model.keywords}
                                    number_cited={model.number_cited}
                                    number_syncholar_factor={model.number_syncholar_factor}
@@ -1557,4 +1577,6 @@ var Model = React.createClass({
     }
 });
 
-ReactDOM.render(<Organization />, document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Organization />, document.getElementById('content'));
+});

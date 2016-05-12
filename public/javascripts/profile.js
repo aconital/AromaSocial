@@ -152,11 +152,7 @@ var Profile = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.username + "_profile_picture_" + randomNumber + "." + this.state.pictureType;
-
-        var $this = this;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -164,15 +160,14 @@ var Profile = React.createClass ({
             type: 'POST',
             data: JSON.stringify(dataForm),
             success: function(status) {
-                console.log(status);
+                this.setState({profile_imgURL: this.state.picture});
+                this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
             }.bind(this)
-        }).then(function(){
-            $this.clickClose();
-            $this.setState({profile_imgURL:changeImgURL});
         });
+        return;
     },
     checkConnection:function()
     {
@@ -919,6 +914,8 @@ var Projects = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
             item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
@@ -992,6 +989,8 @@ var Publications = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type.capitalize();
@@ -1085,6 +1084,8 @@ var Models = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type;
@@ -1154,12 +1155,19 @@ var Data = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
+    
     render: function() {
+        var self = this;
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type;
             var typeList = [];
+            var dataPath;
             for (var i in items) {
                 var item = items[i];
+                dataPath = '/data/' + item.objectId;
+                console.log(item);
                 item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
@@ -1175,7 +1183,10 @@ var Data = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/data/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <h3 className="margin-top-bottom-5">
+                                <a href={'/data/'+item.objectId} className="body-link">{item.title}</a>
+                                {/*TODO uncomment<SettingsModal delete={self.deleteEntry} path={dataPath} refresh={self.render} />*/}
+                            </h3>
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
@@ -1417,7 +1428,7 @@ var PublicationAddForm = React.createClass({
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
 
 				<Modal.Footer>
-					<Input className="btn btn-default pull-right" type="submit" value="Continue" />
+					<Input className="btn btn-default pull-right submit" type="submit" value="Continue" />
 					<div className="form-feedback"></div>
 				</Modal.Footer>
             </form>
@@ -1780,7 +1791,7 @@ var ResourceAddForm = React.createClass({
                     </div>
   */}
                     <Modal.Footer>
-                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                        <Input className="btn btn-default pull-right submit" type="submit" value="Continue" />
                     </Modal.Footer>
                 </form>
             </div>
@@ -2057,7 +2068,7 @@ var ProjectAddForm = React.createClass({
                     {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="full-button" type="submit" value="Submit"/>
+                    <input className="btn btn-default pull-right submit" type="submit" value="Submit"/>
                 </Modal.Footer>
             </form>
 		</div>
@@ -2197,4 +2208,6 @@ var Required = React.createClass({
 	},
 });
 
-ReactDOM.render(<Profile />, document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Profile />, document.getElementById('content'));
+});

@@ -6618,16 +6618,26 @@ hr.style15 {
   transition: background-color 300ms linear;
   font-size: large;
   border: none;
-  background-color:#00897b  ;
+  background-color:#1e88e5   ;
 }
 .createorg_btn:hover{
-  background-color:#004d40 ;
+  background-color:#1565c0   ;
   -webkit-transition: background-color 3000ms linear;
   -moz-transition: background-color 3000ms linear;
   -o-transition: background-color 3000ms linear;
   -ms-transition: background-color 3000ms linear;
   transition: background-color 300ms linear;
 }
+.btn.btn-default.pull-right.submit
+{ width: 100%;
+  border: none;
+  color: white;
+  background-color: #1e88e5;
+}
+.btn.btn-default.pull-right.submit:hover
+{
+  background-color: #1565c0;
+}}
 
 .carousel-inner > .item > img {
   margin: 0 auto;

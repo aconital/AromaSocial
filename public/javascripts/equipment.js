@@ -10,7 +10,7 @@ var Equipment = React.createClass ({
         description: description,
         image_URL: image_URL,
         file_path: file_path,
-
+        path: path,
         showModal: false
         };
     },
@@ -72,11 +72,7 @@ var Equipment = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function(e) {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_equipment_picture_" + randomNumber + "." + this.state.pictureType;
-
-        var $this = this;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -86,6 +82,8 @@ var Equipment = React.createClass ({
             processData: false,
             success: function(data) {
                 console.log(data);
+                this.setState({image_URL: this.state.picture});
+                this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
@@ -97,13 +95,14 @@ var Equipment = React.createClass ({
 
         return;
     },
-   render: function() {
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteEntry.bind(this),
+    
+    render: function() {
         var fileExists;
 
-        if (this.state.file_path || false) {
-                fileExists = <h2 className="corner"><a href={this.state.file_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
-        } else {
-            fileExists = <h2 className="corner"></h2>;
+        if (this.state.filename || false) {
+            fileExists = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         return (
@@ -124,7 +123,10 @@ var Equipment = React.createClass ({
             <div className="content-wrap-item-page-100">
                 <div className="item-panel">
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
-                    {fileExists}
+                    <h2 className="corner">
+                        {fileExists}
+                        {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
+                    </h2>
                     {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen} id="big-image"><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.image_URL} className="contain-panel-big-image"/>}
                     <div className="contain-panel-big item-info">
                         <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
@@ -136,5 +138,6 @@ var Equipment = React.createClass ({
         );
     }
 });
-
-ReactDOM.render(<Equipment />,document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Equipment />,document.getElementById('content'));
+});
