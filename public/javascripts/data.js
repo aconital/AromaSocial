@@ -3,7 +3,7 @@ var Button = ReactBootstrap.Button;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Data = React.createClass ({
-    getInitialState: function() {
+    getInitialState: function(){
      return {
         title: title,
         description: description,
@@ -137,11 +137,7 @@ var Data = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function(e) {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_data_picture_" + randomNumber + "." + this.state.pictureType;
-
-        var $this = this;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -151,6 +147,8 @@ var Data = React.createClass ({
             processData: false,
             success: function(status) {
                 console.log(status);
+                this.setState({image_URL: this.state.picture});
+                this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
@@ -173,7 +171,7 @@ var Data = React.createClass ({
     //         callback('Successfully deleted.')
     //         setTimeout(function(){ // redirect to homepage
     //             window.location = '../..';
-    //         }, 3000); 
+    //         }, 3000);
     //     }).fail(function(xhr, status, err) {
     //         console.log(status + ': ' + err);
     //         callback('Error: ' + err);
@@ -250,7 +248,7 @@ var Data = React.createClass ({
 
 // var SettingsModal = React.createClass({
 //     getInitialState() {
-//         return { 
+//         return {
 //             showModal: false,
 //             message: 'This action cannot be undone.' };
 //     },
@@ -307,7 +305,10 @@ var Data = React.createClass ({
 //     }
 // });
 
-ReactDOM.render(<Data />, document.getElementById('content'));
+
+$( document ).ready(function() {
+    ReactDOM.render(<Data />, document.getElementById('content'));
+});
 
 
 var Models = React.createClass({ //TODO delete?

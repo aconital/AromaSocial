@@ -91,7 +91,7 @@ var Organization = React.createClass ({
 
     },
     submitPicture: function() { //todo export utils
-        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/updatePicture",
             dataType: 'json',
@@ -859,7 +859,7 @@ var Equipments = React.createClass({
                     <div>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/equipment/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
@@ -1113,7 +1113,7 @@ var Projects = React.createClass({
                     <div key={item.objectId}>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/project/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
@@ -1262,13 +1262,7 @@ var Data = React.createClass({
                     return (<Datum objectId={item.objectId}
                                    collaborators={item.collaborators}
                                    title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description}
+                                   image_URL={item.picture.url}
                                    start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
                 })}
             </div>
@@ -1350,7 +1344,7 @@ var Models = React.createClass({
                     return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
-                                   image_URL={model.image_URL}
+                                   image_URL={model.picture.url}
                                    keywords={model.keywords}
                                    number_cited={model.number_cited}
                                    number_syncholar_factor={model.number_syncholar_factor}
@@ -1391,4 +1385,6 @@ var Model = React.createClass({
     }
 });
 
-ReactDOM.render(<Organization />, document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Organization />, document.getElementById('content'));
+});

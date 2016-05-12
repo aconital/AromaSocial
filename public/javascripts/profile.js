@@ -152,11 +152,7 @@ var Profile = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.username + "_profile_picture_" + randomNumber + "." + this.state.pictureType;
-
-        var $this = this;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -164,15 +160,14 @@ var Profile = React.createClass ({
             type: 'POST',
             data: JSON.stringify(dataForm),
             success: function(status) {
-                console.log(status);
+                this.setState({profile_imgURL: this.state.picture});
+                this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
             }.bind(this)
-        }).then(function(){
-            $this.clickClose();
-            $this.setState({profile_imgURL:changeImgURL});
         });
+        return;
     },
     checkConnection:function()
     {
@@ -2213,4 +2208,6 @@ var Required = React.createClass({
 	},
 });
 
-ReactDOM.render(<Profile />, document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Profile />, document.getElementById('content'));
+});

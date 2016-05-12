@@ -10,7 +10,7 @@ var Equipment = React.createClass ({
         description: description,
         image_URL: image_URL,
         file_path: file_path,
-
+        path: path,
         showModal: false
         };
     },
@@ -72,11 +72,7 @@ var Equipment = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function(e) {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_equipment_picture_" + randomNumber + "." + this.state.pictureType;
-
-        var $this = this;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -86,6 +82,8 @@ var Equipment = React.createClass ({
             processData: false,
             success: function(data) {
                 console.log(data);
+                this.setState({image_URL: this.state.picture});
+                this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
@@ -140,5 +138,6 @@ var Equipment = React.createClass ({
         );
     }
 });
-
-ReactDOM.render(<Equipment />,document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Equipment />,document.getElementById('content'));
+});

@@ -206,7 +206,7 @@ module.exports=function(app,Parse,io) {
                     contributors: result.get('contributors'),
                     author: result.get('author'),
                     abstract: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     keywords: result.get('keywords'),
                     url: result.get('url'),
                     title: result.get('title'),
@@ -238,7 +238,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -269,7 +269,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -300,7 +300,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -331,7 +331,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     collaborators: result.get('collaborators'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -362,7 +362,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -393,7 +393,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     contributers: result.get('contributers'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -418,7 +418,6 @@ module.exports=function(app,Parse,io) {
         profileQuery.equalTo("username",req.params.username);
         profileQuery.first().then(function(user) {
             profile = user.id;
-
             var pubs=[];
             var pubBooks = Parse.Object.extend("Pub_Book");
             var query = new Parse.Query(pubBooks);
@@ -431,7 +430,6 @@ module.exports=function(app,Parse,io) {
                     var object = books[i];
                     pubs.push({
                         type: "book",
-                        filename: object.attributes.filename,
                         title: object.attributes.title,
                         keywords: object.attributes.keywords,
                         date: object.attributes.publication_date,
@@ -453,7 +451,6 @@ module.exports=function(app,Parse,io) {
                         var object = conferences[i];
                         pubs.push({
                             type: "conference",
-                            filename: object.attributes.filename,
                             title: object.attributes.title,
                             keywords: object.attributes.keywords,
                             date: object.attributes.publication_date,
@@ -475,7 +472,6 @@ module.exports=function(app,Parse,io) {
                             var object = journals[i];
                             pubs.push({
                                 type: "journal",
-                                filename: object.attributes.filename,
                                 title: object.attributes.title,
                                 keywords: object.attributes.keywords,
                                 date: object.attributes.publication_date,
@@ -497,7 +493,6 @@ module.exports=function(app,Parse,io) {
                                 var object = patents[i];
                                 pubs.push({
                                     type: "patent",
-                                    filename: object.attributes.filename,
                                     title: object.attributes.title,
                                     keywords: object.attributes.keywords,
                                     date: object.attributes.publication_date,
@@ -519,7 +514,6 @@ module.exports=function(app,Parse,io) {
                                     var object = reports[i];
                                     pubs.push({
                                         type: "report",
-                                        filename: object.attributes.filename,
                                         title: object.attributes.title,
                                         keywords: object.attributes.keywords,
                                         date: object.attributes.publication_date,
@@ -541,7 +535,6 @@ module.exports=function(app,Parse,io) {
                                         var object = thesis[i];
                                         pubs.push({
                                             type: "thesis",
-                                            filename: object.attributes.filename,
                                             title: object.attributes.title,
                                             keywords: object.attributes.keywords,
                                             date: object.attributes.publication_date,
@@ -563,7 +556,6 @@ module.exports=function(app,Parse,io) {
                                             var object = unpublished[i];
                                             pubs.push({
                                                 type: "unpublished",
-                                                filename: object.attributes.filename,
                                                 title: object.attributes.title,
                                                 keywords: object.attributes.keywords,
                                                 date: object.attributes.publication_date,
@@ -624,118 +616,92 @@ module.exports=function(app,Parse,io) {
             var pub = new PubType();
             var pubClass = reqBody.type; // save field before being overwritten
 
-            pub.set('contributors',JSON.parse(reqBody.collaborators));
-            pub.set('abstract',reqBody.description);
-            pub.set('filename',"");
-            pub.set('keywords',JSON.parse(reqBody.keywords));
-            pub.set('url',reqBody.url);
-            pub.set('title',reqBody.title);
-			pub.set('doi',reqBody.doi);
-			pub.set('publication_date', new Date(reqBody.creationDate));
+            pub.set('contributors', JSON.parse(reqBody.collaborators));
+            pub.set('abstract', reqBody.description);
+            pub.set('filename', "");
+            pub.set('keywords', JSON.parse(reqBody.keywords));
+            pub.set('url', reqBody.url);
+            pub.set('title', reqBody.title);
+            pub.set('doi', reqBody.doi);
+            pub.set('publication_date', new Date(reqBody.creationDate));
             pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
 
-			// add type-specific fields
-			switch (reqBody.type) {
-				case "Pub_Book":
-                	pub.set('publisher', reqBody.book_publisher);
-                	pub.set('isbn', reqBody.book_isbn);
-                	pub.set('edition', reqBody.book_edition);
-                	pub.set('page', reqBody.book_pages);
+            // add type-specific fields
+            switch (reqBody.type) {
+                case "Pub_Book":
+                    pub.set('publisher', reqBody.book_publisher);
+                    pub.set('isbn', reqBody.book_isbn);
+                    pub.set('edition', reqBody.book_edition);
+                    pub.set('page', reqBody.book_pages);
                     pub.set('type', "book");
-					break;
-				case "Pub_Chapter":
-                	pub.set('publisher', reqBody.book_publisher);
-                	pub.set('isbn', reqBody.book_isbn);
-                	pub.set('edition', reqBody.book_edition);
-                	pub.set('page', reqBody.book_pages);
-				 	pub.set('chapter', reqBody.book_chapter);
+                    break;
+                case "Pub_Chapter":
+                    pub.set('publisher', reqBody.book_publisher);
+                    pub.set('isbn', reqBody.book_isbn);
+                    pub.set('edition', reqBody.book_edition);
+                    pub.set('page', reqBody.book_pages);
+                    pub.set('chapter', reqBody.book_chapter);
                     pub.set('type', "chapter");
-					break;
-				case "Pub_Conference":
+                    break;
+                case "Pub_Conference":
                     pub.set('conference', reqBody.conf);
                     pub.set('volume', reqBody.conf_volume);
                     pub.set('location', reqBody.conf_location);
                     pub.set('type', "conference");
-					break;
-				case "Pub_Journal_Article":
+                    break;
+                case "Pub_Journal_Article":
                     pub.set('journal', reqBody.journal);
                     pub.set('volume', reqBody.journal_volume);
                     pub.set('issue', reqBody.journal_issue);
                     pub.set('page', reqBody.journal_pages);
                     pub.set('type', "journal");
-					break;
-				case "Pub_Patent":
-                	pub.set('reference_number', reqBody.patent_refNum);
-                	pub.set('location', reqBody.patent_location);
+                    break;
+                case "Pub_Patent":
+                    pub.set('reference_number', reqBody.patent_refNum);
+                    pub.set('location', reqBody.patent_location);
                     pub.set('type', "patent");
-					break;
-				case "Pub_Report":
-                	pub.set('publisher', reqBody.report_publisher);
-                	pub.set('number', reqBody.report_number);
-                	pub.set('location', reqBody.report_location);
+                    break;
+                case "Pub_Report":
+                    pub.set('publisher', reqBody.report_publisher);
+                    pub.set('number', reqBody.report_number);
+                    pub.set('location', reqBody.report_location);
                     pub.set('type', "report");
-					break;
-				case "Pub_Thesis":
-                	pub.set('university', reqBody.thesis_university);
-                	pub.set('supervisors', reqBody.thesis_supervisors.split(/\s*,\s*/g));
-                	pub.set('degree', reqBody.thesis_degree);
-                	pub.set('department', reqBody.thesis_depart);
-                	pub.set('page', reqBody.thesis_pages);
+                    break;
+                case "Pub_Thesis":
+                    pub.set('university', reqBody.thesis_university);
+                    pub.set('supervisors', reqBody.thesis_supervisors.split(/\s*,\s*/g));
+                    pub.set('degree', reqBody.thesis_degree);
+                    pub.set('department', reqBody.thesis_depart);
+                    pub.set('page', reqBody.thesis_pages);
                     pub.set('type', "thesis");
-					break;
-				case "Pub_Unpublished":
-                	pub.set('location', reqBody.unpub_location);
+                    break;
+                case "Pub_Unpublished":
+                    pub.set('location', reqBody.unpub_location);
                     pub.set('type', "unpublished");
-					break;
-				default:
-					console.log("Warning: pub type not identified", reqBody.type);
-			}
-
-            pub.save(null).then(function(response) {
-				objectId = response.id;
-				if (reqBody.file != null) {
-					// encode file
-					var params = awsUtils.encodeFile(req.params.username, objectId, reqBody.file, reqBody.fileType, "_pub_");
-
-					// upload files to S3
-					var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-					bucket.putObject(params, function (err, response) {
-						if (err) { console.log("Data Upload Error:", err); }
-						else {
-							// update file name in parse object
-							pub.set('filename', awsLink + params.Key);
-							console.log("S3 uploaded successfully, saving new path.");
-							return {objectId: objectId, data: pub.save(null)};
-						}
-					});
-				}
-				console.log("Publication type saved successfully.");
-				return {objectId: response.id};
-            /*}).then(function(response) { // NOTE: likely will be used for future refactoring
-				// add entry into superclass
-				var Publication = Parse.Object.extend("Publication");
-				var publication = new Publication();
-                console.log(reqBody, pubClass);
-//				publication.set('groups',reqBody.groups);
-//				publication.set('groupies', reqBody.groupies);
-				publication.set('link', {__type: "Pointer", className: pubClass, objectId: response.objectId});
-				publication.set('year',reqBody.creationDate.substring(0,4));
-				publication.set('type',pubClass.replace("Pub_","").replace("_"," "));
-
-				console.log("Saving publication superclass.");
-				return publication.save(null);*/
-			}).then(function(response) {
-				console.log("Publication created successfully.");
-				res.status(200).json({status:"OK", query: response});
-			}, function(error) {
-				console.log('Failed to create new publication object, with error code: ' + error.message);
-				res.status(500).json({status: "Creating publication failed. " + error.message});
-			});
-
-        } else {
-            res.status(500).json({status: 'Publication upload failed!'});
+                    break;
+                default:
+                    console.log("Warning: pub type not identified", reqBody.type);
+            }
+            var promises = [];
+            if (req.body.file != null) {
+                var fileName = "publication_file." + req.body.fileType;
+                var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var fileFile = new Parse.File(fileName, {base64: fileBuff});
+                promises.push(fileFile.save().then(function () {
+                    pub.set('file', fileFile)
+                }));
+            }
+            return Parse.Promise.when(promises).then(function (res1, res2) {
+                pub.save().then(function () {
+                    res.json({status: "Success in creating data"})
+                })
+            }, function (error) {
+                console.log('Failed to create new object, with error code: ' + error.message);
+                res.status(500).json({status: "Creating data object failed. " + error.message});
+            });
         }
     });
+
     app.delete('/profile/:username/publications',function(req,res,next){
         var currentUser = req.user;
         if (currentUser && currentUser.username == req.params.username) {
@@ -749,7 +715,6 @@ module.exports=function(app,Parse,io) {
                     object.destroy().then(function() {
                         res.send(200);
                     });
-
                 },
                 error: function(error) {
                     alert("Error: " + error.code + " " + error.message);

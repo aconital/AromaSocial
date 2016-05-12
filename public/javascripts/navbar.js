@@ -6,7 +6,7 @@ var FriendRequest = React.createClass({
     getInitialState: function() {
         return {data: []};
     },
-    loadRequests :function()
+    loadFriendRequests :function()
     {
         $.ajax({
             url: "/friendrequest",
@@ -20,11 +20,15 @@ var FriendRequest = React.createClass({
         });
     },
     componentDidMount : function(){
-        this.loadRequests();
+        this.loadFriendRequests();
         socket.on('friendrequest', this._friendrequest);
+        socket.on('orgrequest', this._orgrequest);
+    },
+    _orgrequest(data){
+
     },
     _friendrequest(data){
-        this.loadRequests();
+        this.loadFriendRequests();
     },
     pending_action:function(person,action)
     {
@@ -34,7 +38,7 @@ var FriendRequest = React.createClass({
             data:{mode:action,person:person},
             success: function(data) {
 
-                this.loadRequests();
+                this.loadFriendRequests();
 
             }.bind(this),
             error: function(xhr, status, err) {
@@ -85,8 +89,9 @@ var FriendRequest = React.createClass({
     }
 });
 
-ReactDOM.render(<FriendRequest />, document.getElementById('friendrequest'));
-
+$( document ).ready(function() {
+    ReactDOM.render(<FriendRequest />, document.getElementById('friendrequest'));
+});
 
 var Notification = React.createClass({
     getInitialState: function() {
@@ -106,9 +111,12 @@ var Notification = React.createClass({
         });
     },
     componentDidMount : function(){
-    socket.on('friendrequest', this._friendrequest);
-
+        socket.on('friendrequest', this._friendrequest);
+        socket.on('orgrequest', this._orgrequest);
      },
+    _orgrequest(data){
+
+    },
     _friendrequest(data){
          console.log(data);
      },
@@ -122,5 +130,8 @@ var Notification = React.createClass({
 
     }
 });
-
-ReactDOM.render(<Notification />, document.getElementById('notification-request'));
+$( document ).ready(function() {
+    //if (document.getElementById('notification-request') != null) {
+        ReactDOM.render(<Notification />, document.getElementById('notification-request'));
+    //}
+});

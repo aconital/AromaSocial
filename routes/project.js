@@ -29,6 +29,10 @@ module.exports=function(app,Parse,io) {
         query.get(req.params.objectId,{
             success: function(result) {
                 console.log("PASSED!");
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('project', {
                     title: 'Project',
                     path: req.path,
@@ -42,8 +46,8 @@ module.exports=function(app,Parse,io) {
                     authors: result.get('authors'),
                     locations: result.get('locations'),
                     keywords: result.get('keywords'),
-                    image_URL: result.get('image_URL'),
-                    file_path: result.get('file_path'),
+                    image_URL: result.get('picture').url(),
+                    file_path: filename,
                     createdAt: result.get('createdAt'),
                     updatedAt: result.get('updatedAt')
                 });
@@ -88,60 +92,34 @@ module.exports=function(app,Parse,io) {
             project.set('start_date',req.body.startDate);
             project.set('end_date',req.body.endDate);
             project.set('keywords',JSON.parse(req.body.keywords));
-            project.set('image_URL','/images/data.png');
-            project.set('file_path','');
             project.set('client',req.body.client);
             project.set('link_to_resources',req.body.link_to_resources);
             project.set('URL',req.body.url);
-            project.save(null, {
-                success: function(response) {
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    if (req.body.picture != null) {
-                        var s3Key = response.id + "_project_picture"+ "." + req.body.pictureType;
-                        var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                        var fileBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                        var fileParams = {
-                            Key: s3Key,
-                            Body: fileBuff,
-                            ContentEncoding: 'base64',
-                            ContentType: (contentType ? contentType[1] : 'text/plain')
-                        };
-                        bucket.putObject(fileParams, function (err, data) {
-                            if (err) { console.log("Project Image Upload Error:", err); }
-                            else {
-                                project.set('image_URL', awsLink + s3Key);
-                                project.save();
-                            }
-                        });
-                    }
-                    if (req.body.file != null) {
-                        var s3KeyP = response.id + "_project_file" + "." + req.body.fileType;
-                        var contentTypeP = req.body.file.match(/^data:(\w+\/.+);base64,/);
-                        var pictureBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                        var pictureParams = {
-                            Key: s3KeyP,
-                            Body: pictureBuff,
-                            ContentEncoding: 'base64',
-                            ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-                        };
-
-                        bucket.putObject(pictureParams, function (err, data) {
-                            if (err) { console.log("Project File Upload Error:", err); }
-                            else {
-                                project.set('file_path', awsLink + s3KeyP);
-                                project.save();
-                            }
-                        });
-                    }
-                    res.json({status: 'Project Uploaded!'});
-                },
-                error: function(response, error) {
-                    console.log('Failed to create new object, with error code: ' + error.message);
-                    res.status(500).json({status: "Creating project object failed. " + error.message});
-                }
+            var promises = [];
+            if (req.body.picture != null) {
+                var pictureName = "project_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                promises.push(pictureFile.save().then(function () {
+                    project.set('picture', pictureFile)
+                }));
+            }
+            if (req.body.file != null) {
+                var fileName = "project_file." + req.body.fileType;
+                var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var fileFile = new Parse.File(fileName, {base64: fileBuff});
+                promises.push(fileFile.save().then(function () {
+                    project.set('file', fileFile)
+                }));
+            }
+            return Parse.Promise.when(promises).then(function (res1, res2) {
+                project.save().then(function () {
+                    res.json({status: "Success in creating data"})
+                })
+            }, function (error) {
+                console.log('Failed to create new object, with error code: ' + error.message);
+                res.status(500).json({status: "Creating project object failed. " + error.message});
             });
-        } else {
-            res.status(500).json({status: 'Project upload failed!'});
         }
     });
 
@@ -160,39 +138,22 @@ module.exports=function(app,Parse,io) {
 
     app.post('/project/:objectId/picture', is_auth, function(req,res,next){
         var query = new Parse.Query("Project");
-        query.get(req.params.objectId).then(
-            function(result) {
-                if (req.body.picture != null) {
-                    var s3Key = req.params.objectId + "_project_picture_" + req.body.randomNumber + "." + req.body.pictureType;
-                    var contentType = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-                    var pictureParams = {
-                        Key: s3Key,
-                        Body: pictureBuff,
-                        ContentEncoding: 'base64',
-                        ContentType: (contentType ? contentType[1] : 'text/plain')
-                    };
-                    var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                    bucket.putObject(pictureParams, function (err, data) {
-                        if (err) { console.log("Project Image Upload Error:", err); }
-                        else {
-                            result.set('image_URL', awsLink + s3Key);
-                            result.save().then(
-                                function(){
-                                    res.status(200).json({status: "Picture Uploaded Successfully!"});
-                                },
-                                function(errx){
-                                    console.log(errx);
-                                    res.status(500).json({status: "Picture uploading failed"});
-                                }
-                            );
-                        }
+        query.get(req.params.objectId).then(function (result) {
+            if (req.body.picture != null && result != undefined) {
+                var pictureName = req.params.objectId + "_project_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                pictureFile.save().then(function () {
+                    result.set('picture', pictureFile)
+                    result.save().then(function () {
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
                     });
-                }
+                });
             }
-        );
+            else {
+                res.status(500).json({status: "Picture Upload Failed!"});
+            }
+        });
     });
-
-
 };
 

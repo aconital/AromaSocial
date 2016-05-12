@@ -38,14 +38,14 @@ var NewsFeed = React.createClass({
           <div className="container-newsFeed">
               <div className="row">
                   <div className="col-xs-8">
-                      {this.state.data.map(function(item) {
-                        return (<NewsFeedList
+                      {this.state.data.map(function(item, i) {
+                        return (<NewsFeedList key={i}
                                               itemId={item.itemId}
                                               objId={item.objId}
                                               userName={item.username}
                                               fullname={item.fullname}
                                               userImg={item.userImg}
-                                              image_URL={item.image_URL}
+                                              image_URL={item.picture}
                                               type={item.type}
                                               date={item.date}
                                               year={item.year}
@@ -63,9 +63,9 @@ var NewsFeed = React.createClass({
                       </div>
                         <div className = "panel search-panel your-groups">
                         <h4 className="white">Your Labs & Networks</h4>
-                          {this.state.organizations.map(function(item) {
-                              return (<div className="list-group">
-                                  <a href={"organization/" + item.orgId} className="list-group-item groups-list">&#x25cf; {item.orgName.split(".")[0]}</a>
+                          {this.state.organizations.map(function(item, i) {
+                              return (<div className="list-group" key={i}>
+                                  <a href={"organization/" + item.orgId} key={i} className="list-group-item groups-list">&#x25cf; {item.orgName.split(".")[0]}</a>
                               </div>);
                           })}
                     </div>
@@ -343,15 +343,19 @@ var Update = React.createClass({
 
 });
 
-ReactDOM.render(
-  <NewsFeed url={getNewsFeedUrl} userName={userName} userId={userId}/>,
-  document.getElementById('content')
-);
+$( document ).ready(function() {
+  ReactDOM.render(
+    <NewsFeed url={getNewsFeedUrl} userName={userName} userId={userId}/>,
+    document.getElementById('content')
+  );
+});
 
 function showPublicationNewsFeed(pubid, datatype, title, year, postid, filename, tags, date, description, author, user, profilepic){
   var works = document.getElementById("content");
   React.unmountComponentAtNode(works);
   var search = false;
-  ReactDOM.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
-    description={description} author={author} year={year} pubid={pubid} search={search} user={user} profilepic={profilepic}/>, document.getElementById("content"));
+  $( document ).ready(function() {
+    ReactDOM.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+      description={description} author={author} year={year} pubid={pubid} search={search} user={user} profilepic={profilepic}/>, document.getElementById("content"));
+  });
 }
