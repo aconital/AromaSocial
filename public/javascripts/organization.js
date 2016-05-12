@@ -449,26 +449,25 @@ var About = React.createClass({
                     <Carousel>
 
                         <Carousel.Item>
-                            <img src={carousel_1_img} />
+                            <a href="#" onClick={()=>this.clickOpen(1)} id="carousel-image"><div className="carousel_div"><img src={carousel_1_img} className="carousel_img"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
+
                             <Carousel.Caption>
 
-                                <Button onClick={()=>this.clickOpen(1)} bsStyle="primary">Change picture</Button>
                                 <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_1_head" placeholder="Image Title" name="carousel_1_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_1_head}</textarea></h3>
                                 <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_1_body" placeholder="Image Description" name="carousel_1_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_1_body}</textarea></p>
                             </Carousel.Caption>
                         </Carousel.Item>
                         <Carousel.Item>
-                            <img src={carousel_2_img}/>
+                            <a href="#" onClick={()=>this.clickOpen(2)} id="carousel-image"><div className="carousel_div"><img src={carousel_2_img} className="carousel_img" /><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
+
                             <Carousel.Caption>
-                                <Button onClick={()=>this.clickOpen(2)} bsStyle="primary">Change picture</Button>
                                 <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_2_head" placeholder="Image Title" name="carousel_2_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_2_head}</textarea></h3>
                                 <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_2_body" placeholder="Image Description" name="carousel_2_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_2_body}</textarea></p>
                             </Carousel.Caption>
                         </Carousel.Item>
                         <Carousel.Item>
-                            <img src={carousel_3_img}/>
+                            <a href="#" onClick={()=>this.clickOpen(3)} id="carousel-image"><div className="carousel_div"><img src={carousel_3_img} className="carousel_img" /><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
                             <Carousel.Caption>
-                                <Button onClick={()=>this.clickOpen(3)} bsStyle="primary">Change picture</Button>
                                 <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_3_head" placeholder="Image Title" name="carousel_3_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_3_head}</textarea></h3>
                                 <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_3_body" placeholder="Image Description" name="carousel_3_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_3_body}</textarea></p>
                             </Carousel.Caption>
