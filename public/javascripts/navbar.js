@@ -4,7 +4,7 @@
 
 var FriendRequest = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {friendRequest: [],orgRequest:[]};
     },
     loadFriendRequests :function()
     {
@@ -12,7 +12,19 @@ var FriendRequest = React.createClass({
             url: "/friendrequest",
             success: function(data) {
 
-                this.setState({data: data});
+                this.setState({friendRequest: data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
+    },
+    loadOrgRequests :function()
+    {
+        $.ajax({
+            url: "/orgrequest",
+            success: function(data) {
+                this.setState({orgRequest: data});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve people");
@@ -20,12 +32,13 @@ var FriendRequest = React.createClass({
         });
     },
     componentDidMount : function(){
+        this.loadOrgRequests();
         this.loadFriendRequests();
         socket.on('friendrequest', this._friendrequest);
         socket.on('orgrequest', this._orgrequest);
     },
     _orgrequest(data){
-
+        this.loadOrgRequests();
     },
     _friendrequest(data){
         this.loadFriendRequests();
@@ -49,7 +62,7 @@ var FriendRequest = React.createClass({
     },
     render: function() {
 
-        if(this.state.data.length <=0) {
+        if(this.state.friendRequest.length <=0) {
             $('.notification-counter').hide();
             return(
                 <li><a href="#" className="align-center">You have no connection requests at this moment. &nbsp;&nbsp;</a></li>
@@ -60,7 +73,7 @@ var FriendRequest = React.createClass({
             $(".notification-counter").text(this.state.data.length);
             return (
                 <li>
-                    {this.state.data.map(person =>
+                    {this.state.friendRequest.map(person =>
                         <div id={person.username} className="friend-request-item" key={person.username}>
                             <div className="friend-request-left">
                                 <div className="friend-request-image-wrap">

@@ -6637,4 +6637,22 @@ hr.style15 {
 .btn.btn-default.pull-right.submit:hover
 {
   background-color: #1565c0;
+}}
+
+.carousel-inner > .item > img {
+  margin: 0 auto;
+  height: 400px;
+
 }
+
+.carousel-caption{
+  text-align: center !important;
+  text-shadow: 2px 2px 3px black;
+}
+
+.carouselTextarea{
+  text-align: center;
+  text-shadow: 2px 2px 3px black ;
+  border: 1px solid transparent; padding:5px; margin-right: 5px; width:100%;  max-width:100%; outline: none; display:inline-block; background-color: transparent;
+}
+

@@ -61,8 +61,16 @@ module.exports=function(app,Parse,io) {
                     street: result.get('street'),
                     postalcode: result.get('postalcode'),
                     website: result.get('website'),
+                    carousel_1_img: result.get('carousel_1_img'),
+                    carousel_1_head: result.get('carousel_1_head'),
+                    carousel_1_body: result.get('carousel_1_body'),
+                    carousel_2_img: result.get('carousel_2_img'),
+                    carousel_2_head: result.get('carousel_2_head'),
+                    carousel_2_body: result.get('carousel_2_body'),
+                    carousel_3_img: result.get('carousel_3_img'),
+                    carousel_3_head: result.get('carousel_3_head'),
+                    carousel_3_body: result.get('carousel_3_body')
                     organization_imgURL: result.get('picture').url(),
-                    cover_imgURL: result.get('cover_imgURL')
                 });
             },
             error: function(error) {
@@ -332,12 +340,91 @@ module.exports=function(app,Parse,io) {
                     location = req.body.country;
             }
             result.set('location', location);
-
+            result.set("carousel_1_head", req.body.carousel_1_head);
+            result.set("carousel_1_body", req.body.carousel_1_body);
+            result.set("carousel_2_head", req.body.carousel_2_head);
+            result.set("carousel_2_body", req.body.carousel_2_body);
+            result.set("carousel_3_head", req.body.carousel_3_head);
+            result.set("carousel_3_body", req.body.carousel_3_body);
             result.save();
             res.status(200).json({status: "Updated Successfully!"});
         });
     });
 
+    app.post('/organization/:objectId/updateCarouselPicture_1', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(1);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel1");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_1_img", awsLink + params.Key);
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
+    app.post('/organization/:objectId/updateCarouselPicture_2', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(2);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel2");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_2_img", awsLink + params.Key);
+
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
+    app.post('/organization/:objectId/updateCarouselPicture_3', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(3);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel3");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_3_img", awsLink + params.Key);
+
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
     app.post('/organization/:objectId/updatePicture', function(req,res,next){
         var query = new Parse.Query("Organization");
         query.get(req.params.objectId).then(function (result) {
@@ -669,6 +756,16 @@ module.exports=function(app,Parse,io) {
         org.set('street', req.body.street ? req.body.street : '');
         org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
         org.set('website', req.body.website ? req.body.website : '');
+        org.set('carousel_1_img','/images/carousel.png');
+        org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');
+        org.set('carousel_1_body',req.body.carousel_1_body ? req.body.carousel_1_body : '');
+        org.set('carousel_2_img','/images/carousel.png');
+        org.set('carousel_2_head',req.body.carousel_2_head ? req.body.carousel_2_head : '');
+        org.set('carousel_2_body',req.body.carousel_2_body ? req.body.carousel_2_body : '');
+        org.set('carousel_3_img','/images/carousel.png');
+        org.set('carousel_3_head',req.body.carousel_3_head ? req.body.carousel_3_head : '');
+        org.set('carousel_3_body',req.body.carousel_3_body ? req.body.carousel_3_body : '');
+
         var location= '';
         if (req.body.city ) {
             location = req.body.city;
@@ -747,7 +844,7 @@ module.exports=function(app,Parse,io) {
             relation.save(null,{
                 success:function(){
 
-                    io.to(userId).emit('friendrequest',{data:currentUser});
+                    io.to(currentUser.id).emit('orgrequest',{data:currentUser});
 
                     res.json({success: "Joined Successfully"});
                 },
@@ -914,7 +1011,34 @@ module.exports=function(app,Parse,io) {
             }
         });
     });
+    app.get('/orgrequest', is_auth, function(req,res,next){
 
+        var currentUser= req.user;
+        var requests =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("isAdmin",true)
+        query.include('orgId')
+        query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id})
+        query.each(function(result) {
+
+            var query = new Parse.Query('Relationship');
+            query.equalTo("verified",false)
+            query.include('userId')
+            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
+            query.each(function(r) {
+
+                var request ={
+                    user: r.get("userId"),
+                    org: result.get("orgId")
+                };
+                requests.push(request);
+            }).then(function(){
+                res.json(requests);
+            }, function(err) {
+                console.log(err);
+            });
+        });
+    });
     function notifyadmins(orgId)
     {
         var innerQuery = new Parse.Query("Organization");
