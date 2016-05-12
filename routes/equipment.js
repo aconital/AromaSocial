@@ -27,8 +27,14 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query('Equipment');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('equipment', {
+                    path: req.path,
                     title: 'Equipment',
+                    path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
@@ -38,7 +44,7 @@ module.exports=function(app,Parse,io) {
                     description: result.get('description'),
                     instructions: result.get('instructions'),
                     image_URL: result.get('picture').url(),
-                    file_path: result.get('file').url(),
+                    file_path: filename,
                     keywords: result.get('keywords'),
                     model: result.get('model'),
                     model_year: result.get('model_year'),
@@ -52,6 +58,26 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    app.delete('/equipment/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        if (currentUser) {
+            var Equipment = Parse.Object.extend("Equipment");
+            var query = new Parse.Query(Equipment);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete equipment"});
+        }
+    });
+
     app.post('/organization/:objectId/equipment', is_auth, function(req,res,next){
         var now = moment();
         var Equipment = Parse.Object.extend("Equipment");
@@ -61,7 +87,6 @@ module.exports=function(app,Parse,io) {
         equipment.set('description', req.body.description);
         equipment.set('title',req.body.title);
         equipment.set('keywords',JSON.parse(req.body.keywords));
-        equipment.set('image_URL','/images/testtube.png');
         equipment.set('instructions',req.body.instructions);
         equipment.set('model_year',req.body.model_year);
         equipment.set('model',req.body.model);

@@ -131,7 +131,7 @@ var CreateOrganization = React.createClass({
 				message += 'Organization title is required.';
 			}
 			if (isValidForm.indexOf('PICTURE') > -1) {
-				message += ' Please upload an image file ending in png, gif, or jpg.';
+				message += ' Please upload an image file in png, gif, or jpg format.';
 			}
 			this.setState({createStatus: message});
 		}

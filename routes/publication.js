@@ -29,27 +29,6 @@ var encodeHtmlEntity = function(str) {
 };
 
 module.exports=function(app,Parse,io) {
-
-    // app.get('/allpublications', function(req, res, next) {
-    //     var currentUser = req.user;
-    //     var query = new Parse.Query('Publication');
-    //     query.find({
-    //         success: function(items) {
-    //             var results = [];
-    //             for (var i = 0; i < items.length; i++) {
-    //                 var obj = items[i];
-    //                 results.push(obj);
-    //             }
-    //             console.log("RESULTS ARE: ");
-    //             console.log(results);
-    //             res.send(results);
-    //         },
-    //         error: function(error) {
-    //             console.log("Error while getting all publications");
-    //         }
-    //     });
-    // });
-
     
     app.get('/allpublications', function(req, res, next) {
         var currentUser = req.user;
@@ -227,7 +206,7 @@ module.exports=function(app,Parse,io) {
                     contributors: result.get('contributors'),
                     author: result.get('author'),
                     abstract: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     keywords: result.get('keywords'),
                     url: result.get('url'),
                     title: result.get('title'),
@@ -259,7 +238,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -290,7 +269,7 @@ module.exports=function(app,Parse,io) {
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('filename'),
+                    filename: result.get('file').url(),
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -451,7 +430,6 @@ module.exports=function(app,Parse,io) {
                     var object = books[i];
                     pubs.push({
                         type: "book",
-                        filename: object.attributes.file.url(),
                         title: object.attributes.title,
                         keywords: object.attributes.keywords,
                         date: object.attributes.publication_date,
@@ -473,7 +451,6 @@ module.exports=function(app,Parse,io) {
                         var object = conferences[i];
                         pubs.push({
                             type: "conference",
-                            filename: object.attributes.file.url(),
                             title: object.attributes.title,
                             keywords: object.attributes.keywords,
                             date: object.attributes.publication_date,
@@ -495,7 +472,6 @@ module.exports=function(app,Parse,io) {
                             var object = journals[i];
                             pubs.push({
                                 type: "journal",
-                                filename: object.attributes.file.url(),
                                 title: object.attributes.title,
                                 keywords: object.attributes.keywords,
                                 date: object.attributes.publication_date,
@@ -517,7 +493,6 @@ module.exports=function(app,Parse,io) {
                                 var object = patents[i];
                                 pubs.push({
                                     type: "patent",
-                                    filename: object.attributes.file.url(),
                                     title: object.attributes.title,
                                     keywords: object.attributes.keywords,
                                     date: object.attributes.publication_date,
@@ -539,7 +514,6 @@ module.exports=function(app,Parse,io) {
                                     var object = reports[i];
                                     pubs.push({
                                         type: "report",
-                                        filename: object.attributes.file.url(),
                                         title: object.attributes.title,
                                         keywords: object.attributes.keywords,
                                         date: object.attributes.publication_date,
@@ -561,7 +535,6 @@ module.exports=function(app,Parse,io) {
                                         var object = thesis[i];
                                         pubs.push({
                                             type: "thesis",
-                                            filename: object.attributes.file.url(),
                                             title: object.attributes.title,
                                             keywords: object.attributes.keywords,
                                             date: object.attributes.publication_date,
@@ -583,7 +556,6 @@ module.exports=function(app,Parse,io) {
                                             var object = unpublished[i];
                                             pubs.push({
                                                 type: "unpublished",
-                                                filename: object.attributes.file.url(),
                                                 title: object.attributes.title,
                                                 keywords: object.attributes.keywords,
                                                 date: object.attributes.publication_date,
@@ -607,6 +579,28 @@ module.exports=function(app,Parse,io) {
                 })
             })
         })
+    });
+
+    app.delete('/publication/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        var pubClass = req.query.pub_class;
+        console.log(pubClass)
+        if (currentUser) {
+            var Publication = Parse.Object.extend(pubClass);
+            var query = new Parse.Query(Publication);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete publication"});
+        }
     });
 
     app.post('/profile/:username/publication', function(req,res,next){
@@ -690,7 +684,7 @@ module.exports=function(app,Parse,io) {
             }
             var promises = [];
             if (req.body.file != null) {
-                var fileName = req.params.username + "_publication_picture." + req.body.fileType;
+                var fileName = "publication_file." + req.body.fileType;
                 var fileBuff = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
                 var fileFile = new Parse.File(fileName, {base64: fileBuff});
                 promises.push(fileFile.save().then(function () {

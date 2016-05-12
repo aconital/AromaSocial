@@ -159,7 +159,7 @@ passport.deserializeUser(function(username, done) {
                 email: user.attributes.email,
                 emailVerified: user.attributes.emailVerified,
                 fullname:user.attributes.fullname,
-                imgUrl:user.attributes.imgUrl,
+                imgUrl:user.attributes.picture.url(),
                 summary:user.attributes.summary,
                 interests:user.attributes.interests,
                 interestsTag:user.attributes.interestsTag,

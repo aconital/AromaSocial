@@ -54,7 +54,6 @@ module.exports=function(app,Parse,io) {
                 path: req.path,
                 currentUsername: currentUser.username,
                 objectId: currentUser.id,
-                currentUserImg: currentUser.imgUrl,
                 username: currentUser.username,
                 email: currentUser.email,
                 fullname: currentUser.fullname,
@@ -212,7 +211,7 @@ module.exports=function(app,Parse,io) {
                         username: friend.get('username'),
                         title: friend.get('title'),
                         fullname: friend.get('fullname'),
-                        userImgUrl: friend.get('imgUrl'),
+                        userImgUrl: friend.get('picture').url,
                         about: friend.get('about')
                     };
                     people.push(person);
@@ -242,16 +241,11 @@ module.exports=function(app,Parse,io) {
                     var orgId= result[uo].attributes.orgId.id;
                     var name= "";
                     var location= connected_orgs.location;
-                    var orgImgUrl= "/images/organization.png";
+                    var orgImgUrl= connected_orgs.picture.url();
                     if(connected_orgs.hasOwnProperty('name')){
                         name=connected_orgs.name;
                     }
-
-                        location=connected_orgs.location;
-
-                    if(connected_orgs.hasOwnProperty('profile_imgURL')){
-                        orgImgUrl=connected_orgs.profile_imgURL;
-                    }
+                    location=connected_orgs.location;
                     //only show people who are verified by admin
                     if(verified) {
                         var org = {
@@ -379,7 +373,7 @@ module.exports=function(app,Parse,io) {
                     var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
                     pictureFile.save().then(function () {
                         result.set('picture', pictureFile)
-                        result.save().then(function () {
+                        result.save(null, { useMasterKey: true }).then(function () {
                             res.status(200).json({status: "Picture Uploaded Successfully!"});
                         });
                     });

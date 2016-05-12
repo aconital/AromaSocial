@@ -87,6 +87,26 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    app.delete('/data/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        if (currentUser) {
+            var Data = Parse.Object.extend("Data");
+            var query = new Parse.Query(Data);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete data"});
+        }
+    });
+
     app.post('/profile/:username/data', is_auth, function(req,res,next){
         var currentUser = req.user;
         var Data = Parse.Object.extend("Data");
