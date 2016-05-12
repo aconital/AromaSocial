@@ -844,7 +844,7 @@ module.exports=function(app,Parse,io) {
             relation.save(null,{
                 success:function(){
 
-                    io.to(userId).emit('friendrequest',{data:currentUser});
+                    io.to(currentUser.id).emit('orgrequest',{data:currentUser});
 
                     res.json({success: "Joined Successfully"});
                 },
@@ -1011,7 +1011,34 @@ module.exports=function(app,Parse,io) {
             }
         });
     });
+    app.get('/orgrequest', is_auth, function(req,res,next){
 
+        var currentUser= req.user;
+        var requests =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("isAdmin",true)
+        query.include('orgId')
+        query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id})
+        query.each(function(result) {
+
+            var query = new Parse.Query('Relationship');
+            query.equalTo("verified",false)
+            query.include('userId')
+            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
+            query.each(function(r) {
+
+                var request ={
+                    user: r.get("userId"),
+                    org: result.get("orgId")
+                };
+                requests.push(request);
+            }).then(function(){
+                res.json(requests);
+            }, function(err) {
+                console.log(err);
+            });
+        });
+    });
     function notifyadmins(orgId)
     {
         var innerQuery = new Parse.Query("Organization");
