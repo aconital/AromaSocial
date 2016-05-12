@@ -162,15 +162,31 @@ var Data = React.createClass ({
 
         return;
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteEntry.bind(this),
+    // deleteEntry: function(callback) {
+    //     console.log("bad bug", path);
+    //     $.ajax({
+    //         url: path,
+    //         type: 'DELETE'
+    //     }).done(function(status) {
+    //         callback('Successfully deleted.')
+    //         setTimeout(function(){ // redirect to homepage
+    //             window.location = '../..';
+    //         }, 3000); 
+    //     }).fail(function(xhr, status, err) {
+    //         console.log(status + ': ' + err);
+    //         callback('Error: ' + err);
+
+    //     });
+    // },
     render: function() {
         var creator = (this.state.creator) ? '/profile/' + this.state.creator.username : '',
             avatar = (this.state.creator) ? this.state.creator.imgUrl : '',
             fileExists;
 
         if (this.state.filename || false) {
-            fileExists = <h2 className="corner"><a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
-        } else {
-            fileExists = <h2 className="corner"></h2>;
+            fileExists = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         return (
@@ -192,7 +208,10 @@ var Data = React.createClass ({
 
                 <div className="item-panel">
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" style={{width:'90%'}} onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
-                    {fileExists}
+                    <h2 className="corner">
+                        {fileExists}
+                        {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
+                    </h2>
                     <div className="contain-panel-big-item-image">
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </div>
@@ -229,10 +248,69 @@ var Data = React.createClass ({
     }
 });
 
+// var SettingsModal = React.createClass({
+//     getInitialState() {
+//         return { 
+//             showModal: false,
+//             message: 'This action cannot be undone.' };
+//     },
+//     close() {
+//         this.setState({ showModal: false });
+//     },
+//     open() {
+//         this.setState({ showModal: true });
+//     },
+//     setMsg(status) {
+//         this.setState({ message: status });
+//     },
+//     delete() {
+//         this.setMsg('In progress...');
+//         this.props.delete(this.setMsg);
+//         console.log("end");
+//     },
+
+//     render() {
+//         return (
+//             <div>
+//                 <span className="glyphicon glyphicon-remove space" onClick={this.open}></span>
+
+//                 <Modal show={this.state.showModal} onHide={this.close}>
+//                     <Modal.Header closeButton>
+//                         <Modal.Title>Confirmation</Modal.Title>
+//                     </Modal.Header>
+//                     <Modal.Body>
+//                         {/*<div id="">
+//                             <h4>Update Uploaded File</h4>
+//                             <input className="form-control" type="file" name="publication-upload" id="" required onChange={this.handleFile} />
+//                         </div>
+
+//                         <div id="">
+//                             <h4>Update Uploaded Picture</h4>
+//                             <input className="form-control" type="file" name="publication-upload" id="" required onChange={this.handlePicture} />
+//                         </div>
+
+//                         <div id="">
+//                             <h4>Delete Entry</h4>
+//                             <p>Caution: This action cannot be undone. Please save changes to complete the operation.</p>
+//                             <Button block bsStyle="danger" onClick={this.TODO}>Delete</Button>
+//                         </div>*/}
+
+//                         <h4>Are you sure you want to delete this entry?</h4>
+//                         <p>{this.state.message}</p>
+//                     </Modal.Body>
+//                     <Modal.Footer>
+//                         <Button onClick={this.close}>Cancel</Button><Button bsStyle="danger" onClick={this.delete}>Delete</Button>
+//                     </Modal.Footer>
+//                 </Modal>
+//             </div>
+//         );
+//     }
+// });
+
 ReactDOM.render(<Data />, document.getElementById('content'));
 
 
-var Models = React.createClass({
+var Models = React.createClass({ //TODO delete?
   getInitialState: function() {
     return { showModal: false };
   },
@@ -273,7 +351,7 @@ var Models = React.createClass({
   }
 });
 
-var DataInline = React.createClass({
+var DataInline = React.createClass({ //TODO delete?
   getInitialState: function() {
     return { showModal: false };
   },
@@ -306,7 +384,7 @@ var DataInline = React.createClass({
   }
 });
 
-var ResourceAddForm = React.createClass({
+var ResourceAddForm = React.createClass({ //TODO delete?
     getInitialState: function() {
      return {
         fromModelTab: false,
@@ -463,7 +541,7 @@ var ResourceAddForm = React.createClass({
     }
 });
 
-var DataItem = React.createClass({
+var DataItem = React.createClass({ //TODO delete?
     render: function() {
         return (
             <div className="publication-box">
@@ -485,7 +563,7 @@ var DataItem = React.createClass({
     }
 });
 
-var ModelItem = React.createClass({
+var ModelItem = React.createClass({  //TODO delete?
     render: function() {
         return (
             <div className="publication-box">
@@ -511,7 +589,7 @@ var ModelItem = React.createClass({
     }
 });
 
-var ItemInfo = React.createClass({
+var ItemInfo = React.createClass({ //TODO delete?
     render: function() {
         return (
             <div className="publication-box-right">

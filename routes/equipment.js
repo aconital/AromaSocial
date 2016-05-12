@@ -28,6 +28,7 @@ module.exports=function(app,Parse,io) {
         query.get(req.params.objectId,{
             success: function(result) {
                 res.render('equipment', {
+                    path: req.path,
                     title: 'Equipment',
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
@@ -50,6 +51,26 @@ module.exports=function(app,Parse,io) {
                 res.render('index', {title: 'Please Login!', path: req.path});
             }
         });
+    });
+
+    app.delete('/equipment/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        if (currentUser) {
+            var Equipment = Parse.Object.extend("Equipment");
+            var query = new Parse.Query(Equipment);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete equipment"});
+        }
     });
 
     app.post('/organization/:objectId/equipment', is_auth, function(req,res,next){

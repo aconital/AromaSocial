@@ -60,6 +60,25 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    app.delete('/model/:objectId', is_auth, function (req, res, next) {
+        var currentUser = req.user;
+        if (currentUser) {
+            var Model = Parse.Object.extend("Model");
+            var query = new Parse.Query(Model);
+            query.get(req.params.objectId, {
+                success: function(result) {
+                    result.destroy({});
+                    res.status(200).json({status:"OK"});
+                },
+                error: function(error) {
+                    console.log(error);
+                    res.status(500).json({status:"Query failed "+error.message});
+                }
+            });
+        } else {
+            res.status(403).json({status:"Couldn't delete model"});
+        }
+    });
 
     app.post('/model/:objectId/update', is_auth, function(req,res,next){
         var query = new Parse.Query("Model");

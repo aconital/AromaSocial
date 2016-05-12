@@ -919,6 +919,8 @@ var Projects = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
             item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
@@ -992,6 +994,8 @@ var Publications = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type.capitalize();
@@ -1085,6 +1089,8 @@ var Models = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type;
@@ -1154,12 +1160,19 @@ var Data = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
+    
     render: function() {
+        var self = this;
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type;
             var typeList = [];
+            var dataPath;
             for (var i in items) {
                 var item = items[i];
+                dataPath = '/data/' + item.objectId;
+                console.log(item);
                 item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
                 typeList.push(item);
             }
@@ -1175,7 +1188,10 @@ var Data = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/data/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <h3 className="margin-top-bottom-5">
+                                <a href={'/data/'+item.objectId} className="body-link">{item.title}</a>
+                                {/*TODO uncomment<SettingsModal delete={self.deleteEntry} path={dataPath} refresh={self.render} />*/}
+                            </h3>
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>

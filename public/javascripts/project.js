@@ -93,13 +93,14 @@ var Project = React.createClass ({
 
         return;
     },
-   render: function() {
+    // function declared in ./settings.js
+    deleteEntry: settingsModalDeleteEntry.bind(this),
+
+    render: function() {
         var fileExists;
 
-        if (this.state.file_path || false) {
-                fileExists = <h2 className="corner"><a href={this.state.file_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
-            } else {
-                fileExists = <h2 className="corner"></h2>;
+        if (this.state.filename || false) {
+            fileExists = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         return (
@@ -120,7 +121,10 @@ var Project = React.createClass ({
             <div className="content-wrap-item-page-100">
                 <div className="item-panel">
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" style={{width:'90%'}} onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
-                    {fileExists}
+                    <h2 className="corner">
+                        {fileExists}
+                        {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
+                    </h2>
                     {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen} id="big-image"><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.image_URL} className="contain-panel-big-image"/>}
                     <div className="contain-panel-big item-info">
                         <h4 className="no-margin h4-item-inside-panel-wrap h4-item-inside-panel-spacing">Description</h4>
