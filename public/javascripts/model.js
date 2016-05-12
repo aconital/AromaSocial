@@ -10,7 +10,7 @@ var Model = React.createClass ({
 
         objectId: objectId,
         image_URL: image_URL,
-        image: image, // TODO rename associated with this
+        filename: filename, // TODO rename associated with this
 
         license: license,
         keywords: keywords,
