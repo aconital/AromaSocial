@@ -47,7 +47,6 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query('Organization');
         query.get(req.params.objectId,{
             success: function(result) {
-                notifyadmins(req.params.objectId)
                 res.render('organization', {
                     title: 'Organization',
                     path: req.path,
@@ -224,9 +223,11 @@ module.exports=function(app,Parse,io) {
     });
 
     app.post('/organization/:objectId/pending_person_action/', function (req, res, next) {
+
         var personId = req.body.personId;
         var orgId = req.params.objectId;
         var mode = req.body.mode;
+
         var innerQuery = new Parse.Query("Organization");
         innerQuery.equalTo("objectId",orgId);
         var innerQuery2 = new Parse.Query(Parse.User);
@@ -854,8 +855,7 @@ module.exports=function(app,Parse,io) {
             relation.set('title', 'Members');
             relation.save(null,{
                 success:function(){
-
-                    io.to(currentUser.id).emit('orgrequest',{data:currentUser});
+                    notifyadmins(req.params.objectId,currentUser)
 
                     res.json({success: "Joined Successfully"});
                 },
@@ -1037,12 +1037,24 @@ module.exports=function(app,Parse,io) {
             query.include('userId')
             query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
             query.each(function(r) {
-
-                var request ={
-                    user: r.get("userId"),
-                    org: result.get("orgId")
+                var org_notification = {
+                    id: "org_"+result.get("orgId").id+"_"+r.get("userId").id+"_inv",
+                    type:"orgrequest",
+                    from: {
+                        userId:r.get("userId").id,
+                        username: r.get("userId").get("username"),
+                        name: r.get("userId").get("fullname"),
+                        userImgUrl: r.get("userId").get("picture").url(),
+                    },
+                    msg: "wants to join",
+                    extra: {
+                        id: result.get("orgId").id,
+                        name: result.get("orgId").get("name"),
+                        imgUrl: result.get("orgId").get("profile_imgURL")
+                    }
                 };
-                requests.push(request);
+
+                requests.push(org_notification);
             }).then(function(){
                 res.json(requests);
             }, function(err) {
@@ -1050,13 +1062,14 @@ module.exports=function(app,Parse,io) {
             });
         });
     });
-    function notifyadmins(orgId)
+    function notifyadmins(orgId,user)
     {
         var innerQuery = new Parse.Query("Organization");
         innerQuery.equalTo("objectId",orgId);
         var query = new Parse.Query('Relationship');
         query.matchesQuery("orgId",innerQuery)
         query.equalTo("isAdmin",true)
+        query.include('orgId')
         query.find({
             success: function(results) {
 
@@ -1065,7 +1078,23 @@ module.exports=function(app,Parse,io) {
                   for(var i=0;i<results.length;i++)
                   {
                       var adminId= results[i].get("userId").id;
-                      io.to(adminId).emit('orgrequest',{data:currentUser});
+                      var org_notification = {
+                          id: "org_"+results[i].get("orgId").id+"_"+user.id+"_inv",
+                          type:"orgrequest",
+                          from: {
+                              userId:user.id,
+                              username: user.username,
+                              name:user.fullname,
+                              userImgUrl: user.imgUrl,
+                          },
+                          msg: "wants to join ",
+                          extra: {
+                              id: results[i].get("orgId").id,
+                              name: results[i].get("orgId").get("name"),
+                              imgUrl: results[i].get("orgId").get("profile_imgURL")
+                          }
+                      };
+                      io.to(adminId).emit('orgrequest',{data:org_notification});
                   }
               }
             },

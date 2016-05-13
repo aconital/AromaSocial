@@ -20,15 +20,6 @@ var is_auth = require('../utils/helpers').is_auth;
 var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
 
-var smtpConfig = {
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
-    auth: {
-        user: 'support@syncholar.com',
-        pass: 'Fomsummer2016'
-    }
-};
 
 module.exports=function(app,Parse,io) {
 

@@ -588,7 +588,8 @@ module.exports=function(app,Parse,io) {
 
                 relation.save(null,{
                     success:function(){
-                        io.to(userId).emit('friendrequest',{data:currentUser});
+                        notifyFriend(userId,currentUser);
+
                         res.json({success: "Requested Successfully"});
                     },
                     error:function(error){
@@ -666,18 +667,28 @@ module.exports=function(app,Parse,io) {
             var username= user.get('username');
             var userId = user.id;
             var fullname= user.get('fullname');
-            var userImgUrl= user.get('imgUrl');
+            var userImgUrl= user.get('picture').url();
             var verified= result.get('verified');
 
             if(!verified) {
-                var person = {
-                    username:username,
-                    userId: userId,
-                    title: title,
-                    fullname: fullname,
-                    userImgUrl: userImgUrl
+                var person_notification = {
+                    id: "user_"+userId+"_inv",
+                    type:"friendrequest",
+                    from: {
+                        userId:userId,
+                        username: username,
+                        name: fullname,
+                        userImgUrl: userImgUrl,
+                    },
+                    msg: "wants to connect with you.",
+                    extra: {
+                        id: null,
+                        name: null,
+                        imgUrl: null
+                    }
                 };
-                people.push(person);
+
+                people.push(person_notification);
             }
         }).then(function(){
             res.json(people);
@@ -705,7 +716,7 @@ module.exports=function(app,Parse,io) {
                     console.log("Unexpected error. Cannot find RelationshipUser entry for friend request");
                 } else {
                     //user denied
-                    if(mode == "deny")
+                    if(mode == "reject")
                     {
                         result.destroy({
                             success: function(myObject) {
@@ -968,4 +979,26 @@ module.exports=function(app,Parse,io) {
         data_list.push(currentUser.workExperience);
         res.json(JSON.stringify(data_list));
     });
+
+    function notifyFriend(userId,currentUser)
+    {
+          var person_notification = {
+        id: "user_"+currentUser.id+"_inv",
+        type:"friendrequest",
+        from: {
+            userId:currentUser.id,
+            username: currentUser.username,
+            name: currentUser.fullname,
+            userImgUrl: currentUser.imgUrl,
+        },
+        msg: "wants to connect with you.",
+        extra: {
+            id: null,
+            name: null,
+            imgUrl: null
+        }
+    };
+
+        io.to(userId).emit('friendrequest',{data:person_notification});
+    }
 }
