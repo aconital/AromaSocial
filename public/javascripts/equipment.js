@@ -118,8 +118,8 @@ var Equipment = React.createClass ({
     render: function() {
         var fileExists;
 
-        if (this.state.filename || false) {
-            fileExists = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
+        if (this.state.file_path || false) {
+            fileExists = <a href={file_path} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         return (
