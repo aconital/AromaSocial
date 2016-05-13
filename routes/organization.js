@@ -48,7 +48,9 @@ module.exports=function(app,Parse,io) {
         query.get(req.params.objectId,{
             success: function(result) {
                 notifyadmins(req.params.objectId)
-                res.render('organization', {title: 'Organization', path: req.path,
+                res.render('organization', {
+                    title: 'Organization',
+                    path: req.path,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
                     objectId: req.params.objectId,
@@ -60,6 +62,9 @@ module.exports=function(app,Parse,io) {
                     city: result.get('city'),
                     street: result.get('street'),
                     postalcode: result.get('postalcode'),
+                    tel: result.get('tel'),
+                    fax: result.get('fax'),
+                    email: result.get('email'),
                     website: result.get('website'),
                     carousel_1_img: result.get('carousel_1_img'),
                     carousel_1_head: result.get('carousel_1_head'),
@@ -324,6 +329,9 @@ module.exports=function(app,Parse,io) {
             result.set("prov", req.body.prov);
             result.set("country", req.body.country);
             result.set("postalcode", req.body.postalcode);
+            result.set("tel", req.body.tel);
+            result.set("fax", req.body.fax);
+            result.set("email", req.body.email);
             result.set("website", req.body.website);
             var location= '';
             if (req.body.city ) {
@@ -749,12 +757,15 @@ module.exports=function(app,Parse,io) {
         var org = new Organization();
         org.set('name', req.body.name);
         // org.set('location', req.body.location ? req.body.location : '');
-        org.set('about', req.body.description ? req.body.description : 'About Organization');
+        org.set('about', req.body.description ? req.body.description : '');
         org.set('country', req.body.country ? req.body.country : '');
         org.set('prov', req.body.prov ? req.body.prov : '');
         org.set('city', req.body.city ? req.body.city : '');
         org.set('street', req.body.street ? req.body.street : '');
         org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
+        org.set('tel', req.body.tel ? req.body.tel : '');
+        org.set('fax', req.body.fax ? req.body.fax : '');
+        org.set('email', req.body.email ? req.body.email : '');
         org.set('website', req.body.website ? req.body.website : '');
         org.set('carousel_1_img','/images/carousel.png');
         org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');

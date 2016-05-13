@@ -286,6 +286,15 @@ var OrganizationMenu = React.createClass ({
 var About = React.createClass({
     getInitialState: function(){
         return {about: about,
+            orgCountry: orgCountry,
+            orgProv: orgProv,
+            orgCity: orgCity,
+            orgStreet: orgStreet,
+            orgPostalcode: orgPostalcode,
+            orgWebsite: orgWebsite,
+            orgTel: orgTel,
+            orgFax: orgFax,
+            orgEmail: orgEmail,
             carousel_1_img:{carousel_1_img},
             carousel_1_head: carousel_1_head,
             carousel_1_body: carousel_1_body,
@@ -337,7 +346,17 @@ var About = React.createClass({
         var dataForm = {isAdmin: false, about: this.state.about.replace(/(\r\n|\n|\r|\\)/gm,'\\n'),
                         carousel_1_head: this.state.carousel_1_head, carousel_1_body: this.state.carousel_1_body,
                         carousel_2_head: this.state.carousel_2_head, carousel_2_body: this.state.carousel_2_body,
-                        carousel_3_head: this.state.carousel_3_head, carousel_3_body: this.state.carousel_3_body };
+                        carousel_3_head: this.state.carousel_3_head, carousel_3_body: this.state.carousel_3_body,
+            country: this.state.orgCountry,
+            prov: this.state.orgProv,
+            city: this.state.orgCity,
+            street: this.state.orgStreet,
+            postalcode: this.state.orgPostalcode,
+            website: this.state.orgWebsite,
+            tel: this.state.orgTel,
+            fax: this.state.orgFax,
+            email: this.state.orgEmail
+        };
         var isAdminURL= "/organization/"+objectId+"/isAdmin";
         $.ajax({
             url: path + "/update",
@@ -446,6 +465,7 @@ var About = React.createClass({
                             {(this.state.modalMode == 3)? <input className="publication-button" type="submit" value="Submit" onClick={this.submitCarouselPicture_3} />: ""}
                         </Modal.Footer>
                     </Modal>
+                    <div className="carousel_div">
                     <Carousel>
 
                         <Carousel.Item>
@@ -474,10 +494,48 @@ var About = React.createClass({
                         </Carousel.Item>
 
                     </Carousel>
-                    <div className="organization-table-div">
+                        </div>
+                    <div className="resume-item div-relative ">
 
                         <textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea>
                     </div>
+                    <div id="organizaiton_address" className="div-relative"><hr/>
+                        <div>
+                            <h3 className="no-margin-top" >Contact</h3>
+                        </div>
+                        <table className="resume-item div-relative ">
+                            <tbody >
+
+                                <tr >
+
+                                  <td> <input id="streetInp" type="text" className="p-editable" name="orgStreet" placeholder="Street Address, Unit/Room #"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
+                                </tr>
+                                <tr >
+                                    <td ><input type="text" className="p-editable" placeholder="Country" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
+
+                                    <td ><input type="text" className="p-editable" placeholder="State / Province" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
+                                </tr>
+                                <tr >
+                                    <td><input type="text" className="p-editable" name="orgCity" placeholder="City" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
+
+                                    <td><input type="text" className="p-editable" name="orgPostalcode" placeholder="Zip / Postal-code" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
+                                </tr >
+
+                                <tr>
+                                    <td className="tdnowrap"><span>Tel:</span><input type="text" id="telInp" className="p-editable" name="orgTel" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgTel} /></td>
+                                </tr>
+                                <tr>
+                                    <td className="tdnowrap"><span>Fax:</span><input type="text" className="p-editable" name="orgFax" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgFax} /></td>
+                                </tr>
+                                <tr>
+                                    <td className="tdnowrap"><span>Email:</span><input type="text" className="p-editable" name="orgEmail" placeholder="Email" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgEmail} /></td>
+                                </tr>
+                                <tr>
+                                    <td className="tdnowrap"><span>Website:</span><input type="text" className="p-editable" name="orgWebsite" placeholder="Website url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
                 </div>
 
         ) ;
@@ -486,7 +544,8 @@ var About = React.createClass({
         return (
             <div>
             {(carousel_1_img != "/images/carousel.png" || carousel_2_img != "/images/carousel.png" || carousel_3_img != "/images/carousel.png")?
-             <Carousel>
+                <div className="carousel_div">
+                <Carousel>
                    {(carousel_1_img != "/images/carousel.png")?
                         <Carousel.Item>
                             <img src={carousel_1_img}/>
@@ -511,11 +570,47 @@ var About = React.createClass({
                                 <p>{carousel_3_body}</p>
                             </Carousel.Caption>
                         </Carousel.Item> :"" }
-                </Carousel> : ""}
-                <div className="organization-table-div">
+                </Carousel></div> : ""
+                }
+            {(about != "")?
+                <div className="resume-item div-relative ">
 
                     <pre>{about}</pre>
+                </div>:""}
+            {(orgStreet != "" || orgCity != "" || orgProv != "" || orgCountry != "" || orgPostalcode != "" || orgEmail != "" || orgTel != "" || orgFax != "" || orgWebsite != "") ?
+                <div id="organizaiton_address" className="div-relative"><hr/>
+                    <div>
+                        <h3 className="no-margin-top" >Contact</h3>
+                    </div>
+                    <table className="resume-item div-relative ">
+                        <tbody >
+
+                            <tr >
+                                {(orgStreet != "")?<td className="tdnowrap">{orgStreet}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgLocation != "")?<td className="tdnowrap">{orgLocation}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgPostalcode != "")?<td className="tdnowrap">{orgPostalcode}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgTel != "")?<td className="tdnowrap">{orgTel}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgFax != "")?<td className="tdnowrap">{orgFax}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgEmail != "")?<td className="tdnowrap"><a href={"mailto:"+orgEmail}>{orgEmail}</a></td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgWebsite != "")?<td className="tdnowrap"><a href={orgWebsite} target="blank">{orgWebsite}</a></td> : ""}
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+                :""}
+
             </div>
         );
     }
@@ -764,12 +859,7 @@ var People = React.createClass({
 var Manage = React.createClass({
     getInitialState: function() {
         return {
-            orgCountry: orgCountry,
-            orgProv: orgProv,
-            orgCity: orgCity,
-            orgStreet: orgStreet,
-            orgPostalcode: orgPostalcode,
-            orgWebsite: orgWebsite,
+
             organization_imgURL: organization_imgURL,
 
             pendingPeople: [],
@@ -781,13 +871,7 @@ var Manage = React.createClass({
         this.setState({[e.target.name]:e.target.value});
     },
     submitChange: function() {
-        var dataForm = {name: this.state.name,
-            country: this.state.orgCountry,
-            prov: this.state.orgProv,
-            city: this.state.orgCity,
-            street: this.state.orgStreet,
-            postalcode: this.state.orgPostalcode,
-            website: this.state.orgWebsite};
+        var dataForm = {name: this.state.name};
 
         $.ajax({
             url: path + "/update",
@@ -948,30 +1032,7 @@ var Manage = React.createClass({
                     </div>
                     <table className="organization-table-info">
                         <tbody>
-                        <tr>
-                            <td><b>Country: </b></td>
-                            <td><input type="text" className="p-editable" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>State/Province: </b></td>
-                            <td><input type="text" className="p-editable" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>City: </b></td>
-                            <td><input type="text" className="p-editable" name="orgCity" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>Street Address: </b></td>
-                            <td><input type="text" className="p-editable" name="orgStreet" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>Zip/Postal code: </b></td>
-                            <td><input type="text" className="p-editable" name="orgPostalcode" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>Website URL: </b></td>
-                            <td><input type="text" className="p-editable" name="orgWebsite" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
-                        </tr>
+
                         <tr>
                             <td><b>Admins: </b></td>
                             <td><div>{adminsList}</div></td>

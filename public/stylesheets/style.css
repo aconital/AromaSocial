@@ -6639,4 +6639,12 @@ hr.style15 {
   background-color: #1565c0;
 }
 
+.org-about-address{
+  padding-left: 10px ;
+}
 
+.tdnowrap{
+  white-space: nowrap;
+  padding-left: 10px ;
+  padding-top: 5px;
+}

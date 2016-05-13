@@ -265,6 +265,7 @@
     border-color: var(--foreground-color);
     background-color: transparent;
     box-shadow: 0px 2px 10px #888888;
+
 }
 
 .carousel-inner > .item > img {
@@ -289,8 +290,7 @@
 }
 
 .carousel_div{
-    position:relative;
-    z-index:10 !important;
+    padding-bottom: 15px ;
 
 }
 
