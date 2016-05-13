@@ -92,7 +92,7 @@ var Project = React.createClass ({
 
         return;
     },
-    // function declared in ./settings.js
+    // function declared in ./sharedComponents/settings.js
     deleteEntry: settingsModalDeleteEntry.bind(this),
 
     render: function() {

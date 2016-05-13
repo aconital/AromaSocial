@@ -944,7 +944,7 @@ var Projects = React.createClass({
             }.bind(this)
         });
     },
-    // function declared in ./settings.js
+    // function declared in ./sharedComponents/settings.js
     deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
@@ -1019,7 +1019,7 @@ var Publications = React.createClass({
             }.bind(this)
         });
     },
-    // function declared in ./settings.js
+    // function declared in ./sharedComponents/settings.js
     deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
@@ -1114,7 +1114,7 @@ var Models = React.createClass({
             }.bind(this)
         });
     },
-    // function declared in ./settings.js
+    // function declared in ./sharedComponents/settings.js
     deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
@@ -1185,7 +1185,7 @@ var Data = React.createClass({
             }.bind(this)
         });
     },
-    // function declared in ./settings.js
+    // function declared in ./sharedComponents/settings.js
     deleteEntry: settingsModalDeleteListEntry.bind(this),
     
     render: function() {

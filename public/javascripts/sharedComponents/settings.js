@@ -1,4 +1,4 @@
-// Modal used by all entries. Currently supports deleting entry. Future: changing file/image upload
+// Modal component used by all entries. Currently supports deleting entry. Future: changing file/image upload
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 
@@ -70,8 +70,8 @@ var SettingsModal = React.createClass({
 
     render() {
         return (
-            <span className="space">
-                <span className="glyphicon glyphicon-remove space" style={{float: 'right'}} onClick={this.open}></span>
+            <span>
+                <span className="glyphicon glyphicon-remove space settings-btn" onClick={this.open}></span>
 
                 <Modal show={this.state.showModal} onHide={this.close}>
                     <Modal.Header closeButton>

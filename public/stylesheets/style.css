@@ -6648,3 +6648,13 @@ hr.style15 {
   padding-left: 10px ;
   padding-top: 5px;
 }
+
+.settings-btn {
+  float: right;
+  font-size: 1.4em;
+  color: #92999f;
+}
+
+.settings-btn:hover {
+  color: var(--foreground-hover-color);
+}
