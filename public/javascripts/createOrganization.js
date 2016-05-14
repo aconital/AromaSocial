@@ -103,9 +103,9 @@ var CreateOrganization = React.createClass({
 							street: this.state.street,
 							postalcode: this.state.postalcode,
 							website: this.state.website};
-			this.setState({createStatus: 'In progress...'});
+			this.setState({createStatus: 'Please wait...'});
 
-			this.setState({buttonInputText: "Please Wait. Creating..."});
+			this.setState({buttonInputText: "Getting our ducks in a row..."});
 			this.setState({buttonInputDisabled: true});
 
 			$.ajax({
@@ -116,7 +116,7 @@ var CreateOrganization = React.createClass({
 				data: JSON.stringify(dataForm),
 				processData: false,
 				success: function(data) {
-					this.setState({createStatus: 'Organization created! Redirecting...'});
+					this.setState({createStatus: 'Homepage created! Redirecting...'});
 					window.location = '../organization/' + data.location;
 				}.bind(this),
 				error: function(xhr, status, err) {
