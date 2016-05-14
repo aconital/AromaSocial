@@ -158,18 +158,9 @@ var Profile = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function() {
-// <<<<<<< HEAD
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.username + "_profile_picture_" + randomNumber + "." + this.state.pictureType;
-        var that = this;
         this.setState({imgSubmitText: "Uploading. Give us a sec..."});
         this.setState({imgSubmitDisabled: true});
-
-        var $this = this;
-// =======
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
-// >>>>>>> 066d0da34bc0c5a8d4507a6417069090ac217e26
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -178,22 +169,14 @@ var Profile = React.createClass ({
             data: JSON.stringify(dataForm),
             success: function(status) {
                 this.setState({profile_imgURL: this.state.picture});
+                this.setState({ imgSubmitDisabled: false });
                 this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
+                this.setState({ imgSubmitText: "Error. Please select an image and click me again." });
+                this.setState({ imgSubmitDisabled: false });
             }.bind(this)
-// <<<<<<< HEAD
-        }).then(function(){
-            $this.clickClose();
-            $this.setState({profile_imgURL:changeImgURL});
-            that.setState({ imgSubmitText: "Upload" });
-            that.setState({ imgSubmitDisabled: false });
-        }, function(err) {
-            that.setState({ imgSubmitText: "Error. Please select an image and click me again." });
-            that.setState({ imgSubmitDisabled: false });
-// =======
-// >>>>>>> 066d0da34bc0c5a8d4507a6417069090ac217e26
         });
         return;
     },
@@ -272,7 +255,7 @@ var Profile = React.createClass ({
             <div className="content-wrap">
                 <div className="item-bottom">
                     <div className="item-bottom-1">
-                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
+                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
                         {/*
                         <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
                         <div className="side-panel"><h5>RATINGS</h5></div>

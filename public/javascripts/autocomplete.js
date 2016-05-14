@@ -16,13 +16,14 @@ $(function() {
                     });
                     $.map(arr, function(item){
                       var dlink = "/profile/" + item.username;
-                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.imgUrl, link: dlink});
+                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink});
                     });
                   },
                   error: function(xhr) {
                     console.log(xhr.status);
                   }
                 }),
+                  /*
                 $.ajax({
                   url: '/allpublications',
                   dataType: 'json',
@@ -45,7 +46,7 @@ $(function() {
                   error: function(xhr) {
                     console.log(xhr.status);
                   }
-                }),
+                }),*/
                 $.ajax({
                   url: '/allorganizations',
                   dataType: 'json',
@@ -57,7 +58,7 @@ $(function() {
                     });
                     $.map(arr, function(item){
                       var dlink = "/organization/" + item.objectId;
-                      r.push({label: item.name, value: item.name, category: "Organizations", imgsrc: item.profile_imgURL, link: dlink});
+                      r.push({label: item.name, value: item.name, category: "Organizations", imgsrc: item.picture.url, link: dlink});
                     });
                   },
                   error: function(xhr) {
