@@ -1,6 +1,9 @@
 // Modal component used by all entries. Currently supports deleting entry. Future: changing file/image upload
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
+var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+var Tooltip = ReactBootstrap.Tooltip;
+
 
 // used when the settings modal is accessed from a list of entries (eg. profile, organization)
 var settingsModalDeleteListEntry = function(path, callback) {
@@ -31,7 +34,7 @@ var settingsModalDeleteEntry = function(callback) {
         url: path, // this is bound to parent's path var
         type: 'DELETE'
     }).done(function(status) {
-        callback('Successfully deleted. Redirecting to newsfeed in a few seconds...', false);
+        callback('Successfully deleted. Redirecting to newsfeed in a jiffy...', false);
         setTimeout(function(){ // redirect to homepage
             window.location = '../..';
         }, 2000); 
@@ -69,9 +72,15 @@ var SettingsModal = React.createClass({
     },
 
     render() {
+
+        const tooltip_del = (
+            <Tooltip><strong>Delete!</strong></Tooltip>
+        );
         return (
             <span>
-                <span className="glyphicon glyphicon-remove space settings-btn" onClick={this.open}></span>
+                <OverlayTrigger placement="top" overlay={tooltip_del}>
+                    <span className="glyphicon glyphicon-remove space settings-btn" onClick={this.open}></span>
+                </OverlayTrigger>
 
                 <Modal show={this.state.showModal} onHide={this.close}>
                     <Modal.Header closeButton>
@@ -98,7 +107,7 @@ var SettingsModal = React.createClass({
                         <p>{this.state.message}</p>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button onClick={this.close}>Cancel</Button><Button bsStyle="danger" onClick={this.delete} disabled={this.state.isDisabled}>Delete</Button>
+                        <Button onClick={this.close}>Cancel</Button><Button bsStyle="danger" className="del-btn" onClick={this.delete} disabled={this.state.isDisabled}>Delete</Button>
                     </Modal.Footer>
                 </Modal>
             </span>
