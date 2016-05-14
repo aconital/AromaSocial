@@ -1269,8 +1269,6 @@ var EquipmentAddForm = React.createClass({
 
             this.setState({imgSubmitText: 'Creating Equipment. Give us a sec...'});
             this.setState({imgSubmitDisabled: true});
-            var that = this;
-
             $.ajax({
                 url: path + endpoint,
                 dataType: 'json',

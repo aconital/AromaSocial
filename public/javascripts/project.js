@@ -4,14 +4,16 @@ var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 var Project = React.createClass ({
     getInitialState: function() {
-     return {
-        objectId: objectId,
-        title: title,
-        description: description,
-        image_URL: image_URL,
-        file_path: file_path,
-        showModal: false
-        };
+         return {
+             objectId: objectId,
+             title: title,
+             imgSubmitText:'Upload',
+             imgSubmitDisabled:false,
+             description: description,
+             image_URL: image_URL,
+             file_path: file_path,
+             showModal: false
+         };
     },
     handleChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
@@ -70,6 +72,8 @@ var Project = React.createClass ({
     },
     handleSubmitData: function(e) {
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
+        this.setState({imgSubmitText: "Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled: true});
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -79,17 +83,16 @@ var Project = React.createClass ({
             processData: false,
             success: function(data) {
                 this.setState({image_URL: this.state.picture});
+                this.setState({imgSubmitDisabled: false });
                 this.clickClose();
                 console.log(data);
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
+                this.setState({ imgSubmitText: "Error. Please select an image and click me again." });
+                this.setState({ imgSubmitDisabled: false });
             }.bind(this)
-        }).then(function(){
-            $this.clickClose();
-            $this.setState({image_URL:changeImgURL});
         });
-
         return;
     },
     // function declared in ./sharedComponents/settings.js
@@ -114,7 +117,7 @@ var Project = React.createClass ({
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
+                    <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData} />
                 </Modal.Footer>
             </Modal>
             <div className="content-wrap-item-page-100">

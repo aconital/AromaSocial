@@ -11,7 +11,8 @@ var Model = React.createClass ({
         objectId: objectId,
         image_URL: image_URL,
         filename: filename, // TODO rename associated with this
-
+        imgSubmitText:'Upload',
+        imgSubmitDisabled:false,
         license: license,
         keywords: keywords,
         collaborators: collaborators,
@@ -139,6 +140,8 @@ var Model = React.createClass ({
     },
     handleSubmitData: function(e) {
         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
+        this.setState({imgSubmitText: "Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled: true});
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -149,10 +152,13 @@ var Model = React.createClass ({
             success: function(data) {
                 console.log(status);
                 this.setState({image_URL: this.state.picture});
+                this.setState({ imgSubmitDisabled: false });
                 this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
+                this.setState({ imgSubmitText: "Error. Please select an image and click me again." });
+                this.setState({ imgSubmitDisabled: false });
             }.bind(this)
         });
         return;
@@ -182,7 +188,7 @@ var Model = React.createClass ({
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
+                        <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData} />
                     </Modal.Footer>
                 </Modal>
                 <div className="item-panel">

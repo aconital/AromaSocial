@@ -69,7 +69,7 @@ module.exports=function(app,Parse,io) {
                 matching_users[object.get('fullname')] = {
                   "type" : "user",
                   "id" : object.id,
-                  "img" : object.get('imgUrl'),
+                  "img" : object.get('picture'),
                   "about" : object.get('about')
                 };
               }
