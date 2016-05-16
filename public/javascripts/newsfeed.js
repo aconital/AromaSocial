@@ -169,7 +169,7 @@ var NewsFeedList = React.createClass({
         typeLink="publication";
         break;
       case "journal":
-        type="Journal";
+        type="Journal Article";
         typeLink="publication"
         break;
       case "patent":
@@ -201,7 +201,9 @@ var NewsFeedList = React.createClass({
     // else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
     // else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
     if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-    else { var title = this.props.title; }
+    else { 
+      var title = this.props.title;
+      }
 	return (
       <div className="item-panel-newsFeed contain-panel-newsFeed">
         <div className="row">
