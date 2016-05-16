@@ -171,6 +171,7 @@ module.exports=function(app,Parse,io) {
 
         query.include('user');
         query.equalTo("objectId", req.params.objectId);
+        query.include('user');
         query.find({
             success: function(result) {
                 var pubObject = JSON.parse(JSON.stringify(result[0]));
@@ -193,20 +194,23 @@ module.exports=function(app,Parse,io) {
     app.get('/publication/book/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Book');
-
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.username,
-                    currentUserImg: currentUser.imgUrl,
-                    creatorId: JSON.parse(JSON.stringify(result.get("user"))).objectId,
+                    creatorImg: result.get('user').get('picture').url(),
+                    creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     contributors: result.get('contributors'),
                     author: result.get('author'),
                     abstract: result.get('abstract'),
-                    filename: result.get('file').url(),
+                    filename: filename,
                     keywords: result.get('keywords'),
                     url: result.get('url'),
                     title: result.get('title'),
@@ -227,18 +231,22 @@ module.exports=function(app,Parse,io) {
     app.get('/publication/conference/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Conference');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.username,
-                    currentUserImg: currentUser.imgUrl,
+                    creatorImg: result.get('user').get('picture').url(),
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('file').url(),
+                    filename: filename,
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -256,20 +264,23 @@ module.exports=function(app,Parse,io) {
         });
     });
     app.get('/publication/journal/:objectId', is_auth, function (req, res, next) {
-        var currentUser = req.user;
         var query = new Parse.Query('Pub_Journal_Article');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('publication', {path: req.path,
-                    currentUserId: currentUser.id,
-                    currentUsername: currentUser.username,
-                    currentUserImg: currentUser.imgUrl,
+                    currentUserId: req.user.id,
+                    creatorImg: result.get('user').get('picture').url(),
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('file').url(),
+                    filename: filename,
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -289,18 +300,22 @@ module.exports=function(app,Parse,io) {
     app.get('/publication/patent/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Patent');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.username,
-                    currentUserImg: currentUser.imgUrl,
+                    creatorImg: result.get('user').get('picture').url(),
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('file').url(),
+                    filename: filename,
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -320,18 +335,22 @@ module.exports=function(app,Parse,io) {
     app.get('/publication/report/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Report');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.username,
-                    currentUserImg: currentUser.imgUrl,
+                    creatorImg: result.get('user').get('picture').url(),
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     collaborators: result.get('collaborators'),
                     description: result.get('abstract'),
-                    filename: result.get('file').url(),
+                    filename: filename,
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -351,18 +370,22 @@ module.exports=function(app,Parse,io) {
     app.get('/publication/thesis/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Thesis');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.username,
-                    currentUserImg: currentUser.imgUrl,
+                    creatorImg: result.get('user').get('picture').url(),
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     author: result.get('author'),
                     description: result.get('abstract'),
-                    filename: result.get('file').url(),
+                    filename: filename,
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),
@@ -382,18 +405,22 @@ module.exports=function(app,Parse,io) {
     app.get('/publication/unpublished/:objectId', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Pub_Unpublished');
+        query.include('user');
         query.get(req.params.objectId,{
             success: function(result) {
+                var filename='';
+                if (result.get('file')!=undefined){
+                    filename=result.get('file').url();
+                }
                 res.render('publication', {path: req.path,
                     currentUserId: currentUser.id,
-                    currentUsername: currentUser.username,
-                    currentUserImg: currentUser.imgUrl,
+                    creatorImg: result.get('user').get('picture').url(),
                     creatorId: result.get("user").id,
                     objectId: req.params.objectId,
                     title: result.get('title'),
                     contributers: result.get('contributers'),
                     description: result.get('abstract'),
-                    filename: result.get('file').url(),
+                    filename: filename,
                     license: result.get('license'),
                     keywords: result.get('keywords'),
                     publication_link: result.get('publication_link'),

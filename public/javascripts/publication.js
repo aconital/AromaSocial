@@ -25,6 +25,7 @@ var Publication = React.createClass ({
     getInitialState: function() {
      return {
         title: title,
+        creatorImg: creatorImg,
         description: description,
         filename: filename,
         publicationDate: publication_date,
@@ -119,7 +120,7 @@ var Publication = React.createClass ({
             keys = (this.state.fields) ? this.state.fields : [],
             fileExists = this.state.filename || false,
             creator = (this.state.user) ? '/profile/' + this.state.user.username : '',
-            avatar = (this.state.user) ? this.state.user.imgUrl : '',
+            avatar = this.state.creatorImg,
             details, // holds dynamically-filled information table
             fileExists;
 
