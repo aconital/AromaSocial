@@ -178,7 +178,7 @@ module.exports=function(app,Parse,io) {
                 var userEnv = { updatePath: req.path,
                                 publication_date: pubObject.publication_date.iso.slice(0,10),
                                 user: {username: pubObject.user.username,
-                                imgUrl: pubObject.user.imgUrl}}; // NOTE: currently just the uploader of file
+                                imgUrl: pubObject.user.picture.url()}}; // NOTE: currently just the uploader of file
                                 console.log(pubObject);
                 // merge the Parse object and fields for current user
                 var rendered = _.extend(pubObject, userEnv);
