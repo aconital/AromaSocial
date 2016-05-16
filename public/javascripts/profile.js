@@ -319,7 +319,7 @@ var ProfileMenu = React.createClass ({
                             if (self.state.focused == index) {
                                 style = "selected-tab";
                             }
-                        return <li id={style}>
+                        return <li key={index} id={style}>
                                 <a href="#" onClick={self.clicked.bind(self, index)} id={style}>{tab}</a>
                                </li>;
                         })}
