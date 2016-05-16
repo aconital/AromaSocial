@@ -35,7 +35,7 @@ app.io           = io;
 app.use(helmet());
 
 Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
-Parse.serverURL = 'http://52.33.206.191:1337/parse/';
+Parse.serverURL = 'http://52.38.90.136:1337/parse/';
 
 // just to check that s3 is connected. remove when deploying
 s3.listBuckets(function(err, data) {
