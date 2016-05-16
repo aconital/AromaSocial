@@ -6658,3 +6658,10 @@ hr.style15 {
 .settings-btn:hover {
   color: var(--foreground-hover-color);
 }
+
+.nfButton {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
+}
