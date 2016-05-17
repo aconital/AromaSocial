@@ -6370,7 +6370,8 @@ textarea {
 }
 
 .ui-autocomplete {
-    height: 500px;
+    /*max-height: 0;*/
+    /*transition: max-height 0.5s ease-out;*/
     overflow-y: scroll;
     position: absolute;
     top: 100%;
@@ -6416,6 +6417,12 @@ textarea {
 }
 
 .ui-state-hover, .ui-state-active {
+    max-height: 500px;
+    -moz-transition: max-height .5s;
+    -ms-transition: max-height .5s;
+    -o-transition: max-height .5s;
+    -webkit-transition: max-height .5s;
+    transition: max-height .5s ease-in;
     color: var(--white-color);
     text-decoration: none;
     background-color: #9966ff;
