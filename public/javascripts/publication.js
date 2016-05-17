@@ -57,6 +57,8 @@ var Publication = React.createClass ({
 
                         if (staticFields.indexOf(property) < 0) {
                             fields.push(property);
+                        } else if (property === 'abstract') {
+                            this.setState({description: result[property]});
                         }
                     }
                 }
@@ -148,7 +150,7 @@ var Publication = React.createClass ({
                         {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
                     </h2>
                     <p className="p-noneditable"><strong>Abstract:</strong></p>
-                    {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{this.state.abstract}</pre>}
+                    {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{this.state.description}</pre>}
                 </div>
                 <div className="item-panel">
                     <h3 className="no-margin h3-item-wrap h3-item-spacing">Uploaded By</h3>

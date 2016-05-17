@@ -169,7 +169,6 @@ module.exports=function(app,Parse,io) {
         var currentUser = req.user;
         var query = new Parse.Query(req.query.pub_class);
 
-        query.include('user');
         query.equalTo("objectId", req.params.objectId);
         query.include('user');
         query.find({
@@ -178,11 +177,9 @@ module.exports=function(app,Parse,io) {
                 var userEnv = { updatePath: req.path,
                                 publication_date: pubObject.publication_date.iso.slice(0,10),
                                 user: {username: pubObject.user.username,
-                                imgUrl: pubObject.user.picture.url()}}; // NOTE: currently just the uploader of file
-                                console.log(pubObject);
+                                imgUrl: pubObject.user.picture.url}}; // NOTE: currently just the uploader of file
                 // merge the Parse object and fields for current user
                 var rendered = _.extend(pubObject, userEnv);
-
                 res.status(200).json({status:"OK", query: rendered});
             },
             error: function(error) {

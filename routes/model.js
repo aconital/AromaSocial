@@ -39,7 +39,6 @@ module.exports=function(app,Parse,io) {
                     path: req.path,
                     currentUserId: currentUser.id,
                     currentUsername: currentUser.username,
-                    currentUserImg: currentUser.picture.url,
                     objectId: req.params.objectId,
                     creatorId: creator.objectId,
                     creatorName: creator.username,
