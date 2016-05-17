@@ -14,8 +14,10 @@ var CreateOrganization = React.createClass({
         picture: null, pictureType: '', name: '', description: '', location: '', prov: '', country: '', city: '', street: '', postalcode: '', website: ''
         };
     },
+    requiredLabel: function(label) {
+    	return <span>{label} <Required content="*"/></span>;
+    },
 	render: function() {
-		var req = <span>Name <Required content="*"/></span>;
 		return (
 			<div id="createOrganization"><Grid>
 				<Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
@@ -26,12 +28,12 @@ var CreateOrganization = React.createClass({
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
-										<Input type="text" id="name" name="name"  label={req} required placeholder="Name" onChange={this.handleChange} value={this.state.name} required/>
+										<Input type="text" id="name" name="name"  label={this.requiredLabel('Name')} required placeholder="Name" onChange={this.handleChange} value={this.state.name} required/>
 										<Input type="file" name="picture" label="Logo" help="Please upload an image format (png, jpg, or gif)."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-										<Input type="textarea" name="description" label="About" placeholder="Describe your lab or network" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" required/>
+										<Input type="textarea" name="description" label={this.requiredLabel('About')} placeholder="Describe your lab or network" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" required/>
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
-										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street}  required/>
+										<Input type="text" name="street" label={this.requiredLabel('Address')}  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street}  required/>
 
 											<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} required/>
 
