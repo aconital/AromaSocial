@@ -77,17 +77,10 @@ var Equipment = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function(e) {
-// <<<<<<< HEAD
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_equipment_picture_" + randomNumber + "." + this.state.pictureType;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         this.setState({imgSubmitText:"Uploading. Give us a sec..."});
         this.setState({imgSubmitDisabled:true});
-        var $this = this;
-// =======
-//         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
-// >>>>>>> 066d0da34bc0c5a8d4507a6417069090ac217e26
-        $.ajax({
+            $.ajax({
             url: path + "/picture",
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
@@ -101,15 +94,10 @@ var Equipment = React.createClass ({
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
+                this.setState({imgSubmitText: "Error. Please select an image and click me again."});
+                this.setState({imgSubmitDisabled: false});
             }.bind(this)
-        }).then(function(){
-            $this.clickClose();
-            $this.setState({image_URL:changeImgURL});
-        }, function(err) {
-            $this.setState({imgSubmitText: "Error. Please select an image and click me again."});
-            $this.setState({imgSubmitDisabled: false});
         });
-
         return;
     },
     // function declared in ./sharedComponents/settings.js

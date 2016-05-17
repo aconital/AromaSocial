@@ -333,7 +333,10 @@ module.exports=function(app,Parse,io) {
             result.set("tel", req.body.tel);
             result.set("fax", req.body.fax);
             result.set("email", req.body.email);
-            result.set("website", req.body.website);
+            if (req.body.website != "" && !req.body.website.startsWith("http://"))
+                result.set("website", "http://"+req.body.website);
+            else
+                result.set("website", req.body.website);
             var location= '';
             if (req.body.city ) {
                 location = req.body.city;
@@ -348,6 +351,7 @@ module.exports=function(app,Parse,io) {
                 else
                     location = req.body.country;
             }
+
             result.set('location', location);
             result.set("carousel_1_head", req.body.carousel_1_head);
             result.set("carousel_1_body", req.body.carousel_1_body);

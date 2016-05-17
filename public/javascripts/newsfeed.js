@@ -59,10 +59,10 @@ var NewsFeed = React.createClass({
                     <div className="col-xs-4">
 
                       <div className = "createorg_panel">
-                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><i className="fa fa-plus" aria-hidden="true"></i> Create Research Lab or Network</button>
+                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><span className="nfButton"><i className="fa fa-plus" aria-hidden="true"></i> Create Research Lab or Network</span></button>
                       </div>
                         <div className = "panel search-panel your-groups">
-                        <h4 className="white">Your Labs & Networks</h4>
+                        <h4 className="white"><span className="nfButton">Your Labs & Networks</span></h4>
                           {this.state.organizations.map(function(item, i) {
                               return (<div className="list-group" key={i}>
                                   <a href={"organization/" + item.orgId} key={i} className="list-group-item groups-list">&#x25cf; {item.orgName.split(".")[0]}</a>
@@ -169,7 +169,7 @@ var NewsFeedList = React.createClass({
         typeLink="publication";
         break;
       case "journal":
-        type="Journal";
+        type="Journal Article";
         typeLink="publication"
         break;
       case "patent":
@@ -201,7 +201,9 @@ var NewsFeedList = React.createClass({
     // else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
     // else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
     if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-    else { var title = this.props.title; }
+    else { 
+      var title = this.props.title;
+      }
 	return (
       <div className="item-panel-newsFeed contain-panel-newsFeed">
         <div className="row">

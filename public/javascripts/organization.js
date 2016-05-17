@@ -595,10 +595,10 @@ var About = React.createClass({
                                 {(orgPostalcode != "")?<td className="tdnowrap">{orgPostalcode}</td> : ""}
                             </tr>
                             <tr >
-                                {(orgTel != "")?<td className="tdnowrap">{orgTel}</td> : ""}
+                                {(orgTel != "")?<td className="tdnowrap"><span>Tel:</span>{orgTel}</td> : ""}
                             </tr>
                             <tr >
-                                {(orgFax != "")?<td className="tdnowrap">{orgFax}</td> : ""}
+                                {(orgFax != "")?<td className="tdnowrap"><span>Fax:</span>{orgFax}</td> : ""}
                             </tr>
                             <tr >
                                 {(orgEmail != "")?<td className="tdnowrap"><a href={"mailto:"+orgEmail}>{orgEmail}</a></td> : ""}
@@ -1269,8 +1269,6 @@ var EquipmentAddForm = React.createClass({
 
             this.setState({imgSubmitText: 'Creating Equipment. Give us a sec...'});
             this.setState({imgSubmitDisabled: true});
-            var that = this;
-
             $.ajax({
                 url: path + endpoint,
                 dataType: 'json',

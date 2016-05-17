@@ -103,7 +103,7 @@ module.exports=function(app,Parse,io) {
                         workExperience: JSON.stringify(result.get('workExperience')),
                         educations: JSON.stringify(result.get('educations')),
                         projects: JSON.stringify(result.get('projects')),
-                        profile_imgURL: result.get('imgUrl'),
+                        profile_imgURL: result.get('picture').url(),
                         isMe: false
                     });
                 },

@@ -123,7 +123,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family: monospace, monospace;
+  font-family: sans-serif, monospace, monospace;
   font-size: 1em; }
 
 button,
@@ -270,14 +270,14 @@ th {
   .table-bordered td {
     border: 1px solid #ddd !important; } }
 @font-face {
-  font-family: 'Glyphicons Halflings';
+  font-family: sans-serif, 'Glyphicons Halflings';
   src: url("../fonts/bootstrap/glyphicons-halflings-regular.eot");
   src: url("../fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"), url("../fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("../fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("../fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg"); }
 .glyphicon {
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
+  font-family: sans-serif, 'Glyphicons Halflings';
   font-style: normal;
   font-weight: normal;
   line-height: 1;
@@ -1092,7 +1092,7 @@ html {
   -webkit-tap-highlight-color: transparent; }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857;
   color: #333333;
@@ -1492,7 +1492,7 @@ pre {
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 samp {
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
+  font-family: sans-serif, Menlo, Monaco, Consolas, "Courier New", monospace; }
 
 code {
   padding: 2px 4px;
@@ -4419,7 +4419,7 @@ button.close {
   position: absolute;
   z-index: 1070;
   display: block;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -4525,7 +4525,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -4756,7 +4756,7 @@ button.close {
     width: 20px;
     height: 20px;
     line-height: 1;
-    font-family: serif; }
+    font-family: sans-serif; }
   .carousel-control .icon-prev:before {
     content: '\2039'; }
   .carousel-control .icon-next:before {
@@ -6657,4 +6657,11 @@ hr.style15 {
 
 .settings-btn:hover {
   color: var(--foreground-hover-color);
+}
+
+.nfButton {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
 }

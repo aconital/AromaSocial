@@ -244,10 +244,6 @@ app.get('/auth/linkedin/callback',function(req,res){
             if($in.headline !=null)
              about=$in.headline;
 
-            var pictureUrl="/images/user.png";
-            if($in.pictureUrls.values !=null)
-                pictureUrl=$in.pictureUrls.values[0];
-
             var companyObject=null;
             if($in.positions.values != null)
                 companyObject= $in.positions.values[0].company;
@@ -290,19 +286,24 @@ app.get('/auth/linkedin/callback',function(req,res){
                                           res.render('signin', {Error: error.message, path: req.path})
                                       });
                               }
-                                else
-                              {
+                                else {
 
                                   var user = new Parse.User();
                                   //TODO EMAIL THIS TO USER
-                                  var randomPass= randomString(5);
+                                  var randomPass = randomString(5);
 
                                   user.set("fullname", name);
-                                  user.set("username",linkedin_ID);
-                                  user.set("password",randomPass);
-                                  user.set("linkedin_id",linkedin_ID);
+                                  user.set("username", linkedin_ID);
+                                  user.set("password", randomPass);
+                                  user.set("linkedin_id", linkedin_ID);
                                   user.set("email", email);
-                                  user.set("imgUrl", pictureUrl);
+                                  /*if ($in.pictureUrls.values != null){
+                                      var data = {
+                                          base64: $in.pictureUrls.values[0].buffer.toString('base64')
+                                      };
+                              }
+                                        var file = new Parse.File("file", data);
+                                        user.set("picture", file);*/
                                   user.set("about",about);
                                   user.set("interestsTag", []);
                                   user.set("emailVerified",true);
