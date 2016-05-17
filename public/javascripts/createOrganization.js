@@ -26,18 +26,18 @@ var CreateOrganization = React.createClass({
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
-										<Input type="text" id="name" name="name"  label={req} required placeholder="Name" onChange={this.handleChange} value={this.state.name} />
+										<Input type="text" id="name" name="name"  label={req} required placeholder="Name" onChange={this.handleChange} value={this.state.name} required/>
 										<Input type="file" name="picture" label="Logo" help="Please upload an image format (png, jpg, or gif)."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-										<Input type="textarea" name="description" label="About" placeholder="Describe your lab or network" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
+										<Input type="textarea" name="description" label="About" placeholder="Describe your lab or network" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" required/>
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
-										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
+										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street}  required/>
 
-											<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
+											<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} required/>
 
-											<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
-										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
-										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />
+											<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov}  required/>
+										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} required />
+										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} required />
 
 										<ButtonInput className="center-block" type="submit" disabled={this.state.buttonInputDisabled} value={this.state.buttonInputText} />
 									</form>
