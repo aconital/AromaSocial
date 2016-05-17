@@ -2,7 +2,7 @@
  * Created by hroshandel on 2016-01-19.
  */
 
-var FriendRequest = React.createClass({
+var Notification = React.createClass({
     getInitialState: function() {
         return { notication_list: []};
     },
@@ -54,11 +54,29 @@ var FriendRequest = React.createClass({
             }.bind(this)
         });
     },
+    loadOrg2OrgRequests :function()
+    {
+        $.ajax({
+            url: "/org2orgrequest",
+            success: function(data) {
+                var notifications = this.state.notication_list.slice();
+                for (var i=0;i<data.length;i++)
+                    notifications.push(data[i]);
+
+                this.setState({notication_list: notifications});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
+    },
     componentDidMount : function(){
         this.loadFriendRequests();
         this.loadOrgRequests();
+        this.loadOrg2OrgRequests();
         socket.on('friendrequest', this._friendrequest);
         socket.on('orgrequest', this._orgrequest);
+        socket.on('org2orgrequest', this._org2orgrequest);
     },
     _orgrequest(data){
         var notifications = this.state.notication_list.slice();
@@ -70,6 +88,12 @@ var FriendRequest = React.createClass({
         var notifications = this.state.notication_list.slice();
         notifications.push(data.data);
         this.setState({notication_list:notifications});
+    },
+    _org2orgrequest(data){
+        var notifications = this.state.notication_list.slice();
+        notifications.push(data.data);
+        this.setState({notication_list:notifications});
+
     },
     pending_action:function(notification,action)
     {
@@ -104,7 +128,22 @@ var FriendRequest = React.createClass({
         });
         this.deleteNotification(notification.id);
     }
+    else if(notification.type == "org2orgrequest")
+    {
+        $.ajax({
+            url: "/organization/" + notification.extra.id + "/pending_organization_action",
+            method: "POST",
+            data: {organizationId: notification.from.userId, mode: action},
+            success: function (data) {
 
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
+
+        this.deleteNotification(notification.id);
+    }
 
     },
     render: function() {
@@ -153,48 +192,5 @@ var FriendRequest = React.createClass({
 });
 
 $( document ).ready(function() {
-    ReactDOM.render(<FriendRequest />, document.getElementById('friendrequest'));
-});
-
-var Notification = React.createClass({
-    getInitialState: function() {
-        return {data: []};
-    },
-    loadRequests :function()
-    {
-        $.ajax({
-            url: "/friendrequest",
-            success: function(data) {
-
-                this.setState({data: data});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("couldnt retrieve people");
-            }.bind(this)
-        });
-    },
-    componentDidMount : function(){
-        socket.on('friendrequest', this._friendrequest);
-        socket.on('orgrequest', this._orgrequest);
-     },
-    _orgrequest(data){
-
-    },
-    _friendrequest(data){
-         console.log(data);
-     },
-    render: function() {
-
-        if(this.state.data.length >0)
-            return <div className="notification-badge"></div>
-        else
-        return <div></div>;
-
-
-    }
-});
-$( document ).ready(function() {
-    //if (document.getElementById('notification-request') != null) {
-        ReactDOM.render(<Notification />, document.getElementById('notification-request'));
-    //}
+    ReactDOM.render(<Notification />, document.getElementById('notification'));
 });

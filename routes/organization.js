@@ -955,6 +955,8 @@ module.exports=function(app,Parse,io) {
                 connection.set('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
                 connection.set('type', req.body.type);
                 connection.set('verified', false);
+
+                notifyOrgAdmins(orgId0,orgId1);
                 return connection.save(null);
             }
             return Parse.Promise.error({message: "This connection already exists."});
@@ -1062,6 +1064,47 @@ module.exports=function(app,Parse,io) {
             });
         });
     });
+    app.get('/org2orgrequest', is_auth, function(req,res,next){
+
+        var currentUser= req.user;
+        var requests =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("isAdmin",true)
+        query.include('orgId')
+        query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id})
+        query.each(function(result) {
+
+            var query = new Parse.Query('RelationshipOrg');
+            query.equalTo("verified",false)
+            query.include('orgId1')
+            query.include('orgId0')
+            query.equalTo("orgId0",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
+            query.each(function(r) {
+                var org_notification = {
+                    id: "org_"+r.get("orgId1").id+"_"+r.get("orgId0").id+"_inv",
+                    type:"org2orgrequest",
+                    from: {
+                        userId:r.get("orgId1").id,
+                        username: r.get("orgId1").id,
+                        name: r.get("orgId1").get("name"),
+                        userImgUrl: r.get("orgId1").get("picture").url(),
+                    },
+                    msg: "wants to connect with ",
+                    extra: {
+                        id: r.get("orgId0").id,
+                        name: r.get("orgId0").get("name"),
+                        imgUrl: r.get("orgId0").get("picture").url()
+                    }
+                };
+
+                requests.push(org_notification);
+            }).then(function(){
+                res.json(requests);
+            }, function(err) {
+                console.log(err);
+            });
+        });
+    });
     function notifyadmins(orgId,user)
     {
         var innerQuery = new Parse.Query("Organization");
@@ -1102,6 +1145,58 @@ module.exports=function(app,Parse,io) {
                 console.log(error);
             }
         });
+    }
+    function notifyOrgAdmins(toOrg,fromOrg)
+    {
+        var q = new Parse.Query('Organization');
+        q.equalTo("objectId",fromOrg)
+        q.find({
+            success: function (r) {
+                if(r != null)
+                {
+                    var fromOrg = r[0];
+                    var innerQuery = new Parse.Query("Organization");
+                    innerQuery.equalTo("objectId", toOrg);
+                    var query = new Parse.Query('Relationship');
+                    query.matchesQuery("orgId", innerQuery)
+                    query.equalTo("isAdmin", true)
+                    query.include('orgId')
+                    query.find({
+                        success: function (results) {
+
+                            if (results != null) {
+                                for (var i = 0; i < results.length; i++) {
+                                    var adminId = results[i].get("userId").id;
+                                    var org_notification = {
+                                        id: "org_" + results[i].get("orgId").id + "_" + fromOrg.id + "_inv",
+                                        type: "org2orgrequest",
+                                        from: {
+                                            userId: fromOrg.id,
+                                            username: fromOrg.id,
+                                            name: fromOrg.get("name"),
+                                            userImgUrl: fromOrg.get("picture").url(),
+                                        },
+                                        msg: "wants to join ",
+                                        extra: {
+                                            id: results[i].get("orgId").id,
+                                            name: results[i].get("orgId").get("name"),
+                                            imgUrl: results[i].get("orgId").get("profile_imgURL")
+                                        }
+                                    };
+                                    io.to(adminId).emit('org2orgrequest', {data: org_notification});
+                                }
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }
+
+            },
+            error: function (error) {
+                console.log(error);
+            }});
     }
 
 };
