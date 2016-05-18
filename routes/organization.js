@@ -129,24 +129,28 @@ module.exports=function(app,Parse,io) {
         var userId= req.body.userId;
         var makeAdmin = req.body.makeAdmin;
         var orgId= req.params.objectId;
-
+        var adminStatus = (makeAdmin == "true") ? true:false;
+        
         var query=new Parse.Query('Relationship');
         query.equalTo("userId", {__type: "Pointer", className: "_User", objectId: req.body.userId});
         query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.first({
         success: function(r)
         {
-            r.set('isAdmin', makeAdmin);
+            console.log("R is: ");
+            console.log(r);
+            r.set('isAdmin', adminStatus);
             r.save(null, {
-            success:function(){
-                console.log("a");
-                res.json("Accepted!");
-            },
-            error:function(error){
-                console.log(error);
-                res.json({error:error});
-            }
-        });
+                success:function(obj){
+                    console.log(obj);
+                    res.json("Accepted!");
+                },
+                error:function(obj, error){
+                    console.log(obj);
+                    console.log(error);
+                    res.json({error:error});
+                }
+            });
         }
             ,error: function(error) {
                 console.log(error);
