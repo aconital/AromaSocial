@@ -23,7 +23,6 @@ $(function() {
                     console.log(xhr.status);
                   }
                 }),
-                  /*
                 $.ajax({
                   url: '/allpublications',
                   dataType: 'json',
@@ -40,13 +39,13 @@ $(function() {
                       //console.log(item);
                       var type = item.type;
                       var dlink = "/publication/" + type + "/" + item.objectId;
-                      r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink});
+                      r.push({label: item.title, value: item.title, category: item.type, imgsrc: "/images/paper.png", link: dlink});
                     });
                   },
                   error: function(xhr) {
                     console.log(xhr.status);
                   }
-                }),*/
+                }),
                 $.ajax({
                   url: '/allorganizations',
                   dataType: 'json',
