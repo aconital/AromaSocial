@@ -98,16 +98,19 @@ module.exports=function(app,Parse,io) {
             console.log(user);
             var username= user.get('username');
             var fullname=user.get('fullname');
+            var isAdmin = result.get('isAdmin');
             //var company= "";
             //var work_title= "";
             var userImgUrl=user.get('picture').url();
             var work_experience= [];
             if(verified) {
                 var person = {
+                    id: user.id,
                     username:username,
                     title: title,
                     fullname: fullname,
                     userImgUrl: userImgUrl,
+                    isAdmin:isAdmin
                 };
                 people.push(person);
             }
@@ -119,6 +122,36 @@ module.exports=function(app,Parse,io) {
         }, function(err) {
             console.log("ERROR THROWN: ");
             console.log(err);
+        });
+    });
+    //promote or demote someone admin
+    app.post('/organization/:objectId/admin',is_auth,function(req,res,next){
+        var userId= req.body.userId;
+        var makeAdmin = req.body.makeAdmin;
+        var orgId= req.params.objectId;
+
+        var query=new Parse.Query('Relationship');
+        query.equalTo("userId", {__type: "Pointer", className: "_User", objectId: req.body.userId});
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        query.first({
+        success: function(r)
+        {
+            r.set('isAdmin', makeAdmin);
+            r.save(null, {
+            success:function(){
+                console.log("a");
+                res.json("Accepted!");
+            },
+            error:function(error){
+                console.log(error);
+                res.json({error:error});
+            }
+        });
+        }
+            ,error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
         });
     });
     //Done by Hirad

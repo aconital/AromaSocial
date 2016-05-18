@@ -1,5 +1,10 @@
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
+var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+var DropdownButton= ReactBootstrap.DropdownButton;
+var Dropdown= ReactBootstrap.Dropdown;
+var Glyphicon= ReactBootstrap.Glyphicon;
+var MenuItem= ReactBootstrap.MenuItem;
 var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
@@ -199,7 +204,7 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
                             </div>
                         </div>
                     </div>
@@ -230,7 +235,7 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
+                                <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
                     </div>
@@ -250,8 +255,8 @@ var OrganizationMenu = React.createClass ({
         var self = this;
 
         var tabMap = {0: <About objectId={objectId} />,
-            1: <People />,
-            2: <Connections  />,
+            1: <People isAdmin={this.props.isAdmin} />,
+            2: <Connections isAdmin={this.props.isAdmin}  />,
             3: <Equipments objectId={objectId}/>,
             4: <Projects objectId={objectId}/>,
             // 4: <Knowledge/>,
@@ -305,6 +310,7 @@ var About = React.createClass({
             carousel_3_head: carousel_3_head,
             carousel_3_body: carousel_3_body,
             showModal: false,
+            isAdmin:false,
             modalMode : 1 //the active carousel item, values =1,2,3
         };
     },
@@ -818,8 +824,28 @@ var People = React.createClass({
             }.bind(this)
         });
     },
-    render: function() {
+    deleteMember:function(userId)
+    {
+        console.log(userId);
+    },
+    MakeRemoveAdmin:function(userId,action)
+    {
+        $.ajax({
+            url: '/organization/'+objectId+'/admin',
+            type: 'POST',
+            data: {userId:userId,makeAdmin:action},
+            success: function(data) {
+                console.log(data);
+            }.bind(this),
+            error: function(xhr, status, err) {
+               console.log(err);
+            }.bind(this)
+        });
 
+    },
+    render: function() {
+        var parent= this;
+        var isAdmin= this.props.isAdmin;
         var peopleList = $.map(this.state.data,function(objects) {
             var role= objects[0].title;
             var plist=[];
@@ -842,6 +868,15 @@ var People = React.createClass({
                                 </div>
                                 <div className="item-box-right">
                                     <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+
+                                </div>
+                                <div className="item-box-right">
+                                    {(isAdmin == true && person.username != currentUsername) ? <a onClick={parent.deleteMember.bind(self,person.id)} href="#" alt="Delete member">Delete member</a>:""}
+                                 </div>
+                                <div className="item-box-right">
+                                    {(isAdmin==true && person.isAdmin != true && person.username != currentUsername) ? <a onClick={parent.MakeRemoveAdmin.bind(self,person.id,true)} href="#" alt="Make Admin">Make Admin</a>:""}
+                                    {(isAdmin==true && person.isAdmin == true && person.username != currentUsername) ? <a onClick={parent.MakeRemoveAdmin.bind(self,person.id,false)} href="#" alt="Make Admin">Remove Admin</a>:""}
+
                                 </div>
                             </div>
                     )}
