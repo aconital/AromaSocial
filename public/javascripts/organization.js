@@ -845,7 +845,7 @@ var People = React.createClass({
             type: 'POST',
             data: {userId:userId,makeAdmin:action},
             success: function(data) {
-                console.log(data);
+                this.getPeople();
             }.bind(this),
             error: function(xhr, status, err) {
                console.log(err);
