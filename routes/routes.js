@@ -81,7 +81,124 @@ module.exports=function(app,Parse,io) {
     app.get('/privacy', function(req, res, next) {
         res.render("privacy");
     });
+    /*****************************************
+     *
+     * RECOVER PASSWORD
+     *
+     */
+    app.get('/password-reset', function (req, res, next) {
+        if (!req.isAuthenticated()) {
+            res.render('password-reset', {sent:false,title: 'Password Reset', path: req.path, Error: ""});
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+    app.get('/password-reset/verify', function (req, res, next) {
+        if (!req.isAuthenticated()) {
+            res.render('password-reset', {sent:true,title: 'Password Reset', path: req.path, Error: ""});
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+    app.get('/password-reset/:userId/:code', function (req, res, next) {
+       var userId= req.params.userId;
+       var code = req.params.code;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("objectId", userId);
+        query.first({
+            success: function (result) {
+                if (result) {
+                    var dbCode= result.get("password_reset_code");
+                    if(code === dbCode)
+                    {
+                        res.render('change-password', {userId:userId,title: 'Password Reset', path: req.path, Error: ""});
+                    }
+                    else
+                    {
+                        res.render('password-reset', {Error: "The link is not valid or has been expired!", path: req.path});
+                    }
 
+                }
+            }, error: function (err) {
+                res.render('password-reset', {Error: error.message, path: req.path});
+            }
+        });
+    });
+    app.post('/password-reset-verification', function (req, res, next) {
+        var email = req.body.email;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("email", email);
+        query.first({
+            success: function (result) {
+                if (result) {
+                    var userId= result.id;
+                    var activation_code = randomString(3) + randomString(5) + randomString(3);
+                    result.set("password_reset_code", activation_code);
+                    result.save(null, {useMasterKey: true}).then(function () {
+
+                        var emailBody = '<h3></h3><p>Hi ' + result.attributes.fullname + ',</h3></p> <p>Please click on the following link to reset your password:' +
+                            '<a href="http://syncholar.com/password-reset/'+userId+'/'+ activation_code +'">http://syncholar/password-reset/'+userId+'/'+ activation_code+ '</a>'
+                            + ' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
+                        sendMail('Password Reset - Syncholar', emailBody, result.attributes.email);
+
+                        res.redirect('/password-reset/verify');
+
+                    }, function (error) {
+
+                        res.render('signin', {Error: error.message, path: req.path})
+                    });
+                }
+            }, error: function (err) {
+                res.render('password-reset', {Error: error.message, path: req.path});
+            }
+        });
+    });
+    app.post('/password-reset', function (req, res, next) {
+        var password = req.body.password;
+        var confirmpassword = req.body.confirmpassword;
+        if(confirmpassword != password)
+         res.render("change-password",{Error:"Passwords don't match!",path:req.path});
+        else {
+            var userId = req.body.userId;
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("objectId", userId);
+            query.first({
+                success: function (result) {
+                    if (result) {
+
+                        result.set("password", password);
+                        result.save(null, {useMasterKey: true}).then(function () {
+
+                            Parse.User.logIn(result.get("username"), password, {
+                                success: function(u) {
+
+                                    req.login(u.attributes.username,function (err) {
+                                        if (!err)
+                                            res.redirect('/');
+                                        else
+                                            res.render('signin', {Error: err.message, path: req.path})
+                                    });
+
+                                },
+                                error: function(user, error) {
+                                    // Show the error message somewhere and let the user try again.
+                                    res.render('signin', {Error: error.message, path: req.path});
+                                }
+                            });
+
+                        }, function (error) {
+
+                            res.render('signin', {Error: error.message, path: req.path})
+                        });
+                    }
+                }, error: function (err) {
+                    res.render('password-reset', {Error: error.message, path: req.path});
+                }
+            });
+        }
+    });
   /*******************************************
    *
    * SIGN UP
