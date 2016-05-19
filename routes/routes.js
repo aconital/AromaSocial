@@ -121,6 +121,10 @@ module.exports=function(app,Parse,io) {
                     }
 
                 }
+                else
+                {
+                    res.render('password-reset', {Error: "Something has went wrong! Please contact our support team.", path: req.path});
+                }
             }, error: function (err) {
                 res.render('password-reset', {Error: error.message, path: req.path});
             }
@@ -147,8 +151,12 @@ module.exports=function(app,Parse,io) {
 
                     }, function (error) {
 
-                        res.render('signin', {Error: error.message, path: req.path})
+                        res.render('password-reset', {Error: error.message, path: req.path});
                     });
+                }
+                else
+                {
+                    res.render('password-reset', {Error: "Email is not valid!", path: req.path});
                 }
             }, error: function (err) {
                 res.render('password-reset', {Error: error.message, path: req.path});
