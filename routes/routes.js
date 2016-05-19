@@ -33,7 +33,7 @@ module.exports=function(app,Parse,io) {
       var code = req.body.code;
       var redLink = req.body.redLink;
       console.log("RedLink in /beta POST => ", redLink);
-      if(code === "Fom2016") {
+      if(code === "summer2016") {
           req.session.code=code;
           // res.redirect("/signin");
           res.redirect(redLink);
