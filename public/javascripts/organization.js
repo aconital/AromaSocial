@@ -809,14 +809,13 @@ var People = React.createClass({
         return {data: []};
     },
     componentDidMount : function(){
+        this.getPeople();
+    },
+    getPeople:function(){
         var peopleUrl= "/organization/"+objectId+"/people";
-        console.log("PEOPLE COMPONENT MOUNTED");
-        console.log(peopleUrl);
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-                console.log("PEOPLE RECEIVED: ");
-                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -826,7 +825,18 @@ var People = React.createClass({
     },
     deleteMember:function(userId)
     {
-        console.log(userId);
+
+        $.ajax({
+            url: '/organization/'+objectId+'/kick',
+            type: 'POST',
+            data: {userId:userId},
+            success: function(data) {
+                this.getPeople();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.log(err);
+            }.bind(this)
+        });
     },
     MakeRemoveAdmin:function(userId,action)
     {

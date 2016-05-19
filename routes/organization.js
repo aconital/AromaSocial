@@ -127,32 +127,29 @@ module.exports=function(app,Parse,io) {
     //promote or demote someone admin
     app.post('/organization/:objectId/admin',is_auth,function(req,res,next){
         var userId= req.body.userId;
-        var makeAdmin = req.body.makeAdmin;
+
         var orgId= req.params.objectId;
-        var adminStatus = (makeAdmin == "true") ? true:false;
-        
-        var query=new Parse.Query('Relationship');
-        query.equalTo("userId", {__type: "Pointer", className: "_User", objectId: req.body.userId});
-        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        var adminStatus = (req.body.makeAdmin == "true") ? true:false;
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",orgId);
+        var innerQuery2 = new Parse.Query(Parse.User);
+        innerQuery2.equalTo("objectId",userId);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery);
+        query.matchesQuery("userId",innerQuery2);
         query.first({
-        success: function(r)
-        {
-            console.log("R is: ");
-            console.log(r);
-            r.set('isAdmin', adminStatus);
-            r.save(null, {
-                success:function(obj){
-                    console.log(obj);
-                    res.json("Accepted!");
-                },
-                error:function(obj, error){
-                    console.log(obj);
-                    console.log(error);
-                    res.json({error:error});
-                }
-            });
-        }
-            ,error: function(error) {
+            success: function(result) {
+                    result.set("isAdmin",adminStatus);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+            },
+            error: function(error) {
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
             }
@@ -967,7 +964,27 @@ module.exports=function(app,Parse,io) {
             });
         }
     });
-
+    app.post('/organization/:objectId/kick', is_auth, function (req, res, next) {
+        var orgId= req.params.objectId;
+        var userId = req.body.userId;
+        if(userId) {
+            var query = new Parse.Query('Relationship');
+            query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: userId} );
+            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: orgId});
+            query.equalTo('verified',true);
+            query.first(function(result) {
+                if(!(result==undefined)){
+                    console.log("result found");
+                    result.destroy();
+                };
+            }).then(function(){
+                res.status(200).json({status: "Successfully left organization!"});
+            }, function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            });
+        }
+    });
     app.post('/organization/:objectId/connect', is_auth, function (req, res, next) {
         var createConnection = Parse.Object.extend("RelationshipOrg");
         var orgId0= req.body.orgId;
