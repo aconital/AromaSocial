@@ -32,7 +32,7 @@ randomString: function (len, charSet) {
 },
 hasBetaCode: function (req,res,next)
 {
-    if(req.session.code === "Fom2016") {
+    if(req.session.code === "summer2016") {
         next();
     } else {
         console.log("==========================");
