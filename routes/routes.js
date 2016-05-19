@@ -73,6 +73,7 @@ module.exports=function(app,Parse,io) {
       }
       else {
           res.render('newsfeed', { user: req.user});
+          // res.render('import', { user: req.user});
       }
   });
     /********
@@ -357,9 +358,11 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     });
 });
+
     app.get("/auth/linkedin/verify",function(req,res,next){
         res.render("verify");
     });
+
     app.get("/auth/linkedin/verify/:activation/:linkedin",function(req,res,next){
         var code= req.params.activation;
         var linkedin_id=req.params.linkedin;
@@ -386,9 +389,9 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     });
     app.get("/verify-email", function (req,res,next) {
-
         res.render("verify-email");
     });
+
     app.get("/verify-email/:activation",function(req,res,next){
         var code= req.params.activation;
         var query = new Parse.Query(Parse.User);
@@ -399,7 +402,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                 {
                     user.set("emailVerified",true);
                     user.save(null,{ useMasterKey: true }).then(function() {
-                        res.redirect("/");
+                        res.redirect("/import");
                     },function(error)
                     {
                         res.render('signin', {Error: error.message, path: req.path});
@@ -412,6 +415,10 @@ app.get('/auth/linkedin/callback',function(req,res){
             }
         });
 
+    });
+
+    app.get("/import", function (req,res,next) {
+        res.render("import");
     });
 
 };
