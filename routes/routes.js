@@ -246,6 +246,7 @@ module.exports=function(app,Parse,io) {
 
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
+
                if(err) {
                    return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
                }
@@ -287,17 +288,14 @@ module.exports=function(app,Parse,io) {
       passport.authenticate('local', { successRedirect: '/',
           failureRedirect: '/signin'}, function(err, user, info) {
           if(err) {
-              console.log('first',err,user,info);
               return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
           }
 
           if(!user) {
-              console.log('second',err,user,info);
               return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
           }
           return req.logIn(user, function(err) {
               if(err) {
-                  console.log('third',err,user,info);
                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
               } else {
                   return res.redirect('/');
