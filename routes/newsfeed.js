@@ -209,7 +209,7 @@ module.exports=function(app,Parse,io) {
                         {
                             var objectId = object.get("pubJournalId").id;
                             var publication_date = object.get("pubJournalId").get("publication_date") != null? object.get("pubJournalId").get("publication_date"):"";
-                            var abstract = object.get("pubJournalId").get("abstract") != null? object.get("pubJournalId").get("abstracts"):"";
+                            var abstract = object.get("pubJournalId").get("abstract") != null? object.get("pubJournalId").get("abstract"):"";
                             var journal_volume = object.get("pubJournalId").get("journal_volume") != null? object.get("pubJournalId").get("journal_volume"):"";
                             var filename = object.get("pubJournalId").get("filename") != null? object.get("pubJournalId").get("filename"):"";
                             var keywords = object.get("pubJournalId").get("keywords") != null? object.get("pubJournalId").get("keywords"):[];
