@@ -23,6 +23,11 @@ var hasBetaCode= require('../utils/helpers').hasBetaCode;
 
 module.exports=function(app,Parse,io) {
 
+  // test slider route
+  app.get('/slider', function(req, res, next) {
+    res.render('testSlider');
+  });
+
   app.get('/beta', function (req, res, next) {
     var rl = req.query.redLink;
     console.log("redLink in /beta get: ", rl);
