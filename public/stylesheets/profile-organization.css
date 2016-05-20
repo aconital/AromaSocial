@@ -17,7 +17,7 @@
 
 .contain-image {
     width: 80%;
-    border: solid;
+    border: none;
     border-radius: 4px;
     border-color: var(--foreground-color);
     margin: 10%;
@@ -64,7 +64,7 @@
     top: 0px; left: 0px;
     height: 80%; width: 80%;
     padding:0px;
-    border: solid;
+    border: none !important;
     border-radius: 4px;
     margin:10%;
     opacity: 0;
@@ -121,12 +121,13 @@
 .resume-item {
     width:100%;
     background-color: var(--white-color);
-    border: solid;
+    border: none;
     border-color: var(--background-color);
     border-radius: 4px;
     border-width: 1px;
     padding:10px;
     position: relative;
+    box-shadow: none !important;
     box-shadow: 0px 2px 7px #888888;
     -webkit-transition: all 1s ease;
     -moz-transition: all 1s ease;
