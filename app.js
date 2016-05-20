@@ -121,7 +121,7 @@ passport.use(new LocalStrategy({
     query.first({
         success: function (user) {
 
-            if(user === null)
+            if(user === undefined)
             {
                 return done(null, false, {message: 'Invalid username or password'});
             }

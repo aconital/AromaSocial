@@ -6437,8 +6437,6 @@ textarea {
 .ui-autocomplete-category {
      font-weight: bold; 
      text-align: center;
-     -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
      background-color: #333333;
      color: white;  
 }
