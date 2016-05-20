@@ -167,22 +167,7 @@ var Data = React.createClass ({
     },
     // function declared in ./sharedComponents/settings.js
     deleteEntry: settingsModalDeleteEntry.bind(this),
-    // deleteEntry: function(callback) {
-    //     console.log("bad bug", path);
-    //     $.ajax({
-    //         url: path,
-    //         type: 'DELETE'
-    //     }).done(function(status) {
-    //         callback('Successfully deleted.')
-    //         setTimeout(function(){ // redirect to homepage
-    //             window.location = '../..';
-    //         }, 3000);
-    //     }).fail(function(xhr, status, err) {
-    //         console.log(status + ': ' + err);
-    //         callback('Error: ' + err);
 
-    //     });
-    // },
     render: function() {
         var creator = (this.state.creator) ? '/profile/' + this.state.creator.username : '',
             avatar = (this.state.creator) ? this.state.creator.imgUrl : '',
