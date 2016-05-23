@@ -5398,9 +5398,17 @@ input[type="text"]:focus {
   border-color: var(--foreground-color); }
 
 .search-img {
+  display: block;
   padding: 0px;
   border-radius: 0px;
-  background-color: white; }
+  background-color: transparent;
+  max-height: 30px;
+  max-width: 30px;
+
+  margin-right: auto;
+  margin-left: auto;
+}
+
 
 .search-btn {
   border-left: none !important;
