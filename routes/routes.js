@@ -247,7 +247,7 @@ module.exports=function(app,Parse,io) {
 
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
                 '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
-            sendMail("verify Email - Syncholar",emailBody,req.body.email);
+            sendMail("Verify Email - Syncholar",emailBody,req.body.email);
 
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
@@ -446,8 +446,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
 
-                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
-                                                      '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
+                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>You have signed up for Syncholar using your Linkedin account. We have also created an username and a password for you:</p>'+
+                                                      '<h4>Username: '+email+'</h4><p><h4>Password: '+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
                                                   sendMail('Welcome To Syncholar',emailBody,email);
 
                                                   req.login(u.attributes.username,function (err) {
