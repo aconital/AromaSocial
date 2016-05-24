@@ -5404,9 +5404,7 @@ input[type="text"]:focus {
   background-color: transparent;
   max-height: 30px;
   max-width: 30px;
-
-  margin-right: auto;
-  margin-left: auto;
+  margin: auto;
 }
 
 
