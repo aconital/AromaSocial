@@ -74,11 +74,11 @@
 .no-margin{ margin: 0px; padding: 0px; }
 .padding-top-25 td { padding-top:25px; }
 
-.h2-editable { border: 1px solid var(--white-color); padding:10px; width:100%; max-width:100%; }
-.h2-editable:hover { border: 1px dotted var(--foreground-color); width:100%; }
+.h2-editable { border: 1px solid var(--white-color); padding:10px; width:88%; max-width:100%; }
+.h2-editable:hover { border: 1px dotted var(--foreground-color);  }
 .h2-editable-spacing { margin: 0px 0px; margin-bottom:20px; }
 .h2-editable-wrap { height: 75px; }
-.h2-non-editable-wrap { padding:10px; width:100%; max-width:100%; height: 75px; margin: 0px; }
+.h2-non-editable-wrap { padding:10px;  max-width:100%; height: 75px; margin: 0px; }
 
 .h3-item-wrap { margin: 0px; padding: 10px; }
 .h3-item-spacing { margin: 0px 0px; margin-bottom: 8px; }

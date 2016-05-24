@@ -29,20 +29,23 @@ var NewsFeed = React.createClass({
           }.bind(this)
       });
   },
+  createOrg: function() {
+    window.location = '/create/organization';
+  },
 
   render: function() {
       return (
           <div className="container-newsFeed">
               <div className="row">
                   <div className="col-xs-8">
-                      {this.state.data.map(function(item) {
-                        return (<NewsFeedList
+                      {this.state.data.map(function(item, i) {
+                        return (<NewsFeedList key={i}
                                               itemId={item.itemId}
                                               objId={item.objId}
                                               userName={item.username}
                                               fullname={item.fullname}
                                               userImg={item.userImg}
-                                              image_URL={item.image_URL}
+                                              image_URL={item.picture}
                                               type={item.type}
                                               date={item.date}
                                               year={item.year}
@@ -54,14 +57,19 @@ var NewsFeed = React.createClass({
                       })}
                     </div>
                     <div className="col-xs-4">
-                      <div className = "panel search-panel your-groups">
-                        <h4 className="white">ORGANIZATIONS</h4>
-                          {this.state.organizations.map(function(item) {
-                              return (<div className="list-group">
-                                  <a href={"organization/" + item.orgName} className="list-group-item groups-list">&#x25cf; {item.orgName.split(".")[0]}</a>
+
+                      <div className = "createorg_panel">
+                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><span className="nfButton"><i className="fa fa-plus" aria-hidden="true"></i> Create Research Lab or Network</span></button>
+                      </div>
+                        <div className = "panel search-panel your-groups">
+                        <h4 className="white"><span className="nfButton">Your Labs & Networks</span></h4>
+                          {this.state.organizations.map(function(item, i) {
+                              return (<div className="list-group" key={i}>
+                                  <a href={"organization/" + item.orgId} key={i} className="list-group-item groups-list">&#x25cf; {item.orgName.split(".")[0]}</a>
                               </div>);
                           })}
                     </div>
+
                   </div>
               </div>
         </div>
@@ -161,7 +169,7 @@ var NewsFeedList = React.createClass({
         typeLink="publication";
         break;
       case "journal":
-        type="Journal";
+        type="Journal Article";
         typeLink="publication"
         break;
       case "patent":
@@ -193,7 +201,9 @@ var NewsFeedList = React.createClass({
     // else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
     // else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
     if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-    else { var title = this.props.title; }
+    else { 
+      var title = this.props.title;
+      }
 	return (
       <div className="item-panel-newsFeed contain-panel-newsFeed">
         <div className="row">
@@ -335,15 +345,19 @@ var Update = React.createClass({
 
 });
 
-ReactDOM.render(
-  <NewsFeed url={getNewsFeedUrl} userName={userName} userId={userId}/>,
-  document.getElementById('content')
-);
+$( document ).ready(function() {
+  ReactDOM.render(
+    <NewsFeed url={getNewsFeedUrl} userName={userName} userId={userId}/>,
+    document.getElementById('content')
+  );
+});
 
 function showPublicationNewsFeed(pubid, datatype, title, year, postid, filename, tags, date, description, author, user, profilepic){
   var works = document.getElementById("content");
   React.unmountComponentAtNode(works);
   var search = false;
-  ReactDOM.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
-    description={description} author={author} year={year} pubid={pubid} search={search} user={user} profilepic={profilepic}/>, document.getElementById("content"));
+  $( document ).ready(function() {
+    ReactDOM.render(<Zoom url="/loadPublicationFile" filename={filename} postid={postid} tagString={tags} title={title} date={date} 
+      description={description} author={author} year={year} pubid={pubid} search={search} user={user} profilepic={profilepic}/>, document.getElementById("content"));
+  });
 }

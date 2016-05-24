@@ -1,3 +1,99 @@
+Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+	if (!request.object.get("picture")) {
+	  	var query = new Parse.Query("Static_Resources");
+		query.get("EEgFIzn2ta", {
+			success: function(res) {
+	    		request.object.set("picture", res.get("file"));
+	  			response.success();
+			},
+			error: function(error) {
+				console.error("Got an error " + error.code + " : " + error.message);
+				response.error(error);
+			}
+		});
+	} else { response.success(); }
+});
+
+Parse.Cloud.beforeSave("Organization", function(request, response) {
+	if (!request.object.get("picture")) {
+	  	var query = new Parse.Query("Static_Resources");
+		query.get("gXy3yIGZV1", {
+			success: function(res) {
+	    		request.object.set("picture", res.get("file"));
+	  			response.success();
+			},
+			error: function(error) {
+				console.error("Got an error " + error.code + " : " + error.message);
+				response.error(error);
+			}
+		});
+	} else { response.success(); }
+});
+
+Parse.Cloud.beforeSave("Data", function(request, response) {
+	if (!request.object.get("picture")) {
+	  	var query = new Parse.Query("Static_Resources");
+		query.get("w6NYAKDKHb", {
+			success: function(res) {
+	    		request.object.set("picture", res.get("file"));
+	  			response.success();
+			},
+			error: function(error) {
+				console.error("Got an error " + error.code + " : " + error.message);
+				response.error(error);
+			}
+		});
+	} else { response.success(); }
+});
+
+Parse.Cloud.beforeSave("Model", function(request, response) {
+	if (!request.object.get("picture")) {
+	  	var query = new Parse.Query("Static_Resources");
+		query.get("o59Ph5ELBC", {
+			success: function(res) {
+	    		request.object.set("picture", res.get("file"));
+	  			response.success();
+			},
+			error: function(error) {
+				console.error("Got an error " + error.code + " : " + error.message);
+				response.error(error);
+			}
+		});
+	} else { response.success(); }
+});
+
+Parse.Cloud.beforeSave("Equipment", function(request, response) {
+	if (!request.object.get("picture")) {
+	  	var query = new Parse.Query("Static_Resources");
+		query.get("o59Ph5ELBC", {
+			success: function(res) {
+	    		request.object.set("picture", res.get("file"));
+	  			response.success();
+			},
+			error: function(error) {
+				console.error("Got an error " + error.code + " : " + error.message);
+				response.error(error);
+			}
+		});
+	} else { response.success(); }
+});
+
+Parse.Cloud.beforeSave("Project", function(request, response) {
+	if (!request.object.get("picture")) {
+	  	var query = new Parse.Query("Static_Resources");
+		query.get("w6NYAKDKHb", {
+			success: function(res) {
+	    		request.object.set("picture", res.get("file"));
+	  			response.success();
+			},
+			error: function(error) {
+				console.error("Got an error " + error.code + " : " + error.message);
+				response.error(error);
+			}
+		});
+	} else { response.success(); }
+});
+
 Parse.Cloud.afterSave("Project", function(request, response) {
 	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("user");

@@ -11,7 +11,9 @@ var _= require('underscore');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
+var isauth = require('../utils/helpers').isauth;
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+var is_auth = require('../utils/helpers').is_auth;
 
 module.exports=function(app,Parse,io) {
     app.get('/allusers', function(req, res, next) {
@@ -52,7 +54,6 @@ module.exports=function(app,Parse,io) {
                 path: req.path,
                 currentUsername: currentUser.username,
                 objectId: currentUser.id,
-                currentUserImg: currentUser.imgUrl,
                 username: currentUser.username,
                 email: currentUser.email,
                 fullname: currentUser.fullname,
@@ -102,7 +103,7 @@ module.exports=function(app,Parse,io) {
                         workExperience: JSON.stringify(result.get('workExperience')),
                         educations: JSON.stringify(result.get('educations')),
                         projects: JSON.stringify(result.get('projects')),
-                        profile_imgURL: result.get('imgUrl'),
+                        profile_imgURL: result.get('picture').url(),
                         isMe: false
                     });
                 },
@@ -210,7 +211,7 @@ module.exports=function(app,Parse,io) {
                         username: friend.get('username'),
                         title: friend.get('title'),
                         fullname: friend.get('fullname'),
-                        userImgUrl: friend.get('imgUrl'),
+                        userImgUrl: friend.get('picture').url,
                         about: friend.get('about')
                     };
                     people.push(person);
@@ -240,16 +241,11 @@ module.exports=function(app,Parse,io) {
                     var orgId= result[uo].attributes.orgId.id;
                     var name= "";
                     var location= connected_orgs.location;
-                    var orgImgUrl= "/images/organization.png";
+                    var orgImgUrl= connected_orgs.picture.url();
                     if(connected_orgs.hasOwnProperty('name')){
                         name=connected_orgs.name;
                     }
-
-                        location=connected_orgs.location;
-
-                    if(connected_orgs.hasOwnProperty('profile_imgURL')){
-                        orgImgUrl=connected_orgs.profile_imgURL;
-                    }
+                    location=connected_orgs.location;
                     //only show people who are verified by admin
                     if(verified) {
                         var org = {
@@ -368,42 +364,22 @@ module.exports=function(app,Parse,io) {
 
     app.post('/profile/:username/picture', is_auth,function(req,res,next){
         var currentUser = req.user;
-        var linkUser = req.params.username;
-        if(currentUser.username == linkUser) {
-            var bucket = new aws.S3();
-            var s3KeyP = req.params.username + "_profile_picture_" + req.body.randomNumber + "." + req.body.pictureType;
-            console.log(s3KeyP);
-            var contentTypeP = req.body.picture.match(/^data:(\w+\/.+);base64,/);
-            var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""),'base64')
-            var pictureParams = {
-                Bucket: 'syncholar',
-                Key: s3KeyP,
-                Body: pictureBuff,
-                ContentEncoding: 'base64',
-                ContentType: (contentTypeP ? contentTypeP[1] : 'text/plain')
-            };
-            bucket.putObject(pictureParams, function (err, data) {
-                if (err) {
-                    console.log("Profile Picture (Image) Upload Error:", err);
+        if(currentUser.username == req.params.username) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(function (result) {
+                if (req.body.picture != null && result != undefined) {
+                    var pictureName = "user_picture." + req.body.pictureType;
+                    var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                    var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                    pictureFile.save().then(function () {
+                        result.set('picture', pictureFile)
+                        result.save(null, { useMasterKey: true }).then(function () {
+                            res.status(200).json({status: "Picture Uploaded Successfully!"});
+                        });
+                    });
                 }
                 else {
-                    var query = new Parse.Query(Parse.User);
-                    query.get(currentUser.id).then(
-                        function (result) {
-                            if (result != undefined) {
-                                result.set("imgUrl",awsLink + s3KeyP);
-                                result.save(null, { useMasterKey: true }).then(
-                                    function(){
-                                        //console.log("SAVE SUCCESS");
-                                        res.status(200).json({status: "Info Uploaded Successfully!"});
-                                    },
-                                    function(error){
-                                        console.log(error);
-                                        res.status(500).json({status: "Error uploading summary"})
-                                    }
-                                );
-                            }
-                        });
+                    res.status(500).json({status: "Picture Upload Failed!"});
                 }
             });
         }
@@ -544,7 +520,9 @@ module.exports=function(app,Parse,io) {
                                     if (workExperienceTemp[i].key == req.body.key) {
                                         var changedWE = {
                                             key: req.body.key,
+                                            field: req.body.field,
                                             title: req.body.title,
+                                            major: req.body.major,
                                             company: req.body.company,
                                             description: req.body.description,
                                             start: req.body.start,
@@ -562,6 +540,8 @@ module.exports=function(app,Parse,io) {
                                         var changedWE = {
                                             key: req.body.key,
                                             title: req.body.title,
+                                            field: req.body.field,
+                                            major: req.body.major,
                                             company: req.body.company,
                                             description: req.body.description,
                                             start: req.body.start,
@@ -608,7 +588,8 @@ module.exports=function(app,Parse,io) {
 
                 relation.save(null,{
                     success:function(){
-                        io.to(userId).emit('friendrequest',{data:currentUser});
+                        notifyFriend(userId,currentUser);
+
                         res.json({success: "Requested Successfully"});
                     },
                     error:function(error){
@@ -686,18 +667,28 @@ module.exports=function(app,Parse,io) {
             var username= user.get('username');
             var userId = user.id;
             var fullname= user.get('fullname');
-            var userImgUrl= user.get('imgUrl');
+            var userImgUrl= user.get('picture').url();
             var verified= result.get('verified');
 
             if(!verified) {
-                var person = {
-                    username:username,
-                    userId: userId,
-                    title: title,
-                    fullname: fullname,
-                    userImgUrl: userImgUrl
+                var person_notification = {
+                    id: "user_"+userId+"_inv",
+                    type:"friendrequest",
+                    from: {
+                        userId:userId,
+                        username: username,
+                        name: fullname,
+                        userImgUrl: userImgUrl,
+                    },
+                    msg: "wants to connect with you.",
+                    extra: {
+                        id: null,
+                        name: null,
+                        imgUrl: null
+                    }
                 };
-                people.push(person);
+
+                people.push(person_notification);
             }
         }).then(function(){
             res.json(people);
@@ -725,7 +716,7 @@ module.exports=function(app,Parse,io) {
                     console.log("Unexpected error. Cannot find RelationshipUser entry for friend request");
                 } else {
                     //user denied
-                    if(mode == "deny")
+                    if(mode == "reject")
                     {
                         result.destroy({
                             success: function(myObject) {
@@ -776,7 +767,7 @@ module.exports=function(app,Parse,io) {
                     var objectId = results[i].id;
                     var title = results[i].attributes.title;
                     var description = results[i].attributes.description;
-                    var image_URL = results[i].attributes.image_URL;
+                    var image_URL = results[i].attributes.picture.url();
                     if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
                     var equipment = {
                         objectId: objectId,
@@ -812,7 +803,7 @@ module.exports=function(app,Parse,io) {
                     var objectId = results[i].id;
                     var title = results[i].get('title');
                     var description = results[i].get('description');
-                    var image_URL = results[i].get('image_URL');
+                    var image_URL = results[i].get('picture').url();
                     var start_date = "N/A";
                     var end_date = "N/A";
                     if (results[i].get('collaborators') !== undefined) { collaborators = results[i].get('collaborators'); }
@@ -899,18 +890,15 @@ module.exports=function(app,Parse,io) {
                     var keywords = [];
                     var description = results[i].get('description');
                     var collaborators = results[i].get('collaborators');
-                    var image_URL = results[i].get('image_URL');
+                    var image_URL = results[i].get('picture').url();
                     var type = "Other";
-
                     var license = results[i].get('license');
                     var publication_date = results[i].get('publication_date');
                     var url = results[i].get('url');
-
                     if (results[i].get('title')) { title = results[i].get('title'); }
                     if (results[i].get('type')) { type = results[i].get('type'); }
                     if (results[i].get('publication_code')) { publication_code = results[i].get('publication_code'); }
                     if (results[i].get('keywords') !== undefined) { keywords = results[i].get('keywords'); }
-
                     var datum = {
                         objectId: objectId,
                         title: title,
@@ -947,7 +935,7 @@ module.exports=function(app,Parse,io) {
             var title = model.get('title');
             var description = model.get('abstract');
             var collaborators = model.get('collaborators');
-            var image_URL = model.get('image_URL');
+            var image_URL = model.get('picture').url();
             var keywords = model.get('keywords');
             var type = "Other";
             var publication_date = model.get('publication_date');
@@ -992,18 +980,25 @@ module.exports=function(app,Parse,io) {
         res.json(JSON.stringify(data_list));
     });
 
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
-
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else { res.locals.user = req.user;
-            res.locals.user = req.user;
-            next();
+    function notifyFriend(userId,currentUser)
+    {
+          var person_notification = {
+        id: "user_"+currentUser.id+"_inv",
+        type:"friendrequest",
+        from: {
+            userId:currentUser.id,
+            username: currentUser.username,
+            name: currentUser.fullname,
+            userImgUrl: currentUser.imgUrl,
+        },
+        msg: "wants to connect with you.",
+        extra: {
+            id: null,
+            name: null,
+            imgUrl: null
         }
     };
 
-
+        io.to(userId).emit('friendrequest',{data:person_notification});
+    }
 }

@@ -1,5 +1,6 @@
 // ALL
 $(function() {
+  if ($('.auto').length != 0) {
     $('.auto').catcomplete({
             source: function(req, res) {
               var r = []; 
@@ -15,7 +16,7 @@ $(function() {
                     });
                     $.map(arr, function(item){
                       var dlink = "/profile/" + item.username;
-                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.imgUrl, link: dlink});
+                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink});
                     });
                   },
                   error: function(xhr) {
@@ -38,7 +39,7 @@ $(function() {
                       //console.log(item);
                       var type = item.type;
                       var dlink = "/publication/" + type + "/" + item.objectId;
-                      r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink});
+                      r.push({label: item.title, value: item.title, category: item.type, imgsrc: "/images/paper.png", link: dlink});
                     });
                   },
                   error: function(xhr) {
@@ -55,8 +56,8 @@ $(function() {
                       return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });
                     $.map(arr, function(item){
-                      var dlink = "/organization/" + item.name;
-                      r.push({label: item.name, value: item.name, category: "Organizations", imgsrc: item.profile_imgURL, link: dlink});
+                      var dlink = "/organization/" + item.objectId;
+                      r.push({label: item.name, value: item.name, category: "Organizations", imgsrc: item.picture.url, link: dlink});
                     });
                   },
                   error: function(xhr) {
@@ -85,7 +86,8 @@ $(function() {
              return $("<li></li>").data("ui-autocomplete-item", item)
                      .append("<a>" + "<img height='40' width='40' src='" + item.imgsrc + "' />&nbsp" + item.label + "</a>")
                      .appendTo(ul);
-     };   
+     };
+    }   
 });
 
 // $( "#SearchInput" ).autocomplete({ .... }).data( "autocomplete" )._renderItem = function( ul, item ) {

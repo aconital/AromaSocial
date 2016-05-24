@@ -35,7 +35,7 @@ app.io           = io;
 app.use(helmet());
 
 Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
-Parse.serverURL = 'http://52.33.206.191:1337/parse/';
+Parse.serverURL = 'http://52.38.90.136:1337/parse/';
 
 // just to check that s3 is connected. remove when deploying
 s3.listBuckets(function(err, data) {
@@ -111,6 +111,7 @@ io.on('connection', function(socket){
 
 //===============PASSPORT=================
 // Use the LocalStrategy within Passport to login/�signin� users.
+// <<<<<<< HEAD
 passport.use(new LocalStrategy(function(email, password, done) {
 
     // get real username from input email
@@ -121,6 +122,38 @@ passport.use(new LocalStrategy(function(email, password, done) {
       success: function (user) {
         if (user == undefined) {
           return;
+// =======
+// passport.use(new LocalStrategy({
+//     usernameField: 'email',
+//     passwordField: 'password'
+//   },function(email, password, done) {
+
+//     var query = new Parse.Query(Parse.User);
+//     query.equalTo("email", email);
+//     query.first({
+//         success: function (user) {
+
+//             if(user === undefined)
+//             {
+//                 return done(null, false, {message: 'Invalid username or password'});
+//             }
+//             else {
+
+//                 Parse.User.logIn(user.get("username"), password, {
+//                     success: function(user) {
+//                         return done(null, user.attributes.username);
+//                     },
+//                     error: function(user, error) {
+//                         // Show the error message somewhere and let the user try again.
+//                         return done(null, false, {message: 'Invalid username or password'});
+//                     }
+//                 });
+//             }
+
+//         },
+//         error: function(user,error){
+//             console.log(error.message);
+// >>>>>>> origin/master
         }
         username = user.get("username");
         console.log("Retrieved username: ", username);
@@ -175,7 +208,7 @@ passport.deserializeUser(function(username, done) {
                 email: user.attributes.email,
                 emailVerified: user.attributes.emailVerified,
                 fullname:user.attributes.fullname,
-                imgUrl:user.attributes.imgUrl,
+                imgUrl:user.attributes.picture.url(),
                 summary:user.attributes.summary,
                 interests:user.attributes.interests,
                 interestsTag:user.attributes.interestsTag,

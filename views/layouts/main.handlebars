@@ -1,8 +1,24 @@
 <!-- views/layouts/home.handlebars -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 <head>
-    <title>Syncholar</title>
+    <title>Syncholar [ SAEED FILL HERE]</title>
+    <meta name="description" content="[ SAEED FILL HERE]">
+    <meta name="keywords" content="education,socialnetwork,labs,[SAEED FILL HERE]" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta name="distribution" content="web">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta property="og:title" content="[SAEED FILL HERE]" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://syncholar.com" />
+    <meta property="og:image" content="https://syncholar.com/images/syncholar.png" />
+    <meta property="og:image:width" content="500" />
+    <meta property="og:image:height" content="300" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/javascripts/react-tagsinput/react-tagsinput.css">
@@ -62,7 +78,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="/create/organization">Create Research Lab or Network</a></li>
-                            <li><a href="/report">Report Problem, share idea</a></li>
+                            <li><a href="/report">Report Problem | Share Idea</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -84,21 +100,17 @@
                                 <span class="notification-counter" style="display:none;">0</span>
                             </div>
                         </a>
-                        <ul id="friendrequest" class="dropdown-menu friend-request-dropdown" aria-labelledby="dropdownMenuDivider">
+                        <ul id="notification" class="dropdown-menu friend-request-dropdown" aria-labelledby="dropdownMenuDivider">
                         </ul>
                     </li>
-                    <li class="dropdown logout-button"><a href="/signout" role="button"><span class="glyphicon glyphicon-log-out body-link"></span></a>
-                        <!--
-                        <a href="#" data-toggle="dropdown" role="button" class="dropdown-toggle"><span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/help" style="height: 45px;line-height: 45px;"><span class="glyphicon glyphicon-info-sign"></span>  Help</a></li>
-                            <li><a href="/signout" style="height: 45px;line-height: 45px;"><span  class="glyphicon glyphicon-log-out"></span>  Logout</a></li>
-                        </ul>
-                        -->
+                    {{!--<li class="dropdown logout-button"><a href="/setting" role="button"><span><i class="fa fa-cog" aria-hidden="true"></i></span></a>
+                    </li>--}}
+                    <li class="dropdown logout-button"><a href="/signout" role="button"><span><i class="fa fa-sign-out" aria-hidden="true"></i></span></a>
                     </li>
+
                 {{else}}
                     <li class="dropdown logout-button">
-                        <a href="/beta"> <font color="white"><font size="3">Sign In</font></font></a>
+                        <a href="/signin"> <font color="white"><font size="3">Sign In</font></font></a>
                     </li>
                 {{/if}}
             </ul>
@@ -133,11 +145,12 @@
         </p>
 
         <p class="footer-company-name">Syncholar Inc. &copy; 2016</p>
+        <p>All rights reserved.</p>
     </div>
 
-    <div class="footer-center">
+   <div class="footer-center">
 
-        <div>
+       {{!-- <div>
             <i class="fa fa-map-marker"></i>
             <p><span>2424 Main Mall</span> Vancouver, Canada</p>
         </div>
@@ -146,10 +159,10 @@
             <i class="fa fa-phone"></i>
             <p>+1 604 123 4567</p>
         </div>
-
+--}}
         <div>
             <i class="fa fa-envelope"></i>
-            <p><a href="mailto:syncholar@gmail.com">syncholar@gmail.com</a></p>
+            <p><a href="mailto:support@syncholar.com">support@syncholar.com</a></p>
         </div>
 
     </div>

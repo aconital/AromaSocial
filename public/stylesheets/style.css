@@ -56,6 +56,12 @@ audio:not([controls]) {
 template {
   display: none; }
 
+pre{
+  border-color: transparent !important;
+  background-color: transparent !important;
+}
+
+
 a {
   background-color: transparent; 
   cursor: pointer;
@@ -120,7 +126,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family: monospace, monospace;
+  font-family: sans-serif, monospace, monospace;
   font-size: 1em; }
 
 button,
@@ -267,14 +273,14 @@ th {
   .table-bordered td {
     border: 1px solid #ddd !important; } }
 @font-face {
-  font-family: 'Glyphicons Halflings';
+  font-family: sans-serif, 'Glyphicons Halflings';
   src: url("../fonts/bootstrap/glyphicons-halflings-regular.eot");
   src: url("../fonts/bootstrap/glyphicons-halflings-regular.eot?#iefix") format("embedded-opentype"), url("../fonts/bootstrap/glyphicons-halflings-regular.woff2") format("woff2"), url("../fonts/bootstrap/glyphicons-halflings-regular.woff") format("woff"), url("../fonts/bootstrap/glyphicons-halflings-regular.ttf") format("truetype"), url("../fonts/bootstrap/glyphicons-halflings-regular.svg#glyphicons_halflingsregular") format("svg"); }
 .glyphicon {
   position: relative;
   top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
+  font-family: sans-serif, 'Glyphicons Halflings';
   font-style: normal;
   font-weight: normal;
   line-height: 1;
@@ -1089,7 +1095,7 @@ html {
   -webkit-tap-highlight-color: transparent; }
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857;
   color: #333333;
@@ -1489,7 +1495,7 @@ pre {
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 samp {
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace; }
+  font-family: sans-serif, Menlo, Monaco, Consolas, "Courier New", monospace; }
 
 code {
   padding: 2px 4px;
@@ -2491,6 +2497,7 @@ output {
   color: #555555; }
 
 .form-control, .react-tagsinput {
+  box-shadow: none !important;
   display: block;
   width: 100%;
   height: auto;
@@ -2500,7 +2507,7 @@ output {
   color: var(--foreground-color);
   background-color: var(--white-color);
   background-image: none;
-  border: 1px solid #ccc;
+  border: 1px none #ccc;
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
@@ -2946,6 +2953,8 @@ select[multiple].input-lg,
   touch-action: manipulation;
   cursor: pointer;
   background-image: none;
+  background-color: var(--foreground-color);
+  color: #ffffff;
   border: 1px solid transparent;
   white-space: nowrap;
   padding: 6px 12px;
@@ -2961,7 +2970,8 @@ select[multiple].input-lg,
     outline: 5px auto -webkit-focus-ring-color;
     outline-offset: -2px; }
   .btn:hover, .btn:focus, .btn.focus {
-    color: #333;
+    color: #ffffff;
+    background-color: var(--foreground-hover-color);
     text-decoration: none; }
   .btn:active, .btn.active {
     outline: 0;
@@ -4413,7 +4423,7 @@ button.close {
   position: absolute;
   z-index: 1070;
   display: block;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -4519,7 +4529,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -4750,7 +4760,7 @@ button.close {
     width: 20px;
     height: 20px;
     line-height: 1;
-    font-family: serif; }
+    font-family: sans-serif; }
   .carousel-control .icon-prev:before {
     content: '\2039'; }
   .carousel-control .icon-next:before {
@@ -5704,8 +5714,8 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 
 .date-editable-input { padding-left: 0px; padding-right: 0px; }
 
-.tagsinput-tag-link:hover { color: white; text-decoration: none; }
-.tagsinput-tag-link:active { color: white; text-decoration: none; }
+.tagsinput-tag-link:hover { color: var(--link-color); text-decoration: none; }
+.tagsinput-tag-link:active { color: var(--link-color); text-decoration: none; }
 
 .model-layout {
     height:100%;
@@ -5820,7 +5830,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     color: var(--contrast-free-color);
     background-color: var(--foreground-color);
     display: inline;
-    border: solid;
+    border: none;
     border-color: var(--foreground-color);
     border-width: 2px 2px 0 2px;
     padding: 6px 12px;
@@ -5892,7 +5902,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     margin-top: 2px;
     padding: 10px;
     background-color: var(--white-color);
-    border: solid;
+    border: none;
     border-width: 2px;
     border-color: var(--foreground-color);
     border-radius: 4px;
@@ -6045,7 +6055,7 @@ color: var(--white-color);
 .summary-margin-top{margin-top:5px;}
 
 .fifty-fifty{width:50%;}
-.h4-resume-item{margin:0px;font-weight:normal;}
+.h4-resume-item{margin:0px;font-weight:normal; }
 .extend-bottom{display:block;height:60px;width:100%;}
 
 .legend-top{font-size:15px;}
@@ -6194,9 +6204,10 @@ table.summary tr td {
 }
 
 .react-tagsinput-tag {
-    background-color: var(--foreground-color);
-    border-color: var(--foreground-color);
-    color: white;
+    background-color: var(--background-color);
+    border-radius: 25px;
+    border-color: transparent;
+    color: black;
     margin:1px;
     padding:0px 4px;
 } .react-tagsinput-tag a {
@@ -6319,7 +6330,6 @@ div.react-tagsinput {
  }
 #pending-action
  { margin-right: 10px;
-   cursor: pointer;
    text-decoration: none;
 
  }
@@ -6365,7 +6375,8 @@ textarea {
 }
 
 .ui-autocomplete {
-    height: 500px;
+    /*max-height: 0;*/
+    /*transition: max-height 0.5s ease-out;*/
     overflow-y: scroll;
     position: absolute;
     top: 100%;
@@ -6377,8 +6388,8 @@ textarea {
     padding: 4px 4px;
     margin: 10px 10px 10px 25px;
     list-style: none;
-    color: white;
-    background-color: #424242;
+    color: black;
+    background-color: white;
     border-color: #ccc;
     border-color: rgba(0, 0, 0, 0.2);
     border-style: solid;
@@ -6394,6 +6405,7 @@ textarea {
     background-clip: padding-box;
     *border-right-width: 2px;
     *border-bottom-width: 2px;
+    box-shadow: 10px 10px 5px #333333;
 }
 
 .ui-menu-item > a.ui-corner-all {
@@ -6402,16 +6414,23 @@ textarea {
     clear: both;
     font-weight: normal;
     line-height: 18px;
-    color: white;
+    color: #333333;
     white-space: nowrap;
     text-decoration: none;
     cursor: pointer;
+    font-weight: bolder;
 }
 
 .ui-state-hover, .ui-state-active {
+    max-height: 500px;
+    -moz-transition: max-height .5s;
+    -ms-transition: max-height .5s;
+    -o-transition: max-height .5s;
+    -webkit-transition: max-height .5s;
+    transition: max-height .5s ease-in;
     color: var(--white-color);
     text-decoration: none;
-    background-color: #0088cc;
+    background-color: #9966ff;
     border-radius: 0px;
     -webkit-border-radius: 0px;
     -moz-border-radius: 0px;
@@ -6421,14 +6440,15 @@ textarea {
 .ui-autocomplete-category {
      font-weight: bold; 
      text-align: center;
-     -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
-     background-color: #b3b3b3;
-     color: black;  
+     background-color: #333333;
+     color: white;  
 }
 
 .ui-state-focus {
-    background-color: #1a1a1a;
+    /*background-color: #9966ff;*/
+    color: #222;
+    text-shadow: 0px 2px 3px #555;
+    /*text-shadow: 0 0 4px #000066;*/
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
     outline:none;
@@ -6529,7 +6549,7 @@ hr.style15 {
 }
 
 .contain-image {
-  background-color: transparent !important;
+  background-color: #ffffff !important;
 }
 
 .item-box-image-outside{
@@ -6580,4 +6600,78 @@ hr.style15 {
   font-size: 17px;
 }
 
+.workeducationDate {
+  float:right;
+}
+.profile_date_editable{
+  color: #a8a8a8;
+}
 
+.profile_workedu_margin{
+  padding-top: 10px ;
+}
+
+.pending_btn {
+  cursor: default;
+  background-color: var(--foreground-color) !important;
+}
+
+.createorg_panel{
+  margin-top: 25px;
+  border: none;
+}
+.createorg_btn{
+  -webkit-transition: background-color 3000ms linear;
+  -moz-transition: background-color 3000ms linear;
+  -o-transition: background-color 3000ms linear;
+  -ms-transition: background-color 3000ms linear;
+  transition: background-color 300ms linear;
+  font-size: large;
+  border: none;
+  background-color:#1e88e5   ;
+}
+.createorg_btn:hover{
+  background-color:#1565c0   ;
+  -webkit-transition: background-color 3000ms linear;
+  -moz-transition: background-color 3000ms linear;
+  -o-transition: background-color 3000ms linear;
+  -ms-transition: background-color 3000ms linear;
+  transition: background-color 300ms linear;
+}
+.btn.btn-default.pull-right.submit
+{ width: 100%;
+  border: none;
+  color: white;
+  background-color: #1e88e5;
+}
+.btn.btn-default.pull-right.submit:hover
+{
+  background-color: #1565c0;
+}
+
+.org-about-address{
+  padding-left: 10px ;
+}
+
+.tdnowrap{
+  white-space: nowrap;
+  padding-left: 10px ;
+  padding-top: 5px;
+}
+
+.settings-btn {
+  float: right;
+  font-size: 1.4em;
+  color: #92999f;
+}
+
+.settings-btn:hover {
+  color: var(--foreground-hover-color);
+}
+
+.nfButton {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
+}

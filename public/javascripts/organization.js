@@ -1,18 +1,32 @@
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
+var ButtonToolbar = ReactBootstrap.ButtonToolbar;
+var DropdownButton= ReactBootstrap.DropdownButton;
+var Dropdown= ReactBootstrap.Dropdown;
+var Glyphicon= ReactBootstrap.Glyphicon;
+var MenuItem= ReactBootstrap.MenuItem;
 var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+var Carousel = ReactBootstrap.Carousel;
 
 var Organization = React.createClass ({
     getInitialState: function() {
         return {    isAdmin: [],
             status: '',
             organization_imgURL: [organization_imgURL],
-            showModal: false};
+            showModal: false,
+            imgSubmitText: 'Upload',
+            imgSubmitDisabled: false,
+            modalMode: 1, //the active carousel item, values =1,2,3
+            carousel_1_img: {carousel_1_img},
+            carousel_2_img: {carousel_2_img},
+            carousel_3_img: {carousel_3_img},
+            errorText: 'Could not complete operation.'};
     },
     componentWillMount: function() {
         var connectURL= "/organization/"+objectId+"/join-status";
+        var orgURL= "/organization/"+objectId;
 
         $.ajax({
             url: connectURL,
@@ -28,6 +42,8 @@ var Organization = React.createClass ({
         this.setState({ showModal: true });
     },
     clickClose() {
+        this.setState({ imgSubmitText: "Upload" });
+        this.setState({ imgSubmitDisabled: false });
         this.setState({ showModal: false});
     },
     componentDidMount : function() {
@@ -63,20 +79,38 @@ var Organization = React.createClass ({
         });
     },
     clickLeave: function() {
+        var self = this;
         var connectURL= "/organization/"+objectId+"/leave";
+        var adminURL = "/organization/"+objectId+"/admins";
 
         $.ajax({
-            url: connectURL,
-            success: function(status) {
-                this.setState({status: "not-joined"});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't retrieve people.");
-            }.bind(this)
+            url: adminURL,
+            data: {getCount: true}
+        }).done(function(count) {
+            if (self.state.isAdmin && count < 2) {
+                self.setState({errorText: "Can't leave network with no admins! Either delete network or add an administrator."});
+                $("#error-dialog").show();
+                setTimeout(function() { $("#error-dialog").hide(); }, 5000);
+            } else {
+                $.ajax({
+                    url: connectURL
+                }).done(function(status) {
+                    console.log(status);
+                    self.setState({status: "not-joined"});
+                }).fail(function(xhr, status, error) {
+                    console.log(status + ': ' + error);
+                });
+            }
+        }).fail(function(xhr, status, err) {
+            console.log(status + ': ' + error);
         });
+
     },
-    submitPicture: function() { //todo export utils
+    submitPicture: function() { 
         var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        this.setState({imgSubmitText: "Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled:true});
+        var that = this;
         $.ajax({
             url: path + "/updatePicture",
             dataType: 'json',
@@ -92,6 +126,12 @@ var Organization = React.createClass ({
             error: function(xhr, status, err) {
                 console.error(path + "/update", status, err.toString());
             }.bind(this)
+        }).then(function() {
+            that.setState({imgSubmitText: "Upload"});
+            that.setState({imgSubmitDisabled:false});
+        }, function(err) {
+            that.setState({imgSubmitText: "Error. Please select an image and click me again."});
+            that.setState({imgSubmitDisabled:false});
         });
         return;
     },
@@ -104,7 +144,7 @@ var Organization = React.createClass ({
         reader.onload = function(upload) {
             self.setState({
                 picture: upload.target.result,
-                pictureType: extension,
+                pictureType: extension
             });
         }
         reader.readAsDataURL(file);
@@ -118,7 +158,7 @@ var Organization = React.createClass ({
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
         else if (this.state.status == "pending") {
-            joinButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+            joinButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-joined") {
             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
@@ -136,10 +176,15 @@ var Organization = React.createClass ({
                             </div>
                         </Modal.Body>
                         <Modal.Footer>
-                            <input className="publication-button" type="submit" value="Submit" onClick={this.submitPicture} />
+                            <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.submitPicture} />
                         </Modal.Footer>
                     </Modal>
                     <div className="content-wrap">
+                        <div id="error-dialog">
+                            <div className="alert alert-danger">
+                                <strong>Error:</strong> <span id="error-string">{this.state.errorText}</span>
+                            </div>
+                        </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <a href="#" onClick={this.clickOpen}>
@@ -151,9 +196,12 @@ var Organization = React.createClass ({
                                 </a>
                             </div>
                             <div id="item-bottom-2-organization" className="item-bottom-2">
+                                <div className="interact-buttons-wrap">
+                                    {joinButton}
+                                </div>
                                 <h1 className="no-margin-padding align-left h1-title">{orgName}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
                     </div>
@@ -164,6 +212,11 @@ var Organization = React.createClass ({
             return (
                 <div>
                     <div className="content-wrap">
+                        <div id="error-dialog">
+                            <div className="alert alert-danger">
+                                <strong>Error:</strong> <span id="error-string">{this.state.errorText}</span>
+                            </div>
+                        </div>
                         <div className="item-bottom">
                             <div className="item-bottom-1">
                                 <img src={this.state.organization_imgURL} className="contain-image" />
@@ -179,7 +232,7 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{orgName}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu tabs={['About', 'People', 'Connections', 'Equipments', 'Projects', 'Publications', 'Data', 'Models']} />
+                                <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
                     </div>
@@ -198,16 +251,16 @@ var OrganizationMenu = React.createClass ({
     render: function() {
         var self = this;
 
-        var tabMap = {0: <About objectId={objectId}/>,
-            1: <People />,
-            2: <Connections  />,
+        var tabMap = {0: <About objectId={objectId} />,
+            1: <People isAdmin={this.props.isAdmin} />,
+            2: <Connections isAdmin={this.props.isAdmin}  />,
             3: <Equipments objectId={objectId}/>,
             4: <Projects objectId={objectId}/>,
             // 4: <Knowledge/>,
             5: <Publications objectId={objectId}/>,
             6: <Data objectId={objectId}/>,
-            7: <Models objectId={objectId}/>,
-            8: <Manage objectId={objectId}/>
+            7: <Models objectId={objectId}/>
+
         };
         return (
             <div>
@@ -234,7 +287,29 @@ var OrganizationMenu = React.createClass ({
 
 var About = React.createClass({
     getInitialState: function(){
-        return {about: {about}};
+        return {about: about,
+            orgCountry: orgCountry,
+            orgProv: orgProv,
+            orgCity: orgCity,
+            orgStreet: orgStreet,
+            orgPostalcode: orgPostalcode,
+            orgWebsite: orgWebsite,
+            orgTel: orgTel,
+            orgFax: orgFax,
+            orgEmail: orgEmail,
+            carousel_1_img:{carousel_1_img},
+            carousel_1_head: carousel_1_head,
+            carousel_1_body: carousel_1_body,
+            carousel_2_img: {carousel_2_img},
+            carousel_2_head: carousel_2_head,
+            carousel_2_body: carousel_2_body,
+            carousel_3_img: {carousel_3_img},
+            carousel_3_head: carousel_3_head,
+            carousel_3_body: carousel_3_body,
+            showModal: false,
+            isAdmin:false,
+            modalMode : 1 //the active carousel item, values =1,2,3
+        };
     },
     componentDidMount : function() {
         var isAdminURL= "/organization/"+objectId+"/isAdmin";
@@ -250,13 +325,41 @@ var About = React.createClass({
             }.bind(this)
         });
     },
+    handlePicture: function(e) { //todo export utils
+        var self = this,
+            reader = new FileReader(),
+            file = e.target.files[0],
+            extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+            self.setState({
+                picture: upload.target.result,
+                pictureType: extension
+            });
+        }
+        reader.readAsDataURL(file);
+    },
+
     handleChange: function(e) {
         var changedState = {};
         changedState[e.target.name] = e.target.value;
         this.setState( changedState );
     },
     submitChange: function() {
-        var dataForm = {isAdmin: false, about: this.state.about.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
+        var dataForm = {isAdmin: false, about: this.state.about.replace(/(\r\n|\n|\r|\\)/gm,'\\n'),
+                        carousel_1_head: this.state.carousel_1_head, carousel_1_body: this.state.carousel_1_body,
+                        carousel_2_head: this.state.carousel_2_head, carousel_2_body: this.state.carousel_2_body,
+                        carousel_3_head: this.state.carousel_3_head, carousel_3_body: this.state.carousel_3_body,
+            country: this.state.orgCountry,
+            prov: this.state.orgProv,
+            city: this.state.orgCity,
+            street: this.state.orgStreet,
+            postalcode: this.state.orgPostalcode,
+            website: this.state.orgWebsite,
+            tel: this.state.orgTel,
+            fax: this.state.orgFax,
+            email: this.state.orgEmail
+        };
         var isAdminURL= "/organization/"+objectId+"/isAdmin";
         $.ajax({
             url: path + "/update",
@@ -273,15 +376,247 @@ var About = React.createClass({
             }.bind(this)
         });
     },
+
+    submitCarouselPicture_1: function() { //todo export utils
+        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        $.ajax({
+            url: path + "/updateCarouselPicture_1",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log(data.status);
+                this.setState({carousel_1_img: this.state.picture});
+
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateCarouselPicture_1", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitCarouselPicture_2: function() { //todo export utils
+        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        $.ajax({
+            url: path + "/updateCarouselPicture_2",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log(data.status);
+                this.setState({carousel_2_img: this.state.picture});
+
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateCarouselPicture_2", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitCarouselPicture_3: function() { //todo export utils
+        var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
+        $.ajax({
+            url: path + "/updateCarouselPicture_3",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log(data.status);
+                this.setState({carousel_3_img: this.state.picture});
+
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/updateCarouselPicture_3", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    clickOpen(modalMode) {
+        this.setState({modalMode : modalMode});
+        console.log(modalMode);
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false});
+    },
     render: function() {
-        return(
-            <div>
-                <div className="organization-table-div">
-                    {(this.state.isAdmin) ? <textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea> : <pre>{about}</pre>}
+
+        if (this.state.isAdmin)
+            return (
+                <div>
+                    <Modal show={this.state.showModal} onHide={this.clickClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Update Carousel Picture</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <div id="field1-container">
+                                <input className="form-control" type="file" name="publication-upload" id="picture" required="required" placeholder="File" onChange={this.handlePicture} />
+                            </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            {(this.state.modalMode == 1)? <input className="publication-button" type="submit" value="Submit" onClick={this.submitCarouselPicture_1} />: ""}
+                            {(this.state.modalMode == 2)? <input className="publication-button" type="submit" value="Submit" onClick={this.submitCarouselPicture_2} />: ""}
+                            {(this.state.modalMode == 3)? <input className="publication-button" type="submit" value="Submit" onClick={this.submitCarouselPicture_3} />: ""}
+                        </Modal.Footer>
+                    </Modal>
+                    <div className="carousel_div">
+                    <Carousel>
+
+                        <Carousel.Item>
+                            <a href="#" onClick={()=>this.clickOpen(1)} id="carousel-image"><div className="carousel_div"><img src={carousel_1_img} className="carousel_img"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
+
+                            <Carousel.Caption>
+
+                                <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_1_head" placeholder="Image Title" name="carousel_1_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_1_head}</textarea></h3>
+                                <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_1_body" placeholder="Image Description" name="carousel_1_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_1_body}</textarea></p>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <a href="#" onClick={()=>this.clickOpen(2)} id="carousel-image"><div className="carousel_div"><img src={carousel_2_img} className="carousel_img" /><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
+
+                            <Carousel.Caption>
+                                <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_2_head" placeholder="Image Title" name="carousel_2_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_2_head}</textarea></h3>
+                                <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_2_body" placeholder="Image Description" name="carousel_2_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_2_body}</textarea></p>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+                        <Carousel.Item>
+                            <a href="#" onClick={()=>this.clickOpen(3)} id="carousel-image"><div className="carousel_div"><img src={carousel_3_img} className="carousel_img" /><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a>
+                            <Carousel.Caption>
+                                <h3><textarea rows="1" type="text" className="carouselTextarea" id="carousel_3_head" placeholder="Image Title" name="carousel_3_head" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_3_head}</textarea></h3>
+                                <p><textarea rows="1" type="text" className="carouselTextarea" id="carousel_3_body" placeholder="Image Description" name="carousel_3_body" onChange={this.handleChange} onBlur={this.submitChange}>{carousel_3_body}</textarea></p>
+                            </Carousel.Caption>
+                        </Carousel.Item>
+
+                    </Carousel>
+                        </div>
+                    <div className="resume-item div-relative ">
+
+                        <textarea rows="5" type="text" className="r-editable r-editable-full" id="about" placeholder="Summary of activities" name="about" onChange={this.handleChange} onBlur={this.submitChange}>{about}</textarea>
+                    </div>
+                    <div id="organizaiton_address" className="div-relative"><hr/>
+                        <div>
+                            <h3 className="no-margin-top" >Contact</h3>
+                        </div>
+                        <table className="resume-item div-relative ">
+                            <tbody >
+
+                                <tr >
+
+                                  <td> <input id="streetInp" type="text" className="p-editable" name="orgStreet" placeholder="Street Address, Unit/Room #"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
+                                </tr>
+                                <tr >
+                                    <td ><input type="text" className="p-editable" placeholder="Country" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
+
+                                    <td ><input type="text" className="p-editable" placeholder="State / Province" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
+                                </tr>
+                                <tr >
+                                    <td><input type="text" className="p-editable" name="orgCity" placeholder="City" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
+
+                                    <td><input type="text" className="p-editable" name="orgPostalcode" placeholder="Zip / Postal-code" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
+                                </tr >
+
+                                <tr>
+                                    <td className="tdnowrap"><span>Tel:</span><input type="text" id="telInp" className="p-editable" name="orgTel" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgTel} /></td>
+                                </tr>
+                                <tr>
+                                    <td className="tdnowrap"><span>Fax:</span><input type="text" className="p-editable" name="orgFax" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgFax} /></td>
+                                </tr>
+                                <tr>
+                                    <td className="tdnowrap"><span>Email:</span><input type="text" className="p-editable" name="orgEmail" placeholder="Email" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgEmail} /></td>
+                                </tr>
+                                <tr>
+                                    <td className="tdnowrap"><span>Website:</span><input type="text" className="p-editable" name="orgWebsite" placeholder="Website url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
                 </div>
+
+        ) ;
+        //not admin
+        else
+        return (
+            <div>
+            {(carousel_1_img != "/images/carousel.png" || carousel_2_img != "/images/carousel.png" || carousel_3_img != "/images/carousel.png")?
+                <div className="carousel_div">
+                <Carousel>
+                   {(carousel_1_img != "/images/carousel.png")?
+                        <Carousel.Item>
+                            <img src={carousel_1_img}/>
+                            <Carousel.Caption>
+                                <h3>{carousel_1_head}</h3>
+                                <p>{carousel_1_body}</p>
+                            </Carousel.Caption>
+                        </Carousel.Item> :"" }
+                    {(carousel_2_img != "/images/carousel.png")?
+                        <Carousel.Item>
+                            <img src={carousel_2_img}/>
+                            <Carousel.Caption>
+                                <h3>{carousel_2_head}</h3>
+                                <p>{carousel_2_body}</p>
+                            </Carousel.Caption>
+                        </Carousel.Item> :"" }
+                    {(carousel_3_img != "/images/carousel.png")?
+                        <Carousel.Item>
+                            <img src={carousel_3_img}/>
+                            <Carousel.Caption>
+                                <h3>{carousel_3_head}</h3>
+                                <p>{carousel_3_body}</p>
+                            </Carousel.Caption>
+                        </Carousel.Item> :"" }
+                </Carousel></div> : ""
+                }
+            {(about != "")?
+                <div className="resume-item div-relative ">
+
+                    <pre>{about}</pre>
+                </div>:""}
+            {(orgStreet != "" || orgCity != "" || orgProv != "" || orgCountry != "" || orgPostalcode != "" || orgEmail != "" || orgTel != "" || orgFax != "" || orgWebsite != "") ?
+                <div id="organizaiton_address" className="div-relative"><hr/>
+                    <div>
+                        <h3 className="no-margin-top" >Contact</h3>
+                    </div>
+                    <table className="resume-item div-relative ">
+                        <tbody >
+
+                            <tr >
+                                {(orgStreet != "")?<td className="tdnowrap">{orgStreet}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgLocation != "")?<td className="tdnowrap">{orgLocation}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgPostalcode != "")?<td className="tdnowrap">{orgPostalcode}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgTel != "")?<td className="tdnowrap"><span>Tel:</span>{orgTel}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgFax != "")?<td className="tdnowrap"><span>Fax:</span>{orgFax}</td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgEmail != "")?<td className="tdnowrap"><a href={"mailto:"+orgEmail}>{orgEmail}</a></td> : ""}
+                            </tr>
+                            <tr >
+                                {(orgWebsite != "")?<td className="tdnowrap"><a href={orgWebsite} target="blank">{orgWebsite}</a></td> : ""}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                :""}
+
             </div>
         );
-    },
+    }
 
 })
 
@@ -372,7 +707,7 @@ var AddConnection = React.createClass({
             joinOrganization: '',
             organizationId: '',
             joinType: '',
-            formFeedback: '',
+            formFeedback: ''
         }
     },
     componentDidMount : function(){
@@ -463,7 +798,7 @@ var AddConnection = React.createClass({
             }.bind(this)
         });
         return;
-    },
+    }
 });
 
 var People = React.createClass({
@@ -471,14 +806,13 @@ var People = React.createClass({
         return {data: []};
     },
     componentDidMount : function(){
+        this.getPeople();
+    },
+    getPeople:function(){
         var peopleUrl= "/organization/"+objectId+"/people";
-        console.log("PEOPLE COMPONENT MOUNTED");
-        console.log(peopleUrl);
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-                console.log("PEOPLE RECEIVED: ");
-                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -486,8 +820,39 @@ var People = React.createClass({
             }.bind(this)
         });
     },
-    render: function() {
+    deleteMember:function(userId)
+    {
 
+        $.ajax({
+            url: '/organization/'+objectId+'/kick',
+            type: 'POST',
+            data: {userId:userId},
+            success: function(data) {
+                this.getPeople();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.log(err);
+            }.bind(this)
+        });
+    },
+    MakeRemoveAdmin:function(userId,action)
+    {
+        $.ajax({
+            url: '/organization/'+objectId+'/admin',
+            type: 'POST',
+            data: {userId:userId,makeAdmin:action},
+            success: function(data) {
+                this.getPeople();
+            }.bind(this),
+            error: function(xhr, status, err) {
+               console.log(err);
+            }.bind(this)
+        });
+
+    },
+    render: function() {
+        var parent= this;
+        var isAdmin= this.props.isAdmin;
         var peopleList = $.map(this.state.data,function(objects) {
             var role= objects[0].title;
             var plist=[];
@@ -510,6 +875,15 @@ var People = React.createClass({
                                 </div>
                                 <div className="item-box-right">
                                     <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+
+                                </div>
+                                <div className="item-box-right">
+                                    {(isAdmin == true && person.username != currentUsername) ? <a onClick={parent.deleteMember.bind(self,person.id)} href="#" alt="Delete member">Delete member</a>:""}
+                                 </div>
+                                <div className="item-box-right">
+                                    {(isAdmin==true && person.isAdmin != true && person.username != currentUsername) ? <a onClick={parent.MakeRemoveAdmin.bind(self,person.id,true)} href="#" alt="Make Admin">Make Admin</a>:""}
+                                    {(isAdmin==true && person.isAdmin == true && person.username != currentUsername) ? <a onClick={parent.MakeRemoveAdmin.bind(self,person.id,false)} href="#" alt="Make Admin">Remove Admin</a>:""}
+
                                 </div>
                             </div>
                     )}
@@ -524,246 +898,6 @@ var People = React.createClass({
     }
 });
 
-var Manage = React.createClass({
-    getInitialState: function() {
-        return {
-            orgCountry: orgCountry,
-            orgProv: orgProv,
-            orgCity: orgCity,
-            orgStreet: orgStreet,
-            orgPostalcode: orgPostalcode,
-            orgWebsite: orgWebsite,
-            organization_imgURL: organization_imgURL,
-            cover_imgURL: cover_imgURL,
-            pendingPeople: [],
-            pendingOrganizations: [],
-            admins: []
-        };
-    },
-    handleChange: function(e) {
-        this.setState({[e.target.name]:e.target.value});
-    },
-    submitChange: function() {
-        var dataForm = {name: this.state.name,
-            country: this.state.orgCountry,
-            prov: this.state.orgProv,
-            city: this.state.orgCity,
-            street: this.state.orgStreet,
-            postalcode: this.state.orgPostalcode,
-            website: this.state.orgWebsite};
-
-        $.ajax({
-            url: path + "/update",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-        return;
-    },
-    componentDidMount : function(){
-        $.ajax({
-            type: 'GET',
-            url: "/organization/"+objectId+"/pending_people",
-            success: function(pendingPeopleData) {
-                this.setState({pendingPeople: pendingPeopleData});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve People!");
-            }.bind(this)
-        }).then(this.admins);
-        $.ajax({
-            type: 'GET',
-            url: "/organization/"+objectId+"/pending_organizations",
-            success: function(pendingOrganizationsData) {
-                this.setState({pendingOrganizations: pendingOrganizationsData});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve Organizations!");
-            }.bind(this)
-        });
-    },
-    admins : function(){
-        $.ajax({
-            type: 'GET',
-            url: "/organization/"+objectId+"/admins",
-            success: function(adminsData) {
-                this.setState({ admins: adminsData });
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve isAdmin!");
-            }.bind(this)
-        });
-    },
-    pendingPersonAction: function(personId,action) {
-        var dataForm = {personId: personId, mode: action};
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(dataForm),
-            processData: false,
-            url: "/organization/"+objectId+"/pending_person_action",
-            success: function(data) {
-                var displayPerson = document.getElementById("pending_person_" + personId);
-                displayPerson.className += " hide";
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Do Action!");
-            }.bind(this)
-        }).then(this.admins);
-    },
-    pendingOrganizationAction: function(organizationId,action) {
-        var dataForm = {organizationId: organizationId, mode: action};
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(dataForm),
-            processData: false,
-            url: "/organization/"+objectId+"/pending_organization_action",
-            success: function(data) {
-                var displayOrganization = document.getElementById("pending_organization_" + organizationId);
-                displayOrganization.className += " hide";
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Do Action!");
-            }.bind(this)
-        });
-    },
-    deleteOrganization: function() {
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            processData: false,
-            url: "/organization/"+objectId+"/delete",
-            success: function(data) {
-                window.location = '../';
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't delete organization.  " + err);
-            }.bind(this)
-        });
-    },
-    render: function() {
-        var adminsList = $.map(this.state.admins,function(admin) {
-            return (
-                <a href={"/profile/" + admin.username} className="nostyle"><img src={admin.imgUrl} className="contain-panel-small-image"/></a>
-            );
-        });
-        var peopleList = $.map(this.state.pendingPeople,function(person) {
-            return (
-                <div className="item-box" id={"pending_person_" + person.id}>
-                    <div className="accept-reject-buttons">
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"admin")}>Admin</Button>
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"accept")}>Accept</Button>
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"reject")}>Reject</Button>
-                    </div>
-                    <div>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image"/></a>
-                            </div>
-                        </div>
-                        <div className="item-box-right">
-                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname} - {person.username}</h3></a>
-                            <span className="font-15">{person.title}</span><br/>
-
-                        </div>
-                    </div>
-                </div>
-            )
-        }.bind(this));
-        var organizationsList = $.map(this.state.pendingOrganizations,function(organization) {
-            return (
-                <div className="item-box" id={"pending_organization_" + organization.id}>
-                    <div className="accept-reject-buttons">
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingOrganizationAction.bind(this,organization.id,"accept")}>Accept</Button>
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingOrganizationAction.bind(this,organization.id,"reject")}>Reject</Button>
-                    </div>
-                    <div>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/organization/'+organization.id}><img src={organization.profile_imgURL} className="item-box-image"/></a>
-                            </div>
-                        </div>
-                        <div className="item-box-right">
-                            <a href={'/organization/'+organization.id} className="body-link"><h3 className="margin-top-bottom-5">{organization.name}</h3></a>
-                            <span className="font-15">{organization.location}</span>
-                        </div>
-                    </div>
-                </div>
-            );
-        }.bind(this));
-        return (
-            <div>
-                <div className="organization-table-div">
-                    <div>
-                        <h3 className="summary-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Information</h3>
-                    </div>
-                    <table className="organization-table-info">
-                        <tbody>
-                        <tr>
-                            <td><b>Country: </b></td>
-                            <td><input type="text" className="p-editable" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>State/Province: </b></td>
-                            <td><input type="text" className="p-editable" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>City: </b></td>
-                            <td><input type="text" className="p-editable" name="orgCity" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>Street Address: </b></td>
-                            <td><input type="text" className="p-editable" name="orgStreet" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>Zip/Postal code: </b></td>
-                            <td><input type="text" className="p-editable" name="orgPostalcode" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>Website URL: </b></td>
-                            <td><input type="text" className="p-editable" name="orgWebsite" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
-                        </tr>
-                        <tr>
-                            <td><b>Admins: </b></td>
-                            <td><div>{adminsList}</div></td>
-                        </tr>
-                        <tr>
-                            <td><Button onClick={this.deleteOrganization}bsStyle="primary">Delete Organization</Button></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div><hr/>
-                <div>
-                    <h3 className="summary-margin-top"><span aria-hidden="true" className="fa fa-user-plus"></span> People - Pending Approval</h3>
-                </div>
-                <div>
-                    {peopleList}
-                </div>
-                <div className="clear"></div>
-                <hr/>
-                <div>
-                    <h3 className="summary-margin-top"><span aria-hidden="true" className="fa fa-building-o"></span> Connections - Pending Approval</h3>
-                </div>
-                <div>
-                    {organizationsList}
-                </div>
-            </div>
-
-        )
-    }
-});
 
 var NewsAndEvents = React.createClass({
     render: function() {
@@ -831,7 +965,7 @@ var Equipments = React.createClass({
                     <div>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/equipment/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/equipment/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
@@ -870,6 +1004,8 @@ var Equipments = React.createClass({
 
 var EquipmentAddForm = React.createClass({
     close: function(e) {
+        this.setState({imgSubmitText: 'Continue'});
+        this.setState({imgSubmitDisabled: false});
         this.props.submitSuccess();
     },
     getInitialState: function() {
@@ -879,6 +1015,8 @@ var EquipmentAddForm = React.createClass({
             formFeedback: '',
             fileFeedback: {},
             pictureFeedback: '',
+            imgSubmitText: 'Continue',
+            imgSubmitDisabled: false,
             // form
             picture: null,
             file: null,
@@ -919,7 +1057,7 @@ var EquipmentAddForm = React.createClass({
                         <ReactTagsInput type="textarea" placeholder="Keywords:" required name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                     </Modal.Body>
                     <Modal.Footer>
-                        <input className="full-button" type="submit" value="Submit"/>
+                        <input className="full-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText}/>
                     </Modal.Footer>
                 </form>
             </div>
@@ -965,6 +1103,8 @@ var EquipmentAddForm = React.createClass({
                 description: this.state.description, instructions: this.state.instructions, model: this.state.model,
                 model_year: this.state.model_year, keywords: this.state.keywords, title: this.state.title};
 
+            this.setState({imgSubmitText: 'Creating Equipment. Give us a sec...'});
+            this.setState({imgSubmitDisabled: true});
             $.ajax({
                 url: path + endpoint,
                 dataType: 'json',
@@ -979,6 +1119,12 @@ var EquipmentAddForm = React.createClass({
                 error: function(xhr, status, err) {
                     console.error(path + endpoint, status, err.toString());
                 }.bind(this)
+            }).then(function(){
+                that.setState({imgSubmitText: 'Continue'});
+                that.setState({imgSubmitDisabled: false});
+            }, function(err) {
+                that.setState({imgSubmitText: 'Error. Check fields and try again'});
+                that.setState({imgSubmitDisabled: false});
             });
         }
         else {
@@ -1049,7 +1195,7 @@ var EquipmentAddForm = React.createClass({
             issues.push("KEYWORDS");
         }
         return issues;
-    },
+    }
 });
 
 var Projects = React.createClass({
@@ -1078,14 +1224,14 @@ var Projects = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
-            item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
 
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
+                                <a href={'/project/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
@@ -1093,7 +1239,7 @@ var Projects = React.createClass({
                             <table className="item-box-right-tags">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;})}</td></tr>
                                 <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
-                            {/*}   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                            {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </div>
                     </div>
@@ -1136,7 +1282,7 @@ var Publications = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
-                item.date = (new Date(item.date)).toUTCString().slice(0,-12);
+                item.date = (new Date(item.date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
             console.log(typeList);
@@ -1152,7 +1298,7 @@ var Publications = React.createClass({
                             <table className="item-box-table-info">
                                 <tr><td><b>Contributors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
                                 <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
-                              {/*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                             { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
                         </span>
@@ -1234,14 +1380,8 @@ var Data = React.createClass({
                     return (<Datum objectId={item.objectId}
                                    collaborators={item.collaborators}
                                    title={item.title}
-                                   image_URL={item.image_URL}
-                                   keywords={item.keywords}
-                                   number_cited={item.number_cited}
-                                   number_syncholar_factor={item.number_syncholar_factor}
-                                   license={item.license}
-                                   access={item.access}
-                                   abstract={item.description}
-                                   start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
+                                   image_URL={item.picture.url}
+                                   start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)} />);
                 })}
             </div>
         );
@@ -1266,7 +1406,7 @@ var Datum = React.createClass({
                         <table className="item-box-table-info">
                             <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                             <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
-                        {/*}   <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                        {/*   <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                         </table>
                     </span>
                 </div>
@@ -1322,14 +1462,14 @@ var Models = React.createClass({
                     return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
-                                   image_URL={model.image_URL}
+                                   image_URL={model.picture.url}
                                    keywords={model.keywords}
                                    number_cited={model.number_cited}
                                    number_syncholar_factor={model.number_syncholar_factor}
                                    license={model.license}
                                    access={model.access}
                                    abstract={model.abstract}
-                                   start_date={(new Date(model.createdAt)).toUTCString().slice(0,-12)} />);
+                                   start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)} />);
                 })}
                 {rows}
             </div>
@@ -1354,7 +1494,7 @@ var Model = React.createClass({
                     <table className="item-box-table-info">
                         <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
                         <tr><td><b>Creation Date: </b></td><td>{this.props.start_date}</td></tr>
-                    {/*}    <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                    { /*    <tr><td><b>Keywords: </b></td><td>{this.props.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                     </table>
                 </span>
                 </div>
@@ -1363,4 +1503,6 @@ var Model = React.createClass({
     }
 });
 
-ReactDOM.render(<Organization />, document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Organization />, document.getElementById('content'));
+});

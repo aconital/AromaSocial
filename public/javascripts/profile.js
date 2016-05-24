@@ -106,11 +106,15 @@ var CustomTags = React.createClass({
 });
 
 /* TEST REACT TAGS END */
+
+
 var Profile = React.createClass ({
     getInitialState: function() {
       return { showModal: false,
             username: [username],
             profile_imgURL: [profile_imgURL],
+            imgSubmitText:'Upload',
+            imgSubmitDisabled:false,
 
             fromModelTab: false,
             pictureChosen: null,
@@ -122,6 +126,8 @@ var Profile = React.createClass ({
       this.setState({ showModal: true });
     },
     clickClose() {
+      this.setState({ imgSubmitText: "Upload" });
+      this.setState({ imgSubmitDisabled: false });
       this.setState({ showModal: false});
     },
     openFileUpload() {
@@ -152,11 +158,9 @@ var Profile = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.username + "_profile_picture_" + randomNumber + "." + this.state.pictureType;
-
-        var $this = this;
+        this.setState({imgSubmitText: "Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled: true});
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -164,15 +168,17 @@ var Profile = React.createClass ({
             type: 'POST',
             data: JSON.stringify(dataForm),
             success: function(status) {
-                console.log(status);
+                this.setState({profile_imgURL: this.state.picture});
+                this.setState({ imgSubmitDisabled: false });
+                this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
+                this.setState({ imgSubmitText: "Error. Please select an image and click me again." });
+                this.setState({ imgSubmitDisabled: false });
             }.bind(this)
-        }).then(function(){
-            $this.clickClose();
-            $this.setState({profile_imgURL:changeImgURL});
         });
+        return;
     },
     checkConnection:function()
     {
@@ -225,10 +231,10 @@ var Profile = React.createClass ({
              connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
         }
         else if (this.state.status == "pending") {
-             connectButton = <button className="btn btn-panel btn-right-side" value="Pending">Pending</button>;
+             connectButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
         }
         else if (this.state.status == "not-connected") {
-             connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
+                 connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
         }
         else { console.log("Nothing"); }
         return (
@@ -243,13 +249,13 @@ var Profile = React.createClass ({
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData} />
+                    <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData} />
                 </Modal.Footer>
             </Modal>
             <div className="content-wrap">
                 <div className="item-bottom">
                     <div className="item-bottom-1">
-                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={profile_imgURL} className="contain-image" />}
+                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
                         {/*
                         <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
                         <div className="side-panel"><h5>RATINGS</h5></div>
@@ -313,7 +319,7 @@ var ProfileMenu = React.createClass ({
                             if (self.state.focused == index) {
                                 style = "selected-tab";
                             }
-                        return <li id={style}>
+                        return <li key={index} id={style}>
                                 <a href="#" onClick={self.clicked.bind(self, index)} id={style}>{tab}</a>
                                </li>;
                         })}
@@ -366,7 +372,7 @@ var Connections = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <a href={'/profile/'+person.username} className="body-link"><h4 className="margin-top-bottom-5">{person.fullname}</h4></a>
                             <p>{person.about}</p>
                         </div>
                     </div>
@@ -437,9 +443,9 @@ var Organizations = React.createClass({
             if(!this.state.isMe)
             {
                 if (matchingOrg == null)
-                    join = (<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);
+                    join = (<div><button onClick={this.clickJoin.bind(this,org)} className="btn btn-right-side " value="Join">Join</button></div>);  /*(<div><a onClick={this.clickJoin.bind(this,org)}>Join Organization</a></div>);*/
                 else if (!matchingOrg.verified)
-                    join = (<div><a>Request Pending</a></div>);
+                    join = (<div><button className="btn btn-right-side pending_btn" value="Pending">Pending</button></div>);/*(<div><a>Request Pending</a></div>);*/
             }
             return (
                 <div className="item-box" key={org.orgId} id="item-list">
@@ -449,7 +455,7 @@ var Organizations = React.createClass({
                         </div>
                     </div>
                     <div className="item-box-right">
-                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <a href={'/organization/'+org.orgId} className="body-link"><h4 className="margin-top-bottom-5">{org.name}</h4></a>
                         <span className="font-15">{org.location}</span>
                         {join}
                     </div>
@@ -610,20 +616,20 @@ var About = React.createClass({
     },
     addInterest: function() {
         if (JSON.parse(this.state.interests).length > 0) {
-            var result = this.state.interests.substring(0,this.state.interests.length-1) + ',"Add Another interests!"]';
+            var result = this.state.interests.substring(0,this.state.interests.length-1) + ',""]';
         }
         else {
-            var result = '["Add an Interest!"]';
+            var result = '[""]';
         }
         this.setState({interests:result, hideInterests: "show"}, function(){this.submitInterests()}.bind(this));
     },
     addWork: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
         if (this.state.workExperience == "") {
-            var arrayWE = [{company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"}];
+            var arrayWE = [{company:"",description:"",end:"",key: randomNumber,start:"",title:"",major:"",field:"work"}];
         }
         else {
-            var newWE = {company:"Organization Name",description:"Work Description",end:"yyyy-MM-dd",key: randomNumber,start:"yyyy-MM-dd",title:"Work Position"};
+            var newWE = {company:"",description:"",end:"",key: randomNumber,start:"",title:"", major:"",field:"work"};
             var arrayWE = JSON.parse(this.state.workExperience);
             arrayWE.push(newWE);
         }
@@ -632,8 +638,8 @@ var About = React.createClass({
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"}]; }
-        else { var newWE = {company:"Institution Name",description:"Education Description",end:"yyyy-MM-dd",key:randomNumber,start:"yyyy-MM-dd",title:"Education Degree"};
+        if (this.state.educations == "") { var arrayWE = [{company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"}]; }
+        else { var newWE = {company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
         console.log(educations);
@@ -676,19 +682,19 @@ var About = React.createClass({
         if (this.state.workExperience != "") {
             var WEItems = JSON.parse(this.state.workExperience);
             WEItems.forEach(function(item) {
-                workExperience_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
+                workExperience_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
             EItems.forEach(function(item) {
-                educations_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} title={item.title} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
+                educations_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.interests != "") {
             JSON.parse(this.state.interests).map(function(item, i) {
                 interests_data.push (<div className="about-item-hr">
-                        {(currentUsername == username) ? <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
+                        {(currentUsername == username) ? <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} placeholder="Add interest" contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
                         {(currentUsername == username) ? <div className="div-minus-interests"><h4 className="no-margin"><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
                      </div>);
             }, this);
@@ -764,7 +770,9 @@ var AboutTabObject = React.createClass({
     getInitialState: function() {
         return {
             key: this.props.identifier,
+            field: this.props.field,
             title: this.props.title,
+            major: this.props.major,
             company: this.props.company,
             description: this.props.description,
             start: this.props.start,
@@ -786,7 +794,7 @@ var AboutTabObject = React.createClass({
         this.props.updateChanges();
     },
     submitObjectChange: function(index) {
-        var dataForm = {key: this.state.key, action: this.state.action, title: this.state.title,
+        var dataForm = {key: this.state.key, field:this.state.field, action: this.state.action, title: this.state.title, major: this.state.major,
                         company: this.state.company, description: this.state.description,
                         start: this.state.start, end: this.state.end, type: this.state.type};
         $.ajax({
@@ -810,19 +818,73 @@ var AboutTabObject = React.createClass({
         var startDate = this.props.start.replace(/-/g,'/');
         var endDate = this.props.end.replace(/-/g,'/');
         if (this.state.display=="");
-            return(
+        if (this.state.field=="work") { //if work field, use work placeholders
+            return (
                 <div className={"about-item-hr relative " + this.state.display} >
-                    {(currentUsername == username) ? <div className="div-minus"><h4><a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
-                        <h4 className="h4-resume-item">
-                        <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
-                        <span>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/> : <span className="r-noneditable">{this.state.title}</span>}</span>
+                    {(currentUsername == username) ? <div className="div-minus">
+                        <h4>
+                            <a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link">
+                                <span aria-hidden="true" className="glyphicon glyphicon-minus"></span>
+                            </a>
                         </h4>
-                        <p className="no-margin">{(currentUsername == username) ? <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/> : <span className="no-margin">&nbsp;{startDate}</span>}
-                            &nbsp;-&nbsp;{(currentUsername == username) ? <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/> : <span  className="no-margin">{endDate}</span>}</p>
-                        {(currentUsername == username) ? <div className="no-margin r-editable-50"><textarea type="text" className="r-editable r-editable-full" name="description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea></div> : <p className="p-noneditable no-margin">{this.state.description}</p>}
+                    </div> : "" }
+                    <h5 className="h4-resume-item display-inline-block">
+                        <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" placeholder="Company" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
+                        {(currentUsername == username) ? <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+                            <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/>
+                        </span> : (startDate=="") ? <span  className="no-margin workeducationDate"> <b>{endDate}</b> </span>: (endDate=="")?"":<span  className="no-margin workeducationDate">&nbsp;-&nbsp;<b>{endDate}</b> </span>
+                            }
+                         {(currentUsername == username) ? <span className="r-editable profile_date_editable">to: &nbsp;&nbsp;
+                             <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/>
+                         </span> : <span className="no-margin workeducationDate">
+                             <b>{startDate} </b>
+                         </span>}
+                    </h5>
+
+                    <p className="no-margin">
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" placeholder="Position" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/></span>: <span>{this.state.title}</span>}
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="major" placeholder="Department / Group" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.major}/></span> : (this.state.title=="") ? <span>{this.state.major}</span>:(this.state.major=="")?"":<span>, &nbsp;{this.state.major}</span>}
+                    </p>
+                        {(currentUsername == username) ? <div className="r-editable-50">
+                            <textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea>
+                        </div> : <p className="no-margin">{this.state.description}</p>}
 
                 </div>
-        )
+            )
+        }else{ //if field is education, use education placeholders
+            return (
+                <div className={"about-item-hr relative " + this.state.display} >
+                    {(currentUsername == username) ? <div className="div-minus">
+                        <h4>
+                            <a onClick={this.deleteObjectChange.bind(this, this.state.key)} key={this.state.key} className="image-link">
+                                <span aria-hidden="true" className="glyphicon glyphicon-minus"></span>
+                            </a>
+                        </h4>
+                    </div> : "" }
+                    <h5 className="h4-resume-item display-inline-block ">
+                        <b>{(currentUsername == username) ? <input type="text" className="r-editable r-editable-full" contentEditable="true" name="company" placeholder="Institution" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.company}/> : <span  className="no-margin">{this.state.company}</span>}</b>
+                        {(currentUsername == username) ? <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+                            <input type="date" name="start" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.start} className="r-editable r-editable-date"/>
+                        </span> : (startDate=="") ? <span  className="no-margin workeducationDate"> <b>{endDate}</b> </span>: (endDate=="")?"":<span  className="no-margin workeducationDate">&nbsp;-&nbsp;<b>{endDate}</b> </span>
+                        }
+                         {(currentUsername == username) ? <span className="r-editable profile_date_editable">to: &nbsp;&nbsp;
+                             <input type="date" name="end" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.end} className="r-editable r-editable-date"/>
+                         </span> : <span className="no-margin workeducationDate">
+                             <b>{startDate} </b>
+                         </span>}
+                    </h5>
+
+                    <p className="no-margin">
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" placeholder="Degree" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/></span>: <span>{this.state.title}</span>}
+                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="major" placeholder="Major" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.major}/></span> : (this.state.title=="") ? <span>{this.state.major}</span>:(this.state.major=="")?"":<span>, &nbsp;{this.state.major}</span>}
+                    </p>
+                        {(currentUsername == username) ? <div className="r-editable-50">
+                            <textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea>
+                        </div> : <p className="no-margin">{this.state.description}</p>}
+
+                </div>
+            )
+        }
     }
 });
 
@@ -847,6 +909,8 @@ var Projects = React.createClass({
         this.setState({ showModal: true });
     },
     clickClose() {
+        this.setState({ imgSubmitText: "Upload" });
+        this.setState({ imgSubmitDisabled: false });
         this.setState({ showModal: false });
     },
     componentWillMount : function() {
@@ -863,9 +927,11 @@ var Projects = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./sharedComponents/settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
-            item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
 
             return (
                 <div className="item-box">
@@ -876,10 +942,10 @@ var Projects = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <a href={'/project/'+item.objectId} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                             <table className="item-box-right-tags">
-                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
-                                <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
+                                <tr><td>Collaborators: </td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                                <tr><td>Date: </td><td>{item.start_date} to {item.end_date}</td></tr>
                             {/*}  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </div>
@@ -936,27 +1002,29 @@ var Publications = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./sharedComponents/settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type.capitalize();
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
-                item.date = (new Date(item.date)).toUTCString().slice(0,-12);
+                item.date = (new Date(item.date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
             return (
                 <div>
                 <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                 {typeList.map(item =>
-                <div className="item-box">
+                <div className="about-item-hr ">
                     <div key={item.id}>
-                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Authors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
-                                <tr><td><b>Publication Date: </b></td><td>{item.date}</td></tr>
+                                <tr><td>Authors: </td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
+                                {(item.type == "journal")? <tr><td>Publishcation Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date} </td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
@@ -1029,6 +1097,8 @@ var Models = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./sharedComponents/settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type;
@@ -1042,7 +1112,7 @@ var Models = React.createClass({
             <div>
                 <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                 {typeList.map(item =>
-                <div className="item-box">
+                <div className="about-item-hr">
                     <div key={item.objectId}>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
@@ -1050,7 +1120,7 @@ var Models = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/model/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <a href={'/model/'+item.objectId} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
@@ -1098,13 +1168,20 @@ var Data = React.createClass({
             }.bind(this)
         });
     },
+    // function declared in ./sharedComponents/settings.js
+    deleteEntry: settingsModalDeleteListEntry.bind(this),
+    
     render: function() {
+        var self = this;
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type;
             var typeList = [];
+            var dataPath;
             for (var i in items) {
                 var item = items[i];
-                item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+                dataPath = '/data/' + item.objectId;
+                console.log(item);
+                item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
             return (
@@ -1119,7 +1196,10 @@ var Data = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/data/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <h4 className="margin-top-bottom-5">
+                                <a href={'/data/'+item.objectId} className="body-link">{item.title}</a>
+                                {/*TODO uncomment<SettingsModal delete={self.deleteEntry} path={dataPath} refresh={self.render} />*/}
+                            </h4>
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
@@ -1200,7 +1280,8 @@ var PublicationAddForm = React.createClass({
         formFeedback: '',
         fileFeedback: {},
         autoFillStatus: '',
-
+        submitButtonText: 'Continue',
+        submitButtonDisabled: false,
         // field labels
         labels: {title: 'Title', collaborators: 'Collaborators', creationDate: 'Publication Date', description: 'Abstract',
         		 keywords: 'Keywords', url: 'URL', doi: 'DOI (Digital Object Identifier', // common
@@ -1361,7 +1442,7 @@ var PublicationAddForm = React.createClass({
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
 
 				<Modal.Footer>
-					<Input className="btn btn-default pull-right" type="submit" value="Continue" />
+					<Input className="btn btn-default pull-right submit" type="submit" disabled={this.state.submitButtonDisabled} value={this.state.submitButtonText} />
 					<div className="form-feedback"></div>
 				</Modal.Footer>
             </form>
@@ -1541,6 +1622,8 @@ var PublicationAddForm = React.createClass({
 
 	handleSubmitData: function(e) {
         e.preventDefault();
+        this.setState({submitButtonText: "Please wait. We're uploading..."});
+        this.setState({submitButtonDisabled: true});
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
         				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
@@ -1616,6 +1699,8 @@ var ResourceAddForm = React.createClass({
         return {
             alertVisible: false,
             fromModelTab: false,
+            submitButtonText: 'Continue',
+            submitButtonDisabled: false,
             buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
             formFeedback: '',
             fileFeedback: {},
@@ -1724,7 +1809,7 @@ var ResourceAddForm = React.createClass({
                     </div>
   */}
                     <Modal.Footer>
-                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                        <Input ref="submitButton" className="btn btn-default pull-right submit" type="submit" disabled={this.state.submitButtonDisabled} value={this.state.submitButtonText} />
                     </Modal.Footer>
                 </form>
             </div>
@@ -1734,20 +1819,6 @@ var ResourceAddForm = React.createClass({
         var changedState = {};
         changedState[type] = ids;
         this.setState(changedState);
-        // console.log("Type: ");
-        // console.log(type);
-        // console.log("Name: ");
-        // console.log(name);
-        // console.log("Recorded Id: ");
-        // console.log(id);
-        // var changedState = {};
-        // changedState[type] = id;
-        // this.setState(changedState);
-        // console.log("THIS STATE NAME: ");
-        // console.log(this.state[name]);
-        // var changedState = {};
-        // changedState[type] = id;
-        // this.setState({ collaborators: this.state[type].concat([id]) });
     },
 	handleChange: function(e) {
 	    var changedState = {};
@@ -1765,7 +1836,10 @@ var ResourceAddForm = React.createClass({
         this.setState(changedState);
     },
 	handleSubmitData: function(e) {
+        console.log(e);
         e.preventDefault();
+        this.setState({submitButtonText: "Please Wait. We're uploading"});
+        this.setState({submitButtonDisabled: true});
         var endpoint = this.props.fromModelTab ? "/model" : "/data";
         var dataForm = {picture: this.state.picture,
                         pictureType: this.state.pictureType,
@@ -1896,7 +1970,8 @@ var ProjectAddForm = React.createClass({
         formFeedback: '',
         fileFeedback: {},
         pictureFeedback: '',
-
+        submitButtonText: "Continue",
+        submitButtonDisabled: false,
         // form
          picture: null,
          file: null,
@@ -2001,7 +2076,7 @@ var ProjectAddForm = React.createClass({
                     {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
                 </Modal.Body>
                 <Modal.Footer>
-                    <input className="full-button" type="submit" value="Submit"/>
+                    <input className="btn btn-default pull-right submit" type="submit" disabled={this.state.submitButtonDisabled} value={this.state.submitButtonText}/>
                 </Modal.Footer>
             </form>
 		</div>
@@ -2030,7 +2105,8 @@ var ProjectAddForm = React.createClass({
     },
 	handleSubmitData: function(e) {
         e.preventDefault();
-
+        this.setState({submitButtonText: "Please wait. We're uploading..."});
+        this.setState({submitButtonDisabled: true});
         var dataForm = {file: this.state.file, picture: this.state.picture, organizationId: this.state.organizationId,
         				fileType: this.state.fileType, pictureType: this.state.pictureType,
         				collaborators: JSON.stringify(this.state.collaborators), startDate: this.state.startDate, endDate: this.state.endDate,
@@ -2141,4 +2217,6 @@ var Required = React.createClass({
 	},
 });
 
-ReactDOM.render(<Profile />, document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Profile />, document.getElementById('content'));
+});

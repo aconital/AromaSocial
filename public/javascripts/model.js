@@ -10,8 +10,9 @@ var Model = React.createClass ({
 
         objectId: objectId,
         image_URL: image_URL,
-        image: image, // TODO rename associated with this
-
+        filename: filename, // TODO rename associated with this
+        imgSubmitText:'Upload',
+        imgSubmitDisabled:false,
         license: license,
         keywords: keywords,
         collaborators: collaborators,
@@ -138,11 +139,9 @@ var Model = React.createClass ({
         reader.readAsDataURL(file);
     },
     handleSubmitData: function(e) {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType, randomNumber: randomNumber};
-        var changeImgURL = "https://s3-us-west-2.amazonaws.com/syncholar/" + this.state.objectId + "_model_picture_" + randomNumber + "." + this.state.pictureType;
-
-        var $this = this;
+        var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
+        this.setState({imgSubmitText: "Uploading. Give us a sec..."});
+        this.setState({imgSubmitDisabled: true});
         $.ajax({
             url: path + "/picture",
             dataType: 'json',
@@ -152,26 +151,28 @@ var Model = React.createClass ({
             processData: false,
             success: function(data) {
                 console.log(status);
+                this.setState({image_URL: this.state.picture});
+                this.setState({ imgSubmitDisabled: false });
+                this.clickClose();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/picture", status, err.toString());
+                this.setState({ imgSubmitText: "Error. Please select an image and click me again." });
+                this.setState({ imgSubmitDisabled: false });
             }.bind(this)
-        }).then(function(){
-            $this.clickClose();
-            $this.setState({image_URL:changeImgURL});
         });
-
         return;
     },
+    // function declared in ./sharedComponents/settings.js
+    deleteEntry: settingsModalDeleteEntry.bind(this),
+    
     render: function() {
         var creator = (this.state.creator) ? '/profile/' + this.state.creator.username : '',
             avatar = (this.state.creator) ? this.state.creator.imgUrl : '',
             fileExists;
 
-        if (this.state.image || false) { // TODO: rename 'image' to something that makes actual sense
-            fileExists = <h2 className="corner"><a href={image} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a></h2>;
-        } else {
-            fileExists = <h2 className="corner"></h2>;
+        if (this.state.filename || false) {
+            fileExists = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         return (
@@ -187,12 +188,15 @@ var Model = React.createClass ({
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <input className="publication-button" type="submit" value="Submit" onClick={this.handleSubmitData}/>
+                        <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData} />
                     </Modal.Footer>
                 </Modal>
                 <div className="item-panel">
-                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" style={{width:'90%'}} onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{this.state.title}</h2>}
-                    {fileExists}
+                    {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{this.state.title}</h2>}
+                    <h2 className="corner">
+                        {fileExists}
+                        {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
+                    </h2>
                     <div className="contain-panel-big-item-image">
                         {(currentUserId == creatorId) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.image_URL} className="contain-panel-big-image"/><div className="edit-overlay-background edit-overlay-background-big"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={image_URL} className="contain-panel-big-image"/>}
                     </div>
@@ -228,5 +232,6 @@ var Model = React.createClass ({
         );
     }
 });
-
-ReactDOM.render(<Model/>, document.getElementById('content'));
+$( document ).ready(function() {
+    ReactDOM.render(<Model/>, document.getElementById('content'));
+});

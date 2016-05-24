@@ -13,6 +13,7 @@
                 <div class="form-group">
                     <label for="Code" class="control-label">Invitation Code</label>
                     <input type="text" name="code" id="code" placeholder="Secret code" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
+                    <input type="hidden" name="redLink" value={{redLink}} />
                    <br>
                     <input type="submit" value="Submit" name="submit" id="submit" class="btn btn-primary"/>
                 </div>

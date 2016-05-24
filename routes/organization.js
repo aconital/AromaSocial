@@ -12,6 +12,7 @@ var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
+var is_auth = require('../utils/helpers').is_auth;
 
 module.exports=function(app,Parse,io) {
 
@@ -47,7 +48,9 @@ module.exports=function(app,Parse,io) {
         query.equalTo("name", req.params.name);
         query.first({
             success: function(result) {
-                res.render('organization', {title: 'Organization', path: req.path,
+                res.render('organization', {
+                    title: 'Organization',
+                    path: req.path,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
                     objectId: result.id,
@@ -59,9 +62,20 @@ module.exports=function(app,Parse,io) {
                     city: result.get('city'),
                     street: result.get('street'),
                     postalcode: result.get('postalcode'),
+                    tel: result.get('tel'),
+                    fax: result.get('fax'),
+                    email: result.get('email'),
                     website: result.get('website'),
-                    organization_imgURL: result.get('profile_imgURL'),
-                    cover_imgURL: result.get('cover_imgURL')
+                    carousel_1_img: result.get('carousel_1_img'),
+                    carousel_1_head: result.get('carousel_1_head'),
+                    carousel_1_body: result.get('carousel_1_body'),
+                    carousel_2_img: result.get('carousel_2_img'),
+                    carousel_2_head: result.get('carousel_2_head'),
+                    carousel_2_body: result.get('carousel_2_body'),
+                    carousel_3_img: result.get('carousel_3_img'),
+                    carousel_3_head: result.get('carousel_3_head'),
+                    carousel_3_body: result.get('carousel_3_body'),
+                    organization_imgURL: result.get('picture').url()
                 });
             },
             error: function(error) {
@@ -85,20 +99,23 @@ module.exports=function(app,Parse,io) {
             console.log(user);
             var username= user.get('username');
             var fullname=user.get('fullname');
+            var isAdmin = result.get('isAdmin');
             //var company= "";
             //var work_title= "";
-            var userImgUrl=user.get('imgUrl');
+            var userImgUrl=user.get('picture').url();
             var work_experience= [];
             if(verified) {
                 var person = {
+                    id: user.id,
                     username:username,
                     title: title,
                     fullname: fullname,
                     userImgUrl: userImgUrl,
+                    isAdmin:isAdmin
                 };
                 people.push(person);
             }
-        }).then(function(){            
+        }).then(function(){
             console.log("PEOPLE: ");
             console.log(JSON.stringify(people));
             var filtered_people=  _.groupBy(people,'title');
@@ -106,6 +123,37 @@ module.exports=function(app,Parse,io) {
         }, function(err) {
             console.log("ERROR THROWN: ");
             console.log(err);
+        });
+    });
+    //promote or demote someone admin
+    app.post('/organization/:objectId/admin',is_auth,function(req,res,next){
+        var userId= req.body.userId;
+
+        var orgId= req.params.objectId;
+        var adminStatus = (req.body.makeAdmin == "true") ? true:false;
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",orgId);
+        var innerQuery2 = new Parse.Query(Parse.User);
+        innerQuery2.equalTo("objectId",userId);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery);
+        query.matchesQuery("userId",innerQuery2);
+        query.first({
+            success: function(result) {
+                    result.set("isAdmin",adminStatus);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
         });
     });
     //Done by Hirad
@@ -210,9 +258,11 @@ module.exports=function(app,Parse,io) {
     });
 
     app.post('/organization/:objectId/pending_person_action/', function (req, res, next) {
+
         var personId = req.body.personId;
         var orgId = req.params.objectId;
         var mode = req.body.mode;
+
         var innerQuery = new Parse.Query("Organization");
         innerQuery.equalTo("objectId",orgId);
         var innerQuery2 = new Parse.Query(Parse.User);
@@ -262,7 +312,7 @@ module.exports=function(app,Parse,io) {
             }
         });
     });
-    
+
     app.post('/organization/:objectId/pending_organization_action/', function (req, res, next) {
         var organizationId = req.body.organizationId;
         var orgId = req.params.objectId;
@@ -315,7 +365,13 @@ module.exports=function(app,Parse,io) {
             result.set("prov", req.body.prov);
             result.set("country", req.body.country);
             result.set("postalcode", req.body.postalcode);
-            result.set("website", req.body.website);
+            result.set("tel", req.body.tel);
+            result.set("fax", req.body.fax);
+            result.set("email", req.body.email);
+            if (req.body.website != "" && !req.body.website.startsWith("http://"))
+                result.set("website", "http://"+req.body.website);
+            else
+                result.set("website", req.body.website);
             var location= '';
             if (req.body.city ) {
                 location = req.body.city;
@@ -330,25 +386,33 @@ module.exports=function(app,Parse,io) {
                 else
                     location = req.body.country;
             }
-            result.set('location', location);
 
+            result.set('location', location);
+            result.set("carousel_1_head", req.body.carousel_1_head);
+            result.set("carousel_1_body", req.body.carousel_1_body);
+            result.set("carousel_2_head", req.body.carousel_2_head);
+            result.set("carousel_2_body", req.body.carousel_2_body);
+            result.set("carousel_3_head", req.body.carousel_3_head);
+            result.set("carousel_3_body", req.body.carousel_3_body);
             result.save();
             res.status(200).json({status: "Updated Successfully!"});
         });
     });
 
-    app.post('/organization/:objectId/updatePicture', function(req,res,next){
+    app.post('/organization/:objectId/updateCarouselPicture_1', function(req,res,next){
         if(req.body.picture && req.body.pictureType){
+            console.log(1);
             query = new Parse.Query("Organization");
             query.get(req.params.objectId).then(function (result) {
-                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_");
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel1");
                 var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
                 bucket.putObject(params, function (err, response) {
                     if (err) {
                         console.log("S3 Upload Error:", err);
                     }
                     else {
-                        result.set("profile_imgURL", awsLink + params.Key);
+                        result.set("carousel_1_img", awsLink + params.Key);
                         result.save();
                         res.status(200).json({status: "Picture Uploaded Successfully!"});
                     }
@@ -358,6 +422,75 @@ module.exports=function(app,Parse,io) {
         else{
             res.status(200).json({status: "No picture suplied!"})
         }
+    });
+    app.post('/organization/:objectId/updateCarouselPicture_2', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(2);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel2");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_2_img", awsLink + params.Key);
+
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
+    app.post('/organization/:objectId/updateCarouselPicture_3', function(req,res,next){
+        if(req.body.picture && req.body.pictureType){
+            console.log(3);
+            query = new Parse.Query("Organization");
+            query.get(req.params.objectId).then(function (result) {
+                var params = awsUtils.encodeFile("", req.params.objectId, req.body.picture, req.body.pictureType, "org_carousel3");
+                var bucket = new aws.S3({params: {Bucket: 'syncholar'}});
+
+                bucket.putObject(params, function (err, response) {
+                    if (err) {
+                        console.log("S3 Upload Error:", err);
+                    }
+                    else {
+                        result.set("carousel_3_img", awsLink + params.Key);
+
+                        result.save();
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    }
+                });
+            });
+        }
+        else{
+            res.status(200).json({status: "No picture suplied!"})
+        }
+    });
+    app.post('/organization/:objectId/updatePicture', function(req,res,next){
+        var query = new Parse.Query("Organization");
+        query.get(req.params.objectId).then(function (result) {
+            if (req.body.picture != null && result != undefined) {
+                var pictureName = "org_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                pictureFile.save().then(function () {
+                    result.set('picture', pictureFile)
+                    result.save().then(function () {
+                        res.status(200).json({status: "Picture Uploaded Successfully!"});
+                    });
+                });
+            }
+            else {
+                res.status(500).json({status: "Picture Upload Failed!"});
+            }
+        });
     });
 
     app.get('/organization/:objectId/join-status', is_auth, function (req, res, next) {
@@ -393,13 +526,9 @@ module.exports=function(app,Parse,io) {
                 var orgId = results[uo].attributes.orgId1.id;
                 var name = "N/A";
                 var location = connected_orgs.location;
-                var orgImgUrl = "/images/organization.png";
+                var orgImgUrl = onnected_orgs.picture.url()
                 if (connected_orgs.hasOwnProperty('name')) {
                     name = connected_orgs.name;
-                }
-
-                if (connected_orgs.hasOwnProperty('profile_imgURL')) {
-                    orgImgUrl = connected_orgs.profile_imgURL;
                 }
                 var org = {
                     orgId: orgId,
@@ -429,13 +558,9 @@ module.exports=function(app,Parse,io) {
                     var orgId = results[uo].attributes.orgId0.id;
                     var name = "N/A";
                     var location = connected_orgs.location;
-                    var orgImgUrl = "/images/organization.png";
+                    var orgImgUrl = connected_orgs.picture.url();
                     if (connected_orgs.hasOwnProperty('name')) {
                         name = connected_orgs.name;
-                    }
-
-                    if (connected_orgs.hasOwnProperty('profile_imgURL')) {
-                        orgImgUrl = connected_orgs.profile_imgURL;
                     }
                     //only orgs that are verified
                     if (verified) {
@@ -469,7 +594,6 @@ module.exports=function(app,Parse,io) {
                 //var book = JSON.stringify(books);
                 pubs.push({
                     type: "book",
-                    filename: book.attributes.filename,
                     title: book.attributes.title,
                     keywords: book.attributes.keywords,
                     date: book.attributes.publication_date,
@@ -484,7 +608,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryConference.each(function (conferences){
                 pubs.push({
                     type: "conference",
-                    filename: conferences.attributes.filename,
                     title: conferences.attributes.title,
                     keywords: conferences.attributes.keywords,
                     date: conferences.attributes.publication_date,
@@ -499,7 +622,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryJournal.each(function (journals){
                 pubs.push({
                     type: "journal",
-                    filename: journals.attributes.filename,
                     title: journals.attributes.title,
                     keywords: journals.attributes.keywords,
                     date: journals.attributes.publication_date,
@@ -514,7 +636,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryPatent.each(function (patent){
                 pubs.push({
                     type: "patent",
-                    filename: patent.attributes.filename,
                     title: patent.attributes.title,
                     keywords: patent.attributes.keywords,
                     date: patent.attributes.publication_date,
@@ -529,7 +650,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryReport.each(function (report){
                 pubs.push({
                     type: "report",
-                    filename: report.attributes.filename,
                     title: report.attributes.title,
                     keywords: report.attributes.keywords,
                     date: report.attributes.publication_date,
@@ -544,7 +664,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryThesis.each(function (thesis){
                 pubs.push({
                     type: "thesis",
-                    filename: thesis.attributes.filename,
                     title: thesis.attributes.title,
                     keywords: thesis.attributes.keywords,
                     date: thesis.attributes.publication_date,
@@ -559,7 +678,6 @@ module.exports=function(app,Parse,io) {
             promises.push(queryUnpublished.each(function (unpublished){
                 pubs.push({
                     type: "unpublished",
-                    filename: unpublished.attributes.filename,
                     title: unpublished.attributes.title,
                     keywords: unpublished.attributes.keywords,
                     date: unpublished.attributes.publication_date,
@@ -579,7 +697,7 @@ module.exports=function(app,Parse,io) {
             res.status(500).json({status: "Publication retrieval failed. " + error.message});
         });
     });
-    
+
     app.get('/organization/:objectId/datas', function (req, res, next) {
         var datas =[];
         var query = new Parse.Query('Relationship');
@@ -597,12 +715,13 @@ module.exports=function(app,Parse,io) {
             return promise;
         }).then(function(){
             //var filtered_models=  _.groupBy(models,'type');
+            console.log(datas);
             res.json(datas);
         }, function(error) {
             console.log(error);
         });
     });
-    
+
     app.get('/organization/:objectId/models', function (req, res, next) {
         var models =[];
         var query = new Parse.Query('Relationship');
@@ -620,6 +739,7 @@ module.exports=function(app,Parse,io) {
             return promise;
         }).then(function(){
             //var filtered_models=  _.groupBy(models,'type');
+            console.log(models);
             res.json(models);
         }, function(error) {
             console.log(error);
@@ -646,7 +766,11 @@ module.exports=function(app,Parse,io) {
                         admins.push(admin);
                     }
                 }
-                res.json(admins);
+                if (req.query.getCount === 'true') {
+                    res.json(admins.length);
+                } else {
+                    res.json(admins);
+                }
             },
             error: function (error) {
                 console.log(error);
@@ -720,6 +844,16 @@ module.exports=function(app,Parse,io) {
                 org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
                 org.set('website', req.body.website ? req.body.website : '');
 
+                org.set('carousel_1_img','/images/carousel.png');
+                org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');
+                org.set('carousel_1_body',req.body.carousel_1_body ? req.body.carousel_1_body : '');
+                org.set('carousel_2_img','/images/carousel.png');
+                org.set('carousel_2_head',req.body.carousel_2_head ? req.body.carousel_2_head : '');
+                org.set('carousel_2_body',req.body.carousel_2_body ? req.body.carousel_2_body : '');
+                org.set('carousel_3_img','/images/carousel.png');
+                org.set('carousel_3_head',req.body.carousel_3_head ? req.body.carousel_3_head : '');
+                org.set('carousel_3_body',req.body.carousel_3_body ? req.body.carousel_3_body : '');
+
                 var location= '';
                 if (req.body.city ) {
                     location = req.body.city;
@@ -787,10 +921,10 @@ module.exports=function(app,Parse,io) {
         if (currentUser) {
             res.render('organization',
                 {
-                currentUsername: currentUser.username,
-                currentUserImg: currentUser.imgUrl,
-                isCreate: false,
-                isManage: true}
+                    currentUsername: currentUser.username,
+                    currentUserImg: currentUser.imgUrl,
+                    isCreate: false,
+                    isManage: true}
             );
         }
         else {
@@ -813,6 +947,8 @@ module.exports=function(app,Parse,io) {
             relation.set('title', 'Members');
             relation.save(null,{
                 success:function(){
+                    notifyadmins(req.params.objectId,currentUser)
+
                     res.json({success: "Joined Successfully"});
                 },
                 error:function(error){
@@ -860,6 +996,7 @@ module.exports=function(app,Parse,io) {
             res.json({error: "Please Sign In!"})
         }
     });
+
     app.get('/organization/:objectId/leave', is_auth, function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = req.user;
@@ -881,7 +1018,27 @@ module.exports=function(app,Parse,io) {
             });
         }
     });
-
+    app.post('/organization/:objectId/kick', is_auth, function (req, res, next) {
+        var orgId= req.params.objectId;
+        var userId = req.body.userId;
+        if(userId) {
+            var query = new Parse.Query('Relationship');
+            query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: userId} );
+            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: orgId});
+            query.equalTo('verified',true);
+            query.first(function(result) {
+                if(!(result==undefined)){
+                    console.log("result found");
+                    result.destroy();
+                };
+            }).then(function(){
+                res.status(200).json({status: "Successfully left organization!"});
+            }, function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            });
+        }
+    });
     app.post('/organization/:objectId/connect', is_auth, function (req, res, next) {
         var createConnection = Parse.Object.extend("RelationshipOrg");
         var orgId0= req.body.orgId;
@@ -910,6 +1067,8 @@ module.exports=function(app,Parse,io) {
                 connection.set('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId1});
                 connection.set('type', req.body.type);
                 connection.set('verified', false);
+
+                notifyOrgAdmins(orgId0,orgId1);
                 return connection.save(null);
             }
             return Parse.Promise.error({message: "This connection already exists."});
@@ -922,91 +1081,39 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-     app.get('/organization/:objectId/equipments_list', is_auth, function (req, res, next) {
-         var innerQuery = new Parse.Query("Organization");
-         innerQuery.equalTo("objectId",req.params.objectId);
-         var queryEquipment = new Parse.Query('Equipment');
-         queryEquipment.matchesQuery('organization',innerQuery);
-         queryEquipment.find({
-             success: function(results) {
-                 var equipments = [];
-                 for (var i in results) {
-                     var keywords = [""];
-                     var objectId = results[i].id;
-                     var title = results[i].attributes.title;
-                     var description = results[i].attributes.description;
-                     var image_URL = results[i].attributes.image_URL;
-                     if (results[i].attributes.keywords !== undefined) { keywords = results[i].attributes.keywords; }
-                     var equipment = {
-                         objectId: objectId,
-                         title: title,
-                         description: description,
-                         image_URL: image_URL,
-                         keywords: keywords
-                     }; equipments.push(equipment);
-                 }
-                 res.json(equipments);
-             },
-             error: function(error) {
-                 console.log(error);
-                 res.render('index', {title: error, path: req.path});
-             }
-         });
-     });
+    app.get('/organization/:objectId/equipments_list', is_auth, function (req, res, next) {
+        var equipments =[];
+        var query = new Parse.Query('Equipment');
+        query.equalTo("organization", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        query.each(function(equipment) {
+            equipments.push(equipment);
+        }).then(function(){
+            //var filtered_models=  _.groupBy(models,'type');
+            console.log(equipments);
+            res.json(equipments);
+        }, function(error) {
+            console.log(error);
+        });
+    });
 
-     app.get('/organization/:objectId/projects_list', is_auth, function (req, res, next) {
-         var projects = [];
-         var query = new Parse.Query('Relationship');
-         query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
-         query.each(function(relationships) {
-             var queryProjects = new Parse.Query('Project');
-             queryProjects.equalTo("user", relationships.get("userId"));
-             queryProjects.each(function (results) {
-                 var collaborators = ["N/A"];
-                 var locations = ["N/A"];
-                 var keywords = ["N/A"];
-                 var objectId = results.id;
-                 var title = results.attributes.title;
-                 var description = results.attributes.description;
-                 var image_URL = results.attributes.image_URL;
-                 var start_date = "N/A";
-                 var end_date = "N/A";
-                 if (results.attributes.collaborators !== undefined) {
-                     collaborators = results.attributes.collaborators;
-                 }
-                 if (results.attributes.locations !== undefined) {
-                     locations = results.attributes.locations;
-                 }
-                 if (results.attributes.keywords !== undefined) {
-                     keywords = results.attributes.keywords;
-                 }
-                 if (results.attributes.start_date !== undefined) {
-                     start_date = results.attributes.start_date;
-                 }
-                 if (results.attributes.end_date !== undefined) {
-                     end_date = results.attributes.end_date;
-                 }
-                 var project = {
-                     objectId: objectId,
-                     title: title,
-                     description: description,
-                     image_URL: image_URL,
-                     collaborators: collaborators,
-                     locations: locations,
-                     keywords: keywords,
-                     start_date: start_date,
-                     end_date: end_date
-                 }
-                 projects.push(project);
-             }).then(function () {
-                 console.log(projects);
-                 res.json(projects);
-             }, function (error) {
-                 console.log(error);
-                 res.render('index', {title: error, path: req.path});
-             });
-         });
-     });
+    app.get('/organization/:objectId/projects_list', is_auth, function (req, res, next) {
+        var projects = [];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
+        query.each(function(relationships) {
+            var queryProjects = new Parse.Query('Project');
+            queryProjects.equalTo("user", relationships.get("userId"));
+            queryProjects.each(function (project) {
+                projects.push(project);
+            }).then(function () {
+                console.log(projects);
+                res.json(projects);
+            }, function (error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            });
+        });
+    });
 
     app.get('/organization/:objectId/isAdmin', is_auth, function (req, res, next) {
         var currentUser = req.user;
@@ -1029,23 +1136,179 @@ module.exports=function(app,Parse,io) {
             }
         });
     });
+    app.get('/orgrequest', is_auth, function(req,res,next){
 
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
+        var currentUser= req.user;
+        var requests =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("isAdmin",true)
+        query.include('orgId')
+        query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id})
+        query.each(function(result) {
 
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else { res.locals.user = req.user;
-            res.locals.user = req.user;
-            next();
-        }
-    };
-/*
-    function connectedOrg(req,res,next){
+            var query = new Parse.Query('Relationship');
+            query.equalTo("verified",false)
+            query.include('userId')
+            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
+            query.each(function(r) {
+                var org_notification = {
+                    id: "org_"+result.get("orgId").id+"_"+r.get("userId").id+"_inv",
+                    type:"orgrequest",
+                    from: {
+                        userId:r.get("userId").id,
+                        username: r.get("userId").get("username"),
+                        name: r.get("userId").get("fullname"),
+                        userImgUrl: r.get("userId").get("picture").url(),
+                    },
+                    msg: "wants to join",
+                    extra: {
+                        id: result.get("orgId").id,
+                        name: result.get("orgId").get("name"),
+                        imgUrl: result.get("orgId").get("profile_imgURL")
+                    }
+                };
 
-        .json()
-        next();
-    };*/
+                requests.push(org_notification);
+            }).then(function(){
+                res.json(requests);
+            }, function(err) {
+                console.log(err);
+            });
+        });
+    });
+    app.get('/org2orgrequest', is_auth, function(req,res,next){
+
+        var currentUser= req.user;
+        var requests =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("isAdmin",true)
+        query.include('orgId')
+        query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id})
+        query.each(function(result) {
+
+            var query = new Parse.Query('RelationshipOrg');
+            query.equalTo("verified",false)
+            query.include('orgId1')
+            query.include('orgId0')
+            query.equalTo("orgId0",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
+            query.each(function(r) {
+                var org_notification = {
+                    id: "org_"+r.get("orgId1").id+"_"+r.get("orgId0").id+"_inv",
+                    type:"org2orgrequest",
+                    from: {
+                        userId:r.get("orgId1").id,
+                        username: r.get("orgId1").id,
+                        name: r.get("orgId1").get("name"),
+                        userImgUrl: r.get("orgId1").get("picture").url(),
+                    },
+                    msg: "wants to connect with ",
+                    extra: {
+                        id: r.get("orgId0").id,
+                        name: r.get("orgId0").get("name"),
+                        imgUrl: r.get("orgId0").get("picture").url()
+                    }
+                };
+
+                requests.push(org_notification);
+            }).then(function(){
+                res.json(requests);
+            }, function(err) {
+                console.log(err);
+            });
+        });
+    });
+    function notifyadmins(orgId,user)
+    {
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("objectId",orgId);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery)
+        query.equalTo("isAdmin",true)
+        query.include('orgId')
+        query.find({
+            success: function(results) {
+
+              if(results !=null)
+              {
+                  for(var i=0;i<results.length;i++)
+                  {
+                      var adminId= results[i].get("userId").id;
+                      var org_notification = {
+                          id: "org_"+results[i].get("orgId").id+"_"+user.id+"_inv",
+                          type:"orgrequest",
+                          from: {
+                              userId:user.id,
+                              username: user.username,
+                              name:user.fullname,
+                              userImgUrl: user.imgUrl,
+                          },
+                          msg: "wants to join ",
+                          extra: {
+                              id: results[i].get("orgId").id,
+                              name: results[i].get("orgId").get("name"),
+                              imgUrl: results[i].get("orgId").get("profile_imgURL")
+                          }
+                      };
+                      io.to(adminId).emit('orgrequest',{data:org_notification});
+                  }
+              }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+    function notifyOrgAdmins(toOrg,fromOrg)
+    {
+        var q = new Parse.Query('Organization');
+        q.equalTo("objectId",fromOrg)
+        q.find({
+            success: function (r) {
+                if(r != null)
+                {
+                    var fromOrg = r[0];
+                    var innerQuery = new Parse.Query("Organization");
+                    innerQuery.equalTo("objectId", toOrg);
+                    var query = new Parse.Query('Relationship');
+                    query.matchesQuery("orgId", innerQuery)
+                    query.equalTo("isAdmin", true)
+                    query.include('orgId')
+                    query.find({
+                        success: function (results) {
+
+                            if (results != null) {
+                                for (var i = 0; i < results.length; i++) {
+                                    var adminId = results[i].get("userId").id;
+                                    var org_notification = {
+                                        id: "org_" + results[i].get("orgId").id + "_" + fromOrg.id + "_inv",
+                                        type: "org2orgrequest",
+                                        from: {
+                                            userId: fromOrg.id,
+                                            username: fromOrg.id,
+                                            name: fromOrg.get("name"),
+                                            userImgUrl: fromOrg.get("picture").url(),
+                                        },
+                                        msg: "wants to join ",
+                                        extra: {
+                                            id: results[i].get("orgId").id,
+                                            name: results[i].get("orgId").get("name"),
+                                            imgUrl: results[i].get("orgId").get("profile_imgURL")
+                                        }
+                                    };
+                                    io.to(adminId).emit('org2orgrequest', {data: org_notification});
+                                }
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }
+
+            },
+            error: function (error) {
+                console.log(error);
+            }});
+    }
+
 };

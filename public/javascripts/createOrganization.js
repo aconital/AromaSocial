@@ -8,12 +8,16 @@ var CreateOrganization = React.createClass({
     getInitialState: function() {
      return {
      	createStatus:'',
+     	buttonInputText:'Create New Organization',
+     	buttonInputDisabled:false,
         // form
         picture: null, pictureType: '', name: '', description: '', location: '', prov: '', country: '', city: '', street: '', postalcode: '', website: ''
         };
     },
+    requiredLabel: function(label) {
+    	return <span>{label} <Required content="*"/></span>;
+    },
 	render: function() {
-		var req = <span>Name <Required content="*"/></span>;
 		return (
 			<div id="createOrganization"><Grid>
 				<Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
@@ -24,20 +28,20 @@ var CreateOrganization = React.createClass({
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
 									<form onSubmit={this.handleSubmitData}>
-										<Input type="text" id="name" name="name"  label={req} required placeholder="Name" onChange={this.handleChange} value={this.state.name} />
+										<Input type="text" id="name" name="name"  label={this.requiredLabel('Name')} required placeholder="Name" onChange={this.handleChange} value={this.state.name} required/>
 										<Input type="file" name="picture" label="Logo" help="Please upload an image format (png, jpg, or gif)."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
 										<Input type="textarea" name="description" label="About" placeholder="Describe your lab or network" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
-										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street} />
+										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street}  />
 
 											<Input type="text" name="city" placeholder="City" onChange={this.handleChange} value={this.state.city} />
 
-											<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov} />
-										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country} />
-										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode} />
+											<Input type="text" name="prov" placeholder="State/province" onChange={this.handleChange} value={this.state.prov}  />
+										<Input type="text" name="country" placeholder="Country" onChange={this.handleChange} value={this.state.country}  />
+										<Input type="text" name="postalcode" placeholder="Zip/postal code" onChange={this.handleChange} value={this.state.postalcode}  />
 
-										<ButtonInput className="center-block" type="submit" value="Create New Organization" />
+										<ButtonInput className="center-block" type="submit" disabled={this.state.buttonInputDisabled} value={this.state.buttonInputText} />
 									</form>
 								</ListGroupItem>
 								<ListGroupItem style={{textAlign:'center'}}>{this.state.createStatus}</ListGroupItem>
@@ -101,7 +105,10 @@ var CreateOrganization = React.createClass({
 							street: this.state.street,
 							postalcode: this.state.postalcode,
 							website: this.state.website};
-			this.setState({createStatus: 'In progress...'});
+			this.setState({createStatus: 'Please wait...'});
+
+			this.setState({buttonInputText: "Getting our ducks in a row..."});
+			this.setState({buttonInputDisabled: true});
 
 			$.ajax({
 				url: '/create/organization',
@@ -111,7 +118,7 @@ var CreateOrganization = React.createClass({
 				data: JSON.stringify(dataForm),
 				processData: false,
 				success: function(data) {
-					this.setState({createStatus: 'Organization created! Redirecting...'});
+					this.setState({createStatus: 'Homepage created! Redirecting...'});
 					window.location = '../organization/' + data.location;
 				}.bind(this),
 				error: function(xhr, status, err) {
@@ -126,7 +133,7 @@ var CreateOrganization = React.createClass({
 				message += 'Organization title is required.';
 			}
 			if (isValidForm.indexOf('PICTURE') > -1) {
-				message += ' Please upload an image file ending in png, gif, or jpg.';
+				message += ' Please upload an image file in png, gif, or jpg format.';
 			}
 			this.setState({createStatus: message});
 		}
@@ -152,5 +159,6 @@ var Required = React.createClass({
 		);
 	},
 });
-
-ReactDOM.render(<CreateOrganization />, document.getElementById('content'));
+$( document ).ready(function() {
+	ReactDOM.render(<CreateOrganization />, document.getElementById('content'));
+});

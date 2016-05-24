@@ -15,51 +15,37 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 //var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://syncholar.com/auth/linkedin/callback');
 
-var smtpConfig = {
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
-    auth: {
-        user: 'support@syncholar.com',
-        pass: 'Fomsummer2016'
-    }
-};
-var transporter = nodemailer.createTransport('smtps://support%40syncholar.com:Fomsummer2016@smtp.gmail.com');
+var sendMail = require('../utils/helpers').sendMail;
+var is_auth = require('../utils/helpers').is_auth;
+var randomString= require('../utils/helpers').randomString;
+var hasBetaCode= require('../utils/helpers').hasBetaCode;
 
-// setup e-mail data with unicode symbols
-var mailOptions = {
-    from: 'Syncholar 👥 <foo@blurdybloop.com>', // sender address
-    to: 'hiradroshandel@yahoo.com', // list of receivers
-    subject: 'Syncholar Test Invite', // Subject line
-    text: 'Testing nodemailer', // plaintext body
-    html: '<h2>You just got invited! �?�</h2>' // html body
-};
-
-function sendEmail (option) {
-  // send mail with defined transport object
-  transporter.sendMail(option, function(error, info){
-      if(error){
-          return console.log(error);
-      }
-      console.log('Message sent: ' + info.response);
-  });
-}
 
 module.exports=function(app,Parse,io) {
 
+  // test slider route
+  app.get('/slider', function(req, res, next) {
+    res.render('testSlider');
+  });
 
-    app.get('/beta', function (req, res, next) {
-            res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: ""});
-    });
-    app.post('/beta', function (req, res, next) {
-        var code = req.body.code;
-        if(code === "Fom2016") {
-            req.session.code=code;
-            res.redirect("/signin");
-        }
-        else
-         res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
-    });
+  app.get('/beta', function (req, res, next) {
+    var rl = req.query.redLink;
+    console.log("redLink in /beta get: ", rl);
+    res.render('beta', {title: 'Syncholar Beta', redLink: rl, path: req.path, Error: ""});
+  });
+
+  app.post('/beta', function (req, res, next) {
+      var code = req.body.code;
+      var redLink = req.body.redLink;
+      console.log("RedLink in /beta POST => ", redLink);
+      if(code === "summer2016") {
+          req.session.code=code;
+          // res.redirect("/signin");
+          res.redirect(redLink);
+      }
+      else
+       res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
+  });
 
   // EMAIL API
   app.post('/sendemail', function(req, res, next){
@@ -70,6 +56,7 @@ module.exports=function(app,Parse,io) {
 
     // checks go here
     console.log("SENDING EMAIL!!");
+
     sendEmail(name, email, subject, msg);
     next();
   });
@@ -85,11 +72,146 @@ module.exports=function(app,Parse,io) {
   app.get('/', function(req, res, next) {
       if(!req.isAuthenticated()) {
           res.render('home');
-      } else {
+      }else if(req.user.emailVerified != true )
+      {
+          res.redirect('/verify-email');
+      }
+      else {
           res.render('newsfeed', { user: req.user});
       }
   });
+    /********
+     * PRIVACY & TERMS
+     */
+    app.get('/privacy', function(req, res, next) {
+        res.render("privacy");
+    });
+    /*****************************************
+     *
+     * RECOVER PASSWORD
+     *
+     */
+    app.get('/password-reset', function (req, res, next) {
+        if (!req.isAuthenticated()) {
+            res.render('password-reset', {sent:false,title: 'Password Reset', path: req.path, Error: ""});
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+    app.get('/password-reset/verify', function (req, res, next) {
+        if (!req.isAuthenticated()) {
+            res.render('password-reset', {sent:true,title: 'Password Reset', path: req.path, Error: ""});
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+    app.get('/password-reset/:userId/:code', function (req, res, next) {
+       var userId= req.params.userId;
+       var code = req.params.code;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("objectId", userId);
+        query.first({
+            success: function (result) {
+                if (result) {
+                    var dbCode= result.get("password_reset_code");
+                    if(code === dbCode)
+                    {
+                        res.render('change-password', {userId:userId,title: 'Password Reset', path: req.path, Error: ""});
+                    }
+                    else
+                    {
+                        res.render('password-reset', {Error: "The link is not valid or has been expired!", path: req.path});
+                    }
 
+                }
+                else
+                {
+                    res.render('password-reset', {Error: "Something has went wrong! Please contact our support team.", path: req.path});
+                }
+            }, error: function (err) {
+                res.render('password-reset', {Error: error.message, path: req.path});
+            }
+        });
+    });
+    app.post('/password-reset-verification', function (req, res, next) {
+        var email = req.body.email;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("email", email);
+        query.first({
+            success: function (result) {
+                if (result) {
+                    var userId= result.id;
+                    var activation_code = randomString(3) + randomString(5) + randomString(3);
+                    result.set("password_reset_code", activation_code);
+                    result.save(null, {useMasterKey: true}).then(function () {
+
+                        var emailBody = '<h3></h3><p>Hi ' + result.attributes.fullname + ',</h3></p> <p>Please click on the following link to reset your password:' +
+                            '<a href="http://syncholar.com/password-reset/'+userId+'/'+ activation_code +'">http://syncholar/password-reset/'+userId+'/'+ activation_code+ '</a>'
+                            + ' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
+                        sendMail('Password Reset - Syncholar', emailBody, result.attributes.email);
+
+                        res.redirect('/password-reset/verify');
+
+                    }, function (error) {
+
+                        res.render('password-reset', {Error: error.message, path: req.path});
+                    });
+                }
+                else
+                {
+                    res.render('password-reset', {Error: "Email is not valid!", path: req.path});
+                }
+            }, error: function (err) {
+                res.render('password-reset', {Error: error.message, path: req.path});
+            }
+        });
+    });
+    app.post('/password-reset', function (req, res, next) {
+        var password = req.body.password;
+        var confirmpassword = req.body.confirmpassword;
+        if(confirmpassword != password)
+         res.render("change-password",{Error:"Passwords don't match!",path:req.path});
+        else {
+            var userId = req.body.userId;
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("objectId", userId);
+            query.first({
+                success: function (result) {
+                    if (result) {
+
+                        result.set("password", password);
+                        result.save(null, {useMasterKey: true}).then(function () {
+
+                            Parse.User.logIn(result.get("username"), password, {
+                                success: function(u) {
+
+                                    req.login(u.attributes.username,function (err) {
+                                        if (!err)
+                                            res.redirect('/');
+                                        else
+                                            res.render('signin', {Error: err.message, path: req.path})
+                                    });
+
+                                },
+                                error: function(user, error) {
+                                    // Show the error message somewhere and let the user try again.
+                                    res.render('signin', {Error: error.message, path: req.path});
+                                }
+                            });
+
+                        }, function (error) {
+
+                            res.render('signin', {Error: error.message, path: req.path})
+                        });
+                    }
+                }, error: function (err) {
+                    res.render('password-reset', {Error: error.message, path: req.path});
+                }
+            });
+        }
+    });
   /*******************************************
    *
    * SIGN UP
@@ -201,28 +323,25 @@ module.exports=function(app,Parse,io) {
    *
    ********************************************/
   app.get('/signin',hasBetaCode, function (req, res, next) {
-	if (!req.isAuthenticated()) {
-    	res.render('signin', {title: 'Login', path: req.path});
-	} else {
-		res.redirect('/');
-	}
+  	if (!req.isAuthenticated()) {
+      	res.render('signin', {title: 'Login', path: req.path});
+  	} else {
+  		res.redirect('/');
+  	}
   });
 
   app.post('/signin', function (req, res, next) {
       passport.authenticate('local', { successRedirect: '/',
           failureRedirect: '/signin'}, function(err, user, info) {
           if(err) {
-              console.log('first',err,user,info);
               return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
           }
 
           if(!user) {
-              console.log('second',err,user,info);
               return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
           }
           return req.logIn(user, function(err) {
               if(err) {
-                  console.log('third',err,user,info);
                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
               } else {
                   return res.redirect('/');
@@ -294,10 +413,6 @@ app.get('/auth/linkedin/callback',function(req,res){
             if($in.headline !=null)
              about=$in.headline;
 
-            var pictureUrl="/images/user.png";
-            if($in.pictureUrls.values !=null)
-                pictureUrl=$in.pictureUrls.values[0];
-
             var companyObject=null;
             if($in.positions.values != null)
                 companyObject= $in.positions.values[0].company;
@@ -327,15 +442,12 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   var activation_code= randomString(3)+result.id+randomString(3);
                                   result.set("activation_code",activation_code);
                                   result.save(null, { useMasterKey: true }).then(function() {
-                                      var mailOptions = {
-                                              from: 'Syncholar <support@syncholar.com>', // sender address
-                                              to: result.attributes.email, // list of receivers
-                                              subject: 'Connecting Linkedin to your account', // Subject line
-                                              text: '', // plaintext body
-                                              html: '<h2><p>Hi '+result.attributes.fullname+',</p> Please click on the following link to connect your linkedin to your account:</h2>' +
-                                                    '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>' // html body
-                                          };
-                                         sendEmail(mailOptions);
+
+                                      var emailBody ='<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
+                                      '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
+                                      +' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
+                                          sendMail('Connecting Linkedin to your account',emailBody,result.attributes.email);
+
                                          res.redirect('/auth/linkedin/verify');
 
                                       },function(error) {
@@ -343,21 +455,27 @@ app.get('/auth/linkedin/callback',function(req,res){
                                           res.render('signin', {Error: error.message, path: req.path})
                                       });
                               }
-                                else
-                              {
+                                else {
 
                                   var user = new Parse.User();
                                   //TODO EMAIL THIS TO USER
-                                  var randomPass= randomString(5);
+                                  var randomPass = randomString(5);
 
                                   user.set("fullname", name);
-                                  user.set("username",linkedin_ID);
-                                  user.set("password",randomPass);
-                                  user.set("linkedin_id",linkedin_ID);
+                                  user.set("username", linkedin_ID);
+                                  user.set("password", randomPass);
+                                  user.set("linkedin_id", linkedin_ID);
                                   user.set("email", email);
-                                  user.set("imgUrl", pictureUrl);
+                                  /*if ($in.pictureUrls.values != null){
+                                      var data = {
+                                          base64: $in.pictureUrls.values[0].buffer.toString('base64')
+                                      };
+                              }
+                                        var file = new Parse.File("file", data);
+                                        user.set("picture", file);*/
                                   user.set("about",about);
                                   user.set("interestsTag", []);
+                                  user.set("emailVerified",true);
                                   user.set("interests", []);
                                   user.set("summary", "");
                                   user.set("educations", []);
@@ -368,15 +486,11 @@ app.get('/auth/linkedin/callback',function(req,res){
                                       success: function (user) {
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
-                                                  var mailOptions = {
-                                                      from: 'Syncholar <support@syncholar.com>', // sender address
-                                                      to: email, // list of receivers
-                                                      subject: 'Welcome To Syncholar', // Subject line
-                                                      text: '', // plaintext body
-                                                      html: '<h2><p>Welcome to Syncholar '+name+',</p> </h2>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
-                                                          '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p>Syncholar Team</p>'
-                                                  };
-                                                  sendEmail(mailOptions);
+
+                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
+                                                      '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
+                                                  sendMail('Welcome To Syncholar',emailBody,email);
+
                                                   req.login(u.attributes.username,function (err) {
                                                       if (!err)
                                                           res.redirect('/');
@@ -440,31 +554,33 @@ app.get('/auth/linkedin/callback',function(req,res){
         });
 
     });
-    /************************************
-     * HELPER FUNCTIONS
-     *************************************/
-    function is_auth(req,res,next){
-        if (!req.isAuthenticated()) {
-            res.redirect('/');
-        } else {
-            res.locals.user = req.user;
-            next();
-        }
-    };
-    function randomString(len, charSet) {
-        charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var randomString = '';
-        for (var i = 0; i < len; i++) {
-            var randomPoz = Math.floor(Math.random() * charSet.length);
-            randomString += charSet.substring(randomPoz,randomPoz+1);
-        }
-        return randomString;
-    };
-    function hasBetaCode(req,res,next)
-    {
-        if(req.session.code === "Fom2016")
-         next()
-        else
-        res.redirect("/beta");
-    }
+    app.get("/verify-email", function (req,res,next) {
+
+        res.render("verify-email");
+    });
+    app.get("/verify-email/:activation",function(req,res,next){
+        var code= req.params.activation;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("email_token", code);
+        query.first({
+            success: function (user) {
+                if(user)
+                {
+                    user.set("emailVerified",true);
+                    user.save(null,{ useMasterKey: true }).then(function() {
+                        res.redirect("/");
+                    },function(error)
+                    {
+                        res.render('signin', {Error: error.message, path: req.path});
+                    });
+
+                }
+            },
+            error: function (error) {
+                res.render('signin', {Error: error.message, path: req.path});
+            }
+        });
+
+    });
+
 };
