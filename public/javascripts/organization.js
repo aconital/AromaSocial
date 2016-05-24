@@ -204,7 +204,7 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{name}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models', 'Manage']} />
+                                <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
                         </div>
                     </div>
@@ -262,8 +262,8 @@ var OrganizationMenu = React.createClass ({
             // 4: <Knowledge/>,
             5: <Publications objectId={objectId}/>,
             6: <Data objectId={objectId}/>,
-            7: <Models objectId={objectId}/>,
-            8: <Manage objectId={objectId}/>
+            7: <Models objectId={objectId}/>
+
         };
         return (
             <div>
@@ -809,14 +809,13 @@ var People = React.createClass({
         return {data: []};
     },
     componentDidMount : function(){
+        this.getPeople();
+    },
+    getPeople:function(){
         var peopleUrl= "/organization/"+objectId+"/people";
-        console.log("PEOPLE COMPONENT MOUNTED");
-        console.log(peopleUrl);
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-                console.log("PEOPLE RECEIVED: ");
-                console.log(data);
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -826,7 +825,18 @@ var People = React.createClass({
     },
     deleteMember:function(userId)
     {
-        console.log(userId);
+
+        $.ajax({
+            url: '/organization/'+objectId+'/kick',
+            type: 'POST',
+            data: {userId:userId},
+            success: function(data) {
+                this.getPeople();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.log(err);
+            }.bind(this)
+        });
     },
     MakeRemoveAdmin:function(userId,action)
     {
@@ -835,7 +845,7 @@ var People = React.createClass({
             type: 'POST',
             data: {userId:userId,makeAdmin:action},
             success: function(data) {
-                console.log(data);
+                this.getPeople();
             }.bind(this),
             error: function(xhr, status, err) {
                console.log(err);
@@ -891,212 +901,6 @@ var People = React.createClass({
     }
 });
 
-var Manage = React.createClass({
-    getInitialState: function() {
-        return {
-
-            organization_imgURL: organization_imgURL,
-
-            pendingPeople: [],
-            pendingOrganizations: [],
-            admins: []
-        };
-    },
-    handleChange: function(e) {
-        this.setState({[e.target.name]:e.target.value});
-    },
-    submitChange: function() {
-        var dataForm = {name: this.state.name};
-
-        $.ajax({
-            url: path + "/update",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-        return;
-    },
-    componentDidMount : function(){
-        $.ajax({
-            type: 'GET',
-            url: "/organization/"+objectId+"/pending_people",
-            success: function(pendingPeopleData) {
-                this.setState({pendingPeople: pendingPeopleData});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve People!");
-            }.bind(this)
-        }).then(this.admins);
-        $.ajax({
-            type: 'GET',
-            url: "/organization/"+objectId+"/pending_organizations",
-            success: function(pendingOrganizationsData) {
-                this.setState({pendingOrganizations: pendingOrganizationsData});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve Organizations!");
-            }.bind(this)
-        });
-    },
-    admins : function(){
-        $.ajax({
-            type: 'GET',
-            url: "/organization/"+objectId+"/admins",
-            success: function(adminsData) {
-                this.setState({ admins: adminsData });
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve isAdmin!");
-            }.bind(this)
-        });
-    },
-    pendingPersonAction: function(personId,action) {
-        var dataForm = {personId: personId, mode: action};
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(dataForm),
-            processData: false,
-            url: "/organization/"+objectId+"/pending_person_action",
-            success: function(data) {
-                var displayPerson = document.getElementById("pending_person_" + personId);
-                displayPerson.className += " hide";
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Do Action!");
-            }.bind(this)
-        }).then(this.admins);
-    },
-    pendingOrganizationAction: function(organizationId,action) {
-        var dataForm = {organizationId: organizationId, mode: action};
-        $.ajax({
-            type: 'POST',
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(dataForm),
-            processData: false,
-            url: "/organization/"+objectId+"/pending_organization_action",
-            success: function(data) {
-                var displayOrganization = document.getElementById("pending_organization_" + organizationId);
-                displayOrganization.className += " hide";
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't Do Action!");
-            }.bind(this)
-        });
-    },
-    deleteOrganization: function() {
-        $.ajax({
-            type: 'GET',
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            processData: false,
-            url: "/organization/"+objectId+"/delete",
-            success: function(data) {
-                window.location = '../';
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error("Couldn't delete organization.  " + err);
-            }.bind(this)
-        });
-    },
-    render: function() {
-        var adminsList = $.map(this.state.admins,function(admin) {
-            return (
-                <a href={"/profile/" + admin.username} className="nostyle"><img src={admin.imgUrl} className="contain-panel-small-image"/></a>
-            );
-        });
-        var peopleList = $.map(this.state.pendingPeople,function(person) {
-            return (
-                <div className="item-box" id={"pending_person_" + person.id}>
-                    <div className="accept-reject-buttons">
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"admin")}>Admin</Button>
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"accept")}>Accept</Button>
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingPersonAction.bind(this,person.id,"reject")}>Reject</Button>
-                    </div>
-                    <div>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/profile/'+person.username}><img src={person.userImgUrl} className="item-box-image"/></a>
-                            </div>
-                        </div>
-                        <div className="item-box-right">
-                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname} - {person.username}</h3></a>
-                            <span className="font-15">{person.title}</span><br/>
-
-                        </div>
-                    </div>
-                </div>
-            )
-        }.bind(this));
-        var organizationsList = $.map(this.state.pendingOrganizations,function(organization) {
-            return (
-                <div className="item-box" id={"pending_organization_" + organization.id}>
-                    <div className="accept-reject-buttons">
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingOrganizationAction.bind(this,organization.id,"accept")}>Accept</Button>
-                        <Button className="btn-primary btn-accept-reject" onClick={this.pendingOrganizationAction.bind(this,organization.id,"reject")}>Reject</Button>
-                    </div>
-                    <div>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/organization/'+organization.id}><img src={organization.profile_imgURL} className="item-box-image"/></a>
-                            </div>
-                        </div>
-                        <div className="item-box-right">
-                            <a href={'/organization/'+organization.id} className="body-link"><h3 className="margin-top-bottom-5">{organization.name}</h3></a>
-                            <span className="font-15">{organization.location}</span>
-                        </div>
-                    </div>
-                </div>
-            );
-        }.bind(this));
-        return (
-            <div>
-                <div className="organization-table-div">
-                    <div>
-                        <h3 className="summary-margin-top"><span aria-hidden="true" className="glyphicon glyphicon-info-sign"></span> Information</h3>
-                    </div>
-                    <table className="organization-table-info">
-                        <tbody>
-
-                        <tr>
-                            <td><b>Admins: </b></td>
-                            <td><div>{adminsList}</div></td>
-                        </tr>
-                        <tr>
-                            <td><Button onClick={this.deleteOrganization}bsStyle="primary">Delete Organization</Button></td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div><hr/>
-                <div>
-                    <h3 className="summary-margin-top"><span aria-hidden="true" className="fa fa-user-plus"></span> People - Pending Approval</h3>
-                </div>
-                <div>
-                    {peopleList}
-                </div>
-                <div className="clear"></div>
-                <hr/>
-                <div>
-                    <h3 className="summary-margin-top"><span aria-hidden="true" className="fa fa-building-o"></span> Connections - Pending Approval</h3>
-                </div>
-                <div>
-                    {organizationsList}
-                </div>
-            </div>
-
-        )
-    }
-});
 
 var NewsAndEvents = React.createClass({
     render: function() {
@@ -1423,7 +1227,7 @@ var Projects = React.createClass({
     },
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
-            item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
 
             return (
                 <div className="item-box">
@@ -1481,7 +1285,7 @@ var Publications = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
-                item.date = (new Date(item.date)).toUTCString().slice(0,-12);
+                item.date = (new Date(item.date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
             console.log(typeList);
@@ -1489,13 +1293,13 @@ var Publications = React.createClass({
                 <div>
                     <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                     {typeList.map(item =>
-                            <div className="item-box">
+                            <div className="about-item-hr">
                                 <div key={item.id}>
-                                    <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                                    <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Contributors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
+                                <tr><td><b>Authors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
                                 <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
                              { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
@@ -1522,7 +1326,7 @@ var Publication = React.createClass({ //delete
         return (
             <div className="item-box">
                 <div className="publication-box-left publication-box-left-full">
-                    <a href={"/publication/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <a href={"/publication/" + this.props.objectId} className="body-link"><h4 className="margin-top-bottom-5">{title}</h4></a>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
@@ -1580,7 +1384,7 @@ var Data = React.createClass({
                                    collaborators={item.collaborators}
                                    title={item.title}
                                    image_URL={item.picture.url}
-                                   start_date={(new Date(item.createdAt)).toUTCString().slice(0,-12)} />);
+                                   start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)} />);
                 })}
             </div>
         );
@@ -1600,7 +1404,7 @@ var Datum = React.createClass({
                     </div>
                 </div>
                 <div className="item-box-right">
-                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <a href={"/data/" + this.props.objectId} className="body-link"><h4 className="margin-top-bottom-5">{title}</h4></a>
                     <span className="font-15">
                         <table className="item-box-table-info">
                             <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
@@ -1668,7 +1472,7 @@ var Models = React.createClass({
                                    license={model.license}
                                    access={model.access}
                                    abstract={model.abstract}
-                                   start_date={(new Date(model.createdAt)).toUTCString().slice(0,-12)} />);
+                                   start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)} />);
                 })}
                 {rows}
             </div>
@@ -1688,7 +1492,7 @@ var Model = React.createClass({
                     </div>
                 </div>
                 <div className="item-box-right">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <a href={"/model/" + this.props.objectId} className="body-link"><h4 className="margin-top-bottom-5">{title}</h4></a>
                 <span className="font-15">
                     <table className="item-box-table-info">
                         <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>

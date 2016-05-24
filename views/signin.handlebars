@@ -16,14 +16,17 @@
             </div>
             <form name="form" method="post" action="/signin" novalidate="novalidate">
                 <div class="form-group">
-                    <label for="username" class="control-label">Username</label>
-                    <input type="text" name="username" id="username" placeholder="Username" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control"/>
+                    <label for="username" class="control-label">Email</label>
+                    <input type="text" name="email" id="email" placeholder="Email" unique-username="unique-email" required="required" ng-model="email" autofocus="autofocus" class="form-control"/>
                     <label for="password" class="control-label">Password</label>
                     <input type="password" name="password" id="password" ng-model="password" required="required" match="verification" class="form-control"/>
                     <br>
                     <input type="submit" value="Sign in" name="submit" id="submit" class="btn btn-primary"/>
                 </div>
+                </br>
+                <p>I can't remember my password! <a href="/password-reset">Reset Password</a></p>
             </form>
+
             <div class="row" style="margin-top:20px; text-align: center">
                 <a href="/oauth/linkedin"><img src="images/Retina/Sign-In-Small---Default.png"></a>
             </div>

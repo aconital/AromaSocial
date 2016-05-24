@@ -23,6 +23,11 @@ var hasBetaCode= require('../utils/helpers').hasBetaCode;
 
 module.exports=function(app,Parse,io) {
 
+  // test slider route
+  app.get('/slider', function(req, res, next) {
+    res.render('testSlider');
+  });
+
   app.get('/beta', function (req, res, next) {
     var rl = req.query.redLink;
     console.log("redLink in /beta get: ", rl);
@@ -33,7 +38,7 @@ module.exports=function(app,Parse,io) {
       var code = req.body.code;
       var redLink = req.body.redLink;
       console.log("RedLink in /beta POST => ", redLink);
-      if(code === "Fom2016") {
+      if(code === "summer2016") {
           req.session.code=code;
           // res.redirect("/signin");
           res.redirect(redLink);
@@ -82,7 +87,132 @@ module.exports=function(app,Parse,io) {
     app.get('/privacy', function(req, res, next) {
         res.render("privacy");
     });
+    /*****************************************
+     *
+     * RECOVER PASSWORD
+     *
+     */
+    app.get('/password-reset', function (req, res, next) {
+        if (!req.isAuthenticated()) {
+            res.render('password-reset', {sent:false,title: 'Password Reset', path: req.path, Error: ""});
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+    app.get('/password-reset/verify', function (req, res, next) {
+        if (!req.isAuthenticated()) {
+            res.render('password-reset', {sent:true,title: 'Password Reset', path: req.path, Error: ""});
+        }
+        else {
+            res.redirect('/');
+        }
+    });
+    app.get('/password-reset/:userId/:code', function (req, res, next) {
+       var userId= req.params.userId;
+       var code = req.params.code;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("objectId", userId);
+        query.first({
+            success: function (result) {
+                if (result) {
+                    var dbCode= result.get("password_reset_code");
+                    if(code === dbCode)
+                    {
+                        res.render('change-password', {userId:userId,title: 'Password Reset', path: req.path, Error: ""});
+                    }
+                    else
+                    {
+                        res.render('password-reset', {Error: "The link is not valid or has been expired!", path: req.path});
+                    }
 
+                }
+                else
+                {
+                    res.render('password-reset', {Error: "Something has went wrong! Please contact our support team.", path: req.path});
+                }
+            }, error: function (err) {
+                res.render('password-reset', {Error: error.message, path: req.path});
+            }
+        });
+    });
+    app.post('/password-reset-verification', function (req, res, next) {
+        var email = req.body.email;
+        var query = new Parse.Query(Parse.User);
+        query.equalTo("email", email);
+        query.first({
+            success: function (result) {
+                if (result) {
+                    var userId= result.id;
+                    var activation_code = randomString(3) + randomString(5) + randomString(3);
+                    result.set("password_reset_code", activation_code);
+                    result.save(null, {useMasterKey: true}).then(function () {
+
+                        var emailBody = '<h3></h3><p>Hi ' + result.attributes.fullname + ',</h3></p> <p>Please click on the following link to reset your password:' +
+                            '<a href="http://syncholar.com/password-reset/'+userId+'/'+ activation_code +'">http://syncholar/password-reset/'+userId+'/'+ activation_code+ '</a>'
+                            + ' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
+                        sendMail('Password Reset - Syncholar', emailBody, result.attributes.email);
+
+                        res.redirect('/password-reset/verify');
+
+                    }, function (error) {
+
+                        res.render('password-reset', {Error: error.message, path: req.path});
+                    });
+                }
+                else
+                {
+                    res.render('password-reset', {Error: "Email is not valid!", path: req.path});
+                }
+            }, error: function (err) {
+                res.render('password-reset', {Error: error.message, path: req.path});
+            }
+        });
+    });
+    app.post('/password-reset', function (req, res, next) {
+        var password = req.body.password;
+        var confirmpassword = req.body.confirmpassword;
+        if(confirmpassword != password)
+         res.render("change-password",{Error:"Passwords don't match!",path:req.path});
+        else {
+            var userId = req.body.userId;
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("objectId", userId);
+            query.first({
+                success: function (result) {
+                    if (result) {
+
+                        result.set("password", password);
+                        result.save(null, {useMasterKey: true}).then(function () {
+
+                            Parse.User.logIn(result.get("username"), password, {
+                                success: function(u) {
+
+                                    req.login(u.attributes.username,function (err) {
+                                        if (!err)
+                                            res.redirect('/');
+                                        else
+                                            res.render('signin', {Error: err.message, path: req.path})
+                                    });
+
+                                },
+                                error: function(user, error) {
+                                    // Show the error message somewhere and let the user try again.
+                                    res.render('signin', {Error: error.message, path: req.path});
+                                }
+                            });
+
+                        }, function (error) {
+
+                            res.render('signin', {Error: error.message, path: req.path})
+                        });
+                    }
+                }, error: function (err) {
+                    res.render('password-reset', {Error: error.message, path: req.path});
+                }
+            });
+        }
+    });
   /*******************************************
    *
    * SIGN UP
@@ -118,10 +248,11 @@ module.exports=function(app,Parse,io) {
 
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
                 '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
-            sendMail("verify Email - Syncholar",emailBody,req.body.email);
+            sendMail("Verify Email - Syncholar",emailBody,req.body.email);
 
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
+
                if(err) {
                    return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
                }
@@ -163,17 +294,14 @@ module.exports=function(app,Parse,io) {
       passport.authenticate('local', { successRedirect: '/',
           failureRedirect: '/signin'}, function(err, user, info) {
           if(err) {
-              console.log('first',err,user,info);
               return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
           }
 
           if(!user) {
-              console.log('second',err,user,info);
               return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
           }
           return req.logIn(user, function(err) {
               if(err) {
-                  console.log('third',err,user,info);
                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
               } else {
                   return res.redirect('/');
@@ -319,8 +447,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
 
-                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
-                                                      '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
+                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>You have signed up for Syncholar using your Linkedin account. We have also created an username and a password for you:</p>'+
+                                                      '<h4>Username: '+email+'</h4><p><h4>Password: '+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
                                                   sendMail('Welcome To Syncholar',emailBody,email);
 
                                                   req.login(u.attributes.username,function (err) {

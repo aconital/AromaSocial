@@ -111,18 +111,23 @@ io.on('connection', function(socket){
 
 //===============PASSPORT=================
 // Use the LocalStrategy within Passport to login/�signin� users.
-passport.use(new LocalStrategy(function(username, password, done) {
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },function(email, password, done) {
 
     var query = new Parse.Query(Parse.User);
-    query.equalTo("username", username);
+    query.equalTo("email", email);
     query.first({
         success: function (user) {
-            if(user === null)
+
+            if(user === undefined)
             {
                 return done(null, false, {message: 'Invalid username or password'});
             }
             else {
-                Parse.User.logIn(username, password, {
+
+                Parse.User.logIn(user.get("username"), password, {
                     success: function(user) {
                         return done(null, user.attributes.username);
                     },

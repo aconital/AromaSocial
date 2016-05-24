@@ -2494,6 +2494,7 @@ output {
   color: #555555; }
 
 .form-control, .react-tagsinput {
+  box-shadow: none !important;
   display: block;
   width: 100%;
   height: auto;
@@ -5397,9 +5398,17 @@ input[type="text"]:focus {
   border-color: var(--foreground-color); }
 
 .search-img {
+  display: block;
   padding: 0px;
   border-radius: 0px;
-  background-color: white; }
+  background-color: transparent;
+  max-height: 30px;
+  max-width: 30px;
+
+  margin-right: auto;
+  margin-left: auto;
+}
+
 
 .search-btn {
   border-left: none !important;
@@ -5710,8 +5719,8 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 
 .date-editable-input { padding-left: 0px; padding-right: 0px; }
 
-.tagsinput-tag-link:hover { color: white; text-decoration: none; }
-.tagsinput-tag-link:active { color: white; text-decoration: none; }
+.tagsinput-tag-link:hover { color: var(--link-color); text-decoration: none; }
+.tagsinput-tag-link:active { color: var(--link-color); text-decoration: none; }
 
 .model-layout {
     height:100%;
@@ -5826,7 +5835,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     color: var(--contrast-free-color);
     background-color: var(--foreground-color);
     display: inline;
-    border: solid;
+    border: none;
     border-color: var(--foreground-color);
     border-width: 2px 2px 0 2px;
     padding: 6px 12px;
@@ -5898,7 +5907,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     margin-top: 2px;
     padding: 10px;
     background-color: var(--white-color);
-    border: solid;
+    border: none;
     border-width: 2px;
     border-color: var(--foreground-color);
     border-radius: 4px;
@@ -6200,9 +6209,10 @@ table.summary tr td {
 }
 
 .react-tagsinput-tag {
-    background-color: var(--foreground-color);
-    border-color: var(--foreground-color);
-    color: white;
+    background-color: var(--background-color);
+    border-radius: 25px;
+    border-color: transparent;
+    color: black;
     margin:1px;
     padding:0px 4px;
 } .react-tagsinput-tag a {
@@ -6435,8 +6445,6 @@ textarea {
 .ui-autocomplete-category {
      font-weight: bold; 
      text-align: center;
-     -webkit-border-radius: 5px;
-     -moz-border-radius: 5px;
      background-color: #333333;
      color: white;  
 }
@@ -6546,7 +6554,7 @@ hr.style15 {
 }
 
 .contain-image {
-  background-color: transparent !important;
+  background-color: #ffffff !important;
 }
 
 .item-box-image-outside{

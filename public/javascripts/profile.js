@@ -372,7 +372,7 @@ var Connections = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
+                            <a href={'/profile/'+person.username} className="body-link"><h4 className="margin-top-bottom-5">{person.fullname}</h4></a>
                             <p>{person.about}</p>
                         </div>
                     </div>
@@ -455,7 +455,7 @@ var Organizations = React.createClass({
                         </div>
                     </div>
                     <div className="item-box-right">
-                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <a href={'/organization/'+org.orgId} className="body-link"><h4 className="margin-top-bottom-5">{org.name}</h4></a>
                         <span className="font-15">{org.location}</span>
                         {join}
                     </div>
@@ -931,7 +931,7 @@ var Projects = React.createClass({
     deleteEntry: settingsModalDeleteListEntry.bind(this),
     render: function() {
         var itemsList = $.map(this.state.data,function(item) {
-            item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
 
             return (
                 <div className="item-box">
@@ -942,10 +942,10 @@ var Projects = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <a href={'/project/'+item.objectId} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                             <table className="item-box-right-tags">
-                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
-                                <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
+                                <tr><td>Collaborators: </td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                                <tr><td>Date: </td><td>{item.start_date} to {item.end_date}</td></tr>
                             {/*}  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </div>
@@ -1010,21 +1010,21 @@ var Publications = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
-                item.date = (new Date(item.date)).toUTCString().slice(0,-12);
+                item.date = (new Date(item.date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
             return (
                 <div>
                 <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                 {typeList.map(item =>
-                <div className="item-box">
+                <div className="about-item-hr ">
                     <div key={item.id}>
-                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Authors: </b></td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
-                                <tr><td><b>Publication Date: </b></td><td>{item.date}</td></tr>
+                                <tr><td>Authors: </td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
+                                {(item.type == "journal")? <tr><td>Publishcation Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date} </td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
@@ -1112,7 +1112,7 @@ var Models = React.createClass({
             <div>
                 <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                 {typeList.map(item =>
-                <div className="item-box">
+                <div className="about-item-hr">
                     <div key={item.objectId}>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
@@ -1120,7 +1120,7 @@ var Models = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/model/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <a href={'/model/'+item.objectId} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
@@ -1181,7 +1181,7 @@ var Data = React.createClass({
                 var item = items[i];
                 dataPath = '/data/' + item.objectId;
                 console.log(item);
-                item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+                item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
             return (
@@ -1196,10 +1196,10 @@ var Data = React.createClass({
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <h3 className="margin-top-bottom-5">
+                            <h4 className="margin-top-bottom-5">
                                 <a href={'/data/'+item.objectId} className="body-link">{item.title}</a>
                                 {/*TODO uncomment<SettingsModal delete={self.deleteEntry} path={dataPath} refresh={self.render} />*/}
-                            </h3>
+                            </h4>
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
