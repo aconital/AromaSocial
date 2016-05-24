@@ -119,6 +119,14 @@ var Profile = React.createClass ({
             fromModelTab: false,
             pictureChosen: null,
 
+            showAbout:true,
+            showPublications:false,
+            showConnections:false,
+            showOrganizations:false,
+            showProjects:false,
+            showData:false,
+            showModels:false,
+
             picture: null, pictureType: '', status: ''
       };
     },
@@ -225,6 +233,87 @@ var Profile = React.createClass ({
         }.bind(this)
       });
     },
+    showRequiredComponent: function(type) {
+        switch(type) {
+            case 'About':
+                this.setState({
+                    showAbout:true,
+                    showPublications:false,
+                    showConnections:false,
+                    showOrganizations:false,
+                    showProjects:false,
+                    showData:false,
+                    showModels:false
+                });
+                break;
+            case 'Colleagues':
+                this.setState({
+                    showAbout:false,
+                    showPublications:false,
+                    showConnections:true,
+                    showOrganizations:false,
+                    showProjects:false,
+                    showData:false,
+                    showModels:false
+                });
+                break;
+            case 'Affiliations':
+                this.setState({
+                    showAbout:false,
+                    showPublications:false,
+                    showConnections:false,
+                    showOrganizations:true,
+                    showProjects:false,
+                    showData:false,
+                    showModels:false
+                });
+                break;
+            case 'Projects':
+                this.setState({
+                    showAbout:false,
+                    showPublications:false,
+                    showConnections:false,
+                    showOrganizations:false,
+                    showProjects:true,
+                    showData:false,
+                    showModels:false
+                });
+                break;
+            case 'Publications':
+                this.setState({
+                    showAbout:false,
+                    showPublications:true,
+                    showConnections:false,
+                    showOrganizations:false,
+                    showProjects:false,
+                    showData:false,
+                    showModels:false
+                });
+                break;
+            case 'Data':
+                this.setState({
+                    showAbout:false,
+                    showPublications:false,
+                    showConnections:false,
+                    showOrganizations:false,
+                    showProjects:false,
+                    showData:true,
+                    showModels:false
+                });
+                break;
+            case 'Models':
+                this.setState({
+                    showAbout:false,
+                    showPublications:false,
+                    showConnections:false,
+                    showOrganizations:false,
+                    showProjects:false,
+                    showData:false,
+                    showModels:true
+                });
+                break;
+        }
+    },
     render: function() {
         var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "connected") {
@@ -239,6 +328,7 @@ var Profile = React.createClass ({
         else { console.log("Nothing"); }
         return (
         <div>
+            <Slider items={['About', 'Colleagues', 'Affiliations', 'Projects', 'Publications', 'Data', 'Models']} callback={this.showRequiredComponent}/>
             <Modal show={this.state.showModal} onHide={this.clickClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Update Profile Picture</Modal.Title>
@@ -252,44 +342,104 @@ var Profile = React.createClass ({
                     <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData} />
                 </Modal.Footer>
             </Modal>
-            <div className="content-wrap">
-                <div className="item-bottom">
-                    <div className="item-bottom-1">
-                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
-                        {/*
-                        <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                        <div className="side-panel"><h5>RATINGS</h5></div>
-                        <div className="side-panel"><h5>OTHERS</h5></div>
-                        */}
-                    </div>
-                    <div id="item-bottom-2-profile" className="item-bottom-2">
-                        {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
-                        <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
-                        <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Data', 'Models']} />
-                    </div>
-                    <div className="item-bottom-3">
-                        {/*<input className="btn btn-panel" value="Message" />
-                        <input className="btn btn-panel" value="Ask" />*/}
-                        {/*
-                        <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
-                            48 Syncholarity Rating<br/>
-                            2000 Times Cited<br/>
-                            12000 Profile Views
-                        </div>
-                        <div className="item-panel contain-panel"><h5>News & Events</h5><br/>
-                            {this.props.news.map(function(listValue){
-                                return <a href="#" className="body-link">{listValue}<br/></a>;
-                            })}
-                        </div>
-                        <div className="item-panel contain-panel"><h5>Adds</h5><br/>
-                        </div>
-                        */}
-                    </div>
+
+            <section className="module parallax parallax-1">
+              <div className="container">
+                {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
+                <h5>{fullname}</h5>
+                <div className="item-bottom-1">
+                    {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
                 </div>
-            </div>
+              </div>
+            </section>
+
+            <section className="module content">
+              <div className="container">
+                {this.state.showAbout ? <About />:null}
+                {this.state.showConnections ? <Connections />:null}
+                {this.state.showOrganizations ? <Organizations />:null}
+                {this.state.showProjects ? <Projects />:null}
+                {this.state.showPublications ? <Publications />:null}
+                {this.state.showData ? <Data />:null}
+                {this.state.showModels ? <Models />:null}
+              </div>
+            </section>
+
         </div>
         );
     }
+    // render: function() {
+    //     var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
+    //     if (this.state.status == "connected") {
+    //          connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
+    //     }
+    //     else if (this.state.status == "pending") {
+    //          connectButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
+    //     }
+    //     else if (this.state.status == "not-connected") {
+    //              connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
+    //     }
+    //     else { console.log("Nothing"); }
+    //     return (
+    //     <div>
+    //         <Slider items={['About', 'Colleagues', 'Affiliations', 'Projects', 'Publications', 'Data', 'Models']} callback={this.showRequiredComponent}/>
+    //         <Modal show={this.state.showModal} onHide={this.clickClose}>
+    //             <Modal.Header closeButton>
+    //                 <Modal.Title>Update Profile Picture</Modal.Title>
+    //             </Modal.Header>
+    //             <Modal.Body>
+    //                 <div id="field1-container">
+    //                     <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
+    //                 </div>
+    //             </Modal.Body>
+    //             <Modal.Footer>
+    //                 <input className="publication-button" type="submit" disabled={this.state.imgSubmitDisabled} value={this.state.imgSubmitText} onClick={this.handleSubmitData} />
+    //             </Modal.Footer>
+    //         </Modal>
+    //         <div className="content-wrap">
+    //             <div className="item-bottom">
+    //                 <div className="item-bottom-1">
+    //                     {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
+    //                     {/*
+    //                     <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+    //                     <div className="side-panel"><h5>RATINGS</h5></div>
+    //                     <div className="side-panel"><h5>OTHERS</h5></div>
+    //                     */}
+    //                 </div>
+    //                 <div id="item-bottom-2-profile" className="item-bottom-2">
+    //                     {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
+    //                     <h3 className="no-margin-padding align-left h1-title-solo">{fullname}</h3>
+    //                     {this.state.showAbout ? <About />:null}
+    //                     {this.state.showConnections ? <Connections />:null}
+    //                     {this.state.showOrganizations ? <Organizations />:null}
+    //                     {this.state.showProjects ? <Projects />:null}
+    //                     {this.state.showPublications ? <Publications />:null}
+    //                     {this.state.showData ? <Data />:null}
+    //                     {this.state.showModels ? <Models />:null}
+    //                 </div>
+    //                 <div className="item-bottom-3">
+    //                     {/*<input className="btn btn-panel" value="Message" />
+    //                     <input className="btn btn-panel" value="Ask" />*/}
+    //                     {/*
+    //                     <div className="item-panel contain-panel"><h5>Ratings</h5><br/>
+    //                         48 Syncholarity Rating<br/>
+    //                         2000 Times Cited<br/>
+    //                         12000 Profile Views
+    //                     </div>
+    //                     <div className="item-panel contain-panel"><h5>News & Events</h5><br/>
+    //                         {this.props.news.map(function(listValue){
+    //                             return <a href="#" className="body-link">{listValue}<br/></a>;
+    //                         })}
+    //                     </div>
+    //                     <div className="item-panel contain-panel"><h5>Adds</h5><br/>
+    //                     </div>
+    //                     */}
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    //     );
+    // }
 });
 
 var ProfileMenu = React.createClass ({

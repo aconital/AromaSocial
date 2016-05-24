@@ -31,8 +31,8 @@ button {
 }
 .menu > div {
   position: absolute;
-  z-index: 2;
-  top: 0;
+  z-index: 999;
+  top: 60px;
   width: 250px;
   height: 100%;
   box-sizing: border-box;
