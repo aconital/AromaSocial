@@ -27,14 +27,12 @@ module.exports=function(app,Parse,io) {
 
   app.get('/beta', function (req, res, next) {
     var rl = req.query.redLink;
-    console.log("redLink in /beta get: ", rl);
     res.render('beta', {title: 'Syncholar Beta', redLink: rl, path: req.path, Error: ""});
   });
 
   app.post('/beta', function (req, res, next) {
       var code = req.body.code;
       var redLink = req.body.redLink;
-      console.log("RedLink in /beta POST => ", redLink);
       if(code === "summer2016") {
           req.session.code=code;
           // res.redirect("/signin");
@@ -44,19 +42,7 @@ module.exports=function(app,Parse,io) {
        res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
   });
 
-  // EMAIL API
-  app.post('/sendemail', function(req, res, next){
-    var name = req.body.name;
-    var email = req.body.email;
-    var subject = req.body.subject;
-    var msg = req.body.message;
 
-    // checks go here
-    console.log("SENDING EMAIL!!");
-
-    sendEmail(name, email, subject, msg);
-    next();
-  });
 
   app.get('/invite', function(req, res){
     res.render('invite');
@@ -237,9 +223,8 @@ module.exports=function(app,Parse,io) {
     var query = new Parse.Query(Parse.User);
     query.startsWith("username", username);
     query.each(function(result) {
-        console.log("DEBUG: Result => ", result);
+
         var str = result.get("username");
-        console.log("NAME is ==>> ", str);
         var strArr = str.split(".");
         if (strArr.length == 0 || strArr[1] == undefined) {
             if (str == username) {
@@ -248,12 +233,11 @@ module.exports=function(app,Parse,io) {
             return;
         }
         var index = parseInt(strArr[1]);
-        console.log("INDEX: ", index);
+
         if (maxIndexSoFar < index) {
             maxIndexSoFar = index;
         }
     }).then(function() {
-          console.log("Max index in db: ", maxIndexSoFar);
           if (maxIndexSoFar == -1) {
               // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first user)
           } else {
@@ -283,32 +267,9 @@ module.exports=function(app,Parse,io) {
          user.set("workExperience", []);
          user.set("emailVerified", false);
          user.set("email_token",email_code)
-         
-         // user.signUp(null, {
-         //    success: function (user) {
-         //       console.log("sucessful signup");
-         //       passport.authenticate('local', { successRedirect: '/',
-         //           failureRedirect: '/signin'}, function(err, user, info) {
-// =======
-//     app.post('/signup', function (req, res, next) {
-//      var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
-//      var user = new Parse.User();
-//      user.set("username", req.body.username);
-//      user.set("password", req.body.password);
-//      user.set("fullname", req.body.fullname);
-//      user.set("email", req.body.email);
-//      user.set("interestsTag", []);
-//      user.set("interests", []);
-//      user.set("summary", "");
-//      user.set("educations", []);
-//      user.set("about", "");
-//      user.set("projects", []);
-//      user.set("workExperience", []);
-//      user.set("emailVerified",false);
-//      user.set("email_token",email_code)
+
      user.signUp(null, {
         success: function (user) {
-
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
                 '<a href="https://syncholar.com/verify-email/'+email_code+'" >https://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
             sendMail("verify Email - Syncholar",emailBody,req.body.email);
@@ -324,15 +285,6 @@ module.exports=function(app,Parse,io) {
                    return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
                }
                return req.logIn(user, function(err) {
-// >>>>>>> 6f909740a9436d8a63ef7bea5cfb276ae5573f1a
-                   // if(err) {
-                   //     return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
-                   // }
-
-                   // if(!user) {
-                   //     return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
-                   // }
-                   // return req.logIn(user, function(err) {
                        if(err) {
                            return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
                        } else {

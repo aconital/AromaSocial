@@ -111,84 +111,42 @@ io.on('connection', function(socket){
 
 //===============PASSPORT=================
 // Use the LocalStrategy within Passport to login/�signin� users.
-// <<<<<<< HEAD
-passport.use(new LocalStrategy(function(email, password, done) {
 
-    // get real username from input email
-    var username = "";
-    var queryUsername = new Parse.Query(Parse.User);
-    queryUsername.equalTo("email", email);
-    queryUsername.first({
-      success: function (user) {
-        if (user == undefined) {
-          return;
-// =======
-// passport.use(new LocalStrategy({
-//     usernameField: 'email',
-//     passwordField: 'password'
-//   },function(email, password, done) {
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+},function(email, password, done) {
+    var query = new Parse.Query(Parse.User);
+    query.equalTo("email", email);
+    query.first({
+        success: function (user) {
 
-//     var query = new Parse.Query(Parse.User);
-//     query.equalTo("email", email);
-//     query.first({
-//         success: function (user) {
+            if(user === undefined)
+            {
+                return done(null, false, {message: 'Invalid username or password'});
+            }
+            else {
 
-//             if(user === undefined)
-//             {
-//                 return done(null, false, {message: 'Invalid username or password'});
-//             }
-//             else {
+                Parse.User.logIn(user.get("username"), password, {
+                    success: function(user) {
+                        return done(null, user.attributes.username);
+                    },
+                    error: function(user, error) {
+                        // Show the error message somewhere and let the user try again.
+                        return done(null, false, {message: 'Invalid username or password'});
+                    }
+                });
+            }
 
-//                 Parse.User.logIn(user.get("username"), password, {
-//                     success: function(user) {
-//                         return done(null, user.attributes.username);
-//                     },
-//                     error: function(user, error) {
-//                         // Show the error message somewhere and let the user try again.
-//                         return done(null, false, {message: 'Invalid username or password'});
-//                     }
-//                 });
-//             }
-
-//         },
-//         error: function(user,error){
-//             console.log(error.message);
-// >>>>>>> origin/master
+        },
+        error: function(user,error){
+            console.log(error.message);
         }
-        username = user.get("username");
-        console.log("Retrieved username: ", username);
-      },
-      error: function (err) {
-        console.log("Error while trying to retrieve username: ", err);
-      }
-    }).then(function () {
-      var query = new Parse.Query(Parse.User);
-      query.equalTo("username", username);
-      query.first({
-          success: function (user) {
-              if(user === null)
-              {
-                  return done(null, false, {message: 'Invalid username or password'});
-              }
-              else {
-                  Parse.User.logIn(username, password, {
-                      success: function(user) {
-                          return done(null, user.attributes.username);
-                      },
-                      error: function(user, error) {
-                          // Show the error message somewhere and let the user try again.
-                          return done(null, false, {message: 'Invalid username or password'});
-                      }
-                  });
-              }
-
-          },
-          error: function(user,error){
-              console.log(error.message);
-          }
-      });
     });
+
 }));
+
+
 
 passport.serializeUser(function(user, done) {
 
@@ -196,7 +154,6 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(username, done) {
-
     var query = new Parse.Query(Parse.User);
     query.equalTo("username", username);
     query.first({
