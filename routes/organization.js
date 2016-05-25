@@ -1166,7 +1166,7 @@ module.exports=function(app,Parse,io) {
                     msg: "wants to join",
                     extra: {
                         id: result.get("orgId").id,
-                        name: result.get("orgId").get("name"),
+                        name: result.get("orgId").get("displayName"),
                         imgUrl: result.get("orgId").get("profile_imgURL")
                     }
                 };
@@ -1201,13 +1201,13 @@ module.exports=function(app,Parse,io) {
                     from: {
                         userId:r.get("orgId1").id,
                         username: r.get("orgId1").id,
-                        name: r.get("orgId1").get("name"),
+                        name: r.get("orgId1").get("displayName"),
                         userImgUrl: r.get("orgId1").get("picture").url(),
                     },
                     msg: "wants to connect with ",
                     extra: {
                         id: r.get("orgId0").id,
-                        name: r.get("orgId0").get("name"),
+                        name: r.get("orgId0").get("displayName"),
                         imgUrl: r.get("orgId0").get("picture").url()
                     }
                 };
