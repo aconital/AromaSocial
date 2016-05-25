@@ -21,7 +21,7 @@ var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
 
 
-module.exports=function(app,Parse,io) {
+module.exports=function(app,Parse,io, content, jsonContent) {
 
   // test slider route
   app.get('/slider', function(req, res, next) {
@@ -338,10 +338,10 @@ app.get('/terms', function (req, res, next) {
     res.render('terms', {title: 'Terms', path: req.path});
 });
 
-    /*******************************************
- *
- * THIRD PARTY OAUTH
- *
+/*******************************************
+*
+* THIRD PARTY OAUTH
+*
  ********************************************/
 app.get('/oauth/linkedin', function(req, res) {
     if(!req.isAuthenticated()) {
@@ -530,7 +530,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                 {
                     user.set("emailVerified",true);
                     user.save(null,{ useMasterKey: true }).then(function() {
-                        res.redirect("/import");
+                        res.redirect("/import", {user: req.user});
                     },function(error)
                     {
                         res.render('signin', {Error: error.message, path: req.path});
@@ -545,8 +545,52 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     });
 
-    app.get("/import", function (req,res,next) {
-        res.render("import");
-    });
+/*******************************************
+ *
+ * IMPORT WORKS
+ *
+ ********************************************/
+app.get("/import", function (req,res,next) {
+  console.log(req);
+  res.render("import", {user: req.user});
+});
+
+app.get("/fetchworks", function(req, res, next) {
+    console.log("Output Content : \n"+ content);
+    console.log("Output Content : \n"+ jsonContent);
+    console.log("\n *EXIT* \n");
+    if (jsonContent)
+      res.status(200).json({status:"OK", data:jsonContent}); // TODO replace w/ actual query
+    // var params = {
+    //   "expr": "Composite(AA.AuN=='saeed ghafghazi')",
+    //   "model": "latest",
+    //   "count": "20",
+    //   "offset": "0",
+    //   // "orderby": "{string}",
+    //   "attributes": "Ti,Y,AA.AuN,E",
+    // };
+
+    // $.ajax({
+    //   url: "https://api.projectoxford.ai/academic/v1.0/evaluate?" + $.param(params),
+    //   beforeSend: function(xhrObj){
+    //     xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","69bc82dd085d458bbcf261cf06a68558");
+    //   },
+    //   type: "GET",
+    // })
+    // .done(function(data) {
+    //   alert("success");
+    //   console.log(data);
+    //   var entry = data['entities'];
+    //   console.log(JSON.stringify(entry,null,4));
+    // })
+    // .fail(function(xhr, status, err) {
+    //   alert("error");
+    //   console.error('http://.projectoxford.ai/academic/', status, err, xhr);
+    // });
+});
+
+app.post("/import", function(req, res, next) {
+
+});
 
 };
