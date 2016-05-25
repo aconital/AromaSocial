@@ -6,6 +6,7 @@
  *************************************/
 var SparkPost = require('sparkpost');
 var sp = new SparkPost('5c4cf399a6bbc1f2bd87a881d08756458b0834cb');
+var request = require('request').defaults({ encoding: null });
 
 module.exports = {
 
@@ -28,6 +29,33 @@ include_user:function(req,res,next){
     {
         res.locals.user = req.user;
         next();
+    }
+},
+processLinkedinImage:function(email,input,Parse){
+    if(input.pictureUrls.values != null) {
+        request.get(input.pictureUrls.values[0], function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+
+                var pictureName = "user_picture.jpg";
+                var data = {
+                    base64: new Buffer(body,'base64')
+                };
+                var file = new Parse.File(pictureName, data);
+                var query = new Parse.Query(Parse.User);
+                query.equalTo("email", email);
+                query.first({
+                    success: function (result) {
+                        if (result) {
+                            result.set("picture",file);
+                            result.save(null, { useMasterKey: true });
+                        }
+                    },
+                    error: function ( error) {
+                        console.log("Couldnt save photo from linkedin")
+                    }
+                });
+            }
+        });
     }
 },
 randomString: function (len, charSet) {

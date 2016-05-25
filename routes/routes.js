@@ -5,6 +5,7 @@ var fs  = require('fs-extra');
 var moment = require('moment');
 var path = require('path');
 var _= require('underscore');
+var request = require('request').defaults({ encoding: null });
 var aws = require('aws-sdk');
 var passport = require('passport');
 var s3 = new aws.S3();
@@ -20,6 +21,7 @@ var is_auth = require('../utils/helpers').is_auth;
 var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
 var include_user= require('../utils/helpers').include_user;
+var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
 
 module.exports=function(app,Parse,io) {
 
@@ -428,13 +430,6 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("password", randomPass);
                                   user.set("linkedin_id", linkedin_ID);
                                   user.set("email", email);
-                                  /*if ($in.pictureUrls.values != null){
-                                      var data = {
-                                          base64: $in.pictureUrls.values[0].buffer.toString('base64')
-                                      };
-                              }
-                                        var file = new Parse.File("file", data);
-                                        user.set("picture", file);*/
                                   user.set("about",about);
                                   user.set("interestsTag", []);
                                   user.set("emailVerified",true);
@@ -448,7 +443,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                       success: function (user) {
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
-
+                                                  //get image from linkedin
+                                                  processLinkedinImage(email,$in,Parse);
                                                   var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
                                                       '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
                                                   sendMail('Welcome To Syncholar',emailBody,email);
@@ -544,5 +540,7 @@ app.get('/auth/linkedin/callback',function(req,res){
         });
 
     });
+
+
 
 };
