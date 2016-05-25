@@ -5,6 +5,7 @@ var fs  = require('fs-extra');
 var moment = require('moment');
 var path = require('path');
 var _= require('underscore');
+var request = require('request').defaults({ encoding: null });
 var aws = require('aws-sdk');
 var passport = require('passport');
 var s3 = new aws.S3();
@@ -13,20 +14,16 @@ var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
 var nodemailer = require('nodemailer');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 //var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
-var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://syncholar.com/auth/linkedin/callback');
+var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'https://syncholar.com/auth/linkedin/callback');
 
 var sendMail = require('../utils/helpers').sendMail;
 var is_auth = require('../utils/helpers').is_auth;
 var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
-
+var include_user= require('../utils/helpers').include_user;
+var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
 
 module.exports=function(app,Parse,io, content, jsonContent) {
-
-  // test slider route
-  app.get('/slider', function(req, res, next) {
-    res.render('testSlider');
-  });
 
   app.get('/beta', function (req, res, next) {
     var rl = req.query.redLink;
@@ -82,9 +79,9 @@ module.exports=function(app,Parse,io, content, jsonContent) {
       }
   });
     /********
-     * PRIVACY & TERMS
+     * PRIVACY & term
      */
-    app.get('/privacy', function(req, res, next) {
+    app.get('/privacy',include_user, function(req, res, next) {
         res.render("privacy");
     });
     /*****************************************
@@ -149,7 +146,7 @@ module.exports=function(app,Parse,io, content, jsonContent) {
                     result.save(null, {useMasterKey: true}).then(function () {
 
                         var emailBody = '<h3></h3><p>Hi ' + result.attributes.fullname + ',</h3></p> <p>Please click on the following link to reset your password:' +
-                            '<a href="http://syncholar.com/password-reset/'+userId+'/'+ activation_code +'">http://syncholar/password-reset/'+userId+'/'+ activation_code+ '</a>'
+                            '<a href="https://syncholar.com/password-reset/'+userId+'/'+ activation_code +'">https://syncholar/password-reset/'+userId+'/'+ activation_code+ '</a>'
                             + ' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
                         sendMail('Password Reset - Syncholar', emailBody, result.attributes.email);
 
@@ -247,8 +244,8 @@ module.exports=function(app,Parse,io, content, jsonContent) {
         success: function (user) {
 
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
-                '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
-            sendMail("Verify Email - Syncholar",emailBody,req.body.email);
+                '<a href="https://syncholar.com/verify-email/'+email_code+'" >https://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
+            sendMail("verify Email - Syncholar",emailBody,req.body.email);
 
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
@@ -334,9 +331,18 @@ app.get('/signout', function (req, res, next) {
  *
  ********************************************/
 
-app.get('/terms', function (req, res, next) {
+app.get('/terms',include_user, function (req, res, next) {
     res.render('terms', {title: 'Terms', path: req.path});
 });
+    /*******************************************
+     *
+     * About
+     *
+     ********************************************/
+
+    app.get('/about', function (req, res, next) {
+        res.render('about', {title: 'About Us', path: req.path});
+    });
 
 /*******************************************
 *
@@ -404,7 +410,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   result.save(null, { useMasterKey: true }).then(function() {
 
                                       var emailBody ='<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
-                                      '<a href="http://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">http://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
+                                      '<a href="https://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">https://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
                                       +' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
                                           sendMail('Connecting Linkedin to your account',emailBody,result.attributes.email);
 
@@ -418,7 +424,6 @@ app.get('/auth/linkedin/callback',function(req,res){
                                 else {
 
                                   var user = new Parse.User();
-                                  //TODO EMAIL THIS TO USER
                                   var randomPass = randomString(5);
 
                                   user.set("fullname", name);
@@ -426,13 +431,6 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("password", randomPass);
                                   user.set("linkedin_id", linkedin_ID);
                                   user.set("email", email);
-                                  /*if ($in.pictureUrls.values != null){
-                                      var data = {
-                                          base64: $in.pictureUrls.values[0].buffer.toString('base64')
-                                      };
-                              }
-                                        var file = new Parse.File("file", data);
-                                        user.set("picture", file);*/
                                   user.set("about",about);
                                   user.set("interestsTag", []);
                                   user.set("emailVerified",true);
@@ -446,9 +444,10 @@ app.get('/auth/linkedin/callback',function(req,res){
                                       success: function (user) {
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
-
-                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>You have signed up for Syncholar using your Linkedin account. We have also created an username and a password for you:</p>'+
-                                                      '<h4>Username: '+email+'</h4><p><h4>Password: '+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
+                                                  //get image from linkedin
+                                                  processLinkedinImage(email,$in,Parse);
+                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
+                                                      '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
                                                   sendMail('Welcome To Syncholar',emailBody,email);
 
                                                   req.login(u.attributes.username,function (err) {
@@ -592,5 +591,7 @@ app.get("/fetchworks", function(req, res, next) {
 app.post("/import", function(req, res, next) {
 
 });
+
+// 6f909740a9436d8a63ef7bea5cfb276ae5573f1a
 
 };
