@@ -21,6 +21,15 @@ is_auth: function (req,res,next){
         next();
     }
 },
+include_user:function(req,res,next){
+    if (!req.isAuthenticated()) {
+        next();
+    }else
+    {
+        res.locals.user = req.user;
+        next();
+    }
+},
 randomString: function (len, charSet) {
     charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var randomString = '';
