@@ -23,11 +23,6 @@ var hasBetaCode= require('../utils/helpers').hasBetaCode;
 
 module.exports=function(app,Parse,io) {
 
-  // test slider route
-  app.get('/slider', function(req, res, next) {
-    res.render('testSlider');
-  });
-
   app.get('/beta', function (req, res, next) {
     var rl = req.query.redLink;
     console.log("redLink in /beta get: ", rl);
@@ -247,7 +242,7 @@ module.exports=function(app,Parse,io) {
 
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
                 '<a href="http://syncholar.com/verify-email/'+email_code+'" >http://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
-            sendMail("Verify Email - Syncholar",emailBody,req.body.email);
+            sendMail("verify Email - Syncholar",emailBody,req.body.email);
 
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
@@ -336,6 +331,15 @@ app.get('/signout', function (req, res, next) {
 app.get('/terms', function (req, res, next) {
     res.render('terms', {title: 'Terms', path: req.path});
 });
+    /*******************************************
+     *
+     * About
+     *
+     ********************************************/
+
+    app.get('/about', function (req, res, next) {
+        res.render('about', {title: 'About Us', path: req.path});
+    });
 
     /*******************************************
  *
@@ -417,7 +421,6 @@ app.get('/auth/linkedin/callback',function(req,res){
                                 else {
 
                                   var user = new Parse.User();
-                                  //TODO EMAIL THIS TO USER
                                   var randomPass = randomString(5);
 
                                   user.set("fullname", name);
@@ -446,8 +449,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
 
-                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>You have signed up for Syncholar using your Linkedin account. We have also created an username and a password for you:</p>'+
-                                                      '<h4>Username: '+email+'</h4><p><h4>Password: '+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
+                                                  var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
+                                                      '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
                                                   sendMail('Welcome To Syncholar',emailBody,email);
 
                                                   req.login(u.attributes.username,function (err) {
