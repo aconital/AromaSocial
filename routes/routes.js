@@ -19,7 +19,7 @@ var sendMail = require('../utils/helpers').sendMail;
 var is_auth = require('../utils/helpers').is_auth;
 var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
-
+var include_user= require('../utils/helpers').include_user;
 
 module.exports=function(app,Parse,io) {
 
@@ -76,9 +76,9 @@ module.exports=function(app,Parse,io) {
       }
   });
     /********
-     * PRIVACY & TERMS
+     * PRIVACY & term
      */
-    app.get('/privacy', function(req, res, next) {
+    app.get('/privacy',include_user, function(req, res, next) {
         res.render("privacy");
     });
     /*****************************************
@@ -328,7 +328,7 @@ app.get('/signout', function (req, res, next) {
  *
  ********************************************/
 
-app.get('/terms', function (req, res, next) {
+app.get('/terms',include_user, function (req, res, next) {
     res.render('terms', {title: 'Terms', path: req.path});
 });
     /*******************************************
