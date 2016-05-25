@@ -56,8 +56,8 @@ $(function() {
                       return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                     });
                     $.map(arr, function(item){
-                      var dlink = "/organization/" + item.objectId;
-                      r.push({label: item.name, value: item.name, category: "Organizations", imgsrc: item.picture.url, link: dlink});
+                      var dlink = "/organization/" + item.name;
+                      r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink});
                     });
                   },
                   error: function(xhr) {

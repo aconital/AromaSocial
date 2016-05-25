@@ -55,6 +55,7 @@ module.exports=function(app,Parse,io) {
                     currentUserImg: currentUser.imgUrl,
                     objectId: result.id,
                     name: result.get('name'),
+                    displayName: result.get('displayName'),
                     about: result.get('about'),
                     location: result.get('location'),
                     country: result.get('country'),
@@ -792,13 +793,14 @@ module.exports=function(app,Parse,io) {
 
     app.post('/create/organization', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var orgName = req.body.name.toLowerCase();
+        var dName = req.body.name;
+        var orgName = req.body.name.toLowerCase().replace(/'/g, "_").replace(/ /g, "_");
 
         // check if name already exists in db
         var Organization = Parse.Object.extend("Organization");
         var maxIndexSoFar = -1;
         var query = new Parse.Query(Organization);
-        query.startsWith("name", req.body.name.toLowerCase());
+        query.startsWith("displayName", req.body.name.toLowerCase());
         query.each(function(result) {
             console.log("DEBUG: Result => ", result);
             var str = result.get("name");
@@ -835,6 +837,7 @@ module.exports=function(app,Parse,io) {
                 org.set('cover_imgURL', '/images/banner.png'); // default. replace later
                 org.set('profile_imgURL', '/images/organization.png');
                 org.set('name', orgName);
+                org.set('displayName', dName);
                // org.set('location', req.body.location ? req.body.location : '');
                 org.set('about', req.body.description ? req.body.description : 'About Organization');
                 org.set('country', req.body.country ? req.body.country : '');

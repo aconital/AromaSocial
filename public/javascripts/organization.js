@@ -152,8 +152,8 @@ var Organization = React.createClass ({
 
     render: function() {
         var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
-        var orgNameArr = name.split(".");
-        var orgName = orgNameArr[0];
+        // var orgNameArr = name.split(".");
+        // var orgName = orgNameArr[0];
         if (this.state.status == "joined") {
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
@@ -199,7 +199,7 @@ var Organization = React.createClass ({
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{orgName}</h1>
+                                <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                                 <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
