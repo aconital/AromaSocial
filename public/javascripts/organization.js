@@ -1290,13 +1290,13 @@ var Publications = React.createClass({
                 <div>
                     <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
                     {typeList.map(item =>
-                            <div className="item-box">
+                            <div className="about-item-hr">
                                 <div key={item.id}>
-                                    <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                                    <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Contributors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
+                                <tr><td><b>Authors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
                                 <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
                              { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
@@ -1323,7 +1323,7 @@ var Publication = React.createClass({ //delete
         return (
             <div className="item-box">
                 <div className="publication-box-left publication-box-left-full">
-                    <a href={"/publication/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <a href={"/publication/" + this.props.objectId} className="body-link"><h4 className="margin-top-bottom-5">{title}</h4></a>
                     Authors: <a href="#" className="body-link">{this.props.author}</a><br/>
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
@@ -1401,7 +1401,7 @@ var Datum = React.createClass({
                     </div>
                 </div>
                 <div className="item-box-right">
-                    <a href={"/data/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <a href={"/data/" + this.props.objectId} className="body-link"><h4 className="margin-top-bottom-5">{title}</h4></a>
                     <span className="font-15">
                         <table className="item-box-table-info">
                             <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
@@ -1489,7 +1489,7 @@ var Model = React.createClass({
                     </div>
                 </div>
                 <div className="item-box-right">
-                    <a href={"/model/" + this.props.objectId} className="body-link"><h3 className="margin-top-bottom-5">{title}</h3></a>
+                    <a href={"/model/" + this.props.objectId} className="body-link"><h4 className="margin-top-bottom-5">{title}</h4></a>
                 <span className="font-15">
                     <table className="item-box-table-info">
                         <tr><td><b>Collaborators: </b></td><td>{this.props.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>

@@ -90,7 +90,7 @@ require('./routes/publication')(app,Parse,io);
 require('./routes/data')(app,Parse,io);
 require('./routes/model')(app,Parse,io);
 require('./routes/newsfeed')(app,Parse,io);
-require('./routes/search')(app,Parse,io);
+// require('./routes/search')(app,Parse,io);
 require('./routes/group')(app,Parse,io);
 require('./routes/report')(app,Parse,io);
 

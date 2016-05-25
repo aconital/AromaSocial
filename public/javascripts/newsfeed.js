@@ -80,6 +80,14 @@ var NewsFeed = React.createClass({
 // <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>
 
 var NewsFeedList = React.createClass({
+  truncate: function(text) {
+    var maxLength = 140;
+    var truncated = text;
+    if (truncated.length > maxLength) {
+        truncated = truncated.substr(0,maxLength-3) + "...";
+    }
+    return truncated;
+  },
 
   showMore: function() {
     var itemType = this.props.type;
@@ -217,7 +225,7 @@ var NewsFeedList = React.createClass({
                 {(this.props.type=="book" || this.props.type=="conference" || this.props.type=="journal" || this.props.type=="patent" || this.props.type=="report" || this.props.type=="thesis" || this.props.type=="unpublished") ? <div className="item-box-left"><img src="/images/paper.png" className="contain-image-preview" /></div> : <div className="item-box-left"><img src={this.props.image_URL} className="contain-image-preview" /></div>}
             <div className="item-box-right">
                 <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top nfHeader">{title}</h3></a>
-                {(this.props.description=="undefined" || this.props.description=="") ? <div></div>:<pre className="hide-if-empty"> <span className="font-15 limit-text">{this.props.description}</span></pre>}
+                {(this.props.description=="undefined" || this.props.description=="") ? <div></div>:<pre className="hide-if-empty"><span className="font-15">{this.truncate(this.props.description)}</span></pre>}
             </div>
             </div>
           </div>

@@ -83,8 +83,9 @@ $(function() {
               window.location.href = ui.item.link;
             }
      }).data("custom-catcomplete")._renderItem = function(ul, item) {
-             return $("<li></li>").data("ui-autocomplete-item", item)
-                     .append("<a>" + "<img height='40' width='40' src='" + item.imgsrc + "' />&nbsp" + item.label + "</a>")
+             return $("<div></div>").data("ui-autocomplete-item", item)
+                     .append("<div class='item-box'>"+"<div class='item-box-left'>"+"<div class='item-box-image-outside'>"+"<a style='cursor: pointer'>"+ "<img class='search-img' src='" + item.imgsrc + "' />" +"</a>"+"</div></div>"+
+                 "<div class='item-box-right'>"+"<a style='cursor: pointer'>" + item.label + "</a>"+"</div></div>")
                      .appendTo(ul);
      };
     }   
