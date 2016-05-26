@@ -242,6 +242,7 @@ module.exports=function(app,Parse,io) {
                     var name= "";
                     var location= connected_orgs.location;
                     var orgImgUrl= connected_orgs.picture.url();
+                    var displayName = connected_orgs.displayName;
                     if(connected_orgs.hasOwnProperty('name')){
                         name=connected_orgs.name;
                     }
@@ -253,6 +254,7 @@ module.exports=function(app,Parse,io) {
                             name:name,
                             location: location,
                             orgImgUrl: orgImgUrl,
+                            displayName: displayName
                         };
                         orgs.push(org);
                     }
