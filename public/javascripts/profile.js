@@ -455,7 +455,7 @@ var Organizations = React.createClass({
                         </div>
                     </div>
                     <div className="item-box-right">
-                        <a href={'/organization/'+org.orgId} className="body-link"><h4 className="margin-top-bottom-5">{org.name}</h4></a>
+                        <a href={'/organization/'+org.name} className="body-link"><h4 className="margin-top-bottom-5">{org.displayName}</h4></a>
                         <span className="font-15">{org.location}</span>
                         {join}
                     </div>
@@ -1803,7 +1803,9 @@ var ResourceAddForm = React.createClass({
                     <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
                     <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
                     <Input type="text" placeholder="URL (Link to model)" name="url" onChange={this.handleChange} value={this.state.url} />
+                    
                     {/*
+                        <CategorizedTagInput addNew={true} categories={categories} />
                     <div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Users to share:" name="groupies" value={this.state.collaborators} />
                     </div>
