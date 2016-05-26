@@ -19,7 +19,7 @@ var About = React.createClass({
             <ul >
                 <li>Create a homepage for their research group, lab or network and connect their members.</li>
                 <li>Store and share their research outputs. </li>
-                <li>Stary up-to-date with their networks activities.</li>
+                <li>Stay up-to-date with their networks' activities.</li>
                 <li>Discover knowledge and expertise.</li>
                 <li>Streamline collaboration within their networks.</li>
             </ul>
