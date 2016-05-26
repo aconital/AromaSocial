@@ -232,7 +232,7 @@ var Organization = React.createClass ({
                                 </div>
                                 <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
+                                <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                             </div>
                         </div>
                     </div>
@@ -360,7 +360,7 @@ var About = React.createClass({
             fax: this.state.orgFax,
             email: this.state.orgEmail
         };
-        var isAdminURL= "/organization/"+objectId+"/isAdmin";
+        console.log(JSON.stringify(dataForm));
         $.ajax({
             url: path + "/update",
             dataType: 'json',
@@ -511,30 +511,30 @@ var About = React.createClass({
 
                                 <tr >
 
-                                  <td> <input id="streetInp" type="text" className="p-editable" name="orgStreet" placeholder="Street Address, Unit/Room #"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
+                                  <td> <input id="streetInp" type="text" className="p-editable transparent" name="orgStreet" placeholder="Street Address, Unit/Room #"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
                                 </tr>
                                 <tr >
-                                    <td ><input type="text" className="p-editable" placeholder="Country" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
+                                    <td ><input type="text" className="p-editable transparent" placeholder="Country" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
 
-                                    <td ><input type="text" className="p-editable" placeholder="State / Province" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
+                                    <td ><input type="text" className="p-editable transparent" placeholder="State / Province" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
                                 </tr>
                                 <tr >
-                                    <td><input type="text" className="p-editable" name="orgCity" placeholder="City" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
+                                    <td><input type="text" className="p-editable transparent" name="orgCity" placeholder="City" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
 
-                                    <td><input type="text" className="p-editable" name="orgPostalcode" placeholder="Zip / Postal-code" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
+                                    <td><input type="text" className="p-editable transparent" name="orgPostalcode" placeholder="Zip / Postal-code" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
                                 </tr >
 
                                 <tr>
-                                    <td className="tdnowrap"><span>Tel:</span><input type="text" id="telInp" className="p-editable" name="orgTel" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgTel} /></td>
+                                    <td className="tdnowrap"><span>Tel:</span><input type="text" id="telInp" className="p-editable transparent" name="orgTel" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgTel} /></td>
                                 </tr>
                                 <tr>
-                                    <td className="tdnowrap"><span>Fax:</span><input type="text" className="p-editable" name="orgFax" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgFax} /></td>
+                                    <td className="tdnowrap"><span>Fax:</span><input type="text" className="p-editable transparent" name="orgFax" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgFax} /></td>
                                 </tr>
                                 <tr>
-                                    <td className="tdnowrap"><span>Email:</span><input type="text" className="p-editable" name="orgEmail" placeholder="Email" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgEmail} /></td>
+                                    <td className="tdnowrap"><span>Email:</span><input type="text" className="p-editable transparent" name="orgEmail" placeholder="Email" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgEmail} /></td>
                                 </tr>
                                 <tr>
-                                    <td className="tdnowrap"><span>Website:</span><input type="text" className="p-editable" name="orgWebsite" placeholder="Website url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
+                                    <td className="tdnowrap"><span>Website:</span><input type="text" className="p-editable transparent" name="orgWebsite" placeholder="Website url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -660,11 +660,11 @@ var Connections = React.createClass({
                 <div className="item-box">
                     <div className="item-box-left">
                         <div className="item-box-image-outside">
-                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                            <a href={'/organization/'+org.name}><img src={org.orgImgUrl} className="item-box-image" /></a>
                         </div>
                     </div>
                     <div className="item-box-right">
-                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <a href={'/organization/'+org.name} className="body-link"><h3 className="margin-top-bottom-5">{org.displayName}</h3></a>
                         <span className="font-15">{org.location}</span>
                     </div>
                 </div>
@@ -726,7 +726,7 @@ var AddConnection = React.createClass({
                             });
                             res($.map(arr, function(item){
                                 return {
-                                    label: item.name,
+                                    label: item.displayName,
                                     id: item.objectId
                                 };
                             }));
@@ -759,10 +759,10 @@ var AddConnection = React.createClass({
                         <option value=""></option>
                         <option value="contains">We are part of this organization</option>
                         <option value="sponsors">This organization sponsors us</option>
-                        <option value="collaberates">We collaborate with this organization</option>
+                        <option value="collaborates">We collaborate with this organization</option>
                     </Input>
                     <Modal.Footer>
-                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                        <Input className="btn pull-right" type="submit" value="Continue" />
                         <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
                     </Modal.Footer>
                 </form>

@@ -124,13 +124,17 @@ pre {
 }
 
 input[type="text"] { 
-  border: 1px solid gray;
+  border: 1px solid var(--background-color);
 }
 input[type="email"] { 
-  border: 1px solid gray;
+  border: 1px solid var(--background-color);
 }
 input[type="password"] { 
-  border: 1px solid gray;
+  border: 1px solid var(--background-color);
+}
+
+.transparent{
+  border: transparent !important;
 }
 
 code,
@@ -5731,6 +5735,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
 
 .date-editable-input { padding-left: 0px; padding-right: 0px; }
 
+.tagsinput-tag-link.react-tagsinput-tag { color: var(--link-color); text-decoration: none; }
 .tagsinput-tag-link:hover { color: var(--link-color); text-decoration: none; }
 .tagsinput-tag-link:active { color: var(--link-color); text-decoration: none; }
 
@@ -6228,7 +6233,7 @@ table.summary tr td {
     margin:1px;
     padding:0px 4px;
 } .react-tagsinput-tag a {
-    color: white;
+    color: black;
 } span.react-tagsinput-tag {
     padding: 1.5px 5px !important;
 } .react-tagsinput-input {
@@ -6422,7 +6427,7 @@ textarea {
     background-clip: padding-box;
     *border-right-width: 2px;
     *border-bottom-width: 2px;
-    box-shadow: 10px 10px 5px #333333;
+    /*box-shadow: 10px 10px 5px #333333;*/
 }
 
 .ui-menu-item > a.ui-corner-all {

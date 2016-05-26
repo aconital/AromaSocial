@@ -15,13 +15,13 @@ var About = React.createClass({
         <div className="about-div2">
             <h4>
             Syncholar is a knowledge sharing platform for research labs and networks. It is created by academics to make their busy lives easier! </h4>
-            <h4>Academics use Syncholar to:</h4>
+            <h4>Researchers use Syncholar to:</h4>
             <ul >
-                <li>Create a homepage for their research lab or network and connect their members.</li>
+                <li>Create a homepage for their research group, lab or network and connect their members.</li>
                 <li>Store and share their research outputs. </li>
-                <li>Stary up-to-date with their networks activities.</li>
+                <li>Stay up-to-date with their networks' activities.</li>
                 <li>Discover knowledge and expertise.</li>
-                <li> streamline collaboration within their networks.</li>
+                <li>Streamline collaboration within their networks.</li>
             </ul>
         </div>
         <div className="about-middiv">
@@ -51,7 +51,7 @@ var About = React.createClass({
                         </p>
                     </div>
                     <div className="col-md-3"><img src={'/images/Track Outputs.png'} alt="Generic placeholder image" width="110" height="140" />
-                        <h2>Track and store</h2>
+                        <h2>Store and Track</h2>
                         <p>
                         All research outputs will be stored and accessible. Track your impact! <br> <b> But way beyond just publications!</b></br>
                         </p>
@@ -92,7 +92,7 @@ var About = React.createClass({
             <div>
                 <div className="col-md-1 "><OverlayTrigger trigger="hover" placement="top" overlay={<Popover title="Troublemaker"><strong>Saeed Ghafghazi</strong> <br></br>Co-founder</Popover>}><img className="team-img" src={'/images/IMG_20160326_114524.jpg'} alt="Generic placeholder image" width="100" height="100"  /></OverlayTrigger> </div>
                 <div className="col-md-1 "><OverlayTrigger trigger="hover" placement="top" overlay={<Popover title="Computer Scientologist"><strong>Hirad Roshandel</strong> <br></br>Software Developer</Popover>}><img className="team-img" src={'/images/12023.jpg'} alt="Generic placeholder image" width="100" height="100" /></OverlayTrigger>  </div>
-                <div className="col-md-1 "><OverlayTrigger trigger="hover" placement="top" overlay={<Popover title="Appearing soon"><strong>Newton Tse</strong> <br></br>Software Developer</Popover>}><img className="team-img" src={'/images/user.png'} alt="Generic placeholder image" width="100" height="100"/></OverlayTrigger>  </div>
+                <div className="col-md-1 "><OverlayTrigger trigger="hover" placement="top" overlay={<Popover title="Super Dev"><strong>Newton Tse</strong> <br></br>Software Developer</Popover>}><img className="team-img" src={'/images/Newton.jpg'} alt="Generic placeholder image" width="100" height="100"/></OverlayTrigger>  </div>
                 <div className="col-md-1 "><OverlayTrigger trigger="hover" placement="top" overlay={<Popover title="Picturephobic Minion"><strong>Lisa Li</strong> <br></br>Software Developer</Popover>}><img className="team-img" src={'/images/1423.png'} alt="Generic placeholder image" width="100" height="100" /></OverlayTrigger>  </div>
                 <div className="col-md-1 "><OverlayTrigger trigger="hover" placement="top" overlay={<Popover title="A bit artist(ic)"><strong>Shariq Aziz</strong> <br></br>Software Developer</Popover>}><img className="team-img" src={'/images/12309.jpg'} alt="Generic placeholder image" width="100" height="100"/></OverlayTrigger>  </div>
 

@@ -50,7 +50,7 @@ module.exports=function(app,Parse,io) {
             success: function(result) {
                 res.render('organization', {
                     title: 'Organization',
-                    path: req.path,
+                    path: '/organization/' + result.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
                     objectId: result.id,
@@ -387,7 +387,6 @@ module.exports=function(app,Parse,io) {
                 else
                     location = req.body.country;
             }
-
             result.set('location', location);
             result.set("carousel_1_head", req.body.carousel_1_head);
             result.set("carousel_1_body", req.body.carousel_1_body);
@@ -520,61 +519,47 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query("RelationshipOrg");
         query.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId});
         query.include('orgId1');
-        query.find().then(function(results) {
-            for (var uo in results) {
-                var verified = results[uo].attributes.verified;
-                var connected_orgs = results[uo].attributes.orgId1.attributes;
-                var orgId = results[uo].attributes.orgId1.id;
-                var name = "N/A";
-                var location = connected_orgs.location;
-                var orgImgUrl = onnected_orgs.picture.url()
-                if (connected_orgs.hasOwnProperty('name')) {
-                    name = connected_orgs.name;
-                }
+        query.each(function(results) {
+            var verified = results.attributes.verified;
+            var connected_orgs = results.attributes.orgId1.attributes;
+            var orgId = results.attributes.orgId1.id;
+            var name = connected_orgs.name;
+            var displayName = connected_orgs.displayName;
+            var location = connected_orgs.location;
+            var orgImgUrl = connected_orgs.picture.url()
+            //only orgs that are verified
+            if (verified) {
                 var org = {
                     orgId: orgId,
                     name: name,
+                    displayName: displayName,
                     location: location,
                     orgImgUrl: orgImgUrl
                 };
-                //only orgs that are verified
-                if (verified) {
-                    var org = {
-                        orgId: orgId,
-                        name: name,
-                        location: location,
-                        orgImgUrl: orgImgUrl
-                    };
-                    orgs.push(org);
-                }
+                orgs.push(org);
             }
         }).then(function(results){
             var query1 = new Parse.Query("RelationshipOrg");
             query1.equalTo('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId});
             query1.include('orgId0');
-            query1.find().then(function(results) {
-                for (var uo in results) {
-                    var verified = results[uo].attributes.verified;
-                    var connected_orgs = results[uo].attributes.orgId0.attributes;
-                    var orgId = results[uo].attributes.orgId0.id;
-                    var name = "N/A";
-                    var location = connected_orgs.location;
-                    var orgImgUrl = connected_orgs.picture.url();
-                    if (connected_orgs.hasOwnProperty('name')) {
-                        name = connected_orgs.name;
-                    }
-                    //only orgs that are verified
-                    if (verified) {
-                        var org = {
-                            orgId: orgId,
-                            name: name,
-                            location: location,
-                            orgImgUrl: orgImgUrl
-                        };
-                        console.log("Verified org: ");
-                        console.log(org);
-                        orgs.push(org);
-                    }
+            query1.each(function(results) {
+                var verified = results.attributes.verified;
+                var connected_orgs = results.attributes.orgId0.attributes;
+                var orgId = results.attributes.orgId0.id;
+                var name = connected_orgs.name;
+                var displayName = connected_orgs.displayName;
+                var location = connected_orgs.location;
+                var orgImgUrl = connected_orgs.picture.url();
+                //only orgs that are verified
+                if (verified) {
+                    var org = {
+                        orgId: orgId,
+                        name: name,
+                        displayName: displayName,
+                        location: location,
+                        orgImgUrl: orgImgUrl
+                    };
+                    orgs.push(org);
                 }
             }).then(function(results){
                 console.log(orgs);
