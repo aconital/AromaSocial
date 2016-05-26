@@ -660,11 +660,11 @@ var Connections = React.createClass({
                 <div className="item-box">
                     <div className="item-box-left">
                         <div className="item-box-image-outside">
-                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                            <a href={'/organization/'+org.name}><img src={org.orgImgUrl} className="item-box-image" /></a>
                         </div>
                     </div>
                     <div className="item-box-right">
-                        <a href={'/organization/'+org.orgId} className="body-link"><h3 className="margin-top-bottom-5">{org.name}</h3></a>
+                        <a href={'/organization/'+org.name} className="body-link"><h3 className="margin-top-bottom-5">{org.displayName}</h3></a>
                         <span className="font-15">{org.location}</span>
                     </div>
                 </div>
