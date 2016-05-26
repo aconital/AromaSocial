@@ -17,69 +17,46 @@ var ImportContent = React.createClass({
 		e.preventDefault();
 		var self = this;
 
-		var nameQuery = this.state.name || 'saeed ghafghazi'; // TODO split etc
+		var nameQuery = this.state.name.toLowerCase() || 'saeed ghafghazi'; // TODO split etc
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
 
-		var params = {
-			"expr": "Composite(AA.AuN=='saeed ghafghazi')",
-			"model": "latest",
-			"count": "10",
-			"offset": "0",
-			// "orderby": "{string}",
-			"attributes": "Ti,Y,AA.AuN,E",
-		};
-
 		$.ajax({
-			// url: "https://api.projectoxford.ai/academic/v1.0/evaluate?" + $.param(params),
-			// beforeSend: function(xhrObj){
-			// 	xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","69bc82dd085d458bbcf261cf06a68558");
-			// },
-			url: '/fetchworks',
+			url: '/fetchworks?name=' + nameQuery,
 			type: "GET",
-			// data: "{body}",
 		})
 		.done(function(data) {
 			console.log(data);
 			var entities = data.data['entities'];
 			// console.log(JSON.stringify(entities,null,4));
-			self.setState({ results: entities,
+			self.setState({ results: data.data,
 							status: 'showTable' });
 		})
 		.fail(function(xhr, status, err) {
 			console.error('http://.projectoxford.ai/academic/', status, err, xhr);
 		});
-
-		// $.ajax({
-		// 	url: "https://api.projectoxford.ai/academic/v1.0/evaluate?expr= Composite(AA.AuN=='saeed ghafghazi')&attributes=Ti,Y,AA.AuN,AA.AuId,E",
-		// 	dataType: 'jsonp',
-		// 	headers: {
-		// 		'Ocp-Apim-Subscription-Key' : '69bc82dd085d458bbcf261cf06a68558',
-		// 		// 'Accept':'application/json'
-		// 	},
-		// 	success: function(data) {
-		// 		console.log(data);
-		// 		var totalResults = data['search-results']['opensearch:totalResults'];
-		// 		var entry = data['search-results']['entry'];
-		// 		console.log(JSON.stringify(entry,null,4));
-		// 		// TODO: displsy
-		// 	}.bind(this),
-		// 	error: function(xhr, status, err) {
-		// 		console.error('http://api.elsevier.com', status, err, xhr);
-		// 		this.setState({ autoFillStatus: "DOI not found. Try again." });
-		// 	}.bind(this)
-		// });
 	},
+	redirect: function(e) {
+		alert("you shall not pass! not yet anyway lemme finish some stuff first");
+	},
+
 	render: function() {
 		var content;
 		if (this.state.status == 'askForAction') {
-			content = <div><ImportButtons querySciDir={this.querySciDir} /></div>
+			content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
 		} else if (this.state.status == 'searching') {
 			console.log('henshin!');
 			content = <div>Searching...</div>
 		} else if (this.state.status == 'showTable') {
-			console.log('change again');
-			content = <WorksList results={this.state.results} />
+			if (this.state.results.length > 0) {
+				console.log('change again');
+				content = <WorksList results={this.state.results} />
+			} else {
+				content = (<div>
+					<p>No results found!</p>
+					<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
+					</div>)
+			}
 		}
 
 		return (
@@ -109,24 +86,37 @@ var ImportButtons = React.createClass({
 });
 
 var WorkItem = React.createClass({
-	// TODO
 	getInitialState: function() {
 		return {
 			isImported: true,
-			entity: this.props.entity,
+			glyphCellClasses: 'glyphicon glyphicon-ok imported',
 		};
     },
     // controls highlighting of items to import and fires related events
 	toggleCheck(e) { // TODO toggle on tr click, not span click
-		if ($(e.target).hasClass("glyphicon-remove")) {
-			this.setState({isImported: true});
-			$(e.target).removeClass("glyphicon-remove").addClass("glyphicon-ok imported");
+		if (this.state.isImported) {
+			this.setState({
+				isImported: false,
+				glyphCellClasses: 'glyphicon glyphicon-remove'
+			});
 			this.toggleImport(true);
-		} else if ($(e.target).hasClass("glyphicon-ok")) {
-			this.setState({isImported: false});
-			$(e.target).removeClass("glyphicon-ok imported").addClass("glyphicon-remove");
+		} else if (!this.state.isImported) {
+			this.setState({
+				isImported: true,
+				glyphCellClasses: 'glyphicon glyphicon-ok imported'
+			});
 			this.toggleImport(false);
 		}
+
+		// if ($(e.target).hasClass("glyphicon-remove")) {
+		// 	this.setState({isImported: true});
+		// 	$(e.target).removeClass("glyphicon-remove").addClass("glyphicon-ok imported");
+		// 	this.toggleImport(true);
+		// } else if ($(e.target).hasClass("glyphicon-ok")) {
+		// 	this.setState({isImported: false});
+		// 	$(e.target).removeClass("glyphicon-ok imported").addClass("glyphicon-remove");
+		// 	this.toggleImport(false);
+		// }
 	},
 	// tells WorksList to add or remove item at current index
 	toggleImport(toAdd) {
@@ -135,18 +125,19 @@ var WorkItem = React.createClass({
 	},
 
 	render() {
-		var entity = this.props.entity;
+		var entity = this.props.entity; // TODO change props.entity to transformed version
 		var extended = JSON.parse(entity.E);
-		var allAuthors = entity.AA.reduce( (prev, curr) => prev + ', ' + toTitleCase(curr.AuN), '' );
+		var allAuthors = entity.AA.map( (a) => toTitleCase(a.AuN) ).join(", ");
 		var importFeedback = this.state.isImported ? { backgroundColor: '#bbefbb' } : { backgroundColor: 'white'};
+		var glyphCellClasses = this.state.glyphCellClasses;
 
 		return (
-			<tr style={importFeedback}>
-				<td className="import-works-checkbox"><span className="glyphicon glyphicon-ok imported" onClick={this.toggleCheck}></span></td>
+			<tr style={importFeedback} onClick={this.toggleCheck}>
+				<td className="import-works-checkbox"><span className={this.state.glyphCellClasses}></span></td>
 				<td className="import-works-details">
 					<div><strong>Title:</strong> {extended.DN}</div>
 					<div><strong>Authors:</strong> {allAuthors}</div>
-					<div><strong>Publication Year:</strong> {this.state.entity.Y}</div>
+					<div><strong>Publication Year:</strong> {entity.Y}</div>
 				</td>
 			</tr>
 		)
@@ -164,6 +155,22 @@ var WorksList = React.createClass({
 	// TODO
 	importWorks() {
 		alert('TODO send POST to database' + this.state.resultsToSend.length);
+
+		$.ajax({
+			url: '/import',
+			type: 'POST',
+			dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(this.state.resultsToSend),
+		})
+		.done(function(data) {
+			console.log(data);
+			self.setState({ results: data.data,
+							status: 'showTable' });
+		})
+		.fail(function(xhr, status, err) {
+			console.error('Failed to get result', status, err, xhr);
+		});
 	},
 	transformResults(works) {
 		var self = this;
@@ -171,24 +178,17 @@ var WorksList = React.createClass({
 		works.map(function(item) { 
 			transformed.push(self.transformProperties(item));
         });
-        console.log(transformed);
-        return transformed;
+        return transformed; // TODO convert to set?
 	},
-	transformProperties(work) {
+	transformProperties(work) { // TODO support for conferences, books, others if possible
 		var journalArticle = {
-			title: work.hasOwnProperty('Ti') ? work.Ti : '',
+			type: 'journal',
+			title: work.hasOwnProperty('Ti') ? toTitleCase(work.Ti) : '',
 			publication_date: work.hasOwnProperty('D') ? work.D : Date.parse(work.Y),
-			contributors: work.hasOwnProperty('AA') ? work.AA.reduce( (prev, curr) => prev + ', ' + toTitleCase(curr.AuN), '' ) : [name],
-			journal: work.hasOwnProperty('J') ? work.J.JN : '',
-			keywords: work.hasOwnProperty('F') ? [work.F.Fn] : [],
-			// abstract: extended.D,
-			// volume: extended.V,
-			// issue: extended.I,
-			// page: extended.FP+'-'extended.LP,
-			// url: extended.S[0].U,
-			// doi: extended.DOI
+			contributors: work.hasOwnProperty('AA') ? work.AA.map( (a) => toTitleCase(a.AuN) ): [name],
+			journal: work.hasOwnProperty('J') ? toTitleCase(work.J.JN) : '',
+			keywords: work.hasOwnProperty('F') ? work.F.map( (k) => toTitleCase(k.FN) ) : [],
 		};
-
 		if (work.hasOwnProperty('E')) {
 			var extended = JSON.parse(work.E);
 			journalArticle['abstract'] = extended.hasOwnProperty('D') ? extended.D : '';
@@ -198,15 +198,13 @@ var WorksList = React.createClass({
 			journalArticle['url'] = extended.hasOwnProperty('S') ? extended.S[0].U : '';
 			journalArticle['doi'] = extended.hasOwnProperty('DOI') ? extended.DOI : '';
 		}
-		
 		return journalArticle;
 	},
-	// add or remove works from the list of things to send. allResults keeps permanent list of works, and indexes of WorkItem components match to those in allResults
+	// adds or removes works from the list of things to send. allResults keeps permanent list of works,
+	// and indexes of WorkItem components passed up match to those in allResults
 	addRemoveImport(index, toAdd) {
-		console.log(this.state.resultsToSend);
 		if (toAdd) {
 			console.log('adding', index);
-			// this.setState({resultsToSend: this.state.resultsToSend.push(this.state.allResults[index])});
 			this.setState({resultsToSend: this.state.resultsToSend.concat(this.state.allResults[index])});
 			console.log(this.state.resultsToSend);
 		} else {
@@ -223,10 +221,10 @@ var WorksList = React.createClass({
 		var self = this;
 		var results = this.props.results;
 		var transFormedResults = [];
-		var items = results.map(function(item, index) { // TODO remove?
-			transFormedResults.push(self.transformProperties(item));
-            return <WorkItem entity={item} key={index} index={index} toggleImport={self.addRemoveImport} />;
-        });
+		// var items = results.map(function(item, index) { // TODO remove?
+		// 	transFormedResults.push(self.transformProperties(item));
+  //           return <WorkItem entity={item} key={index} index={index} toggleImport={self.addRemoveImport} />;
+  //       });
 
 		return (
 			<div style={{width: '90%'}} className="center-block">
@@ -252,7 +250,7 @@ var WorksList = React.createClass({
 
 var Required = React.createClass({
 	render: function() {
-		var requiredField = {color: 'red', fontWeight: '800'}
+		var requiredField = {color: 'red', fontWeight: '800'};
 		return (
 			<span style={requiredField}>{this.props.content}</span>
 		);

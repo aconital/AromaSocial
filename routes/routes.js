@@ -22,6 +22,7 @@ var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
 var include_user= require('../utils/helpers').include_user;
 var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
+var formatParams=require('../utils/helpers').formatParams;
 
 module.exports=function(app,Parse,io, content, jsonContent) {
 
@@ -579,7 +580,6 @@ app.get('/auth/linkedin/callback',function(req,res){
  *
  ********************************************/
 app.get("/import", function (req,res,next) {
-  console.log(req);
   res.render("import", {user: req.user});
 });
 
@@ -590,35 +590,39 @@ app.get("/fetchworks", function(req, res, next) {
     if (jsonContent)
       res.status(200).json({status:"OK", data:jsonContent}); // TODO replace w/ actual query
     // var params = {
-    //   "expr": "Composite(AA.AuN=='saeed ghafghazi')",
+    //   // "expr": "Composite(AA.AuN=='" + req.query.name.toLowerCase() + "')",
+    //   "expr": "Composite(AA.AuN=='" +'saeed ghafghazi' + "')",
     //   "model": "latest",
     //   "count": "20",
     //   "offset": "0",
     //   // "orderby": "{string}",
     //   "attributes": "Ti,Y,D,J.JN,F.FN,AA.AuN,E",
     // };
+    // var url = "https://api.projectoxford.ai/academic/v1.0/evaluate?" + formatParams(params);
 
-    // $.ajax({
-    //   url: "https://api.projectoxford.ai/academic/v1.0/evaluate?" + $.param(params),
-    //   beforeSend: function(xhrObj){
-    //     xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","69bc82dd085d458bbcf261cf06a68558");
-    //   },
-    //   type: "GET",
-    // })
-    // .done(function(data) {
-    //   alert("success");
-    //   console.log(data);
-    //   var entry = data['entities'];
-    //   console.log(JSON.stringify(entry,null,4));
-    // })
-    // .fail(function(xhr, status, err) {
-    //   alert("error");
-    //   console.error('http://.projectoxford.ai/academic/', status, err, xhr);
-    // });
+    // var options = {
+    //   url: url,
+    //   headers: {
+    //     "Ocp-Apim-Subscription-Key": "69bc82dd085d458bbcf261cf06a68558"
+    //   }
+    // };
+
+    // function callback(error, response, body) {
+    //   if (!error && response.statusCode == 200) {
+    //     var data = JSON.parse(body);
+    //     console.log(data.entities);
+    //     res.status(200).json({status:"OK", data: data.entities});
+    //   } else {
+    //     res.status(response.statusCode).json({status: "Searching for works has failed." + error});
+    //   }
+    // }
+
+    // request(options, callback);
 });
 
 app.post("/import", function(req, res, next) {
-
+  console.log('\nTODO add all to publications');
+  console.log(JSON.stringify(req.body, null, 2));
 });
 
 // 6f909740a9436d8a63ef7bea5cfb276ae5573f1a
