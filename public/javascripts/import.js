@@ -39,6 +39,9 @@ var ImportContent = React.createClass({
 	redirect: function(e) {
 		alert("you shall not pass! not yet anyway lemme finish some stuff first");
 	},
+	setStatus: function(newStatus) {
+		this.setState({ status: newStatus });
+	},
 
 	render: function() {
 		var content;
@@ -50,13 +53,18 @@ var ImportContent = React.createClass({
 		} else if (this.state.status == 'showTable') {
 			if (this.state.results.length > 0) {
 				console.log('change again');
-				content = <WorksList results={this.state.results} />
+				content = <WorksList results={this.state.results} setStatus={this.setStatus} />
 			} else {
 				content = (<div>
 					<p>No results found!</p>
 					<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
 					</div>)
 			}
+		} else {
+			content = (<div>
+				<p>{this.state.status}</p>
+				<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
+				</div>)
 		}
 
 		return (
@@ -92,6 +100,7 @@ var WorkItem = React.createClass({
 			glyphCellClasses: 'glyphicon glyphicon-ok imported',
 		};
     },
+
     // controls highlighting of items to import and fires related events
 	toggleCheck(e) { // TODO toggle on tr click, not span click
 		if (this.state.isImported) {
@@ -99,25 +108,16 @@ var WorkItem = React.createClass({
 				isImported: false,
 				glyphCellClasses: 'glyphicon glyphicon-remove'
 			});
-			this.toggleImport(true);
+			this.toggleImport(false);
 		} else if (!this.state.isImported) {
 			this.setState({
 				isImported: true,
 				glyphCellClasses: 'glyphicon glyphicon-ok imported'
 			});
-			this.toggleImport(false);
+			this.toggleImport(true);
 		}
-
-		// if ($(e.target).hasClass("glyphicon-remove")) {
-		// 	this.setState({isImported: true});
-		// 	$(e.target).removeClass("glyphicon-remove").addClass("glyphicon-ok imported");
-		// 	this.toggleImport(true);
-		// } else if ($(e.target).hasClass("glyphicon-ok")) {
-		// 	this.setState({isImported: false});
-		// 	$(e.target).removeClass("glyphicon-ok imported").addClass("glyphicon-remove");
-		// 	this.toggleImport(false);
-		// }
 	},
+
 	// tells WorksList to add or remove item at current index
 	toggleImport(toAdd) {
 		console.log('passingUp', this.props.index, toAdd);
@@ -147,31 +147,41 @@ var WorkItem = React.createClass({
 var WorksList = React.createClass({
 	getInitialState: function() {
 		return {
-			resultsToSend: this.transformResults(this.props.results), // list of works to send to database
+			resultsToSend: Array.apply(null, Array(this.props.results.length)).map( (item, i) => item = i ), // indexes of works to send to database
 			allResults: this.transformResults(this.props.results), // original list. do not modify after transform
 			style: {},
 		};
     },
-	// TODO
+	setStatus(status) {
+		this.props.setStatus(status);
+	},
+
+	// TODO send request for highlighted works to be imported
 	importWorks() {
 		alert('TODO send POST to database' + this.state.resultsToSend.length);
-
+		var self = this;
+		var works = [];
+		for (index of this.state.resultsToSend) {
+			works.push(this.state.allResults[index]);
+		}
+		console.log(works);
 		$.ajax({
 			url: '/import',
 			type: 'POST',
 			dataType: 'json',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(this.state.resultsToSend),
+            data: JSON.stringify(works),
 		})
 		.done(function(data) {
 			console.log(data);
-			self.setState({ results: data.data,
-							status: 'showTable' });
+			self.setStatus('Import done!');
 		})
 		.fail(function(xhr, status, err) {
-			console.error('Failed to get result', status, err, xhr);
+			console.error('Failed to import works', status, err, xhr);
+			self.setStatus('Import failed.');
 		});
 	},
+
 	transformResults(works) {
 		var self = this;
 		var transformed = [];
@@ -192,26 +202,29 @@ var WorksList = React.createClass({
 		if (work.hasOwnProperty('E')) {
 			var extended = JSON.parse(work.E);
 			journalArticle['abstract'] = extended.hasOwnProperty('D') ? extended.D : '';
-			journalArticle['volume'] = extended.hasOwnProperty('V') ? extended.V : '';
-			journalArticle['issue'] = extended.hasOwnProperty('I') ? extended.I : '';
+			journalArticle['volume'] = extended.hasOwnProperty('V') ? extended.V.toString() : '';
+			journalArticle['issue'] = extended.hasOwnProperty('I') ? extended.I.toString() : '';
 			journalArticle['page'] = (extended.hasOwnProperty('FP') && extended.hasOwnProperty('LP')) ? extended.FP+'-'+extended.LP : '';
 			journalArticle['url'] = extended.hasOwnProperty('S') ? extended.S[0].U : '';
 			journalArticle['doi'] = extended.hasOwnProperty('DOI') ? extended.DOI : '';
 		}
 		return journalArticle;
 	},
-	// adds or removes works from the list of things to send. allResults keeps permanent list of works,
+
+	// adds or removes indexes from the list of works to send. allResults keeps permanent list of works,
 	// and indexes of WorkItem components passed up match to those in allResults
 	addRemoveImport(index, toAdd) {
-		if (toAdd) {
+		if (toAdd === true) {
 			console.log('adding', index);
-			this.setState({resultsToSend: this.state.resultsToSend.concat(this.state.allResults[index])});
+			this.setState({
+				resultsToSend: this.state.resultsToSend.concat([index])
+			});
 			console.log(this.state.resultsToSend);
 		} else {
 			console.log('removing', index);
 			// this.state.resultsToSend.splice(index, 1);
 			this.setState({
-				resultsToSend: this.state.resultsToSend.filter((_, i) => i !== index)
+				resultsToSend: this.state.resultsToSend.filter((i) => i !== index)
 			});
 			console.log(this.state.resultsToSend);
 		}
