@@ -54,7 +54,29 @@ module.exports=function(app,Parse,io) {
    ********************************************/
   app.get('/', function(req, res, next) {
       if(!req.isAuthenticated()) {
-          res.render('home');
+          //maybe there is cookie for remember me
+          if(req.cookies.syncholar_cookie != null)
+          {
+              var cookie_token= req.cookies.syncholar_cookie;
+              var query = new Parse.Query(Parse.User);
+              query.equalTo("cookie_token", cookie_token);
+              query.first({
+                  success: function (result) {
+                      if (result) {
+                          var username=result.get("username");
+                          req.login(username, function(err){
+                              if(err) res.redirect('/');
+                              res.redirect(req.originalUrl);
+                          });
+                      }
+                  },
+                  error: function ( error) {
+                      console.log("Couldnt save cookie token")
+                  }
+              });
+          }
+          else
+              res.render('home');
       }else if(req.user.emailVerified != true )
       {
           res.redirect('/verify-email');
@@ -329,7 +351,32 @@ module.exports=function(app,Parse,io) {
               if(err) {
                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
               } else {
-                  return res.redirect('/');
+                  //remember me option is checked, create a token for this user and save in db and res
+                  if(req.body.remember)
+                  {
+                      var timestamp= Date.now() / 1000 | 0;
+                      var cookie_token= randomString(5)+timestamp+randomString(5);
+                      var query = new Parse.Query(Parse.User);
+                      query.equalTo("username", user);
+                      query.first({
+                          success: function (result) {
+                              if (result) {
+                                  result.set("cookie_token",cookie_token);
+                                  result.save(null, { useMasterKey: true });
+                                  var cookie_age=  30*24*60*1000; //30 days
+                                  res.cookie('syncholar_cookie', cookie_token, { maxAge: cookie_age });
+                                  return res.redirect('/');
+                              }
+                          },
+                          error: function ( error) {
+                              console.log("Couldnt save cookie token")
+                          }
+                      });
+
+                  }
+                  else
+                      return res.redirect('/');
+
               }
           });
       })(req, res, next);
@@ -346,6 +393,7 @@ app.get('/signout', function (req, res, next) {
 
     if(req.isAuthenticated()) {
         req.session.destroy(function (err) {
+            res.clearCookie("syncholar_cookie");
             res.redirect('/'); //Inside a callback� bulletproof!
         });
     }
@@ -368,7 +416,7 @@ app.get('/terms',include_user, function (req, res, next) {
      *
      ********************************************/
 
-    app.get('/about', function (req, res, next) {
+    app.get('/about',include_user, function (req, res, next) {
         res.render('about', {title: 'About Us', path: req.path});
     });
 

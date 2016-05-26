@@ -8,10 +8,40 @@ var SparkPost = require('sparkpost');
 var sp = new SparkPost('5c4cf399a6bbc1f2bd87a881d08756458b0834cb');
 var request = require('request').defaults({ encoding: null });
 
+var Parse = require('parse/node');
+Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
+Parse.serverURL = 'http://52.38.90.136:1337/parse/';
+
 module.exports = {
 
 is_auth: function (req,res,next){
+
     if (!req.isAuthenticated()) {
+        //maybe there is cookie for remember me
+        if(req.cookies.syncholar_cookie != null)
+        {
+            var cookie_token= req.cookies.syncholar_cookie;
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("cookie_token", cookie_token);
+            query.first({
+                success: function (result) {
+                    if (result) {
+                      var username=result.get("username");
+                        req.login(username, function(err){
+                            if(err) res.redirect('/');
+
+                            res.redirect(req.originalUrl);
+                        });
+
+                    }
+                },
+                error: function ( error) {
+                    console.log("Couldnt save cookie token")
+                }
+            });
+        }
+        //nope user is not logged in
+        else
         res.redirect('/');
     }else if(req.user.emailVerified != true )
     {
@@ -24,6 +54,30 @@ is_auth: function (req,res,next){
 },
 include_user:function(req,res,next){
     if (!req.isAuthenticated()) {
+        //maybe there is cookie for remember me
+        if(req.cookies.syncholar_cookie != null)
+        {
+            var cookie_token= req.cookies.syncholar_cookie;
+            var query = new Parse.Query(Parse.User);
+            query.equalTo("cookie_token", cookie_token);
+            query.first({
+                success: function (result) {
+                    if (result) {
+                        var username=result.get("username");
+                        req.login(username, function(err){
+                            if(err) res.redirect('/');
+
+                            res.redirect(req.originalUrl);
+                        });
+
+                    }
+                },
+                error: function ( error) {
+                    console.log("Couldnt save cookie token")
+                }
+            });
+        }
+        else
         next();
     }else
     {
