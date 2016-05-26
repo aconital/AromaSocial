@@ -726,7 +726,7 @@ var AddConnection = React.createClass({
                             });
                             res($.map(arr, function(item){
                                 return {
-                                    label: item.name,
+                                    label: item.displayName,
                                     id: item.objectId
                                 };
                             }));
@@ -759,10 +759,10 @@ var AddConnection = React.createClass({
                         <option value=""></option>
                         <option value="contains">We are part of this organization</option>
                         <option value="sponsors">This organization sponsors us</option>
-                        <option value="collaberates">We collaborate with this organization</option>
+                        <option value="collaborates">We collaborate with this organization</option>
                     </Input>
                     <Modal.Footer>
-                        <Input className="btn btn-default pull-right" type="submit" value="Continue" />
+                        <Input className="btn pull-right" type="submit" value="Continue" />
                         <div style={{textAlign:'center'}}>{this.state.formFeedback}</div>
                     </Modal.Footer>
                 </form>

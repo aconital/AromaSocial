@@ -99,7 +99,7 @@
 } #resume-education:hover a {
   color: var(--link-color);
 } #resume-expertise-and-interests a {
-  color: var(--contrast-free-color);
+  color: var(--link-color);
   -webkit-transition: all 1s ease;
   -moz-transition: all 1s ease;
   -o-transition: all 1s ease;
