@@ -566,7 +566,7 @@ app.get("/fetchworks", function(req, res, next) {
     //   "count": "20",
     //   "offset": "0",
     //   // "orderby": "{string}",
-    //   "attributes": "Ti,Y,AA.AuN,E",
+    //   "attributes": "Ti,Y,D,J.JN,F.FN,AA.AuN,E",
     // };
 
     // $.ajax({
