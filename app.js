@@ -90,7 +90,7 @@ require('./routes/publication')(app,Parse,io);
 require('./routes/data')(app,Parse,io);
 require('./routes/model')(app,Parse,io);
 require('./routes/newsfeed')(app,Parse,io);
-require('./routes/search')(app,Parse,io);
+// require('./routes/search')(app,Parse,io);
 require('./routes/group')(app,Parse,io);
 require('./routes/report')(app,Parse,io);
 
@@ -111,11 +111,11 @@ io.on('connection', function(socket){
 
 //===============PASSPORT=================
 // Use the LocalStrategy within Passport to login/�signin� users.
+
 passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
-  },function(email, password, done) {
-
+},function(email, password, done) {
     var query = new Parse.Query(Parse.User);
     query.equalTo("email", email);
     query.first({
@@ -146,13 +146,14 @@ passport.use(new LocalStrategy({
 
 }));
 
+
+
 passport.serializeUser(function(user, done) {
 
     done(null, user);
 });
 
 passport.deserializeUser(function(username, done) {
-
     var query = new Parse.Query(Parse.User);
     query.equalTo("username", username);
     query.first({

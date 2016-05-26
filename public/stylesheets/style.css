@@ -63,7 +63,10 @@ pre{
 
 
 a {
-  background-color: transparent; }
+  background-color: transparent; 
+  cursor: pointer;
+  cursor: hand;
+}
 
 a:active,
 a:hover {
@@ -117,7 +120,18 @@ hr {
   height: 0; }
 
 pre {
-  overflow: auto; }
+  overflow: auto; 
+}
+
+input[type="text"] { 
+  border: 1px solid gray;
+}
+input[type="email"] { 
+  border: 1px solid gray;
+}
+input[type="password"] { 
+  border: 1px solid gray;
+}
 
 code,
 kbd,

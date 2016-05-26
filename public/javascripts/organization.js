@@ -47,6 +47,7 @@ var Organization = React.createClass ({
         this.setState({ showModal: false});
     },
     componentDidMount : function() {
+        console.log("In organization main: ", objectId);
         var peopleUrl = "/organization/" + objectId + "/admins";
 
         $.ajax({
@@ -105,15 +106,11 @@ var Organization = React.createClass ({
         });
 
     },
-    submitPicture: function() { //todo export utils
-// <<<<<<< HEAD
+    submitPicture: function() { 
         var dataForm = {name: this.state.name, picture: this.state.picture, pictureType: this.state.pictureType};
         this.setState({imgSubmitText: "Uploading. Give us a sec..."});
         this.setState({imgSubmitDisabled:true});
         var that = this;
-// =======
-//         var dataForm = {picture: this.state.picture, pictureType: this.state.pictureType};
-// >>>>>>> 066d0da34bc0c5a8d4507a6417069090ac217e26
         $.ajax({
             url: path + "/updatePicture",
             dataType: 'json',
@@ -155,8 +152,8 @@ var Organization = React.createClass ({
 
     render: function() {
         var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
-        var orgNameArr = name.split(".");
-        var orgName = orgNameArr[0];
+        // var orgNameArr = name.split(".");
+        // var orgName = orgNameArr[0];
         if (this.state.status == "joined") {
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
@@ -202,7 +199,7 @@ var Organization = React.createClass ({
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{name}</h1>
+                                <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                                 <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                             </div>
@@ -233,7 +230,7 @@ var Organization = React.createClass ({
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{name}</h1>
+                                <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
                                 <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
                                 <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Data', 'Models']} />
                             </div>
