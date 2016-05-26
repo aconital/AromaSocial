@@ -21,7 +21,7 @@ var About = React.createClass({
                 <li>Store and share their research outputs. </li>
                 <li>Stary up-to-date with their networks activities.</li>
                 <li>Discover knowledge and expertise.</li>
-                <li> streamline collaboration within their networks.</li>
+                <li>Streamline collaboration within their networks.</li>
             </ul>
         </div>
         <div className="about-middiv">
