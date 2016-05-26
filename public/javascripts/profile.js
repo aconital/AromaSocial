@@ -47,6 +47,15 @@ var CustomTags = React.createClass({
             idMap: nameToIds
         }
     },
+    isInTags: function(tag) {
+        var tags = this.state.tags;
+        for(var i = 0; i < tags.length; i++) {
+            if (tags[i].text == tag) {
+                return true;
+            }
+        }
+        return false;
+    },
     handleDelete: function(i) {
         var tags = this.state.tags;
         tags.splice(i, 1);
@@ -54,7 +63,7 @@ var CustomTags = React.createClass({
     },
     handleAddition: function(tag) {
         var tags = this.state.tags;
-        if ($.inArray('specialword', tags) == -1) {
+        if (this.isInTags(tag)) {
             console.log("Duplicate tag found. Not adding.");
         } else {
             tags.push({
@@ -64,7 +73,11 @@ var CustomTags = React.createClass({
             this.setState({tags: tags});
 
             var ids = this.state.ids;
-            ids.push(this.state.idMap[tag]);
+            if (this.state.idMap[tag] == undefined) {
+                ids.push(tag);
+            } else {
+                ids.push(this.state.idMap[tag]);
+            }
             this.setState({ids: ids});
 
 
@@ -1794,7 +1807,8 @@ var ResourceAddForm = React.createClass({
                     <div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Collaborators:" name="collaborators" value={this.state.collaborators} />
                     </div>
-*/  }
+                    */}
+                    
                     <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
                     <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
