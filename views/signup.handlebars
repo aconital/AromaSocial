@@ -1,16 +1,14 @@
 <script>
 function nospaces(t){
-
     if( t.value.match(/\s/g) || t.value.match(/\./g)  ){
 
         //swal("Sorry...", "You can't have spaces or periods in your username", "error");
-        $('#username').tooltip('toggle');
-        setTimeout(function(){ $('#username').tooltip('toggle'); }, 3000);
+        $('#' + t.id).tooltip('toggle');
+        setTimeout(function(){ $('#' + t.id).tooltip('toggle'); }, 3000);
 
         t.value= (t.value.replace(/\s/g,'') .replace(/\./g,''));
 
     }
-
 }
 </script>
 
@@ -23,32 +21,38 @@ function nospaces(t){
                 <div class="alert alert-warning" id="error" style="visibility: hidden"></div></p>
                 <p class="bg-danger">{{Error}}</p>
             </div>--}}
-            <form name="form" method="post" action="/signup" novalidate="novalidate">
+            <form name="form" method="post" action="/signup">
+
                 <div class="form-group">
-                    <label for="username" class="control-label">Display Name</label>
-                    <input type="text" name="username" id="username" onkeyup="nospaces(this)" placeholder="JohnSmith2016" unique-username="unique-username" required="required" ng-model="username" autofocus="autofocus" class="form-control" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="No spaces or periods in username..."/>
+                    <label for="firstname" class="control-label">First Name</label>
+                    <input type="text" name="firstname" id="firstname" onkeyup="nospaces(this)" placeholder="First Name" ng-model="fullname" autofocus="autofocus" class="form-control" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="No spaces or periods in first name..." aria-required="true" required/>
                 </div>
+
                 <div class="form-group">
-                    <label for="fullname" class="control-label">Full Name</label>
-                    <input type="text" name="fullname" id="fullname" placeholder="Full Name" unique-username="unique-username" required="required" ng-model="fullname" autofocus="autofocus" class="form-control"/>
+                    <label for="lastname" class="control-label">Last Name</label>
+                    <input type="text" name="lastname" id="lastname" onkeyup="nospaces(this)" placeholder="Last Name" ng-model="lastname" autofocus="autofocus" class="form-control" data-toggle="tooltip" data-trigger="manual" data-placement="top" title="No spaces or periods in last name..." aria-required="true" required/>
                 </div>
+
                 <div class="form-group">
                     <label for="email" class="control-label">Email</label>
-                    <input type="email" ng-model="email" name="email" id="email" placeholder="Email" required="required" class="form-control"/>
+                    <input type="email" ng-model="email" name="email" id="email" placeholder="Email" class="form-control" aria-required="true" required/>
                 </div>
+
                 <div class="form-group">
                     <label for="password" class="control-label">Password</label>
-                    <input type="password" name="password" id="password" ng-model="password" required="required" match="verification" class="form-control"/>
+                    <input type="password" name="password" id="password" ng-model="password" match="verification" class="form-control" aria-required="true" required/>
                 </div>
+
                 <div class="form-group">
                     <label for="verification" class="control-label">Repeat password</label>
-                    <input type="password" name="verification" id="verification" ng-model="verification" required="required" match="password" class="form-control"/>
+                    <input type="password" name="verification" id="verification" ng-model="verification" match="password" class="form-control" aria-required="true" required/>
                 </div>
+                
                 <br>
                 <input type="submit" value="Sign Up" class="btn btn-primary"/>
                 <div class="form-group">
-                    <p> By clicking "Sign Up", you agree to our
-                        <a href="/terms" target="_blank"> terms of service</a>
+                    <p> By clicking "Sign Up", or "Sigin in with Linkedin", you agree to our
+                        <a href="/terms" target="_blank"> terms and conditions</a>
                         and
                         <a href="/privacy" target="_blank"> privacy policy</a>.
                     </p>

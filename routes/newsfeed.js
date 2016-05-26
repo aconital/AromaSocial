@@ -510,12 +510,14 @@ module.exports=function(app,Parse,io) {
         query.each(function(result) {
             var verified = result.get('verified');
             var orgId = result.get('orgId').id;
-            var orgName = result.get('orgId').get('name');
+            var orgName = result.get('orgId').get('displayName');
+            var orgLink = result.get('orgId').get('name');
             //console.log("VERIFIED " +verified + " ORGID " + orgId + " ORGNAME " + orgName);
             if (verified) {
                 var org = {
                     orgId: orgId,
-                    orgName: orgName
+                    orgName: orgName,
+                    orgLink: orgLink
                 }
                 orgs.push(org);
             }

@@ -27,14 +27,12 @@ module.exports=function(app,Parse,io, content, jsonContent) {
 
   app.get('/beta', function (req, res, next) {
     var rl = req.query.redLink;
-    console.log("redLink in /beta get: ", rl);
     res.render('beta', {title: 'Syncholar Beta', redLink: rl, path: req.path, Error: ""});
   });
 
   app.post('/beta', function (req, res, next) {
       var code = req.body.code;
       var redLink = req.body.redLink;
-      console.log("RedLink in /beta POST => ", redLink);
       if(code === "summer2016") {
           req.session.code=code;
           // res.redirect("/signin");
@@ -44,19 +42,7 @@ module.exports=function(app,Parse,io, content, jsonContent) {
        res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
   });
 
-  // EMAIL API
-  app.post('/sendemail', function(req, res, next){
-    var name = req.body.name;
-    var email = req.body.email;
-    var subject = req.body.subject;
-    var msg = req.body.message;
 
-    // checks go here
-    console.log("SENDING EMAIL!!");
-
-    sendEmail(name, email, subject, msg);
-    next();
-  });
 
   app.get('/invite', function(req, res){
     res.render('invite');
@@ -224,25 +210,67 @@ module.exports=function(app,Parse,io, content, jsonContent) {
       }
    });
 
-    app.post('/signup', function (req, res, next) {
-     var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
-     var user = new Parse.User();
-     user.set("username", req.body.username);
-     user.set("password", req.body.password);
-     user.set("fullname", req.body.fullname);
-     user.set("email", req.body.email);
-     user.set("interestsTag", []);
-     user.set("interests", []);
-     user.set("summary", "");
-     user.set("educations", []);
-     user.set("about", "");
-     user.set("projects", []);
-     user.set("workExperience", []);
-     user.set("emailVerified",false);
-     user.set("email_token",email_code)
+// <<<<<<< HEAD
+  app.post('/signup', function (req, res, next) {
+    // if (req.body.firstname == undefined || req.body.lastname == undefined || req.body.email == undefined || req.body.password == undefined || req.body.verification == undefined) {
+    //   return false;
+    // }
+
+    var fullname = req.body.firstname + " " + req.body.lastname;
+    var username = req.body.firstname + "_" + req.body.lastname;
+
+    // check if username already exists in db
+    var maxIndexSoFar = -1;
+    var query = new Parse.Query(Parse.User);
+    query.startsWith("username", username);
+    query.each(function(result) {
+
+        var str = result.get("username");
+        var strArr = str.split(".");
+        if (strArr.length == 0 || strArr[1] == undefined) {
+            if (str == username) {
+                username += ".0";
+            }
+            return;
+        }
+        var index = parseInt(strArr[1]);
+
+        if (maxIndexSoFar < index) {
+            maxIndexSoFar = index;
+        }
+    }).then(function() {
+          if (maxIndexSoFar == -1) {
+              // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first user)
+          } else {
+              // update username to use next index
+              var newIndex = maxIndexSoFar + 1;
+              username = req.body.firstname + "_" + req.body.lastname + "." + newIndex;
+          }
+      }, function(error) {
+          console.log("ERROR THROWN: ");
+          console.log(error);
+    }).then(function() {
+         var email_code= randomString(3)+req.body.email.split("@")[0]+randomString(3);
+         var user = new Parse.User();
+         user.set("username", username);
+         user.set("password", req.body.password);
+         user.set("firstname", req.body.firstname);
+         user.set("lastname", req.body.lastname);
+         user.set("fullname", fullname);
+         user.set("email", req.body.email);
+         user.set("imgUrl", "/images/user.png");
+         user.set("interestsTag", []);
+         user.set("interests", []);
+         user.set("summary", "");
+         user.set("educations", []);
+         user.set("about", "");
+         user.set("projects", []);
+         user.set("workExperience", []);
+         user.set("emailVerified", false);
+         user.set("email_token",email_code)
+
      user.signUp(null, {
         success: function (user) {
-
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
                 '<a href="https://syncholar.com/verify-email/'+email_code+'" >https://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
             sendMail("verify Email - Syncholar",emailBody,req.body.email);
@@ -258,20 +286,21 @@ module.exports=function(app,Parse,io, content, jsonContent) {
                    return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
                }
                return req.logIn(user, function(err) {
-                   if(err) {
-                       return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
-                   } else {
-                       return res.redirect('/');
-                   }
-               });
-           })(req, res, next);
-       },
-       error: function (user, error) {
-         // Show the error message somewhere and let the user try again.
-         res.render('signup', {Error: error.message, path: req.path});
-       }
-     });
-
+                       if(err) {
+                           return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
+                       } else {
+                           return res.redirect('/');
+                       }
+                   });
+               })(req, res, next)
+           },
+           error: function (user, error) {
+             // Show the error message somewhere and let the user try again.
+             console.log(error);
+             res.render('signup', {Error: error.message, path: req.path});
+           }
+         })
+      })
    });
 
   /*******************************************

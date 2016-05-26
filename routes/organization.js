@@ -42,18 +42,20 @@ module.exports=function(app,Parse,io) {
      * ORGANIZATION
      *
      ********************************************/
-    app.get('/organization/:objectId', is_auth, function (req, res, next) {
+    app.get('/organization/:name', is_auth, function (req, res, next) {
         var currentUser = req.user;
         var query = new Parse.Query('Organization');
-        query.get(req.params.objectId,{
+        query.equalTo("name", req.params.name);
+        query.first({
             success: function(result) {
                 res.render('organization', {
                     title: 'Organization',
                     path: req.path,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
-                    objectId: req.params.objectId,
+                    objectId: result.id,
                     name: result.get('name'),
+                    displayName: result.get('displayName'),
                     about: result.get('about'),
                     location: result.get('location'),
                     country: result.get('country'),
@@ -791,75 +793,130 @@ module.exports=function(app,Parse,io) {
 
     app.post('/create/organization', is_auth, function (req, res, next) {
         var currentUser = req.user;
-        var objectId;
-        var Organization = Parse.Object.extend("Organization");
-        var org = new Organization();
-        org.set('name', req.body.name);
-        // org.set('location', req.body.location ? req.body.location : '');
-        org.set('about', req.body.description ? req.body.description : '');
-        org.set('country', req.body.country ? req.body.country : '');
-        org.set('prov', req.body.prov ? req.body.prov : '');
-        org.set('city', req.body.city ? req.body.city : '');
-        org.set('street', req.body.street ? req.body.street : '');
-        org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
-        org.set('tel', req.body.tel ? req.body.tel : '');
-        org.set('fax', req.body.fax ? req.body.fax : '');
-        org.set('email', req.body.email ? req.body.email : '');
-        org.set('website', req.body.website ? req.body.website : '');
-        org.set('carousel_1_img','/images/carousel.png');
-        org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');
-        org.set('carousel_1_body',req.body.carousel_1_body ? req.body.carousel_1_body : '');
-        org.set('carousel_2_img','/images/carousel.png');
-        org.set('carousel_2_head',req.body.carousel_2_head ? req.body.carousel_2_head : '');
-        org.set('carousel_2_body',req.body.carousel_2_body ? req.body.carousel_2_body : '');
-        org.set('carousel_3_img','/images/carousel.png');
-        org.set('carousel_3_head',req.body.carousel_3_head ? req.body.carousel_3_head : '');
-        org.set('carousel_3_body',req.body.carousel_3_body ? req.body.carousel_3_body : '');
+        var dName = req.body.name;
+        var orgName = req.body.name.toLowerCase().replace(/'/g, "_").replace(/ /g, "_");
 
-        var location= '';
-        if (req.body.city ) {
-            location = req.body.city;
-        } if (req.body.prov) {
-            if(location!='')
-                location = location +', ' +req.body.prov;
-            else
-                location = req.body.prov;
-        } if (req.body.country) {
-            if(location!='')
-                location = location +', ' +req.body.country;
-            else
-                location = req.body.country;
-        }
-        org.set('location', location);
-        var promises = [];
-        if (req.body.picture != null) {
-            var pictureName = "org_picture." + req.body.pictureType;
-            var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
-            var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
-            promises.push(pictureFile.save().then(function () {
-                org.set('picture', pictureFile)
-            }));
-        }
-        return Parse.Promise.when(promises).then(function (res1, res2) {
-            org.save().then(function(response) {
-                objectId = response.id;
-                // create new Relationship object between organization and admin
-                console.log('Object ID retrieved/path name updated successfully');
-                var Relationship = Parse.Object.extend("Relationship");
-                var relation = new Relationship();
-                relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id});
-                relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
-                relation.set('isAdmin', true);
-                relation.set('verified', true);
-                relation.set('title', 'Members');
-                relation.save(null);
-            }).then(function(response) {
-                res.status(200).json({status: "OK", location: objectId});
-            });
+        // check if name already exists in db
+        var Organization = Parse.Object.extend("Organization");
+        var maxIndexSoFar = -1;
+        var query = new Parse.Query(Organization);
+        query.startsWith("displayName", req.body.name.toLowerCase());
+        query.each(function(result) {
+            console.log("DEBUG: Result => ", result);
+            var str = result.get("name");
+            console.log("NAME is ==>> ", str);
+            var strArr = str.split(".");
+            if (strArr.length == 0 || strArr[1] == undefined) {
+                if (str == orgName) {
+                    orgName += ".0";
+                }
+                return;
+            }
+            var index = parseInt(strArr[1]);
+            console.log("INDEX: ", index);
+            if (maxIndexSoFar < index) {
+                maxIndexSoFar = index;
+            }
+        }).then(function() {
+            console.log("Max index in db: ", maxIndexSoFar);
+            if (maxIndexSoFar == -1) {
+                // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first organization)
+            } else {
+                // update orgName to use next index
+                var newIndex = maxIndexSoFar + 1;
+                orgName = req.body.name.toLowerCase() + "." + newIndex;
+            }
         }, function(error) {
-            console.log('Failed to create new organization, with error code: ' + error.message);
-            res.status(500).json({status: "Creating organization failed. " + error.message});
-        });
+            console.log("ERROR THROWN: ");
+            console.log(error);
+        }).then(function() {
+            var objectId;
+            if (currentUser) {
+                //var Organization = Parse.Object.extend("Organization");
+                var org = new Organization();
+                org.set('cover_imgURL', '/images/banner.png'); // default. replace later
+                org.set('profile_imgURL', '/images/organization.png');
+                org.set('name', orgName);
+                org.set('displayName', dName);
+               // org.set('location', req.body.location ? req.body.location : '');
+                org.set('about', req.body.description ? req.body.description : 'About Organization');
+                org.set('country', req.body.country ? req.body.country : '');
+                org.set('prov', req.body.prov ? req.body.prov : '');
+                org.set('city', req.body.city ? req.body.city : '');
+                org.set('street', req.body.street ? req.body.street : '');
+                org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
+                org.set('website', req.body.website ? req.body.website : '');
+
+                org.set('carousel_1_img','/images/carousel.png');
+                org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');
+                org.set('carousel_1_body',req.body.carousel_1_body ? req.body.carousel_1_body : '');
+                org.set('carousel_2_img','/images/carousel.png');
+                org.set('carousel_2_head',req.body.carousel_2_head ? req.body.carousel_2_head : '');
+                org.set('carousel_2_body',req.body.carousel_2_body ? req.body.carousel_2_body : '');
+                org.set('carousel_3_img','/images/carousel.png');
+                org.set('carousel_3_head',req.body.carousel_3_head ? req.body.carousel_3_head : '');
+                org.set('carousel_3_body',req.body.carousel_3_body ? req.body.carousel_3_body : '');
+
+                var location= '';
+                if (req.body.city ) {
+                    location = req.body.city;
+                } if (req.body.prov) {
+                    if(location!='')
+                        location = location +', ' +req.body.prov;
+                    else
+                        location = req.body.prov;
+                } if (req.body.country) {
+                    if(location!='')
+                        location = location +', ' +req.body.country;
+                    else
+                        location = req.body.country;
+                }
+                org.set('location', location);
+
+                org.save(null).then(function(response) {
+                    objectId = response.id;
+                    // create new Relationship object between organization and admin
+                    console.log('Object ID retrieved/path name updated successfully');
+                    var Relationship = Parse.Object.extend("Relationship");
+                    var relation = new Relationship();
+                    relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id});
+                    relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
+                    relation.set('isAdmin', true);
+                    relation.set('verified', true);
+                    relation.set('title', 'Members');
+                    relation.save(null);
+                }).then(function(response) {
+                    // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
+                    // if provided. FOR LATER: also support cover image.
+                    if (req.body.picture) {
+                        // encode file
+                        var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
+                        // upload files to S3
+                        var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
+                        bucket.putObject(params, function (err, response) {
+                            if (err) {
+                                console.log("S3 Upload Error:", err); }
+                            else {
+                                // update file path in parse object
+                                org.set('profile_imgURL', awsLink + params.Key);
+                                org.save(null).then(function(){
+                                    res.status(200).json({status:"OK", location: orgName});
+                                })
+                            };
+                        });
+                    }
+                    else {
+                        res.status(200).json({status:"OK", location: orgName});
+                    }
+                }, function(error) {
+                    console.log('Failed to create new organization, with error code: ' + error.message);
+                    res.status(500).json({status: "Creating organization failed. " + error.message});
+                });
+
+            } else {
+                res.status(403).json({status:"Please login!"});
+            }
+        })
     });
 
     app.get('/manage/organization', is_auth, function (req, res, next) {
@@ -1109,7 +1166,7 @@ module.exports=function(app,Parse,io) {
                     msg: "wants to join",
                     extra: {
                         id: result.get("orgId").id,
-                        name: result.get("orgId").get("name"),
+                        name: result.get("orgId").get("displayName"),
                         imgUrl: result.get("orgId").get("profile_imgURL")
                     }
                 };
@@ -1144,13 +1201,13 @@ module.exports=function(app,Parse,io) {
                     from: {
                         userId:r.get("orgId1").id,
                         username: r.get("orgId1").id,
-                        name: r.get("orgId1").get("name"),
+                        name: r.get("orgId1").get("displayName"),
                         userImgUrl: r.get("orgId1").get("picture").url(),
                     },
                     msg: "wants to connect with ",
                     extra: {
                         id: r.get("orgId0").id,
-                        name: r.get("orgId0").get("name"),
+                        name: r.get("orgId0").get("displayName"),
                         imgUrl: r.get("orgId0").get("picture").url()
                     }
                 };
