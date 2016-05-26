@@ -6427,7 +6427,7 @@ textarea {
     background-clip: padding-box;
     *border-right-width: 2px;
     *border-bottom-width: 2px;
-    box-shadow: 10px 10px 5px #333333;
+    /*box-shadow: 10px 10px 5px #333333;*/
 }
 
 .ui-menu-item > a.ui-corner-all {
