@@ -15,9 +15,9 @@ var About = React.createClass({
         <div className="about-div2">
             <h4>
             Syncholar is a knowledge sharing platform for research labs and networks. It is created by academics to make their busy lives easier! </h4>
-            <h4>Academics use Syncholar to:</h4>
+            <h4>Researchers use Syncholar to:</h4>
             <ul >
-                <li>Create a homepage for their research lab or network and connect their members.</li>
+                <li>Create a homepage for their research group, lab or network and connect their members.</li>
                 <li>Store and share their research outputs. </li>
                 <li>Stary up-to-date with their networks activities.</li>
                 <li>Discover knowledge and expertise.</li>
@@ -51,7 +51,7 @@ var About = React.createClass({
                         </p>
                     </div>
                     <div className="col-md-3"><img src={'/images/Track Outputs.png'} alt="Generic placeholder image" width="110" height="140" />
-                        <h2>Track and store</h2>
+                        <h2>Store and Track</h2>
                         <p>
                         All research outputs will be stored and accessible. Track your impact! <br> <b> But way beyond just publications!</b></br>
                         </p>
