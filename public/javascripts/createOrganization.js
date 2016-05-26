@@ -23,7 +23,7 @@ var CreateOrganization = React.createClass({
 				<Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
 				<Row className="show-grid">
 					<Col xs={9} xsOffset={2} md={6} mdOffset={3}>
-						<Panel header="Create homepage for your research lab or network" >
+						<Panel header="Create homepage for your research group, lab, or network" >
 							<p>Once you have created the home page, remember to connect to your home department, institution, sponsors, etc. and more importantly invite your members to connect.  </p>
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
