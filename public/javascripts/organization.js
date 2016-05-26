@@ -360,7 +360,7 @@ var About = React.createClass({
             fax: this.state.orgFax,
             email: this.state.orgEmail
         };
-        var isAdminURL= "/organization/"+objectId+"/isAdmin";
+        console.log(JSON.stringify(dataForm));
         $.ajax({
             url: path + "/update",
             dataType: 'json',
@@ -511,30 +511,30 @@ var About = React.createClass({
 
                                 <tr >
 
-                                  <td> <input id="streetInp" type="text" className="p-editable" name="orgStreet" placeholder="Street Address, Unit/Room #"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
+                                  <td> <input id="streetInp" type="text" className="p-editable transparent" name="orgStreet" placeholder="Street Address, Unit/Room #"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgStreet} /></td>
                                 </tr>
                                 <tr >
-                                    <td ><input type="text" className="p-editable" placeholder="Country" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
+                                    <td ><input type="text" className="p-editable transparent" placeholder="Country" name="orgCountry" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCountry} /></td>
 
-                                    <td ><input type="text" className="p-editable" placeholder="State / Province" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
+                                    <td ><input type="text" className="p-editable transparent" placeholder="State / Province" name="orgProv" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgProv} /></td>
                                 </tr>
                                 <tr >
-                                    <td><input type="text" className="p-editable" name="orgCity" placeholder="City" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
+                                    <td><input type="text" className="p-editable transparent" name="orgCity" placeholder="City" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgCity} /></td>
 
-                                    <td><input type="text" className="p-editable" name="orgPostalcode" placeholder="Zip / Postal-code" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
+                                    <td><input type="text" className="p-editable transparent" name="orgPostalcode" placeholder="Zip / Postal-code" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgPostalcode} /></td>
                                 </tr >
 
                                 <tr>
-                                    <td className="tdnowrap"><span>Tel:</span><input type="text" id="telInp" className="p-editable" name="orgTel" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgTel} /></td>
+                                    <td className="tdnowrap"><span>Tel:</span><input type="text" id="telInp" className="p-editable transparent" name="orgTel" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgTel} /></td>
                                 </tr>
                                 <tr>
-                                    <td className="tdnowrap"><span>Fax:</span><input type="text" className="p-editable" name="orgFax" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgFax} /></td>
+                                    <td className="tdnowrap"><span>Fax:</span><input type="text" className="p-editable transparent" name="orgFax" placeholder="+cc-area-number" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgFax} /></td>
                                 </tr>
                                 <tr>
-                                    <td className="tdnowrap"><span>Email:</span><input type="text" className="p-editable" name="orgEmail" placeholder="Email" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgEmail} /></td>
+                                    <td className="tdnowrap"><span>Email:</span><input type="text" className="p-editable transparent" name="orgEmail" placeholder="Email" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgEmail} /></td>
                                 </tr>
                                 <tr>
-                                    <td className="tdnowrap"><span>Website:</span><input type="text" className="p-editable" name="orgWebsite" placeholder="Website url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
+                                    <td className="tdnowrap"><span>Website:</span><input type="text" className="p-editable transparent" name="orgWebsite" placeholder="Website url" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.orgWebsite} /></td>
                                 </tr>
                             </tbody>
                         </table>

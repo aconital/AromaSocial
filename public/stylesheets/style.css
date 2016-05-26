@@ -124,13 +124,17 @@ pre {
 }
 
 input[type="text"] { 
-  border: 1px solid gray;
+  border: 1px solid var(--background-color);
 }
 input[type="email"] { 
-  border: 1px solid gray;
+  border: 1px solid var(--background-color);
 }
 input[type="password"] { 
-  border: 1px solid gray;
+  border: 1px solid var(--background-color);
+}
+
+.transparent{
+  border: transparent !important;
 }
 
 code,

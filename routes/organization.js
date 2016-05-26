@@ -50,7 +50,7 @@ module.exports=function(app,Parse,io) {
             success: function(result) {
                 res.render('organization', {
                     title: 'Organization',
-                    path: req.path,
+                    path: '/organization/' + result.id,
                     currentUsername: currentUser.username,
                     currentUserImg: currentUser.imgUrl,
                     objectId: result.id,
@@ -387,7 +387,6 @@ module.exports=function(app,Parse,io) {
                 else
                     location = req.body.country;
             }
-
             result.set('location', location);
             result.set("carousel_1_head", req.body.carousel_1_head);
             result.set("carousel_1_body", req.body.carousel_1_body);
