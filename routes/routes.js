@@ -521,7 +521,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                           Parse.User.logIn(linkedin_ID, randomPass, {
                                               success: function(u) {
                                                   //get image from linkedin
-                                                  processLinkedinImage(email,$in,Parse);
+                                                  processLinkedinImage(email,$in);
                                                   var emailBody ='<h3><p>Welcome to Syncholar '+name+',</p> </h3>'+ '<p>We noticed you signed up using Linkedin. We have also created an username and a password for you:</p>'+
                                                       '<h4>Username:'+email+'</h4><p><h4>Password:'+randomPass+'</h4></p><p><br>-------------------<br>Syncholar Team</p>';
                                                   sendMail('Welcome To Syncholar',emailBody,email);

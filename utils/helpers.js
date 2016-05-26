@@ -85,7 +85,7 @@ include_user:function(req,res,next){
         next();
     }
 },
-processLinkedinImage:function(email,input,Parse){
+processLinkedinImage:function(email,input){
     if(input.pictureUrls.values != null) {
         request.get(input.pictureUrls.values[0], function (error, response, body) {
             if (!error && response.statusCode == 200) {
