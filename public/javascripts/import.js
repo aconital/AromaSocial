@@ -9,7 +9,6 @@ var ImportContent = React.createClass({
      return {
      	status: 'askForAction',
      	name: name,
-     	ajaxStatus:'',
      	results: {}
         };
     },
@@ -17,7 +16,7 @@ var ImportContent = React.createClass({
 		e.preventDefault();
 		var self = this;
 
-		var nameQuery = this.state.name.toLowerCase() || 'saeed ghafghazi'; // TODO split etc
+		var nameQuery = this.state.name.toLowerCase(); // TODO split etc
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
 
@@ -26,9 +25,7 @@ var ImportContent = React.createClass({
 			type: "GET",
 		})
 		.done(function(data) {
-			console.log(data);
 			var entities = data.data['entities'];
-			// console.log(JSON.stringify(entities,null,4));
 			self.setState({ results: data.data,
 							status: 'showTable' });
 		})
@@ -38,6 +35,7 @@ var ImportContent = React.createClass({
 	},
 	redirect: function(e) {
 		alert("you shall not pass! not yet anyway lemme finish some stuff first");
+		window.location = '../';
 	},
 	setStatus: function(newStatus) {
 		this.setState({ status: newStatus });
@@ -48,12 +46,10 @@ var ImportContent = React.createClass({
 		if (this.state.status == 'askForAction') {
 			content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
 		} else if (this.state.status == 'searching') {
-			console.log('henshin!');
 			content = <div>Searching...</div>
 		} else if (this.state.status == 'showTable') {
 			if (this.state.results.length > 0) {
-				console.log('change again');
-				content = <WorksList results={this.state.results} setStatus={this.setStatus} />
+				content = <WorksList results={this.state.results} setStatus={this.setStatus} redirect={this.redirect} />
 			} else {
 				content = (<div>
 					<p>No results found!</p>
@@ -77,17 +73,14 @@ var ImportContent = React.createClass({
 
 var ImportButtons = React.createClass({
     querySciDir(e) {
-        console.log('here');
-        // this.setMsg('In progress...');
         this.props.querySciDir(e);
-        console.log("end");
     },
 
 	render: function() {
 		return (
 			<div id="">
 				<Button className="btn-success btn-lg" onClick={this.querySciDir}>Yes, import my works</Button>
-				<Button className="btn-secondary btn-lg space" onClick={this.redirect}>No, proceed to Syncholar</Button>
+				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>No, proceed to Syncholar</Button>
 			</div>
 		);
 	}
@@ -156,15 +149,13 @@ var WorksList = React.createClass({
 		this.props.setStatus(status);
 	},
 
-	// TODO send request for highlighted works to be imported
+	// send request for highlighted works to be imported
 	importWorks() {
-		alert('TODO send POST to database' + this.state.resultsToSend.length);
 		var self = this;
 		var works = [];
 		for (index of this.state.resultsToSend) {
 			works.push(this.state.allResults[index]);
 		}
-		console.log(works);
 		$.ajax({
 			url: '/import',
 			type: 'POST',
@@ -173,11 +164,9 @@ var WorksList = React.createClass({
             data: JSON.stringify(works),
 		})
 		.done(function(data) {
-			console.log(data);
 			self.setStatus('Import done!');
 		})
 		.fail(function(xhr, status, err) {
-			console.error('Failed to import works', status, err, xhr);
 			self.setStatus('Import failed.');
 		});
 	},
@@ -219,14 +208,12 @@ var WorksList = React.createClass({
 			this.setState({
 				resultsToSend: this.state.resultsToSend.concat([index])
 			});
-			console.log(this.state.resultsToSend);
 		} else {
 			console.log('removing', index);
 			// this.state.resultsToSend.splice(index, 1);
 			this.setState({
 				resultsToSend: this.state.resultsToSend.filter((i) => i !== index)
 			});
-			console.log(this.state.resultsToSend);
 		}
 	},
 
@@ -234,10 +221,6 @@ var WorksList = React.createClass({
 		var self = this;
 		var results = this.props.results;
 		var transFormedResults = [];
-		// var items = results.map(function(item, index) { // TODO remove?
-		// 	transFormedResults.push(self.transformProperties(item));
-  //           return <WorkItem entity={item} key={index} index={index} toggleImport={self.addRemoveImport} />;
-  //       });
 
 		return (
 			<div style={{width: '90%'}} className="center-block">
@@ -256,6 +239,7 @@ var WorksList = React.createClass({
 					</tbody>
 				</Table>
 				<Button className="btn-success btn-lg" onClick={this.importWorks}>Import highlighted works and continue</Button>
+				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button>
 			</div>
 		);
 	}

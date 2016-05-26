@@ -37,14 +37,6 @@ app.use(helmet());
 Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
 Parse.serverURL = 'http://52.38.90.136:1337/parse/';
 
-// TODO remove
-var content = fs.readFileSync("./public/javascripts/response.json");
-console.log("Output Content : \n"+ content);
-var jsonContent = JSON.parse(content);
-console.log("Output Content : \n"+ jsonContent);
-console.log("\n *EXIT* \n");
-
-
 // just to check that s3 is connected. remove when deploying
 s3.listBuckets(function(err, data) {
   if (err) { console.log("Error:", err); }

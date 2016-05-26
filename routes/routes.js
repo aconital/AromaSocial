@@ -584,26 +584,20 @@ app.get("/import", function (req,res,next) {
 });
 
 app.get("/fetchworks", function(req, res, next) {
-    // console.log("Output Content : \n"+ content);
-    // console.log("Output Content : \n"+ jsonContent);
-    // console.log("\n *EXIT* \n");
-    // if (jsonContent)
-    //   res.status(200).json({status:"OK", data:jsonContent}); // TODO replace w/ actual query
     var params = {
-      // "expr": "Composite(AA.AuN=='" + req.query.name.toLowerCase() + "')",
-      "expr": "Composite(AA.AuN=='" +'saeed ghafghazi' + "')",
+      "expr": "Composite(AA.AuN=='" + req.query.name.toLowerCase() + "')",
       "model": "latest",
       "count": "20",
       "offset": "0",
       // "orderby": "{string}",
-      "attributes": "Ti,Y,D,J.JN,F.FN,AA.AuN,E", // TODO: conferene support C.CN, VFN
+      "attributes": "Ti,Y,D,J.JN,F.FN,AA.AuN,E", // TODO: conference support C.CN, VFN
     };
     var url = "https://api.projectoxford.ai/academic/v1.0/evaluate?" + formatParams(params);
 
     var options = {
       url: url,
       headers: {
-        "Ocp-Apim-Subscription-Key": "69bc82dd085d458bbcf261cf06a68558"
+        "Ocp-Apim-Subscription-Key": "4e12b17ee21441fca62a50d570acc065"
       }
     };
 
@@ -623,10 +617,6 @@ app.get("/fetchworks", function(req, res, next) {
 });
 
 app.post("/import", function(req, res, next) {
-  console.log('\nTODO add all to publications');
-  console.log(JSON.stringify(req.body, null, 2));
-  console.log(req.user);
-
   var saveArray = [];
 
   //parse each imported work, and add to saveArray for bulk saving
@@ -643,7 +633,7 @@ app.post("/import", function(req, res, next) {
       pub.set('title', work.title);
       pub.set('doi', work.doi);
       pub.set('publication_date', new Date(work.publication_date));
-      console.log('progrteds!!!');
+
       // journal article fields
       pub.set('journal', work.journal);
       pub.set('volume', work.volume);
@@ -652,15 +642,13 @@ app.post("/import", function(req, res, next) {
       pub.set('type', "journal");
       saveArray.push(pub);
   };
-  console.log(saveArray);
+  
   // return success if all works are imported without error
   Parse.Object.saveAll(saveArray, {
     success: function(list) {
-      console.log('success', list);
       res.status(200).json({status:"All works imported"});
     },
     error: function(error) {
-      console.log(error);
       console.log(JSON.stringify(error,null,2));
       res.status(500).json({status: "Importing works failed. " + error.message});
     },
