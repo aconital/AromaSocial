@@ -1174,35 +1174,44 @@ module.exports=function(app,Parse,io) {
         query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id})
         query.each(function(result) {
 
-            var query = new Parse.Query('RelationshipOrg');
-            query.equalTo("verified",false)
-            query.include('orgId1')
-            query.include('orgId0')
-            query.equalTo("orgId0",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
-            query.each(function(r) {
-                var org_notification = {
-                    id: "org_"+r.get("orgId1").id+"_"+r.get("orgId0").id+"_inv",
-                    type:"org2orgrequest",
-                    from: {
-                        userId:r.get("orgId1").id,
-                        username: r.get("orgId1").id,
-                        name: r.get("orgId1").get("displayName"),
-                        userImgUrl: r.get("orgId1").get("picture").url(),
-                    },
-                    msg: "wants to connect with ",
-                    extra: {
-                        id: r.get("orgId0").id,
-                        name: r.get("orgId0").get("displayName"),
-                        imgUrl: r.get("orgId0").get("picture").url()
-                    }
-                };
+            var promise = Parse.Promise.as();
 
-                requests.push(org_notification);
-            }).then(function(){
-                res.json(requests);
-            }, function(err) {
-                console.log(err);
+            promise = promise.then(function() {
+                var query = new Parse.Query('RelationshipOrg');
+                query.equalTo("verified", false)
+                query.include('orgId1')
+                query.include('orgId0')
+                query.equalTo("orgId0", {
+                    __type: "Pointer",
+                    className: "Organization",
+                    objectId: result.get("orgId").id
+                });
+                return query.each(function (r) {
+
+                    var org_notification = {
+                        id: "org_" + r.get("orgId1").id + "_" + r.get("orgId0").id + "_inv",
+                        type: "org2orgrequest",
+                        from: {
+                            userId: r.get("orgId1").id,
+                            username: r.get("orgId1").id,
+                            name: r.get("orgId1").get("displayName"),
+                            userImgUrl: r.get("orgId1").get("picture").url(),
+                        },
+                        msg: "wants to connect with ",
+                        extra: {
+                            id: r.get("orgId0").id,
+                            name: r.get("orgId0").get("displayName"),
+                            imgUrl: r.get("orgId0").get("picture").url()
+                        }
+                    };
+                    requests.push(org_notification);
+                });
             });
+            return promise;
+        }).then(function(){
+            res.json(requests);
+        }, function(err) {
+            console.log(err);
         });
     });
     function notifyadmins(orgId,user)
