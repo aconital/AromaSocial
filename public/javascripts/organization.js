@@ -199,8 +199,8 @@ var Organization = React.createClass ({
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
-                                <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
+                                <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
+                                <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>
                                 <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                             </div>
                         </div>
@@ -230,8 +230,8 @@ var Organization = React.createClass ({
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
-                                <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
+                                <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
+                                <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>
                                 <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                             </div>
                         </div>

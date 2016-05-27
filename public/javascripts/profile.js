@@ -275,7 +275,9 @@ var Profile = React.createClass ({
                     </div>
                     <div id="item-bottom-2-profile" className="item-bottom-2">
                         {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
-                        <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
+                        <h3 className="no-margin-padding align-left h1-title">{fullname}</h3>
+                        <h4 className="no-margin-padding align-left h3-title">{title}</h4>
+
                         <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                     </div>
                     <div className="item-bottom-3">
