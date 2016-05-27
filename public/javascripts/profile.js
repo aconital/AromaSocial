@@ -1249,6 +1249,9 @@ var ResourceForm = React.createClass({
   open() {
     this.setState({ showModal: true });
   },
+  redirect: function(e) {
+        window.location = '../../import';
+  },
   render: function() {
     return (
 		<div>
@@ -1257,6 +1260,9 @@ var ResourceForm = React.createClass({
                 <tr>
                     {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                     {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.open} type="button" value="+"/></td> : ""}
+                </tr>
+                <tr>
+                    {(currentUsername == username && this.props.publication) ? <td className="padding-left-5 padding-top-5"><input className="item-add-button" onClick={this.redirect} type="button" value="Import Publications"/></td> : ""}
                 </tr>
             </table>
         </div>
