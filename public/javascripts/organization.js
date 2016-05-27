@@ -135,6 +135,20 @@ var Organization = React.createClass ({
         });
         return;
     },
+    deleteOrg:function(orgId){
+        var connectURL= "/organization/"+orgId+"/delete";
+
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                location.reload();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't retrieve people.");
+            }.bind(this)
+        });
+
+    },
     handlePicture: function(e) { //todo export utils
         var self = this,
             reader = new FileReader(),
@@ -198,6 +212,7 @@ var Organization = React.createClass ({
                             <div id="item-bottom-2-organization" className="item-bottom-2">
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
+                                    <button onClick={this.deleteOrg.bind(self, objectId)} className="btn btn-panel btn-right-side" value="Delete">Delete Page</button>
                                 </div>
                                 <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
                                 <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>

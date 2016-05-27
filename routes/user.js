@@ -50,7 +50,7 @@ module.exports=function(app,Parse,io) {
         if(currentUser.username == linkUser) {
             console.log(req.path);
             var obj={
-                title: currentUser.about,
+                title: currentUser.title,
                 path: req.path,
                 currentUsername: currentUser.username,
                 objectId: currentUser.id,
@@ -90,6 +90,7 @@ module.exports=function(app,Parse,io) {
             query.equalTo("username",linkUser);
             query.first({
                 success: function(result) {
+                    if(result)
                     res.render('profile', { title: result.get('about'), path: req.path,
                         currentUsername: currentUser.username,
                         currentUserImg: currentUser.imgUrl,
@@ -106,6 +107,8 @@ module.exports=function(app,Parse,io) {
                         profile_imgURL: result.get('picture').url(),
                         isMe: false
                     });
+                    else
+                    res.render('notfound',{isOrg:false,isUser:true});
                 },
                 error: function(error) {
                     res.redirect('/');
@@ -166,7 +169,7 @@ module.exports=function(app,Parse,io) {
                 res.json(status);
             }, error: function(error) {
                 console.log(error);
-                res.render('index', {path: req.path});
+                res.render('index', {title: error, path: req.path});
             }
         });
     });
@@ -221,7 +224,7 @@ module.exports=function(app,Parse,io) {
                 res.json(filtered_people);
             }, function(error){
                 console.log(error);
-                res.render('index', {path: req.path});
+                res.render('index', {title: error, path: req.path});
             });
         });
 
@@ -288,7 +291,7 @@ module.exports=function(app,Parse,io) {
             },
             error: function(error) {
                 console.log(error);
-                res.render('index', {path: req.path});
+                res.render('index', {title: error, path: req.path});
             }
         });
     });
@@ -314,7 +317,7 @@ module.exports=function(app,Parse,io) {
                         if(email !=null)
                             user.set("email",email);
                         user.save();
-                        res.render('profile', {title: currentUser.title, username: currentUser.username, isMe: true, currentUserImg:currentUser.imgUrl,
+                        res.render('profile', {title: 'Profile', username: currentUser.username, isMe: true, currentUserImg:currentUser.imgUrl,
                             userImg:currentUser.imgUrl, fullname:name, email: email});
                     }
                 });
@@ -351,7 +354,7 @@ module.exports=function(app,Parse,io) {
                                 var imgUrl='/profilepictures/'+req.params.username+'/'+file_name;
                                 user.set("imgUrl",imgUrl);
                                 user.save();
-                                res.render('profile', {title: currentUser.title, username: currentUser.username, isMe: true, currentUserImg:imgUrl,
+                                res.render('profile', {title: 'Profile', username: currentUser.username, isMe: true, currentUserImg:imgUrl,
                                     userImg: imgUrl, fullname:currentUser.fullname, email: currentUser.email});
                             }
                         });

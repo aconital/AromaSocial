@@ -48,6 +48,7 @@ module.exports=function(app,Parse,io) {
         query.equalTo("name", req.params.name);
         query.first({
             success: function(result) {
+                if(result)
                 res.render('organization', {
                     title: 'Organization',
                     path: '/organization/' + result.id,
@@ -78,6 +79,8 @@ module.exports=function(app,Parse,io) {
                     carousel_3_body: result.get('carousel_3_body'),
                     organization_imgURL: result.get('picture').url()
                 });
+                else
+                res.render('notfound',{isOrg:true,isUser:false});
             },
             error: function(error) {
                 res.render('index', {title: 'Please Login!', path: req.path});
