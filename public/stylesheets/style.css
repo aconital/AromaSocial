@@ -6299,7 +6299,7 @@ div.react-tagsinput {
          float:left;
          width:100%;
          border-color: var(--foreground-color);
-         background-color:var(--foreground-color);
+         background-color:var(--background-color);
          opacity: 1;
          	-webkit-transition: .3s ease-in-out;
          	transition: .3s ease-in-out;

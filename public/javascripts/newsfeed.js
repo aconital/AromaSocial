@@ -59,7 +59,7 @@ var NewsFeed = React.createClass({
                     <div className="col-xs-4">
 
                       <div className = "createorg_panel">
-                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><span className="nfButton"><i className="fa fa-plus" aria-hidden="true"></i> Create a Homepage</span></button>
+                        <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><span className="nfButton"><i className="fa fa-plus" aria-hidden="true"></i> Create Organizational Homepage</span></button>
                       </div>
                         <div className = "panel search-panel your-groups">
                         <h4 className="white"><span className="nfButton">Your Labs & Networks</span></h4>
