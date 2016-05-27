@@ -22,6 +22,7 @@ var randomString= require('../utils/helpers').randomString;
 var hasBetaCode= require('../utils/helpers').hasBetaCode;
 var include_user= require('../utils/helpers').include_user;
 var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
+var formatParams=require('../utils/helpers').formatParams;
 
 module.exports=function(app,Parse,io) {
 
@@ -83,6 +84,7 @@ module.exports=function(app,Parse,io) {
       }
       else {
           res.render('newsfeed', { user: req.user});
+          // res.render('import', { user: req.user});
       }
   });
     /********
@@ -420,10 +422,10 @@ app.get('/terms',include_user, function (req, res, next) {
         res.render('about', {title: 'About Us', path: req.path});
     });
 
-    /*******************************************
- *
- * THIRD PARTY OAUTH
- *
+/*******************************************
+*
+* THIRD PARTY OAUTH
+*
  ********************************************/
 app.get('/oauth/linkedin', function(req, res) {
     if(!req.isAuthenticated()) {
@@ -561,9 +563,11 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     });
 });
+
     app.get("/auth/linkedin/verify",function(req,res,next){
         res.render("verify");
     });
+
     app.get("/auth/linkedin/verify/:activation/:linkedin",function(req,res,next){
         var code= req.params.activation;
         var linkedin_id=req.params.linkedin;
@@ -590,9 +594,9 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     });
     app.get("/verify-email", function (req,res,next) {
-
         res.render("verify-email");
     });
+
     app.get("/verify-email/:activation",function(req,res,next){
         var code= req.params.activation;
         var query = new Parse.Query(Parse.User);
@@ -603,7 +607,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                 {
                     user.set("emailVerified",true);
                     user.save(null,{ useMasterKey: true }).then(function() {
-                        res.redirect("/");
+                        res.render('import', {user: req.user});
                     },function(error)
                     {
                         res.render('signin', {Error: error.message, path: req.path});
@@ -618,6 +622,88 @@ app.get('/auth/linkedin/callback',function(req,res){
 
     });
 
+/*******************************************
+ *
+ * IMPORT WORKS
+ *
+ ********************************************/
+app.get("/import", function (req,res,next) {
+  res.render("import", {user: req.user});
+});
 
+app.get("/fetchworks", function(req, res, next) {
+    var params = {
+      "expr": "Composite(AA.AuN=='" + req.query.name.toLowerCase() + "')",
+      "model": "latest",
+      "count": "20",
+      "offset": "0",
+      // "orderby": "{string}",
+      "attributes": "Ti,Y,D,J.JN,F.FN,AA.AuN,E", // TODO: conference support C.CN, VFN
+    };
+    var url = "https://api.projectoxford.ai/academic/v1.0/evaluate?" + formatParams(params);
+
+    var options = {
+      url: url,
+      headers: {
+        "Ocp-Apim-Subscription-Key": "4e12b17ee21441fca62a50d570acc065"
+      }
+    };
+
+    function callback(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var data = JSON.parse(body);
+        console.log(data.entities);
+        // currently only supports importing journals/entries with journal metadata
+        var journals = data.entities.filter( (entity) => entity.hasOwnProperty('J') );
+        res.status(200).json({status:"OK", data: journals});
+      } else {
+        res.status(response.statusCode).json({status: "Searching for works has failed." + error});
+      }
+    }
+
+    request(options, callback);
+});
+
+app.post("/import", function(req, res, next) {
+  var saveArray = [];
+
+  //parse each imported work, and add to saveArray for bulk saving
+  for (var i = 0; i < req.body.length; i++) {
+      var work = req.body[i];
+      var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO future support for conf and others
+      var pub = new PubType();
+
+      pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
+      pub.set('contributors', work.contributors);
+      pub.set('abstract', work.abstract);
+      pub.set('keywords', work.keywords);
+      pub.set('url', work.url);
+      pub.set('title', work.title);
+      pub.set('doi', work.doi);
+      pub.set('publication_date', new Date(work.publication_date));
+
+      // journal article fields
+      pub.set('journal', work.journal);
+      pub.set('volume', work.volume);
+      pub.set('issue', work.issue);
+      pub.set('page', work.page);
+      pub.set('type', "journal");
+      saveArray.push(pub);
+  };
+  
+  // return success if all works are imported without error
+  Parse.Object.saveAll(saveArray, {
+    success: function(list) {
+      res.status(200).json({status:"All works imported"});
+    },
+    error: function(error) {
+      console.log(JSON.stringify(error,null,2));
+      res.status(500).json({status: "Importing works failed. " + error.message});
+    },
+  });
+
+});
+
+// 6f909740a9436d8a63ef7bea5cfb276ae5573f1a
 
 };

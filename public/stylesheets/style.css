@@ -6691,6 +6691,28 @@ hr.style15 {
   color: var(--foreground-hover-color);
 }
 
+#import-works-list {
+  background-color: white;
+}
+
+.imported {
+  color: #5cb85c;
+}
+
+.import-works-checkbox {
+  font-size:2em;
+}
+
+.import-works-checkbox > span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 2.1em;
+}
+
+.import-works-details > div {
+  text-align: left;
+}
+
 .nfButton {
   overflow: hidden;
   white-space: nowrap;

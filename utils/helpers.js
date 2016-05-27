@@ -154,6 +154,13 @@ hasBetaCode: function (req,res,next)
                 console.log('Woohoo! You just sent your first mailing!');
             }
         });
-    }
+    },
+
+formatParams: function(params) {
+    var queryParams = Object.keys(params).map(function(k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
+    }).join('&')
+    return queryParams;
+}
 
 };
