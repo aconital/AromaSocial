@@ -50,7 +50,7 @@ module.exports=function(app,Parse,io) {
         if(currentUser.username == linkUser) {
             console.log(req.path);
             var obj={
-                title: currentUser.title,
+                title: 'Profile',
                 path: req.path,
                 currentUsername: currentUser.username,
                 objectId: currentUser.id,
@@ -67,7 +67,7 @@ module.exports=function(app,Parse,io) {
                 isMe: true
             };
             res.render('profile', {
-                title: currentUser.title,
+                title: 'Profile',
                 path: req.path,
                 currentUsername: currentUser.username,
                 objectId: currentUser.id,
@@ -91,7 +91,7 @@ module.exports=function(app,Parse,io) {
             query.first({
                 success: function(result) {
                     if(result)
-                    res.render('profile', { title: result.get('about'), path: req.path,
+                    res.render('profile', { title: "Profile", path: req.path,
                         currentUsername: currentUser.username,
                         currentUserImg: currentUser.imgUrl,
                         username: result.get('username'),
