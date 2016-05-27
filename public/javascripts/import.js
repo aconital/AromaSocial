@@ -78,7 +78,7 @@ var ImportButtons = React.createClass({
 	render: function() {
 		return (
 			<div id="">
-				<Button className="btn-success btn-lg" onClick={this.querySciDir}>Yes, import my works</Button>
+				<Button className="btn-success btn-lg" onClick={this.querySciDir}>Yes, import my publications</Button>
 				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>No, proceed to Syncholar</Button>
 			</div>
 		);
@@ -223,7 +223,7 @@ var WorksList = React.createClass({
 
 		return (
 			<div style={{width: '90%'}} className="center-block">
-				<div>Please highlight the works that you would like to import. Details of each individual work can be edited after submission.</div>
+				<div>Please de-select the ones that don't belong to you or you don't want to import. Details of entries can be edited later.</div>
 				<Table id="import-works-list" bordered striped>
 					<thead>
 						<tr>
@@ -237,7 +237,7 @@ var WorksList = React.createClass({
 						})}
 					</tbody>
 				</Table>
-				<Button className="btn-success btn-lg" onClick={this.importWorks}>Import highlighted works and continue</Button>
+				<Button className="btn-success btn-lg" onClick={this.importWorks}>Import highlighted publications and continue</Button>
 				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button>
 			</div>
 		);
