@@ -1133,12 +1133,14 @@ module.exports=function(app,Parse,io) {
         query.include('orgId')
         query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id})
         query.each(function(result) {
+            var promise = Parse.Promise.as();
 
+            promise = promise.then(function() {
             var query = new Parse.Query('Relationship');
             query.equalTo("verified",false)
             query.include('userId')
-            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id})
-            query.each(function(r) {
+            query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id});
+            return query.each(function(r) {
                 var org_notification = {
                     id: "org_"+result.get("orgId").id+"_"+r.get("userId").id+"_inv",
                     type:"orgrequest",
@@ -1157,11 +1159,13 @@ module.exports=function(app,Parse,io) {
                 };
 
                 requests.push(org_notification);
-            }).then(function(){
-                res.json(requests);
-            }, function(err) {
-                console.log(err);
             });
+            });
+            return promise;
+        }).then(function(){
+            res.json(requests);
+        }, function(err) {
+            console.log(err);
         });
     });
     app.get('/org2orgrequest', is_auth, function(req,res,next){
