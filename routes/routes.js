@@ -292,7 +292,7 @@ module.exports=function(app,Parse,io) {
 
      user.signUp(null, {
         success: function (user) {
-            var emailBody ='<h3><p>Welcome to Syncholar '+req.body.fullname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
+            var emailBody ='<h3><p>Welcome to Syncholar '+req.body.firstname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
                 '<a href="https://syncholar.com/verify-email/'+email_code+'" >https://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
             sendMail("verify Email - Syncholar",emailBody,req.body.email);
 
