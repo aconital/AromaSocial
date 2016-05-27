@@ -24,7 +24,7 @@ var include_user= require('../utils/helpers').include_user;
 var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
 var formatParams=require('../utils/helpers').formatParams;
 
-module.exports=function(app,Parse,io, content, jsonContent) {
+module.exports=function(app,Parse,io) {
 
   app.get('/beta', function (req, res, next) {
     var rl = req.query.redLink;
@@ -607,7 +607,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                 {
                     user.set("emailVerified",true);
                     user.save(null,{ useMasterKey: true }).then(function() {
-                        res.redirect("/import", {user: req.user});
+                        res.render('import', {user: req.user});
                     },function(error)
                     {
                         res.render('signin', {Error: error.message, path: req.path});

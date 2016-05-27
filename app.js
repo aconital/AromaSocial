@@ -81,7 +81,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./routes/routes')(app,Parse,io,content,jsonContent);
+require('./routes/routes')(app,Parse,io);
 require('./routes/organization')(app,Parse,io);
 require('./routes/user')(app,Parse,io);
 require('./routes/equipment')(app,Parse,io);

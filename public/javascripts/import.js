@@ -34,7 +34,6 @@ var ImportContent = React.createClass({
 		});
 	},
 	redirect: function(e) {
-		alert("you shall not pass! not yet anyway lemme finish some stuff first");
 		window.location = '../';
 	},
 	setStatus: function(newStatus) {
