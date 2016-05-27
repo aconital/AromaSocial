@@ -223,7 +223,7 @@ var WorksList = React.createClass({
 
 		return (
 			<div style={{width: '90%'}} className="center-block">
-				<div>Please de-select the ones that don't belong to you or you don't want to import. Details of entries can be edited later.</div>
+				<div><h3>Please deselect the ones that don't belong to you or you don't want to import. Details of entries can be edited later on.</h3></div>
 				<Table id="import-works-list" bordered striped>
 					<thead>
 						<tr>
