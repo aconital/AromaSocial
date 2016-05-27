@@ -607,7 +607,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                 {
                     user.set("emailVerified",true);
                     user.save(null,{ useMasterKey: true }).then(function() {
-                        res.render('import', {user: req.user});
+                        res.redirect('/import');
                     },function(error)
                     {
                         res.render('signin', {Error: error.message, path: req.path});
@@ -627,8 +627,8 @@ app.get('/auth/linkedin/callback',function(req,res){
  * IMPORT WORKS
  *
  ********************************************/
-app.get("/import", function (req,res,next) {
-  res.render("import", {user: req.user});
+app.get("/import",is_auth, function (req,res,next) {
+  res.render("import");
 });
 
 app.get("/fetchworks", function(req, res, next) {
