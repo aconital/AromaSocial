@@ -90,6 +90,7 @@ module.exports=function(app,Parse,io) {
             query.equalTo("username",linkUser);
             query.first({
                 success: function(result) {
+                    if(result)
                     res.render('profile', { title: 'Profile', path: req.path,
                         currentUsername: currentUser.username,
                         currentUserImg: currentUser.imgUrl,
@@ -106,6 +107,8 @@ module.exports=function(app,Parse,io) {
                         profile_imgURL: result.get('picture').url(),
                         isMe: false
                     });
+                    else
+                        res.render('notfound',{isOrg:false,isUser:true});
                 },
                 error: function(error) {
                     res.redirect('/');

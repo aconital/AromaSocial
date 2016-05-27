@@ -59,6 +59,7 @@ var Notification = React.createClass({
         $.ajax({
             url: "/org2orgrequest",
             success: function(data) {
+                console.log(data);
                 var notifications = this.state.notication_list.slice();
                 for (var i=0;i<data.length;i++)
                     notifications.push(data[i]);
