@@ -233,7 +233,7 @@ module.exports=function(app,Parse,io) {
       }
    });
 
-// <<<<<<< HEAD
+
   app.post('/signup', function (req, res, next) {
     // if (req.body.firstname == undefined || req.body.lastname == undefined || req.body.email == undefined || req.body.password == undefined || req.body.verification == undefined) {
     //   return false;
@@ -530,7 +530,7 @@ app.get('/auth/linkedin/callback',function(req,res){
 
                                                   req.login(u.attributes.username,function (err) {
                                                       if (!err)
-                                                          res.redirect('/');
+                                                          res.redirect('/import');
                                                       else
                                                           res.render('signin', {Error: err.message, path: req.path})
                                                   });
