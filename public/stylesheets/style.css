@@ -6099,7 +6099,7 @@ color: var(--white-color);
 
 .btn-panel {
     background-color: var(--blue-color);
-    border-color: var(--blue-color);
+    border-color: var(--white-color);
     border-radius:0px;
     color:var(--white-color);
     width:100%;
