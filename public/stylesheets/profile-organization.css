@@ -16,7 +16,7 @@
 .accept-reject-buttons { position: absolute; right: 10px; top:10px; width: 30%; text-align:right; }
 
 .contain-image {
-    width: 80%;
+    width: 60%;
     border: none;
     border-radius: 4px;
     border-color: var(--foreground-color);
@@ -62,7 +62,7 @@
     color: white;
 } .edit-overlay-background {
     top: 0px; left: 0px;
-    height: 80%; width: 80%;
+    height: 80%; width: 60%;
     padding:0px;
     border: none !important;
     border-radius: 4px;
@@ -183,10 +183,10 @@
     margin: 0px;
 } .item-add-button {
     color: var(--white-color);
-    background-color: var(--foreground-color);
+    background-color: var(--blue-color);
     display: inline !important;
     border: solid;
-    border-color: var(--foreground-color);
+    border-color: var(--blue-color);
     border-width: 1px 1px 0 1px;
     padding: 6px 12px;
     margin: 0 0.05em 0 0;
@@ -221,16 +221,20 @@
     opacity: .75;
 }
 
-.item-bottom { position:relative; float:left; width: 100%; }
-.item-bottom-1 { float:left; width:20%; }
-.item-bottom-2 { margin-top:6px; float:left; width:78%; }
+.item-bottom { padding-top: 20px;
+    padding-bottom: 20px; display: table; border-bottom: solid; background-color: var(--white-color); position:relative; float:left; width: 100%; }
+.item-row1 { display: table-row;}
+.item-row2 { display: table-row;}
+.item-bottom-1 { display: table-cell; float:left; width:15%; }
+.item-bottom-2 { display: table-cell; margin-top:0px; float:right; width:85%; }
 .item-bottom-2-profile { position:relative; }
 .item-bottom-2-organization { position:relative; }
+.item-bottom-3 { background-color: var(--foreground-color)}
 
 
-.h1-title { padding-top: 25px !important; }
+.h1-title { padding-top: 5px !important; margin-right: 17% !important; line-height: 200%; }
 .h1-title-solo { padding-top: 25px !important; padding-bottom: 25px !important; }
-.h3-title { padding-bottom: 25px !important; }
+.h3-title { padding-bottom: 5px !important; margin-right: 17% !important;}
 
 #error-dialog {
     display:none;
@@ -241,9 +245,10 @@
 .interact-buttons-wrap {
     position:absolute;
     border-radius: 4px;
-    border: solid;
-    border-color: var(--foreground-color);
-    box-shadow: 0px 2px 10px #888888;
+    border: none;
+    border-color: var(--blue-color);
+    box-shadow: none;
+    padding-top: 1%;
     top: 25px; right: 2.25%;
     width: 100px; }
 .h4-resume-item{width:97%;margin:0px;padding:0px;}

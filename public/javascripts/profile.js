@@ -5,6 +5,8 @@ var Alert = ReactBootstrap.Alert;
 var Tooltip = ReactBootstrap.Tooltip;
 var Carousel = ReactBootstrap.Carousel;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+var TabPane = ReactBootstrap.TabPane;
+
 // require('autocomplete.js').UserAutocomplete();
 String.prototype.capitalize = function() {
     return (this.charAt(0).toUpperCase() + this.slice(1)).replace("_"," ");
@@ -265,22 +267,28 @@ var Profile = React.createClass ({
             </Modal>
             <div className="content-wrap">
                 <div className="item-bottom">
-                    <div className="item-bottom-1">
-                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
+                    <div className="item-row1">
+                    </div>
+                    <div className="item-row1">
+                        <div className="item-bottom-1">
+                            {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
                         {/*
-                        <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                        <div className="side-panel"><h5>RATINGS</h5></div>
-                        <div className="side-panel"><h5>OTHERS</h5></div>
-                        */}
+                            <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                            <div className="side-panel"><h5>RATINGS</h5></div>
+                            <div className="side-panel"><h5>OTHERS</h5></div>
+                            */}
+                        </div>
+                        <div id="item-bottom-2-profile" className="item-bottom-2">
+                            {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
+                            <h3 className="no-margin-padding align-left h1-title">{fullname}</h3>
+                            <h4 className="no-margin-padding align-left h3-title">{about}</h4>
+                        </div>
                     </div>
-                    <div id="item-bottom-2-profile" className="item-bottom-2">
-                        {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
-                        <h3 className="no-margin-padding align-left h1-title">{fullname}</h3>
-                        <h4 className="no-margin-padding align-left h3-title">{about}</h4>
-
+                </div>
+                <div className="item-bottom-3">
                         <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
-                    </div>
-                    <div className="item-bottom-3">
+
+
                         {/*<input className="btn btn-panel" value="Message" />
                         <input className="btn btn-panel" value="Ask" />*/}
                         {/*
@@ -298,7 +306,7 @@ var Profile = React.createClass ({
                         </div>
                         */}
                     </div>
-                </div>
+
             </div>
         </div>
         );

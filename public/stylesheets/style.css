@@ -14,6 +14,7 @@
     --white-color: #fff;
     --link-color: #0066cc;
     --text-color: red;
+    --blue-color: #1e88e5;
 }
 
 html {
@@ -5844,6 +5845,9 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     }
 
     #tabs ul {
+      border-bottom: none ;
+
+      margin: 0 4em 4em 0
     list-style: none;
     padding:0;
     margin:0;
@@ -5852,18 +5856,19 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     color: var(--contrast-free-color);
     background-color: var(--foreground-color);
     display: inline;
-    border: none;
+    border-bottom: none;
     border-color: var(--foreground-color);
-    border-width: 2px 2px 0 2px;
-    padding: 6px 12px;
-    margin: 0 0.2em 0 0;
-    font-size: 14px;
-    border-top-right-radius:4px;
-    border-top-left-radius:4px;
+    padding: 4.5px 12px;
+    margin: 0 0 0 0;
+    font-size: 16px;
+    border-top-right-radius:0px;
+    border-top-left-radius:0px;
     }
     #tabs li:hover {
     background-color: var(--foreground-hover-color);
     border-color: var(--foreground-hover-color);
+      border-top-left-radius: 1em;
+      border-top-right-radius: 1em;
     }
     #tabs li a {
     color: var(--contrast-free-color);
@@ -5872,11 +5877,16 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     #tabs li a:hover {
         color: var(--white-color);
         text-decoration: none;
+
         }
     #tabs #selected-tab {
+      border-bottom: none ;
         background-color: var(--white-color);
         border-color: var(--foreground-color);
         color: var(--foreground-color);
+      border-top-left-radius: 0.75em;
+      border-top-right-radius: 0.75em;
+
     }
 
     #bottom-tabs {
@@ -5927,8 +5937,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     border: none;
     border-width: 2px;
     border-color: var(--foreground-color);
-    border-radius: 4px;
-    box-shadow: 0px 2px 10px #888888;
+    border-radius: 0px;
     border-top-left-radius:0;
     z-index:5;
     }
@@ -6089,8 +6098,8 @@ color: var(--white-color);
 .form-color{color:FFF;}
 
 .btn-panel {
-    background-color: var(--foreground-color);
-    border-color: var(--foreground-color);
+    background-color: var(--blue-color);
+    border-color: var(--blue-color);
     border-radius:0px;
     color:var(--white-color);
     width:100%;
@@ -6331,7 +6340,9 @@ div.react-tagsinput {
         z-index: 0 !important;
         }
   .content-wrap {
-    max-width:1200px;
+    background-color: var(--white-color);
+    display: block;
+    max-width:1150px;
     margin:auto;
   }
 
@@ -6650,7 +6661,7 @@ hr.style15 {
   transition: background-color 300ms linear;
   font-size: large;
   border: none;
-  background-color:#1e88e5   ;
+  background-color: var(--blue-color)   ;
 }
 .createorg_btn:hover{
   background-color:#1565c0   ;
@@ -6664,7 +6675,7 @@ hr.style15 {
 { width: 100%;
   border: none;
   color: white;
-  background-color: #1e88e5;
+  background-color: var(--blue-color);
 }
 .btn.btn-default.pull-right.submit:hover
 {
@@ -6730,7 +6741,7 @@ hr.style15 {
   text-align: left; display: block; margin-left: auto; margin-right: auto; margin-bottom: 25px; margin-top: 30px;
 }
 .about-div2{
-text-align: left; display: block; margin-left: 250px; margin-right: 100px; margin-bottom: 0px; margin-top: 30px; line-height: 200%;}
+text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bottom: 0px; margin-top: 30px; line-height: 200%;}
 
 .about-middiv{
   background-color: #F2F2F2;

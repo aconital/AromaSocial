@@ -168,6 +168,7 @@ var Organization = React.createClass ({
         var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         // var orgNameArr = name.split(".");
         // var orgName = orgNameArr[0];
+
         if (this.state.status == "joined") {
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
@@ -177,6 +178,7 @@ var Organization = React.createClass ({
         else if (this.state.status == "not-joined") {
             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
         }
+
         if(this.state.isAdmin)
             return (
                 <div>
@@ -200,7 +202,10 @@ var Organization = React.createClass ({
                             </div>
                         </div>
                         <div className="item-bottom">
-                            <div className="item-bottom-1">
+                            <div className="item-row1">
+                            </div>
+                            <div className="item-row1">
+                                <div className="item-bottom-1">
                                 <a href="#" onClick={this.clickOpen}>
                                     <div className="edit-overlay-div">
                                         <img src={this.state.organization_imgURL} className="contain-image" />
@@ -216,8 +221,12 @@ var Organization = React.createClass ({
                                 </div>
                                 <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
                                 <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>
-                                <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                             </div>
+                            </div>
+                        </div>
+                                <div className="item-bottom-3">
+
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
