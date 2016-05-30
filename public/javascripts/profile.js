@@ -501,7 +501,7 @@ var Organizations = React.createClass({
                 <div className="item-box" key={org.orgId} id="item-list">
                     <div className="item-box-left">
                         <div className="item-box-image-outside">
-                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                            <a href={'/organization/'+org.name}><img src={org.orgImgUrl} className="item-box-image" /></a>
                         </div>
                     </div>
                     <div className="item-box-right">
