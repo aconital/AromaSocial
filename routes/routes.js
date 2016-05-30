@@ -514,6 +514,8 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   var randomPass = randomString(5);
 
                                   user.set("fullname", name);
+                                  user.set("firstname", firstName);
+                                  user.set("lastname", lastName);
                                   user.set("username", username);
                                   user.set("password", randomPass);
                                   user.set("linkedin_id", linkedin_ID);
