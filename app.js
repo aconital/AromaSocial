@@ -27,7 +27,7 @@ var s3 = new aws.S3();
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var helmet = require('helmet')
-var dbconfig = require('./utils/configs');
+var dbconfig = require('./config/configs');
 
 var app = express();
 var io           = socket_io();

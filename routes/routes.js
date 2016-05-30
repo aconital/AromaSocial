@@ -452,6 +452,15 @@ app.get('/auth/linkedin/callback',function(req,res){
             var linkedin_ID= $in.id;
             var email= $in.emailAddress;
             var name= $in.formattedName;
+            var nameArr = name.split(" ");
+            var firstName = nameArr[0];
+            var lastName = "";
+            for (var i = 1; i < nameArr.length; i++) {
+              lastName += (i == nameArr.length-1) ? nameArr[i]:nameArr[i]+" ";
+            }
+            console.log("FirstName: ", firstName);
+            console.log("lastName: ", lastName);
+            var username = name.replace(/ /g, "_");
 
             var about=null
             if($in.headline !=null)
@@ -505,7 +514,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   var randomPass = randomString(5);
 
                                   user.set("fullname", name);
-                                  user.set("username", linkedin_ID);
+                                  user.set("username", username);
                                   user.set("password", randomPass);
                                   user.set("linkedin_id", linkedin_ID);
                                   user.set("email", email);
