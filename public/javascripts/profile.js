@@ -128,7 +128,7 @@ var Profile = React.createClass ({
             profile_imgURL: [profile_imgURL],
             imgSubmitText:'Upload',
             imgSubmitDisabled:false,
-
+            about: [about],
             fromModelTab: false,
             pictureChosen: null,
 
@@ -238,6 +238,32 @@ var Profile = React.createClass ({
         }.bind(this)
       });
     },
+    handleChange: function(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
+
+    submitChange: function() {
+        var dataForm = { about: this.state.about
+        };
+        console.log(JSON.stringify(dataForm));
+        $.ajax({
+            url: path + "/updateAbout",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
     render: function() {
         var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "connected") {
@@ -281,7 +307,8 @@ var Profile = React.createClass ({
                         <div id="item-bottom-2-profile" className="item-bottom-2">
                             {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
                             <h3 className="no-margin-padding align-left h1-title">{fullname}</h3>
-                            <h4 className="no-margin-padding align-left h3-title">{about}</h4>
+                            {(currentUsername == username) ? <input id="userTitleInp" type="text" className="p-editable transparent" name="about" placeholder="Your Title"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.about} />
+                                : <h4 className="no-margin-padding align-left h3-title">{about}</h4>}
                         </div>
                     </div>
                 </div>
@@ -494,7 +521,6 @@ var Organizations = React.createClass({
 var About = React.createClass({
     getInitialState: function() {
         var hideInterests;
-        console.log(summary);
         if(JSON.parse(interests).length > 0) { hideInterests = "show"; } else { hideInterests = "hide"; }
         if(JSON.parse(workExperience).length > 0) { hideWorkExperiences = "show"; } else { hideWorkExperiences = "hide"; }
         if(JSON.parse(educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }

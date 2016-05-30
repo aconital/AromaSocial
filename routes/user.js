@@ -418,6 +418,31 @@ module.exports=function(app,Parse,io) {
         }
     });
 
+    app.post('/profile/:username/updateAbout', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        var linkUser = req.params.username;
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        result.set("about", req.body.about);
+                        result.save(null, { useMasterKey: true }).then(
+                            function(){
+                                //console.log("SAVE SUCCESS");
+                                res.status(200).json({status: "Info Uploaded Successfully!"});
+                            },
+                            function(error){
+                                console.log(error);
+                                res.status(500).json({status: "Error uploading summary"})
+                            }
+                        );
+                    }
+                }
+            );
+        }
+    });
+
     app.post('/profile/:username/updateInterest', is_auth, function(req,res,next){
         var currentUser = req.user;
         var linkUser = req.params.username;
@@ -433,7 +458,7 @@ module.exports=function(app,Parse,io) {
                 }
             );
         }
-    })
+    });
 
     app.post('/profile/:username/updateTags', is_auth, function(req,res,next){
         var currentUser = req.user;
