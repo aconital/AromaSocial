@@ -529,7 +529,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.signUp(null,
                                       {
                                       success: function (user) {
-                                          Parse.User.logIn(linkedin_ID, randomPass, {
+                                          Parse.User.logIn(username, randomPass, {
                                               success: function(u) {
                                                   //get image from linkedin
                                                   processLinkedinImage(email,$in);
