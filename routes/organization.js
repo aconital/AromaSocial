@@ -103,6 +103,7 @@ module.exports=function(app,Parse,io) {
             console.log(user);
             var username= user.get('username');
             var fullname=user.get('fullname');
+            var about= user.get('about');
             var isAdmin = result.get('isAdmin');
             //var company= "";
             //var work_title= "";
@@ -114,6 +115,7 @@ module.exports=function(app,Parse,io) {
                     username:username,
                     title: title,
                     fullname: fullname,
+                    about: about,
                     userImgUrl: userImgUrl,
                     isAdmin:isAdmin
                 };

@@ -9,7 +9,14 @@ var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 var Carousel = ReactBootstrap.Carousel;
+var Tooltip = ReactBootstrap.Tooltip;
 
+const tooltipEquip = (
+    <Tooltip className="tooltip2">Add an Equipment</Tooltip>
+);
+const tooltipConc = (
+    <Tooltip className="tooltip2">Add a Connection</Tooltip>
+);
 var Organization = React.createClass ({
     getInitialState: function() {
         return {    isAdmin: [],
@@ -712,7 +719,7 @@ var Connections = React.createClass({
                         <tbody>
                         <tr>
                             {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltipConc}><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></OverlayTrigger></td> : <td></td>}
                         </tr>
                         </tbody>
                     </table>
@@ -901,8 +908,8 @@ var People = React.createClass({
                                     </div>
                                 </div>
                                 <div className="item-box-right">
-                                    <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-
+                                    <a href={'/profile/'+person.username} className="body-link"><h4 className="margin-top-bottom-5">{person.fullname}</h4></a>
+                                    <p>{person.about}</p>
                                 </div>
                                 <div className="item-box-right">
                                     {(isAdmin == true && person.username != currentUsername) ? <a onClick={parent.deleteMember.bind(self,person.id)} href="#" alt="Delete member">Delete member</a>:""}
@@ -1019,7 +1026,7 @@ var Equipments = React.createClass({
                     <table className="item-search-field" width="100%">
                         <tr>
                             {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltipEquip}><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></OverlayTrigger></td> : <td></td>}
                         </tr>
                     </table>
                 </div>

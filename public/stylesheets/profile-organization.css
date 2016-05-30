@@ -309,3 +309,15 @@
     height: 400px;
 
 }
+
+.tooltip > .tooltip-inner{
+    background-color: var(--foreground-color);
+    width: 100px;
+    height: 25px;
+}
+
+.tooltip2 > .tooltip-inner{
+    background-color: var(--foreground-color);
+    width: 150px;
+    height: 25px;
+}
