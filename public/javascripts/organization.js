@@ -242,25 +242,28 @@ var Organization = React.createClass ({
                             </div>
                         </div>
                         <div className="item-bottom">
-                            <div className="item-bottom-1">
-                                <img src={this.state.organization_imgURL} className="contain-image" />
-                                {/*
-                                 <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                                 <div className="side-panel"><h5>RATINGS</h5></div>
-                                 <div className="side-panel"><h5>OTHERS</h5></div>
-                                 */}
+                            <div className="item-row1">
                             </div>
-                            <div id="item-bottom-2-organization" className="item-bottom-2">
-                                <div className="interact-buttons-wrap">
-                                    {joinButton}
+                            <div className="item-row1">
+                                <div className="item-bottom-1">
+                                            <img src={this.state.organization_imgURL} className="contain-image" />
                                 </div>
-                                <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
-                                <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>
-                                <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                <div id="item-bottom-2-organization" className="item-bottom-2">
+                                    <div className="interact-buttons-wrap">
+                                    {joinButton}
+                                    </div>
+                                    <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
+                                    <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>
+                                </div>
                             </div>
+                        </div>
+                        <div className="item-bottom-3">
+
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
+
             );
     }
 });
