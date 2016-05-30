@@ -4,7 +4,7 @@
 /************************************
  * HELPER FUNCTIONS
  *************************************/
-var config = require('../utils/configs');
+var config = require('../config/configs');
 var SparkPost = require('sparkpost');
 var sp = new SparkPost('5c4cf399a6bbc1f2bd87a881d08756458b0834cb');
 var request = require('request').defaults({ encoding: null });

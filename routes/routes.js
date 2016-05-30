@@ -12,7 +12,7 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
 var nodemailer = require('nodemailer');
-var configs = require('../utils/configs');
+var configs = require('../config/configs');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', configs.linkedin_callback);
 
