@@ -865,7 +865,11 @@ var AboutTabObject = React.createClass({
     },
     render: function() {
         var startDate = this.props.start.replace(/-/g,'/');
+        if(startDate!="")
+        startDate= moment(startDate).format("MMM YYYY");
         var endDate = this.props.end.replace(/-/g,'/');
+        if(endDate!= "")
+            endDate= moment(endDate).format("MMM YYYY");
         if (this.state.display=="");
         if (this.state.field=="work") { //if work field, use work placeholders
             return (
