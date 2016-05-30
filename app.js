@@ -33,10 +33,18 @@ var io           = socket_io();
 app.io           = io;
 
 app.use(helmet());
+var MODES= ["DEV","PROD"];
+var mode= MODES[0];
 
-Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
-Parse.serverURL = 'http://52.38.90.136:1337/parse/';
-
+if(mode == "PROD") {
+    Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
+    Parse.serverURL = 'http://52.38.90.136:1337/parse/';
+}
+else
+{
+    Parse.initialize("development_v2", "Fomsummer2014", "Fomsummer2014");
+    Parse.serverURL = 'http://52.38.90.136:1337/parse/';
+}
 // just to check that s3 is connected. remove when deploying
 s3.listBuckets(function(err, data) {
   if (err) { console.log("Error:", err); }
