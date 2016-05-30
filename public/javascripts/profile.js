@@ -90,7 +90,8 @@ var CustomTags = React.createClass({
             if (this.state.idMap[tag] != null) {
                 // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
                 // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
-                this.props.changeFunc(this.props.name, this.state.ids);
+                // this.props.changeFunc(this.props.name, this.state.ids);
+                this.props.changeFunc(this.props.name, this.state.tags);
             }
         }
     },
@@ -1255,7 +1256,12 @@ var Data = React.createClass({
                             </h4>
                             <span className="font-15">
                             <table className="item-box-table-info">
-                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborators) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborators}</a>;})}</td></tr>
+                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) {
+                                    // var ret = (this.isUserId(collaborator) ? <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a> : <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>);
+                                    var dLink = "/profile/" + collaborator.replace(/ /g, "_");
+                                    return <a href={dLink} className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;
+                                })}
+                                </td></tr>
                                 <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
                               {/*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
@@ -1851,11 +1857,11 @@ var ResourceAddForm = React.createClass({
                         </Button>
                     </div>
                     <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
-                    {/*
+                    
                     <div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Collaborators:" name="collaborators" value={this.state.collaborators} />
                     </div>
-                    */}
+                    
                     
                     <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
@@ -1877,9 +1883,19 @@ var ResourceAddForm = React.createClass({
             </div>
 		);
 	},
-    handleAcTagChange: function(type, ids) {
+    handleAcTagChange: function(type, tags) {
+        // var changedState = {};
+        // changedState[type] = ids;
+        // this.setState(changedState);
+        var newState = [];
+        for (var i = 0; i < tags.length; i++) {
+            var t = tags[i];
+            console.log(t.id);
+            console.log(t.text);
+            newState.push(t.text);
+        }
         var changedState = {};
-        changedState[type] = ids;
+        changedState[type] = newState;
         this.setState(changedState);
     },
 	handleChange: function(e) {
