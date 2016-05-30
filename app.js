@@ -27,6 +27,7 @@ var s3 = new aws.S3();
 var passport = require('passport');
 var LocalStrategy = require('passport-local');
 var helmet = require('helmet')
+var dbconfig = require('./utils/configs');
 
 var app = express();
 var io           = socket_io();
@@ -34,8 +35,9 @@ app.io           = io;
 
 app.use(helmet());
 
-Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
-Parse.serverURL = 'http://52.38.90.136:1337/parse/';
+
+Parse.initialize(dbconfig.db_name, dbconfig.username, dbconfig.password);
+Parse.serverURL = dbconfig.url;
 
 // just to check that s3 is connected. remove when deploying
 s3.listBuckets(function(err, data) {
@@ -163,6 +165,7 @@ passport.deserializeUser(function(username, done) {
                 username: user.attributes.username,
                 cover_imgURL:user.attributes.cover_imgURL,
                 email: user.attributes.email,
+                about: user.attributes.about,
                 emailVerified: user.attributes.emailVerified,
                 fullname:user.attributes.fullname,
                 imgUrl:user.attributes.picture.url(),

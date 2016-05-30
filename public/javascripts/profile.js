@@ -5,13 +5,17 @@ var Alert = ReactBootstrap.Alert;
 var Tooltip = ReactBootstrap.Tooltip;
 var Carousel = ReactBootstrap.Carousel;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+var TabPane = ReactBootstrap.TabPane;
+
 // require('autocomplete.js').UserAutocomplete();
 String.prototype.capitalize = function() {
     return (this.charAt(0).toUpperCase() + this.slice(1)).replace("_"," ");
 }
 
 /* TEST REACT TAGS */
-
+const tooltip = (
+    <Tooltip className="tooltip">Add an Entry</Tooltip>
+);
 var ReactTags = ReactTags.WithContext;
 
 var CustomTags = React.createClass({
@@ -127,7 +131,7 @@ var Profile = React.createClass ({
             profile_imgURL: [profile_imgURL],
             imgSubmitText:'Upload',
             imgSubmitDisabled:false,
-
+            about: [about],
             fromModelTab: false,
             pictureChosen: null,
 
@@ -237,6 +241,32 @@ var Profile = React.createClass ({
         }.bind(this)
       });
     },
+    handleChange: function(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
+
+    submitChange: function() {
+        var dataForm = { about: this.state.about
+        };
+        console.log(JSON.stringify(dataForm));
+        $.ajax({
+            url: path + "/updateAbout",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
     render: function() {
         var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "connected") {
@@ -266,20 +296,29 @@ var Profile = React.createClass ({
             </Modal>
             <div className="content-wrap">
                 <div className="item-bottom">
-                    <div className="item-bottom-1">
-                        {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
+                    <div className="item-row1">
+                    </div>
+                    <div className="item-row1">
+                        <div className="item-bottom-1">
+                            {(currentUsername == username) ? <a href="#" onClick={this.clickOpen}><div className="edit-overlay-div"><img src={this.state.profile_imgURL} className="contain-image" /><div className="edit-overlay-background"><span className="glyphicon glyphicon-edit edit-overlay"></span></div></div></a> : <img src={this.state.profile_imgURL} className="contain-image" />}
                         {/*
-                        <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                        <div className="side-panel"><h5>RATINGS</h5></div>
-                        <div className="side-panel"><h5>OTHERS</h5></div>
-                        */}
+                            <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
+                            <div className="side-panel"><h5>RATINGS</h5></div>
+                            <div className="side-panel"><h5>OTHERS</h5></div>
+                            */}
+                        </div>
+                        <div id="item-bottom-2-profile" className="item-bottom-2">
+                            {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
+                            <h3 className="no-margin-padding align-left h1-title">{fullname}</h3>
+                            {(currentUsername == username) ? <input id="userTitleInp" type="text" className="p-editable transparent" name="about" placeholder="Your Title"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.about} />
+                                : <h4 className="no-margin-padding align-left h3-title">{about}</h4>}
+                        </div>
                     </div>
-                    <div id="item-bottom-2-profile" className="item-bottom-2">
-                        {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
-                        <h1 className="no-margin-padding align-left h1-title-solo">{fullname}</h1>
+                </div>
+                <div className="item-bottom-3">
                         <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
-                    </div>
-                    <div className="item-bottom-3">
+
+
                         {/*<input className="btn btn-panel" value="Message" />
                         <input className="btn btn-panel" value="Ask" />*/}
                         {/*
@@ -297,7 +336,7 @@ var Profile = React.createClass ({
                         </div>
                         */}
                     </div>
-                </div>
+
             </div>
         </div>
         );
@@ -463,7 +502,7 @@ var Organizations = React.createClass({
                 <div className="item-box" key={org.orgId} id="item-list">
                     <div className="item-box-left">
                         <div className="item-box-image-outside">
-                            <a href={'/organization/'+org.orgId}><img src={org.orgImgUrl} className="item-box-image" /></a>
+                            <a href={'/organization/'+org.name}><img src={org.orgImgUrl} className="item-box-image" /></a>
                         </div>
                     </div>
                     <div className="item-box-right">
@@ -485,7 +524,6 @@ var Organizations = React.createClass({
 var About = React.createClass({
     getInitialState: function() {
         var hideInterests;
-        console.log(summary);
         if(JSON.parse(interests).length > 0) { hideInterests = "show"; } else { hideInterests = "hide"; }
         if(JSON.parse(workExperience).length > 0) { hideWorkExperiences = "show"; } else { hideWorkExperiences = "hide"; }
         if(JSON.parse(educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }
@@ -828,7 +866,11 @@ var AboutTabObject = React.createClass({
     },
     render: function() {
         var startDate = this.props.start.replace(/-/g,'/');
+        if(startDate!="")
+        startDate= moment(startDate).format("MMM YYYY");
         var endDate = this.props.end.replace(/-/g,'/');
+        if(endDate!= "")
+            endDate= moment(endDate).format("MMM YYYY");
         if (this.state.display=="");
         if (this.state.field=="work") { //if work field, use work placeholders
             return (
@@ -977,7 +1019,7 @@ var Projects = React.createClass({
                     <table className="item-search-field" width="100%">
                         <tr>
                             {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                            {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : ""}
+                            {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></OverlayTrigger></td> : ""}
                         </tr>
                     </table>
                 </div>
@@ -1253,6 +1295,9 @@ var ResourceForm = React.createClass({
   open() {
     this.setState({ showModal: true });
   },
+  redirect: function(e) {
+        window.location = '../../import';
+  },
   render: function() {
     return (
 		<div>
@@ -1260,8 +1305,11 @@ var ResourceForm = React.createClass({
             <table className="item-search-field" width="100%">
                 <tr>
                     {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                    {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.open} type="button" value="+"/></td> : ""}
+                    {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.open} type="button" value="+"/></OverlayTrigger></td> : ""}
                 </tr>
+            {/* <tr>
+                    {(currentUsername == username && this.props.publication) ? <td className="padding-left-5 padding-top-5"><input className="item-add-button" onClick={this.redirect} type="button" value="Import Publications"/></td> : ""}
+                </tr>*/}
             </table>
         </div>
        {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}

@@ -23,7 +23,7 @@ var CreateOrganization = React.createClass({
 				<Row className="show-grid"><Col xs={12}> &nbsp; </Col></Row>
 				<Row className="show-grid">
 					<Col xs={9} xsOffset={2} md={6} mdOffset={3}>
-						<Panel header="Create homepage for your research group, lab, or network" >
+						<Panel header="Create a homepage for your institution, organization, department, research group, lab, or network" >
 							<p>Once you have created the home page, remember to connect to your home department, institution, sponsors, etc. and more importantly invite your members to connect.  </p>
 							<ListGroup id="orgForm" fill>
 								<ListGroupItem>
@@ -31,7 +31,7 @@ var CreateOrganization = React.createClass({
 										<Input type="text" id="name" name="name"  label={this.requiredLabel('Name')} required placeholder="Name" onChange={this.handleChange} value={this.state.name} required/>
 										<Input type="file" name="picture" label="Logo" help="Please upload an image format (png, jpg, or gif)."
 											accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
-										<Input type="textarea" name="description" label="About" placeholder="Describe your lab or network" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
+										<Input type="textarea" name="description" label="About" placeholder="About us" onChange={this.handleChange} value={this.state.description} rows="5" cols="10" />
 										<Input type="text" name="website" label="Website" placeholder="Website url" onChange={this.handleChange} value={this.state.website} />
 										<Input type="text" name="street" label="Address"  placeholder="Street # and name, Unit #" onChange={this.handleChange} value={this.state.street}  />
 

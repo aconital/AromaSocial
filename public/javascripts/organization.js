@@ -9,7 +9,14 @@ var Input = ReactBootstrap.Input;
 var Alert = ReactBootstrap.Alert;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 var Carousel = ReactBootstrap.Carousel;
+var Tooltip = ReactBootstrap.Tooltip;
 
+const tooltipEquip = (
+    <Tooltip className="tooltip2">Add an Equipment</Tooltip>
+);
+const tooltipConc = (
+    <Tooltip className="tooltip2">Add a Connection</Tooltip>
+);
 var Organization = React.createClass ({
     getInitialState: function() {
         return {    isAdmin: [],
@@ -135,6 +142,20 @@ var Organization = React.createClass ({
         });
         return;
     },
+    deleteOrg:function(orgId){
+        var connectURL= "/organization/"+orgId+"/delete";
+
+        $.ajax({
+            url: connectURL,
+            success: function(status) {
+                location.reload();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't retrieve people.");
+            }.bind(this)
+        });
+
+    },
     handlePicture: function(e) { //todo export utils
         var self = this,
             reader = new FileReader(),
@@ -154,6 +175,7 @@ var Organization = React.createClass ({
         var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         // var orgNameArr = name.split(".");
         // var orgName = orgNameArr[0];
+
         if (this.state.status == "joined") {
             joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
         }
@@ -163,6 +185,7 @@ var Organization = React.createClass ({
         else if (this.state.status == "not-joined") {
             joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
         }
+
         if(this.state.isAdmin)
             return (
                 <div>
@@ -186,7 +209,10 @@ var Organization = React.createClass ({
                             </div>
                         </div>
                         <div className="item-bottom">
-                            <div className="item-bottom-1">
+                            <div className="item-row1">
+                            </div>
+                            <div className="item-row1">
+                                <div className="item-bottom-1">
                                 <a href="#" onClick={this.clickOpen}>
                                     <div className="edit-overlay-div">
                                         <img src={this.state.organization_imgURL} className="contain-image" />
@@ -198,11 +224,16 @@ var Organization = React.createClass ({
                             <div id="item-bottom-2-organization" className="item-bottom-2">
                                 <div className="interact-buttons-wrap">
                                     {joinButton}
+                                    <button onClick={this.deleteOrg.bind(self, objectId)} className="btn btn-panel btn-right-side" value="Delete">Delete Page</button>
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
-                                <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
+                                <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>
                             </div>
+                            </div>
+                        </div>
+                                <div className="item-bottom-3">
+
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
@@ -218,25 +249,28 @@ var Organization = React.createClass ({
                             </div>
                         </div>
                         <div className="item-bottom">
-                            <div className="item-bottom-1">
-                                <img src={this.state.organization_imgURL} className="contain-image" />
-                                {/*
-                                 <div className="side-panel"><h5>NEWS AND EVENTS</h5></div>
-                                 <div className="side-panel"><h5>RATINGS</h5></div>
-                                 <div className="side-panel"><h5>OTHERS</h5></div>
-                                 */}
+                            <div className="item-row1">
                             </div>
-                            <div id="item-bottom-2-organization" className="item-bottom-2">
-                                <div className="interact-buttons-wrap">
-                                    {joinButton}
+                            <div className="item-row1">
+                                <div className="item-bottom-1">
+                                            <img src={this.state.organization_imgURL} className="contain-image" />
                                 </div>
-                                <h1 className="no-margin-padding align-left h1-title">{displayName}</h1>
-                                <h3 className="no-margin-padding align-left h3-title">{orgLocation}</h3>
-                                <OrganizationMenu isAdmin = {this.state.isAdmin} tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                <div id="item-bottom-2-organization" className="item-bottom-2">
+                                    <div className="interact-buttons-wrap">
+                                    {joinButton}
+                                    </div>
+                                    <h3 className="no-margin-padding align-left h1-title">{displayName}</h3>
+                                    <h4 className="no-margin-padding align-left h3-title">{orgLocation}</h4>
+                                </div>
                             </div>
+                        </div>
+                        <div className="item-bottom-3">
+
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
+
             );
     }
 });
@@ -685,7 +719,7 @@ var Connections = React.createClass({
                         <tbody>
                         <tr>
                             {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltipConc}><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></OverlayTrigger></td> : <td></td>}
                         </tr>
                         </tbody>
                     </table>
@@ -874,8 +908,8 @@ var People = React.createClass({
                                     </div>
                                 </div>
                                 <div className="item-box-right">
-                                    <a href={'/profile/'+person.username} className="body-link"><h3 className="margin-top-bottom-5">{person.fullname}</h3></a>
-
+                                    <a href={'/profile/'+person.username} className="body-link"><h4 className="margin-top-bottom-5">{person.fullname}</h4></a>
+                                    <p>{person.about}</p>
                                 </div>
                                 <div className="item-box-right">
                                     {(isAdmin == true && person.username != currentUsername) ? <a onClick={parent.deleteMember.bind(self,person.id)} href="#" alt="Delete member">Delete member</a>:""}
@@ -992,7 +1026,7 @@ var Equipments = React.createClass({
                     <table className="item-search-field" width="100%">
                         <tr>
                             {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                            {(this.state.isAdmin) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></td> : <td></td>}
+                            {(this.state.isAdmin) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltipEquip}><input className="item-add-button" onClick={this.clickOpen} type="button" value="+"/></OverlayTrigger></td> : <td></td>}
                         </tr>
                     </table>
                 </div>

@@ -57,6 +57,7 @@ module.exports=function(app,Parse,io) {
                 username: currentUser.username,
                 email: currentUser.email,
                 fullname: currentUser.fullname,
+                about: currentUser.about,
                 summary: currentUser.summary,
                 interestsTag: JSON.stringify(currentUser.interestsTag),
                 interests: JSON.stringify(currentUser.interests),
@@ -74,6 +75,7 @@ module.exports=function(app,Parse,io) {
                 currentUserImg: currentUser.imgUrl,
                 username: currentUser.username,
                 email: currentUser.email,
+                about: currentUser.about,
                 fullname: currentUser.fullname,
                 summary: currentUser.summary,
                 interestsTag: JSON.stringify(currentUser.interestsTag),
@@ -90,12 +92,14 @@ module.exports=function(app,Parse,io) {
             query.equalTo("username",linkUser);
             query.first({
                 success: function(result) {
-                    res.render('profile', { title: 'Profile', path: req.path,
+                    if(result)
+                    res.render('profile', { title: "Profile", path: req.path,
                         currentUsername: currentUser.username,
                         currentUserImg: currentUser.imgUrl,
                         username: result.get('username'),
                         objectId: result.id,
                         email: result.get('email'),
+                        about: result.get("about"),
                         fullname: result.get('fullname'),
                         summary: result.get('summary'),
                         interestsTag: JSON.stringify(result.get('interestsTag')),
@@ -106,6 +110,8 @@ module.exports=function(app,Parse,io) {
                         profile_imgURL: result.get('picture').url(),
                         isMe: false
                     });
+                    else
+                    res.render('notfound',{isOrg:false,isUser:true});
                 },
                 error: function(error) {
                     res.redirect('/');
@@ -412,6 +418,31 @@ module.exports=function(app,Parse,io) {
         }
     });
 
+    app.post('/profile/:username/updateAbout', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        var linkUser = req.params.username;
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        result.set("about", req.body.about);
+                        result.save(null, { useMasterKey: true }).then(
+                            function(){
+                                //console.log("SAVE SUCCESS");
+                                res.status(200).json({status: "Info Uploaded Successfully!"});
+                            },
+                            function(error){
+                                console.log(error);
+                                res.status(500).json({status: "Error uploading summary"})
+                            }
+                        );
+                    }
+                }
+            );
+        }
+    });
+
     app.post('/profile/:username/updateInterest', is_auth, function(req,res,next){
         var currentUser = req.user;
         var linkUser = req.params.username;
@@ -427,7 +458,7 @@ module.exports=function(app,Parse,io) {
                 }
             );
         }
-    })
+    });
 
     app.post('/profile/:username/updateTags', is_auth, function(req,res,next){
         var currentUser = req.user;
