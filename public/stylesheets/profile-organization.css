@@ -192,7 +192,7 @@
     margin: 0 0.05em 0 0;
     font-size: 14px;
     border-radius:4px;
-    width:100%;
+    width:10%;
 } .item-add-button:hover {
     background-color: var(--foreground-hover-color);
     border-color: var(--foreground-hover-color);

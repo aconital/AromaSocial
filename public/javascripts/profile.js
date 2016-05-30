@@ -1295,9 +1295,9 @@ var ResourceForm = React.createClass({
                     {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                     {(currentUsername == username) ? <td className="padding-left-5"><input className="item-add-button" onClick={this.open} type="button" value="+"/></td> : ""}
                 </tr>
-                <tr>
+            {/* <tr>
                     {(currentUsername == username && this.props.publication) ? <td className="padding-left-5 padding-top-5"><input className="item-add-button" onClick={this.redirect} type="button" value="Import Publications"/></td> : ""}
-                </tr>
+                </tr>*/}
             </table>
         </div>
        {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}
