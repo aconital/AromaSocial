@@ -12,9 +12,9 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
 var nodemailer = require('nodemailer');
+var configs = require('../utils/configs');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
-//var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
-var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'https://syncholar.com/auth/linkedin/callback');
+var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', configs.linkedin_callback);
 
 var sendMail = require('../utils/helpers').sendMail;
 var is_auth = require('../utils/helpers').is_auth;
@@ -155,7 +155,7 @@ module.exports=function(app,Parse,io) {
                     result.save(null, {useMasterKey: true}).then(function () {
 
                         var emailBody = '<h3></h3><p>Hi ' + result.attributes.fullname + ',</h3></p> <p>Please click on the following link to reset your password:' +
-                            '<a href="https://syncholar.com/password-reset/'+userId+'/'+ activation_code +'">https://syncholar/password-reset/'+userId+'/'+ activation_code+ '</a>'
+                            '<a href="'+configs.baseUrl+'/password-reset/'+userId+'/'+ activation_code +'">'+configs.baseUrl+'/password-reset/'+userId+'/'+ activation_code+ '</a>'
                             + ' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
                         sendMail('Password Reset - Syncholar', emailBody, result.attributes.email);
 
@@ -295,7 +295,7 @@ module.exports=function(app,Parse,io) {
      user.signUp(null, {
         success: function (user) {
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.firstname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
-                '<a href="https://syncholar.com/verify-email/'+email_code+'" >https://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
+                '<a href="'+configs.baseUrl+'/verify-email/'+email_code+'" >'+configs.baseUrl+'/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
             sendMail("verify Email - Syncholar",emailBody,req.body.email);
 
            passport.authenticate('local', { successRedirect: '/',
@@ -488,7 +488,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   result.save(null, { useMasterKey: true }).then(function() {
 
                                       var emailBody ='<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
-                                      '<a href="https://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">https://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
+                                      '<a href="'+configs.baseUrl+'/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">'+configs.baseUrl+'/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
                                       +' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
                                           sendMail('Connecting Linkedin to your account',emailBody,result.attributes.email);
 
