@@ -3,7 +3,7 @@
  */
 
 var MODES= ["DEV","PROD"];
-var mode= MODES[1];
+var mode= MODES[0];
 
 if(mode == "PROD") {
 
