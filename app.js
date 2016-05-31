@@ -29,11 +29,13 @@ var LocalStrategy = require('passport-local');
 var helmet = require('helmet')
 var dbconfig = require('./config/configs');
 
+
 var app = express();
 var io           = socket_io();
 app.io           = io;
 
 app.use(helmet());
+
 
 
 Parse.initialize(dbconfig.db_name, dbconfig.username, dbconfig.password);
@@ -83,6 +85,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
+
+
 require('./routes/routes')(app,Parse,io);
 require('./routes/organization')(app,Parse,io);
 require('./routes/user')(app,Parse,io);
@@ -110,6 +115,10 @@ io.on('connection', function(socket){
     });
 
 });
+
+
+
+
 
 //===============PASSPORT=================
 // Use the LocalStrategy within Passport to login/�signin� users.
