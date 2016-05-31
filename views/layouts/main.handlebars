@@ -97,8 +97,8 @@
                                       type: 'POST',
                                       data: emailData,
                                       cache: false,
-                                      success: function(data) {
-                                        console.log("Ajax for email successful");
+                                      success: function(response) {
+                                        console.log("Ajax for email successful: ", response);
                                       }.bind(this),
                                       error: function(xhr, status, err) {
                                         console.log("Ajax for email failed with err: ", err);

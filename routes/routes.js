@@ -47,9 +47,67 @@ module.exports=function(app,Parse,io) {
     var addr = req.body.addr;
     var msg = req.body.msg;
     var emailBody = req.body.emailBody;
-    sendMail('You just received an invite to Syncholar. Not everyone gets it :)',emailBody,addr);
-    res.send({reply: "Invited"});
-    //next();
+
+    // TODO: spam prevention (using captcha (?))
+
+    var addrIsUser = false;
+    var addrAlreadySent = false;
+    var query = new Parse.Query(Parse.User);
+    query.equalTo("email", addr);
+    query.first({
+      success: function(result) {
+        if (result == undefined) {
+          // user with this email doesn't exist - check invite class if email already sent to this address
+          addrIsUser = false;
+        } else {
+          // user exists
+          addrIsUser = true;
+        }
+      },
+      error: function(err) {
+        console.log("Error in checking user in inviteBuddy: ", err);
+        res.send({reply: err});
+      }
+    }).then(function(){
+      if (addrIsUser) {
+        // do nothing - don't send email
+        res.send({reply: "User already exists with this email"});
+      } else {
+        var Invite = Parse.Object.extend("Invite");
+        var inviteQuery = new Parse.Query(Invite);
+        inviteQuery.equalTo("email", addr);
+        inviteQuery.first({
+          success: function(result) {
+            if (result == undefined) {
+              // save in Invite and send email
+              var inv = new Invite();
+              inv.set("email", addr);
+              inv.save(null, {
+                success: function(i) {
+                  console.log(i);
+                },
+                error: function(err) {
+                  console.log("Error while storing new address in Invite Class: ", err);
+                  res.send({reply: err});
+                }
+              }).then(function() {
+                // send mail after we've stored in db
+                sendMail('You just received an invite to Syncholar',emailBody,addr);
+                res.send({reply: "Invited"});
+              })
+            } else {
+              // don't (?)
+              console.log("Invitation email has already been sent to this user");
+              res.send({reply: "Invitation email has already been sent to this user"});
+            }
+          },
+          error: function(err) {
+            console.log("Error while checking invite class: ", err);
+            res.send({reply: err});
+          }
+        })
+      }
+    })
   });
 
   /*******************************************
