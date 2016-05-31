@@ -653,7 +653,7 @@ app.get("/fetchworks", function(req, res, next) {
       "count": "20",
       "offset": "0",
       // "orderby": "{string}",
-      "attributes": "Ti,Y,D,J.JN,F.FN,AA.AuN,E", // TODO: conference support C.CN, VFN
+      "attributes": "Ti,Y,D,J.JN,C.CN,F.FN,AA.AuN,E",
     };
     var url = "https://api.projectoxford.ai/academic/v1.0/evaluate?" + formatParams(params);
 
@@ -668,9 +668,9 @@ app.get("/fetchworks", function(req, res, next) {
       if (!error && response.statusCode == 200) {
         var data = JSON.parse(body);
         console.log(data.entities);
-        // currently only supports importing journals/entries with journal metadata
-        var journals = data.entities.filter( (entity) => entity.hasOwnProperty('J') );
-        res.status(200).json({status:"OK", data: journals});
+        // currently only supports importing journals/conferences
+        var publications = data.entities.filter( (entity) => (entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) );
+        res.status(200).json({status:"OK", data: publications});
       } else {
         res.status(response.statusCode).json({status: "Searching for works has failed." + error});
       }
@@ -685,25 +685,47 @@ app.post("/import", function(req, res, next) {
   //parse each imported work, and add to saveArray for bulk saving
   for (var i = 0; i < req.body.length; i++) {
       var work = req.body[i];
-      var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO future support for conf and others
-      var pub = new PubType();
 
-      pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-      pub.set('contributors', work.contributors);
-      pub.set('abstract', work.abstract);
-      pub.set('keywords', work.keywords);
-      pub.set('url', work.url);
-      pub.set('title', work.title);
-      pub.set('doi', work.doi);
-      pub.set('publication_date', new Date(work.publication_date));
+      if (work.hasOwnProperty('journal')) {
+        var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO refactor into helper functions; future support for others
+        var pub = new PubType();
 
-      // journal article fields
-      pub.set('journal', work.journal);
-      pub.set('volume', work.volume);
-      pub.set('issue', work.issue);
-      pub.set('page', work.page);
-      pub.set('type', "journal");
-      saveArray.push(pub);
+        pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
+        pub.set('contributors', work.contributors);
+        pub.set('abstract', work.abstract);
+        pub.set('keywords', work.keywords);
+        pub.set('url', work.url);
+        pub.set('title', work.title);
+        pub.set('doi', work.doi);
+        pub.set('publication_date', new Date(work.publication_date));
+
+        // journal article fields
+        pub.set('journal', work.journal);
+        pub.set('volume', work.volume);
+        pub.set('issue', work.issue);
+        pub.set('page', work.page);
+        pub.set('type', "journal");
+        saveArray.push(pub);
+      } else if (work.hasOwnProperty('conference')) {
+        var PubType = Parse.Object.extend("Pub_Conference");
+        var pub = new PubType();
+
+        pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
+        pub.set('contributors', work.contributors);
+        pub.set('abstract', work.abstract);
+        pub.set('keywords', work.keywords);
+        pub.set('url', work.url);
+        pub.set('title', work.title);
+        pub.set('doi', work.doi);
+        pub.set('publication_date', new Date(work.publication_date));
+
+        // conference fields
+        pub.set('conference', work.conference);
+        pub.set('volume', work.volume);
+        pub.set('location', work.location);
+        pub.set('type', "conference");
+        saveArray.push(pub);
+      }
   };
   
   // return success if all works are imported without error
