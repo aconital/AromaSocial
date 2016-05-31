@@ -139,7 +139,7 @@ hasBetaCode: function (req,res,next)
         sp.transmissions.send({
             transmissionBody: {
                 content: {
-                    from: 'support@syncholar.com',
+                    from: 'no-reply@syncholar.com',
                     subject: subject,
                     html: html
                 },
