@@ -43,11 +43,15 @@ module.exports=function(app,Parse,io) {
        res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
   });
 
-
-
-  app.get('/invite', function(req, res){
-    res.render('invite');
+  app.post('/inviteBuddy', function(req, res, next){
+    var addr = req.body.addr;
+    var msg = req.body.msg;
+    var emailBody = req.body.emailBody;
+    sendMail('You just received an invite to Syncholar. Not everyone gets it :)',emailBody,addr);
+    res.send({reply: "Invited"});
+    //next();
   });
+
   /*******************************************
    *
    * HOME PAGE
