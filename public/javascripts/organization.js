@@ -890,6 +890,15 @@ var People = React.createClass({
         invite(e.nativeEvent);
     },
     render: function() {
+        return (
+            <div className="item-search-div">
+                <table className="item-search-field" width="100%">
+                    <tr>
+                        {(isAdmin) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
+                    </tr>
+                </table>
+            </div>
+        )
         var parent= this;
         var isAdmin= this.props.isAdmin;
         var peopleList = $.map(this.state.data,function(objects) {
