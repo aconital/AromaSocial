@@ -25,6 +25,7 @@ var Organization = React.createClass ({
             showModal: false,
             imgSubmitText: 'Upload',
             imgSubmitDisabled: false,
+            isAdmin:false,
             modalMode: 1, //the active carousel item, values =1,2,3
             carousel_1_img: {carousel_1_img},
             carousel_2_img: {carousel_2_img},

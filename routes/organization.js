@@ -270,7 +270,7 @@ module.exports=function(app,Parse,io) {
         var mode = req.body.mode;
 
         var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",orgId);
+        innerQuery.equalTo("name",orgId);
         var innerQuery2 = new Parse.Query(Parse.User);
         innerQuery2.equalTo("objectId",personId);
         var query = new Parse.Query('Relationship');
@@ -324,9 +324,9 @@ module.exports=function(app,Parse,io) {
         var orgId = req.params.objectId;
         var mode = req.body.mode;
         var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",orgId);
+        innerQuery.equalTo("name",orgId);
         var innerQuery2 = new Parse.Query("Organization");
-        innerQuery2.equalTo("objectId",organizationId);
+        innerQuery2.equalTo("name",organizationId);
         var query = new Parse.Query('RelationshipOrg');
         query.matchesQuery("orgId0",innerQuery);
         query.matchesQuery("orgId1",innerQuery2);
@@ -1157,7 +1157,7 @@ module.exports=function(app,Parse,io) {
                     },
                     msg: "wants to join",
                     extra: {
-                        id: result.get("orgId").id,
+                        id: result.get("orgId").get("name"),
                         name: result.get("orgId").get("displayName"),
                         imgUrl: result.get("orgId").get("profile_imgURL")
                     }
@@ -1202,13 +1202,13 @@ module.exports=function(app,Parse,io) {
                         type: "org2orgrequest",
                         from: {
                             userId: r.get("orgId1").id,
-                            username: r.get("orgId1").id,
+                            username: r.get("orgId1").get("name"),
                             name: r.get("orgId1").get("displayName"),
                             userImgUrl: r.get("orgId1").get("picture").url(),
                         },
                         msg: "wants to connect with ",
                         extra: {
-                            id: r.get("orgId0").id,
+                            id: r.get("orgId0").get("name"),
                             name: r.get("orgId0").get("displayName"),
                             imgUrl: r.get("orgId0").get("picture").url()
                         }
@@ -1250,8 +1250,8 @@ module.exports=function(app,Parse,io) {
                           },
                           msg: "wants to join ",
                           extra: {
-                              id: results[i].get("orgId").id,
-                              name: results[i].get("orgId").get("name"),
+                              id: results[i].get("orgId").get("name"),
+                              name: results[i].get("orgId").get("displayName"),
                               imgUrl: results[i].get("orgId").get("profile_imgURL")
                           }
                       };
@@ -1290,14 +1290,14 @@ module.exports=function(app,Parse,io) {
                                         type: "org2orgrequest",
                                         from: {
                                             userId: fromOrg.id,
-                                            username: fromOrg.id,
-                                            name: fromOrg.get("name"),
+                                            username: fromOrg.get("name"),
+                                            name: fromOrg.get("displayName"),
                                             userImgUrl: fromOrg.get("picture").url(),
                                         },
                                         msg: "wants to join ",
                                         extra: {
-                                            id: results[i].get("orgId").id,
-                                            name: results[i].get("orgId").get("name"),
+                                            id: results[i].get("orgId").get("name"),
+                                            name: results[i].get("orgId").get("displayName"),
                                             imgUrl: results[i].get("orgId").get("profile_imgURL")
                                         }
                                     };
