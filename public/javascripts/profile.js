@@ -402,7 +402,20 @@ var Connections = React.createClass({
             }.bind(this)
         });
     },
+    inviteTrigger: function(e) {
+        e.stopPropagation();
+        invite(e.nativeEvent);
+    },
     render: function() {
+        return (
+            <div className="item-search-div">
+                <table className="item-search-field" width="100%">
+                    <tr>
+                        {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
+                    </tr>
+                </table>
+            </div>
+        )
         var peopleList = $.map(this.state.data,function(objects) {
             var role= objects[0].title;
             var plist=[];
@@ -412,8 +425,10 @@ var Connections = React.createClass({
 
                 plist.push(person);
             }
+            console.log(currentUsername);
+            console.log(username);
 
-            return (
+            return (                
                 <div id="item-list">
                     {plist.map(person =>
                     <div className="item-box" key={person.username} id="item-list">

@@ -47,7 +47,7 @@ module.exports=function(app,Parse,io) {
     var addr = req.body.addr;
     var msg = req.body.msg;
     var emailBody = req.body.emailBody;
-    var user = req.user.username;
+    var user = req.user.fullname;
     console.log(user);
 
     // TODO: spam prevention (using captcha (?))

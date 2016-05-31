@@ -885,6 +885,10 @@ var People = React.createClass({
         });
 
     },
+    inviteTrigger: function(e) {
+        e.stopPropagation();
+        invite(e.nativeEvent);
+    },
     render: function() {
         var parent= this;
         var isAdmin= this.props.isAdmin;

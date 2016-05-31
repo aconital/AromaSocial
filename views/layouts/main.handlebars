@@ -84,9 +84,9 @@
                                     var results = JSON.parse(inputValue);
                                     console.log(results[0]);
                                     console.log(results[1]);
-                                    var emailBody ='<h3> {{user.fullname}} has invited you to join Syncholar! </h3><br> <p> You can sign up for Syncholar for free by clicking on the link below: </p>' +
+                                    var emailBody ="<h3> You've been invited to join {{user.fullname}}'s network on Syncholar! </h3><br> <p> You can sign up for Syncholar for free by clicking on the link below: </p>" +
                                             '<a href="https://syncholar.com/">www.syncholar.com</a>' +
-                                            '<br><p><b>Invitation code: </b>summer2016 <br><br><p> Syncholar is an information sharing platform and a dynamic and social networked alternative for your research lab or profile webpage' +
+                                            '<br><p><b>Invitation code: </b>summer2016 <br><br><p> Syncholar is an information sharing platform and a dynamic and social networked alternative for your research lab or profile webpage.' +
                                             '<br> Academics use Syncholar to:<br>' +
                                             ' - Create a homepage for their research group, lab or network and connect their members.<br>' +
                                             '- Store and share their research outputs.<br>' +
@@ -121,7 +121,7 @@
             //set up the fields: labels
             var tooltipsArray = ["Email","Message"];
             //set up the fields: defaults
-            var defaultsArray = ["","You've been invited to Syncholar!"];
+            var defaultsArray = ["",""];
             SweetAlertMultiInput(tooltipsArray,defaultsArray);
         }
     </script>
