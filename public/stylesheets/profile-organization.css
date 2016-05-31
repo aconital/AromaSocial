@@ -16,7 +16,7 @@
 .accept-reject-buttons { position: absolute; right: 10px; top:10px; width: 30%; text-align:right; }
 
 .contain-image {
-    width: 60%;
+    width: 80%;
     border: none;
     border-radius: 4px;
     border-color: var(--foreground-color);
