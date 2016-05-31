@@ -1,3 +1,8 @@
+// For transforming publication type category
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
 // ALL
 $(function() {
   if ($('.auto').length != 0) {
@@ -39,7 +44,7 @@ $(function() {
                       //console.log(item);
                       var type = item.type;
                       var dlink = "/publication/" + type + "/" + item.objectId;
-                      r.push({label: item.title, value: item.title, category: item.type, imgsrc: "/images/paper.png", link: dlink});
+                      r.push({label: item.title, value: item.title, category: toTitleCase(item.type), imgsrc: "/images/paper.png", link: dlink});
                     });
                   },
                   error: function(xhr) {

@@ -12,9 +12,9 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var mandrill = require('node-mandrill')('UEomAbdaxFGITwF43ZsO6g');
 var nodemailer = require('nodemailer');
+var configs = require('../config/configs');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
-//var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'http://localhost:3000/auth/linkedin/callback');
-var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', 'https://syncholar.com/auth/linkedin/callback');
+var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', configs.linkedin_callback);
 
 var sendMail = require('../utils/helpers').sendMail;
 var is_auth = require('../utils/helpers').is_auth;
@@ -43,11 +43,15 @@ module.exports=function(app,Parse,io) {
        res.render('beta', {title: 'Syncholar Beta', path: req.path, Error: "Wrong code!"});
   });
 
-
-
-  app.get('/invite', function(req, res){
-    res.render('invite');
+  app.post('/inviteBuddy', function(req, res, next){
+    var addr = req.body.addr;
+    var msg = req.body.msg;
+    var emailBody = req.body.emailBody;
+    sendMail('You just received an invite to Syncholar. Not everyone gets it :)',emailBody,addr);
+    res.send({reply: "Invited"});
+    //next();
   });
+
   /*******************************************
    *
    * HOME PAGE
@@ -155,7 +159,7 @@ module.exports=function(app,Parse,io) {
                     result.save(null, {useMasterKey: true}).then(function () {
 
                         var emailBody = '<h3></h3><p>Hi ' + result.attributes.fullname + ',</h3></p> <p>Please click on the following link to reset your password:' +
-                            '<a href="https://syncholar.com/password-reset/'+userId+'/'+ activation_code +'">https://syncholar/password-reset/'+userId+'/'+ activation_code+ '</a>'
+                            '<a href="'+configs.baseUrl+'/password-reset/'+userId+'/'+ activation_code +'">'+configs.baseUrl+'/password-reset/'+userId+'/'+ activation_code+ '</a>'
                             + ' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
                         sendMail('Password Reset - Syncholar', emailBody, result.attributes.email);
 
@@ -295,7 +299,7 @@ module.exports=function(app,Parse,io) {
      user.signUp(null, {
         success: function (user) {
             var emailBody ='<h3><p>Welcome to Syncholar '+req.body.firstname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
-                '<a href="https://syncholar.com/verify-email/'+email_code+'" >https://syncholar.com/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
+                '<a href="'+configs.baseUrl+'/verify-email/'+email_code+'" >'+configs.baseUrl+'/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
             sendMail("verify Email - Syncholar",emailBody,req.body.email);
 
            passport.authenticate('local', { successRedirect: '/',
@@ -452,6 +456,15 @@ app.get('/auth/linkedin/callback',function(req,res){
             var linkedin_ID= $in.id;
             var email= $in.emailAddress;
             var name= $in.formattedName;
+            var nameArr = name.split(" ");
+            var firstName = nameArr[0];
+            var lastName = "";
+            for (var i = 1; i < nameArr.length; i++) {
+              lastName += (i == nameArr.length-1) ? nameArr[i]:nameArr[i]+" ";
+            }
+            console.log("FirstName: ", firstName);
+            console.log("lastName: ", lastName);
+            var username = name.replace(/ /g, "_");
 
             var about=null
             if($in.headline !=null)
@@ -488,7 +501,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   result.save(null, { useMasterKey: true }).then(function() {
 
                                       var emailBody ='<h3></h3><p>Hi '+result.attributes.fullname+',</h3></p> <p>Please click on the following link to connect your linkedin to your account:' +
-                                      '<a href="https://syncholar.com/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">https://syncholar/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
+                                      '<a href="'+configs.baseUrl+'/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'">'+configs.baseUrl+'/auth/linkedin/verify/'+activation_code+'/'+linkedin_ID+'</a>'
                                       +' ,</p><p> <br>--------------------<br> Syncholar Team</p>';
                                           sendMail('Connecting Linkedin to your account',emailBody,result.attributes.email);
 
@@ -505,7 +518,9 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   var randomPass = randomString(5);
 
                                   user.set("fullname", name);
-                                  user.set("username", linkedin_ID);
+                                  user.set("firstname", firstName);
+                                  user.set("lastname", lastName);
+                                  user.set("username", username);
                                   user.set("password", randomPass);
                                   user.set("linkedin_id", linkedin_ID);
                                   user.set("email", email);
@@ -520,7 +535,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.signUp(null,
                                       {
                                       success: function (user) {
-                                          Parse.User.logIn(linkedin_ID, randomPass, {
+                                          Parse.User.logIn(username, randomPass, {
                                               success: function(u) {
                                                   //get image from linkedin
                                                   processLinkedinImage(email,$in);
@@ -638,7 +653,7 @@ app.get("/fetchworks", function(req, res, next) {
       "count": "20",
       "offset": "0",
       // "orderby": "{string}",
-      "attributes": "Ti,Y,D,J.JN,F.FN,AA.AuN,E", // TODO: conference support C.CN, VFN
+      "attributes": "Ti,Y,D,J.JN,C.CN,F.FN,AA.AuN,E",
     };
     var url = "https://api.projectoxford.ai/academic/v1.0/evaluate?" + formatParams(params);
 
@@ -653,9 +668,9 @@ app.get("/fetchworks", function(req, res, next) {
       if (!error && response.statusCode == 200) {
         var data = JSON.parse(body);
         console.log(data.entities);
-        // currently only supports importing journals/entries with journal metadata
-        var journals = data.entities.filter( (entity) => entity.hasOwnProperty('J') );
-        res.status(200).json({status:"OK", data: journals});
+        // currently only supports importing journals/conferences
+        var publications = data.entities.filter( (entity) => (entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) );
+        res.status(200).json({status:"OK", data: publications});
       } else {
         res.status(response.statusCode).json({status: "Searching for works has failed." + error});
       }
@@ -670,25 +685,47 @@ app.post("/import", function(req, res, next) {
   //parse each imported work, and add to saveArray for bulk saving
   for (var i = 0; i < req.body.length; i++) {
       var work = req.body[i];
-      var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO future support for conf and others
-      var pub = new PubType();
 
-      pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-      pub.set('contributors', work.contributors);
-      pub.set('abstract', work.abstract);
-      pub.set('keywords', work.keywords);
-      pub.set('url', work.url);
-      pub.set('title', work.title);
-      pub.set('doi', work.doi);
-      pub.set('publication_date', new Date(work.publication_date));
+      if (work.hasOwnProperty('journal')) {
+        var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO refactor into helper functions; future support for others
+        var pub = new PubType();
 
-      // journal article fields
-      pub.set('journal', work.journal);
-      pub.set('volume', work.volume);
-      pub.set('issue', work.issue);
-      pub.set('page', work.page);
-      pub.set('type', "journal");
-      saveArray.push(pub);
+        pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
+        pub.set('contributors', work.contributors);
+        pub.set('abstract', work.abstract);
+        pub.set('keywords', work.keywords);
+        pub.set('url', work.url);
+        pub.set('title', work.title);
+        pub.set('doi', work.doi);
+        pub.set('publication_date', new Date(work.publication_date));
+
+        // journal article fields
+        pub.set('journal', work.journal);
+        pub.set('volume', work.volume);
+        pub.set('issue', work.issue);
+        pub.set('page', work.page);
+        pub.set('type', "journal");
+        saveArray.push(pub);
+      } else if (work.hasOwnProperty('conference')) {
+        var PubType = Parse.Object.extend("Pub_Conference");
+        var pub = new PubType();
+
+        pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
+        pub.set('contributors', work.contributors);
+        pub.set('abstract', work.abstract);
+        pub.set('keywords', work.keywords);
+        pub.set('url', work.url);
+        pub.set('title', work.title);
+        pub.set('doi', work.doi);
+        pub.set('publication_date', new Date(work.publication_date));
+
+        // conference fields
+        pub.set('conference', work.conference);
+        pub.set('volume', work.volume);
+        pub.set('location', work.location);
+        pub.set('type', "conference");
+        saveArray.push(pub);
+      }
   };
   
   // return success if all works are imported without error

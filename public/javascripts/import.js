@@ -112,7 +112,7 @@ var WorkItem = React.createClass({
 
 	// tells WorksList to add or remove item at current index
 	toggleImport(toAdd) {
-		console.log('passingUp', this.props.index, toAdd);
+		// console.log('passingUp', this.props.index, toAdd);
 		this.props.toggleImport(this.props.index, toAdd);
 	},
 
@@ -179,37 +179,49 @@ var WorksList = React.createClass({
         return transformed; // TODO convert to set?
 	},
 	transformProperties(work) { // TODO support for conferences, books, others if possible
-		var journalArticle = {
-			type: 'journal',
-			title: work.hasOwnProperty('Ti') ? toTitleCase(work.Ti) : '',
-			publication_date: work.hasOwnProperty('D') ? work.D : Date.parse(work.Y),
-			contributors: work.hasOwnProperty('AA') ? work.AA.map( (a) => toTitleCase(a.AuN) ): [name],
-			journal: work.hasOwnProperty('J') ? toTitleCase(work.J.JN) : '',
-			keywords: work.hasOwnProperty('F') ? work.F.map( (k) => toTitleCase(k.FN) ) : [],
-		};
+		if (work.hasOwnProperty('C')) {
+			var publication = { 
+				type: 'conference', 
+				conference: work.hasOwnProperty('C') ? toTitleCase(work.C.CN) : ''
+			};
+		} else if (work.hasOwnProperty('J')) {
+			var publication = { 
+				type: 'journal',
+				journal: work.hasOwnProperty('J') ? toTitleCase(work.J.JN) : ''
+			};
+		} else {
+			var publication = { type: 'unknown'};
+		}
+		publication['title'] = work.hasOwnProperty('Ti') ? toTitleCase(work.Ti) : '';
+		publication['publication_date'] = work.hasOwnProperty('D') ? work.D : Date.parse(work.Y);
+		publication['contributors'] = work.hasOwnProperty('AA') ? work.AA.map( (a) => toTitleCase(a.AuN) ): [name];
+		publication['keywords'] = work.hasOwnProperty('F') ? work.F.map( (k) => toTitleCase(k.FN) ) : [];
+
 		if (work.hasOwnProperty('E')) {
 			var extended = JSON.parse(work.E);
-			journalArticle['abstract'] = extended.hasOwnProperty('D') ? extended.D : '';
-			journalArticle['volume'] = extended.hasOwnProperty('V') ? extended.V.toString() : '';
-			journalArticle['issue'] = extended.hasOwnProperty('I') ? extended.I.toString() : '';
-			journalArticle['page'] = (extended.hasOwnProperty('FP') && extended.hasOwnProperty('LP')) ? extended.FP+'-'+extended.LP : '';
-			journalArticle['url'] = extended.hasOwnProperty('S') ? extended.S[0].U : '';
-			journalArticle['doi'] = extended.hasOwnProperty('DOI') ? extended.DOI : '';
+			publication['abstract'] = extended.hasOwnProperty('D') ? extended.D : '';
+			publication['url'] = extended.hasOwnProperty('S') ? extended.S[0].U : '';
+			publication['doi'] = extended.hasOwnProperty('DOI') ? extended.DOI : '';
+			publication['volume'] = extended.hasOwnProperty('V') ? extended.V.toString() : '';
+			publication['issue'] = extended.hasOwnProperty('I') ? extended.I.toString() : '';
+			publication['page'] = (extended.hasOwnProperty('FP') && extended.hasOwnProperty('LP')) ? extended.FP+'-'+extended.LP : '';
+			if (extended.hasOwnProperty('VFN')) { // if VFN exists, update current name of publisher
+				publication[publication.type] = extended.VFN;
+			}
 		}
-		return journalArticle;
+		return publication;
 	},
 
 	// adds or removes indexes from the list of works to send. allResults keeps permanent list of works,
 	// and indexes of WorkItem components passed up match to those in allResults
 	addRemoveImport(index, toAdd) {
 		if (toAdd === true) {
-			console.log('adding', index);
+			// console.log('adding', index);
 			this.setState({
 				resultsToSend: this.state.resultsToSend.concat([index])
 			});
 		} else {
-			console.log('removing', index);
-			// this.state.resultsToSend.splice(index, 1);
+			// console.log('removing', index);
 			this.setState({
 				resultsToSend: this.state.resultsToSend.filter((i) => i !== index)
 			});

@@ -4,13 +4,14 @@
 /************************************
  * HELPER FUNCTIONS
  *************************************/
+var config = require('../config/configs');
 var SparkPost = require('sparkpost');
 var sp = new SparkPost('5c4cf399a6bbc1f2bd87a881d08756458b0834cb');
 var request = require('request').defaults({ encoding: null });
 
 var Parse = require('parse/node');
-Parse.initialize("development", "Fomsummer2014", "Fomsummer2014");
-Parse.serverURL = 'http://52.38.90.136:1337/parse/';
+Parse.initialize(config.db_name, config.username, config.password);
+Parse.serverURL = config.url;
 
 module.exports = {
 
