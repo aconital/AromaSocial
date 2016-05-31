@@ -36,6 +36,9 @@
     <link rel="stylesheet" href="/stylesheets/tag-it.css">
     <link rel="stylesheet" href="/javascripts/react-tag-input/example/reactTags.css">
 
+    <script src="/javascripts/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/javascripts/sweetalert/dist/sweetalert.multi.js"></script>
+
     <link rel="stylesheet" href="/javascripts/sweetalert/dist/sweetalert.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -54,6 +57,63 @@
             var textArea = document.createElement('textarea');
             textArea.innerHTML = encodedString;
             return textArea.value;
+        }
+
+        //sweet alert hack for multiple inputs
+        function invite(event) {
+            event.stopPropagation();
+            swal({title: "Invite a Potential Syncholar!",
+                    text: "",
+                    type: "input",
+                    showCancelButton: true,
+                    closeOnConfirm: false},
+
+                        function(inputValue)
+                        {
+                            SweetAlertMultiInputReset(); // make sure you call this
+                            if (inputValue!=false)
+                            {
+                                
+                                swal({title: "Invitation Sent!",
+                                text: "We look forward to having your friend join our network of scholars",
+                                type:"success",
+                                closeOnConfirm: true,
+                                },function(){SweetAlertMultiInputFix()}); // fix used if you want to display another box immediately
+                                if (inputValue!=false)
+                                {
+                                    var results = JSON.parse(inputValue);
+                                    console.log(results[0]);
+                                    console.log(results[1]);
+                                    var emailBody ='<h3><p>Your friend thinks you will make a great Syncholar... and we agree! Join now and get connected to the vast network of scholars and academics - with a huge store of knowledge at your disposal</p> </h3>' + '<br><p>Your Syncholar buddy says: <br>' + results[1] + '</p>' + '<p><br>-------------------<br>Syncholar Team</p>';
+                                    
+                                    var emailData = {
+                                        'addr': results[0],
+                                        'msg': results[1],
+                                        'emailBody': emailBody
+                                    }
+                                    $.ajax({
+                                      url: "/inviteBuddy",
+                                      dataType: 'json',
+                                      type: 'POST',
+                                      data: emailData,
+                                      cache: false,
+                                      success: function(data) {
+                                        console.log("Ajax for email successful");
+                                      }.bind(this),
+                                      error: function(xhr, status, err) {
+                                        console.log("Ajax for email failed with err: ", err);
+                                      }.bind(this)
+                                    });
+                                }
+                            }
+                        }
+                    )
+                            
+            //set up the fields: labels
+            var tooltipsArray = ["Email","Message"];
+            //set up the fields: defaults
+            var defaultsArray = ["","You've been invited, good Sir!"];
+            SweetAlertMultiInput(tooltipsArray,defaultsArray);
         }
     </script>
 
@@ -83,6 +143,7 @@
                         <ul class="dropdown-menu">
                             <li><a href="/create/organization">Create Organizational Homepage</a></li>
                             <li><a href="/report">Report Problem | Share Idea</a></li>
+                            <li><a onclick="invite(event)" value="invite">Invite a Friend</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -195,7 +256,6 @@
 <script src="https://www.parsecdn.com/js/parse-react.js"></script>
 <script type="text/jsx" src="/javascripts/navbar.js"></script>
 <script src="/javascripts/autocomplete.js"></script>
-<script src="/javascripts/sweetalert/dist/sweetalert.min.js"></script>
 
 <script>
     $(document).ready(function(){
