@@ -84,7 +84,16 @@
                                     var results = JSON.parse(inputValue);
                                     console.log(results[0]);
                                     console.log(results[1]);
-                                    var emailBody ='<h3><p>Your friend thinks you will make a great Syncholar... and we agree! Join now and get connected to the vast network of scholars and academics - with a huge store of knowledge at your disposal</p> </h3>' + '<br><p>Your Syncholar buddy says: <br>' + results[1] + '</p>' + '<p><br>-------------------<br>Syncholar Team</p>';
+                                    var emailBody ='<h3> {{user.fullname}} has invited you to join Syncholar! </h3><br> <p> You can sign up for Syncholar for free by clicking on the link below: </p>' +
+                                            '<a href="https://syncholar.com/">www.syncholar.com</a>' +
+                                            '<br><p><b>Invitation code: </b>summer2016 <br><br><p> Syncholar is an information sharing platform and a dynamic and social networked alternative for your research lab or profile webpage' +
+                                            '<br> Academics use Syncholar to:<br>' +
+                                            ' - Create a homepage for their research group, lab or network and connect their members.<br>' +
+                                            '- Store and share their research outputs.<br>' +
+                                            '- Stay up-to-date with their networks activities.<br>' +
+                                            '- Discover knowledge and expertise.<br>' +
+                                            '- Streamline collaboration within their networks.<br><br>' +
+                                            results[1] + '</p>' + '<p><br>-------------------<br>Syncholar Team</p>';
                                     
                                     var emailData = {
                                         'addr': results[0],
@@ -97,8 +106,8 @@
                                       type: 'POST',
                                       data: emailData,
                                       cache: false,
-                                      success: function(data) {
-                                        console.log("Ajax for email successful");
+                                      success: function(response) {
+                                        console.log("Ajax for email successful: ", response);
                                       }.bind(this),
                                       error: function(xhr, status, err) {
                                         console.log("Ajax for email failed with err: ", err);
@@ -112,7 +121,7 @@
             //set up the fields: labels
             var tooltipsArray = ["Email","Message"];
             //set up the fields: defaults
-            var defaultsArray = ["","You've been invited, good Sir!"];
+            var defaultsArray = ["","You've been invited to Syncholar!"];
             SweetAlertMultiInput(tooltipsArray,defaultsArray);
         }
     </script>
