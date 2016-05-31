@@ -47,6 +47,8 @@ module.exports=function(app,Parse,io) {
     var addr = req.body.addr;
     var msg = req.body.msg;
     var emailBody = req.body.emailBody;
+    var user = req.user.username;
+    console.log(user);
 
     // TODO: spam prevention (using captcha (?))
 
@@ -92,7 +94,7 @@ module.exports=function(app,Parse,io) {
                 }
               }).then(function() {
                 // send mail after we've stored in db
-                sendMail('You just received an invite to Syncholar',emailBody,addr);
+                sendMail(user + ' has invited you to join Syncholar',emailBody,addr);
                 res.send({reply: "Invited"});
               })
             } else {
