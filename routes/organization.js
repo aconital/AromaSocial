@@ -270,7 +270,7 @@ module.exports=function(app,Parse,io) {
         var mode = req.body.mode;
 
         var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",orgId);
+        innerQuery.equalTo("name",orgId);
         var innerQuery2 = new Parse.Query(Parse.User);
         innerQuery2.equalTo("objectId",personId);
         var query = new Parse.Query('Relationship');
@@ -324,9 +324,9 @@ module.exports=function(app,Parse,io) {
         var orgId = req.params.objectId;
         var mode = req.body.mode;
         var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("objectId",orgId);
+        innerQuery.equalTo("name",orgId);
         var innerQuery2 = new Parse.Query("Organization");
-        innerQuery2.equalTo("objectId",organizationId);
+        innerQuery2.equalTo("name",organizationId);
         var query = new Parse.Query('RelationshipOrg');
         query.matchesQuery("orgId0",innerQuery);
         query.matchesQuery("orgId1",innerQuery2);
@@ -1250,8 +1250,8 @@ module.exports=function(app,Parse,io) {
                           },
                           msg: "wants to join ",
                           extra: {
-                              id: results[i].get("orgId").id,
-                              name: results[i].get("orgId").get("name"),
+                              id: results[i].get("orgId").get("name"),
+                              name: results[i].get("orgId").get("displayName"),
                               imgUrl: results[i].get("orgId").get("profile_imgURL")
                           }
                       };
