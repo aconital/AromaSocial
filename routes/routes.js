@@ -298,9 +298,9 @@ module.exports=function(app,Parse,io) {
 
      user.signUp(null, {
         success: function (user) {
-            var emailBody ='<h3><p>Welcome to Syncholar '+req.body.firstname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address:</p>'+
+            var emailBody ='<h3><p>Welcome to Syncholar '+req.body.firstname+',</p> </h3>'+ '<p>Please click on the link below to verify your email address: </p>'+
                 '<a href="'+configs.baseUrl+'/verify-email/'+email_code+'" >'+configs.baseUrl+'/verify-email/'+email_code+'</a></p><p><br>--------------------<br>Syncholar Team</p>';
-            sendMail("verify Email - Syncholar",emailBody,req.body.email);
+            sendMail("Verify Email - Syncholar",emailBody,req.body.email);
 
            passport.authenticate('local', { successRedirect: '/',
                failureRedirect: '/signin'}, function(err, user, info) {
