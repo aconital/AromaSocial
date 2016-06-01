@@ -20,13 +20,25 @@
 			incls.innerHTML=tooltipsArray[i];
 			fieldset.appendChild(incls);
 			
-			var incls=document.createElement("input");
-			incls.className="hackpanel hackinput";
-			var type = (types===undefined)?"string":(types[i]===undefined)?"string":types[i];
-			incls.dataset.type=type;
-			incls.value=defaultsArray[i];
-			incls.onkeyup = SweetAlertMultiInputAmalgamate;
-			fieldset.appendChild(incls);
+			if (i == 0) {
+				var incls=document.createElement("input");
+				incls.className="hackpanel hackinput";
+				var type = (types===undefined)?"string":(types[i]===undefined)?"string":types[i];
+				incls.dataset.type=type;
+				incls.value=defaultsArray[i];
+				incls.onkeyup = SweetAlertMultiInputAmalgamate;
+				fieldset.appendChild(incls);
+			} else {
+				var incls=document.createElement("textarea");
+				incls.className="hackpanel hackinput";
+				incls.setAttribute("rows", "5");
+				incls.setAttribute("cols", "60");
+				var type = (types===undefined)?"string":(types[i]===undefined)?"string":types[i];
+				incls.dataset.type=type;
+				incls.value=defaultsArray[i];
+				incls.onkeyup = SweetAlertMultiInputAmalgamate;
+				fieldset.appendChild(incls);
+			}
 		}
 		SweetAlertMultiInputAmalgamate();
 	}
