@@ -36,6 +36,8 @@ module.exports=function(app,Parse,io) {
         query.include("projectId");
         query.include("modId");
         query.include("datId");
+        query.include("comments")
+        query.include("comments.from")
         query.include('from');
         query.descending("createdAt");
         //query.limit(20);
@@ -46,6 +48,26 @@ module.exports=function(app,Parse,io) {
                 var feeds=[];
                 for (var i = 0; i < results.length; i++) {
                     var object = results[i];
+                    var comments = [];
+                    if(object.get("comments") != undefined)
+                    {
+                        var commentsList =object.get("comments");
+                        var commentId=0;
+                        for(var c in commentsList){
+
+                            var comment = {
+                                id: commentId,
+                                from :  {
+                                    name: commentsList[c].get("from").get("fullname"),
+                                    img : commentsList[c].get("from").get("picture").url(),
+                                    username: commentsList[c].get("from").get("username")
+                                },
+                                content: commentsList[c].get("content")
+                            };
+                            comments.push(comment);
+                            commentId++;
+                        }
+                    }
                     var username = "N/A";
                     var fullname ="";
                     var userImg = "";
@@ -81,7 +103,8 @@ module.exports=function(app,Parse,io) {
                                 type:type,
                                 keywords:keywords,
                                 title: title,
-                                picture: picture
+                                picture: picture,
+                                comments:comments
                             });
                         }
                     }
@@ -113,7 +136,8 @@ module.exports=function(app,Parse,io) {
                                 type:type,
                                 keywords:keywords,
                                 title: title,
-                                picture: picture
+                                picture: picture,
+                                comments:comments
                             });
                         }
                     }
@@ -153,7 +177,8 @@ module.exports=function(app,Parse,io) {
                             isbn: isbn,
                             doi:doi,
                             title: title,
-                            edition: edition
+                            edition: edition,
+                            comments:comments
                         });
                     }
                     }
@@ -199,6 +224,7 @@ module.exports=function(app,Parse,io) {
                             doi:doi,
                             title: title,
                             conference_volume: conference_volume,
+                            comments:comments
 
                         });
                     }
@@ -245,7 +271,8 @@ module.exports=function(app,Parse,io) {
                                 issue:issue,
                                 volume:volume,
                                 type:type,
-                                doi:doi
+                                doi:doi,
+                                comments:comments
                             });
                         }
                     }
@@ -287,7 +314,8 @@ module.exports=function(app,Parse,io) {
                                 patent_location:patent_location,
                                 patent_date:patent_date,
                                 type:type,
-                                doi:doi
+                                doi:doi,
+                                comments:comments
                             });
                         }
                     }
@@ -329,7 +357,8 @@ module.exports=function(app,Parse,io) {
                                 degree:degree,
                                 supervisors:supervisors,
                                 type:type,
-                                doi:doi
+                                doi:doi,
+                                comments:comments
                             });
                         }
                     }
@@ -362,7 +391,8 @@ module.exports=function(app,Parse,io) {
                                 contributors:contributors,
                                 location:location,
                                 type:type,
-                                doi:doi
+                                doi:doi,
+                                comments:comments
                             });
                         }
                     }
@@ -400,7 +430,8 @@ module.exports=function(app,Parse,io) {
                                 location:location,
                                 type:type,
                                 report_number:report_number,
-                                doi:doi
+                                doi:doi,
+                                comments:comments
                             });
                         }
                     }
@@ -446,7 +477,8 @@ module.exports=function(app,Parse,io) {
                                 hashtags: hashtags,
                                 title: title,
                                 objId: objectId,
-                                picture: picture
+                                picture: picture,
+                                comments:comments
                             });
                         }
                     }
@@ -489,7 +521,8 @@ module.exports=function(app,Parse,io) {
                                 hashtags: hashtags,
                                 title: title,
                                 objId: objectId,
-                                picture: picture
+                                picture: picture,
+                                comments:comments
                             });
                         }
                     }

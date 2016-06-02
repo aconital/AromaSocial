@@ -51,6 +51,7 @@ var NewsFeed = React.createClass({
                                               year={item.year}
                                               filename={item.filename}
                                               title={item.title}
+                                              comments={item.comments}
                                               description={item.description}
                                               upload={item.upload}
                                               keywords={item.keywords} />);
@@ -92,9 +93,6 @@ var NewsFeedList = React.createClass({
   showMore: function() {
     var itemType = this.props.type;
     var author = this.props.author;
-    console.log("TYPE FOR THIS GUY: ");
-    console.log(itemType);
-    console.log(this.props);
     switch (itemType) {
       case "pub":
         window.location.href="/publication/" + this.props.objId['objectId'];
@@ -136,20 +134,11 @@ var NewsFeedList = React.createClass({
         break;
     }
 
-    // if (itemType == "pub") {
-    //   window.location.href="/publication/" + this.props.objId['objectId'];
-    // }
-    // else if (itemType == "mod") {
-    //   window.location.href="/model/" + this.props.objId['objectId'];
-    // }
-
-    // else if (itemType == "dat") {
-    //   window.location.href="/data/" + this.props.objId['objectId'];
-    // }
     return false;
   },
 
   render: function() {
+
     var date = moment(this.props.date).format("MMMM D, YYYY");
     switch (this.props.type) {
       case "pub":
@@ -215,25 +204,126 @@ var NewsFeedList = React.createClass({
 	return (
       <div className="item-panel-newsFeed contain-panel-newsFeed">
         <div className="row">
-          <div className="col-xs-1 col-xs-1-5 no-padding">
-            <a href={"/profile/" + this.props.userName}><img src={this.props.userImg} alt="" className="img-circle newsfeed-profile-pic"/></a>
-          </div>
-          <div className="col-xs-10 col-xs-10-5 no-padding-right">
-            <a href={"/profile/" + this.props.userName} className="nostyle"><h3 className="non-inline">{this.props.fullname}</h3></a>
-            <h4 className="black non-inline">Added a {type} on {date}</h4>
-            <div className="item-box">
-                {(this.props.type=="book" || this.props.type=="conference" || this.props.type=="journal" || this.props.type=="patent" || this.props.type=="report" || this.props.type=="thesis" || this.props.type=="unpublished") ? <div className="item-box-left"><img src="/images/paper.png" className="contain-image-preview" /></div> : <div className="item-box-left"><img src={this.props.image_URL} className="contain-image-preview" /></div>}
-            <div className="item-box-right">
-                <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top nfHeader">{title}</h3></a>
-                {(this.props.description=="undefined" || this.props.description=="") ? <div></div>:<pre className="hide-if-empty"><span className="font-15">{this.truncate(this.props.description)}</span></pre>}
+            <div className="col-xs-1 col-xs-1-5 no-padding">
+              <a href={"/profile/" + this.props.userName}><img src={this.props.userImg} alt="" className="img-circle newsfeed-profile-pic"/></a>
             </div>
+            <div className="col-xs-10 col-xs-10-5 no-padding-right">
+              <a href={"/profile/" + this.props.userName} className="nostyle"><h3 className="non-inline">{this.props.fullname}</h3></a>
+              <h4 className="black non-inline">Added a {type} on {date}</h4>
+              <div className="item-box">
+                  {(this.props.type=="book" || this.props.type=="conference" || this.props.type=="journal" || this.props.type=="patent" || this.props.type=="report" || this.props.type=="thesis" || this.props.type=="unpublished") ? <div className="item-box-left"><img src="/images/paper.png" className="contain-image-preview" /></div> : <div className="item-box-left"><img src={this.props.image_URL} className="contain-image-preview" /></div>}
+              <div className="item-box-right">
+                  <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top nfHeader">{title}</h3></a>
+                  {(this.props.description=="undefined" || this.props.description=="") ? <div></div>:<pre className="hide-if-empty"><span className="font-15">{this.truncate(this.props.description)}</span></pre>}
+              </div>
+              </div>
             </div>
-          </div>
+        </div>
+        <div className="itemBox">
+          <CommentBox comments= {this.props.comments}/>
         </div>
       </div>
+
     );
   }
 });
+
+var CommentBox = React.createClass({
+  getInitialState: function() {
+    return {data: []};
+  },
+  render: function() {
+
+    return (
+        <div className="commentBox">
+          <h4>Comments</h4>
+          <CommentList data={this.props.comments} />
+          <CommentForm />
+        </div>
+    );
+  }
+});
+var CommentList = React.createClass({
+  render: function() {
+    var commentNodes="";
+
+    if(this.props.data.length >0) {
+       commentNodes = this.props.data.map(function (comment) {
+        return (
+            <Comment from={comment.from} key={comment.id}>
+              {comment.content.msg}
+            </Comment>
+        );
+      });
+    }
+    return (
+        <div className="commentList">
+          {commentNodes}
+        </div>
+    );
+  }
+});
+var Comment = React.createClass({
+  rawMarkup: function() {
+    var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+    return { __html: rawMarkup };
+  },
+  render: function() {
+    console.log(this.props);
+    return (
+        <div className="comment">
+          <h4 className="commentAuthor">
+            {this.props.from.name}
+          </h4>
+          <span dangerouslySetInnerHTML={this.rawMarkup()} />
+        </div>
+    );
+  }
+});
+
+var CommentForm = React.createClass({
+  getInitialState: function() {
+    return {author: '', text: ''};
+  },
+  handleAuthorChange: function(e) {
+    this.setState({author: e.target.value});
+  },
+  handleTextChange: function(e) {
+    this.setState({text: e.target.value});
+  },
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var author = this.state.author.trim();
+    var text = this.state.text.trim();
+    if (!text || !author) {
+      return;
+    }
+    // TODO: send request to the server
+    this.setState({author: '', text: ''});
+  },
+  render: function() {
+    return (
+        <form className="commentForm" onSubmit={this.handleSubmit}>
+          <input
+              type="text"
+              placeholder="Your name"
+              value={this.state.author}
+              onChange={this.handleAuthorChange}
+              />
+          <input
+              type="text"
+              placeholder="Say something..."
+              value={this.state.text}
+              onChange={this.handleTextChange}
+              />
+          <input type="submit" value="Post" />
+        </form>
+    );
+  }
+});
+
+
+
 
 var Update = React.createClass({
   render: function() {
