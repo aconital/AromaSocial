@@ -41,17 +41,6 @@ app.use(helmet());
 Parse.initialize(dbconfig.db_name, dbconfig.username, dbconfig.password);
 Parse.serverURL = dbconfig.url;
 
-// just to check that s3 is connected. remove when deploying
-s3.listBuckets(function(err, data) {
-  if (err) { console.log("Error:", err); }
-  else {
-    for (var index in data.Buckets) {
-      var bucket = data.Buckets[index];
-      console.log("Bucket: ", bucket.Name, ' : ', bucket.CreationDate);
-    }
-  }
-});
-
 aws.config.update({
     accessKeyId: "AKIAJAKJNWQBINWXOD7Q",
     secretAccessKey: "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"
