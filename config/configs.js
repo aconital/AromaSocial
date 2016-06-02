@@ -9,10 +9,10 @@ if(mode == "PROD") {
 
     module.exports = {
 
-        db_name: "development",
-        username: "Fomsummer2014",
+        db_name: "production",
+        username: "production",
         password: "Fomsummer2014",
-        url: "http://52.38.90.136:1337/parse/",
+        url: "http://159.203.60.67:1337/parse/",
         linkedin_callback:"https://syncholar.com/auth/linkedin/callback",
         baseUrl: "https://syncholar.com"
 
@@ -21,10 +21,10 @@ if(mode == "PROD") {
 else {
     module.exports = {
 
-        db_name: "development_v2",
-        username: "Fomsummer2014",
+        db_name: "development",
+        username: "development",
         password: "Fomsummer2014",
-        url: "http://52.38.90.136:1336/parse/",
+        url: "http://159.203.60.67:1336/parse/",
         linkedin_callback:"http://localhost:3000/auth/linkedin/callback",
         baseUrl: "http://127.0.0.1:3000"
     }
