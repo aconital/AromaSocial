@@ -887,7 +887,7 @@ var People = React.createClass({
     },
     inviteTrigger: function(e) {
         e.stopPropagation();
-        invite(e.nativeEvent);
+        invite(e.nativeEvent, "org2people", objectId);
     },
     render: function() {
         return (

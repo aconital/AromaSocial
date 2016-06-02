@@ -60,7 +60,7 @@
         }
 
         //sweet alert hack for multiple inputs
-        function invite(event) {
+        function invite(event, invType, source) {
             event.stopPropagation();
             swal({title: "Invite a Potential Syncholar!",
                     text: "",
@@ -98,7 +98,9 @@
                                     var emailData = {
                                         'addr': results[0],
                                         'msg': results[1],
-                                        'emailBody': emailBody
+                                        'emailBody': emailBody,
+                                        'from': source,
+                                        'invType': invType
                                     }
                                     $.ajax({
                                       url: "/inviteBuddy",

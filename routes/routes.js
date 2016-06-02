@@ -44,6 +44,8 @@ module.exports=function(app,Parse,io) {
   });
 
   app.post('/inviteBuddy', function(req, res, next){
+    var inviteType = req.body.invType;
+    var from = req.body.from;
     var addr = req.body.addr;
     var msg = req.body.msg;
     var emailBody = req.body.emailBody;
@@ -54,6 +56,7 @@ module.exports=function(app,Parse,io) {
 
     var addrIsUser = false;
     var addrAlreadySent = false;
+    var toUser;
     var query = new Parse.Query(Parse.User);
     query.equalTo("email", addr);
     query.first({
@@ -63,6 +66,7 @@ module.exports=function(app,Parse,io) {
           addrIsUser = false;
         } else {
           // user exists
+          toUser = result;
           addrIsUser = true;
         }
       },
@@ -72,8 +76,39 @@ module.exports=function(app,Parse,io) {
       }
     }).then(function(){
       if (addrIsUser) {
-        // do nothing - don't send email
-        res.send({reply: "User already exists with this email"});
+        // don't send email
+        if (invType === "org2people") {
+          // invite user to join organization
+          var Relationship = Parse.Object.extend("Relationship");
+          var rel = new Relationship();
+          rel.set("isAdmin", false);
+          rel.set("orgRequest", true);
+          rel.set("userId", toUser.id);
+          rel.set("orgId", from);
+          rel.save(null, {
+            success: function() {
+              console.log("Stored in Relationship");
+            },
+            error: function(err) {
+              console.log("Error while storing in Relationship: ", err);
+            }
+          });
+          var notification = {
+              type: "org2peoplerequest",
+              from: {
+                  orgId: org.id,
+                  orgName: org.get("name"),
+                  name: org.get("displayName")
+              },
+              to: {
+                  userId: usr.id,
+                  name: usr.get("fullname");
+              }
+              msg: "has invited you to join their organization",
+          }
+          io.to(toUser.id).emit('org2peoplerequest',{data:notification});
+        }
+        res.send({reply: "User already exists with this email - sending notification..."});
       } else {
         var Invite = Parse.Object.extend("Invite");
         var inviteQuery = new Parse.Query(Invite);

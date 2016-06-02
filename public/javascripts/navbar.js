@@ -71,13 +71,31 @@ var Notification = React.createClass({
             }.bind(this)
         });
     },
+    loadOrg2PeopleRequests :function() {
+        $.ajax({
+            url: "/org2peoplerequest",
+            success: function(data) {
+                console.log(data);
+                var notifications = this.state.notication_list.slice();
+                for (var i=0;i<data.length;i++)
+                    notifications.push(data[i]);
+
+                this.setState({notication_list: notifications});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve org2people requests");
+            }.bind(this)
+        });
+    },
     componentDidMount : function(){
         this.loadFriendRequests();
         this.loadOrgRequests();
         this.loadOrg2OrgRequests();
+        this.loadOrg2PeopleRequests();
         socket.on('friendrequest', this._friendrequest);
         socket.on('orgrequest', this._orgrequest);
         socket.on('org2orgrequest', this._org2orgrequest);
+        socket.on('org2peoplerequest', this._org2peoplerequest);
     },
     _orgrequest(data){
         var notifications = this.state.notication_list.slice();
@@ -96,6 +114,11 @@ var Notification = React.createClass({
         this.setState({notication_list:notifications});
 
     },
+    _org2peoplerequest(data) {
+        var notifications = this.state.notication_list.slice();
+        notifications.push(data.data);
+        this.setState({notication_list:notifications});
+    }
     pending_action:function(notification,action)
     {
         if (notification.type =="orgrequest") {
@@ -144,6 +167,18 @@ var Notification = React.createClass({
         });
 
         this.deleteNotification(notification.id);
+    } else if (notification.type === "org2peoplerequest") {
+        $.ajax({
+            url: "/organization/" + notification.from.orgId + "/pending_orgpeople_action",
+            method: "POST",
+            data: {personId: notification.to.userId, mode: action},
+            success: function (data) {
+                console.log(data);
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error("Couldnt retrieve people");
+            }.bind(this)
+        });
     }
 
     },

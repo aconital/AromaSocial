@@ -319,6 +319,61 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    app.post('/organization/:objectId/pending_orgpeople_action/', function (req, res, next) {
+        var personId = req.body.personId;
+        var orgId = req.params.objectId;
+        var mode = req.body.mode;
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("name",orgId);
+        var innerQuery2 = new Parse.Query(Parse.User);
+        innerQuery2.equalTo("objectId",personId);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery);
+        query.matchesQuery("userId",innerQuery2);
+        query.first({
+            success: function(result) {
+                if(mode=="admin") {
+                    result.set("verified",true);
+                    result.set("isAdmin",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="accept") {
+                    result.set("verified",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="reject") {
+                    result.destroy({
+                        success: function(model, response){
+                            res.json("Rejected!");
+                        },
+                        error: function(model, response){
+                            res.json({error:error});
+                        }
+                    });
+                }
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
     app.post('/organization/:objectId/pending_organization_action/', function (req, res, next) {
         var organizationId = req.body.organizationId;
         var orgId = req.params.objectId;
@@ -1223,6 +1278,41 @@ module.exports=function(app,Parse,io) {
             console.log(err);
         });
     });
+
+    app.get('org2peoplerequest', function(req, res, next){
+        var currentUser= req.user;
+        var requests =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("isAdmin", false);
+        query.equalTo("orgRequest", true);
+        query.equalTo("verified", false);
+        query.include('orgId');
+        query.include('userId');
+
+        query.each(function(result){
+            var usr = result.get("userId");
+            var org = result.get("orgId");
+            var notification = {
+                type: "org2peoplerequest",
+                from: {
+                    orgId: org.id,
+                    orgName: org.get("name"),
+                    name: org.get("displayName")
+                },
+                to: {
+                    userId: usr.id,
+                    name: usr.get("fullname");
+                }
+                msg: "has invited you to join their organization",
+            }
+            requests.push(notification);
+        }).then(function() {
+            res.send(requests);
+        }, function(err){
+            console.log(err);
+        })
+    });
+
     function notifyadmins(orgId,user)
     {
         var innerQuery = new Parse.Query("Organization");
