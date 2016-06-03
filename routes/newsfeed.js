@@ -71,6 +71,7 @@ module.exports=function(app,Parse,io) {
                     var username = "N/A";
                     var fullname ="";
                     var userImg = "";
+                    var feedId= object.id;
                     if(object.attributes.from!=null) {
                         username = object.attributes.from.attributes.username;
                         fullname = object.attributes.from.attributes.fullname;
@@ -94,6 +95,7 @@ module.exports=function(app,Parse,io) {
                             var keywords = equip.get("keywords");
                             var instructions = equip.get("instructions");
                             feeds.push({
+                                feedId:feedId,
                                 objId: objectId,
                                 fullname: fullname,
                                 username: username,
@@ -126,6 +128,7 @@ module.exports=function(app,Parse,io) {
                             var url = proj.get("URL");
                             var keywords = proj.get("keywords");
                             feeds.push({
+                                feedId:feedId,
                                 objId: objectId,
                                 fullname: fullname,
                                 username: username,
@@ -161,6 +164,7 @@ module.exports=function(app,Parse,io) {
                         var edition = object.get("pubBookId").get("edition") != null? object.get("pubBookId").get("edition"):"";
                         var type = "book";
                         feeds.push({
+                            feedId:feedId,
                             objId: objectId,
                             fullname: fullname,
                             username: username,
@@ -203,6 +207,7 @@ module.exports=function(app,Parse,io) {
                         var doi = object.get("pubConferenceId").get("doi") != null? object.get("pubConferenceId").get("doi"):"";
 
                         feeds.push({
+                            feedId:feedId,
                             objId: objectId,
                             fullname: fullname,
                             username: username,
@@ -252,6 +257,7 @@ module.exports=function(app,Parse,io) {
                             var doi = object.get("pubJournalId").get("doi") != null? object.get("pubJournalId").get("doi"):"";
 
                             feeds.push({
+                                feedId:feedId,
                                 objId: objectId,
                                 fullname: fullname,
                                 username: username,
@@ -297,6 +303,7 @@ module.exports=function(app,Parse,io) {
                             var reference_number = object.get("pubPatentId").get("reference_number") != null? object.get("pubPatentId").get("reference_number"):"";
                             var doi = object.get("pubPatentId").get("doi") != null? object.get("pubPatentId").get("doi"):"";
                             feeds.push({
+                                feedId:feedId,
                                 objId: objectId,
                                 fullname: fullname,
                                 username: username,
@@ -340,6 +347,7 @@ module.exports=function(app,Parse,io) {
                             var type = "thesis";
                             var doi = object.get("pubThesisId").get("doi") != null? object.get("pubThesisId").get("doi"):"";
                             feeds.push({
+                                feedId:feedId,
                                 objId: objectId,
                                 fullname: fullname,
                                 username: username,
@@ -378,6 +386,7 @@ module.exports=function(app,Parse,io) {
                             var location = object.get("pubUnpublishedId").get("location") != null? object.get("pubUnpublishedId").get("location"):"";
                             var doi = object.get("pubUnpublishedId").get("doi") != null? object.get("pubUnpublishedId").get("doi"):"";
                             feeds.push({
+                                feedId:feedId,
                                 objId: objectId,
                                 fullname: fullname,
                                 username: username,
@@ -416,6 +425,7 @@ module.exports=function(app,Parse,io) {
                             var type = "report";
                             var doi = object.get("pubReportId").get("doi") != null? object.get("pubReportId").get("doi"):"";
                             feeds.push({
+                                feedId:feedId,
                                 objId: objectId,
                                 fullname: fullname,
                                 username: username,
@@ -465,6 +475,7 @@ module.exports=function(app,Parse,io) {
                                 description = modItem.abstract;
                             }
                             feeds.push({
+                                feedId:feedId,
                                 username: username,
                                 userImg: userImg,
                                 fullname: fullname,
@@ -509,6 +520,7 @@ module.exports=function(app,Parse,io) {
                                 description = datItem.description;
                             }
                             feeds.push({
+                                feedId:feedId,
                                 username: username,
                                 userImg: userImg,
                                 fullname: fullname,
@@ -583,4 +595,84 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+app.get('/comments/:feedId',function(req,res,next){
+    var feedId= req.params.feedId;
+    var query= new Parse.Query('NewsFeed');
+    query.equalTo("objectId", feedId);
+    query.include("comments");
+    query.include("comments.from");
+    query.first({
+        success: function (result) {
+            if (result)
+            {
+                var comments =[];
+                if(result.get("comments") != undefined)
+                {
+                    var commentsList =result.get("comments");
+
+                    var commentId=0;
+                    for(var c in commentsList){
+
+                        var comment = {
+                            id: commentId,
+                            from :  {
+                                name: commentsList[c].get("from").get("fullname"),
+                                img : commentsList[c].get("from").get("picture").url(),
+                                username: commentsList[c].get("from").get("username")
+                            },
+                            content: commentsList[c].get("content")
+                        };
+                        comments.push(comment);
+                        commentId++;
+                    }
+                }
+                res.json(comments);
+            }
+        },
+        error: function ( error) {
+            console.log("Couldnt save cookie token")
+        }
+    });
+
+});
+app.post('/comment',is_auth,function(req,res,next){
+    var feedId= req.body.feedId;
+    var feedNumber= req.body.feedNumber;
+    var content = req.body.content;
+    var Comment = Parse.Object.extend("Comment");
+    var comment = new Comment();
+    comment.set('from', {__type: "Pointer", className: "_User", objectId: req.user.id});
+    comment.set('content', {msg: content});
+    comment.set('feedId',{__type: "Pointer", className: "NewsFeed", objectId: feedId})
+    comment.save(null, {
+        success: function (comment) {
+            var query= new Parse.Query('NewsFeed');
+            query.equalTo("objectId", feedId);
+            query.first({
+                success: function (result) {
+                    if (result) {
+                        var comments=result.get("comments");
+                        comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
+                        result.set("comments",comments);
+                        result.save();
+                        io.to(req.user.id).emit('commentReceived',{feedId:feedId,feedNumber:feedNumber});
+                        res.json({msg:"success"});
+                    }
+                },
+                error: function ( error) {
+                    console.log("Couldnt save cookie token")
+                }
+            });
+        },
+        error: function (comment, error) {
+            // Execute any logic that should take place if the save fails.
+            // error is a Parse.Error with an error code and message.
+            alert('Failed to create new object, with error code: ' + error.message);
+            res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
+        }
+    });
+
+
+
+});
 };

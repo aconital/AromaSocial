@@ -6,6 +6,8 @@ var NewsFeed = React.createClass({
       };
    },
   componentWillMount: function() {
+      socket.on('commentReceived', this._reloadComments);
+
       $.ajax({
           url: '/newsfeeddata',
           dataType: 'json',
@@ -32,8 +34,26 @@ var NewsFeed = React.createClass({
   createOrg: function() {
     window.location = '/create/organization';
   },
-
+  _reloadComments: function(data)
+    {   var feedId= data.feedId;
+        var feedNumber=data.feedNumber;
+        $.ajax({
+            url: '/comments/'+feedId,
+            success: function(data) {
+                var feedItems= this.state.data;
+                console.log(feedItems[feedNumber]);
+//TODO UPDATE DOESNT WORK
+                feedItems[feedNumber].comments= data;
+                console.log(feedItems[feedNumber]);
+                this.setState({data: feedItems});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
   render: function() {
+
       return (
           <div className="container-newsFeed">
               <div className="row">
@@ -42,7 +62,7 @@ var NewsFeed = React.createClass({
                         return (
                             <div>
                             <NewsFeedList key={i}
-                                              itemId={item.itemId}
+                                              feedId={item.feedId}
                                               objId={item.objId}
                                               userName={item.username}
                                               fullname={item.fullname}
@@ -58,8 +78,8 @@ var NewsFeed = React.createClass({
                                               upload={item.upload}
                                               keywords={item.keywords} />
 
-                                <CommentBox comments= {item.comments}/>
-                                <CommentForm />
+                                <CommentBox  feedId ={item.feedId} comments= {item.comments}/>
+                                <CommentForm feedNumber={i} feedId ={item.feedId} />
 
                             </div>);
                       })}
@@ -234,13 +254,16 @@ var NewsFeedList = React.createClass({
 
 var CommentBox = React.createClass({
   getInitialState: function() {
-    return {data: []};
+    return {comments: []};
+  },
+  componentWillMount: function() {
+        this.setState({comments: this.props.comments});
   },
   render: function() {
 
     return (
         <div className="commentBox">
-          <CommentList data={this.props.comments} />
+          <CommentList data={this.state.comments} />
         </div>
     );
   }
@@ -271,7 +294,7 @@ var Comment = React.createClass({
     return { __html: rawMarkup };
   },
   render: function() {
-    console.log(this.props);
+
     return (
         <div className="comment">
           <div className="row">
@@ -295,23 +318,35 @@ var Comment = React.createClass({
 
 var CommentForm = React.createClass({
   getInitialState: function() {
-    return {author: '', text: ''};
+    return {feedNumber:'',feedId: '', text: ''};
+  },
+  componentWillMount: function() {
+        this.setState({feedNumber:this.props.feedNumber,feedId: this.props.feedId});
   },
   handleTextChange: function(e) {
     this.setState({text: e.target.value});
   },
   handleSubmit: function(e) {
     e.preventDefault();
-    var author = this.state.author.trim();
-    var text = this.state.text.trim();
-    if (!text || !author) {
+    var text = this.state.text;
+    if (!text) {
       return;
     }
-    // TODO: send request to the server
-    this.setState({author: '', text: ''});
+      $.ajax({
+          url: '/comment',
+          method:'post',
+          data: {content: text, feedId: this.state.feedId,feedNumber:this.state.feedNumber},
+          success: function(data) {
+              this.setState({text: ''});
+          }.bind(this),
+          error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+          }.bind(this)
+      });
+
   },
   render: function() {
-;
+
     return (
         <div className="row commentForm">
           <div className="col-xs-1">
@@ -319,13 +354,17 @@ var CommentForm = React.createClass({
           </div>
           <div className="col-xs-11">
             <form  onSubmit={this.handleSubmit}>
-              <textarea
+              <input
                   className="comment-input"
                   type="text"
+                  cols="40" rows="5"
                   placeholder="Say something..."
                   value={this.state.text}
                   onChange={this.handleTextChange}
                   />
+                <input type="submit"
+                       className="comment-submit"
+                       tabIndex="-1" />
             </form>
           </div>
         </div>
