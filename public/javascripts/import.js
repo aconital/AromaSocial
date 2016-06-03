@@ -1,22 +1,24 @@
-var Button = ReactBootstrap.Button, ListGroup = ReactBootstrap.ListGroup, Table=ReactBootstrap.Table;
+var Button = ReactBootstrap.Button, ListGroup = ReactBootstrap.ListGroup, 
+	Table=ReactBootstrap.Table, Panel = ReactBootstrap.Panel;
 
 function toTitleCase(str) {
 	return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
 var ImportContent = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
      return {
      	status: 'askForAction',
      	name: name,
-     	results: {}
+     	results: {},
+     	duplicates: {}
         };
     },
-	querySciDir: function(e) {
+	querySciDir(e) {
 		e.preventDefault();
 		var self = this;
 
-		var nameQuery = this.state.name.toLowerCase(); // TODO split etc
+		var nameQuery = 'sung kyu lim';//this.state.name.toLowerCase(); // TODO split etc
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
 
@@ -25,22 +27,24 @@ var ImportContent = React.createClass({
 			type: "GET",
 		})
 		.done(function(data) {
-			var entities = data.data['entities'];
-			self.setState({ results: data.data,
+			// var entities = data.data['entities'];
+			console.log(data.data);
+			self.setState({ results: data.data.new,
+							duplicates: data.data.duplicates,
 							status: 'showTable' });
 		})
 		.fail(function(xhr, status, err) {
 			console.error('http://.projectoxford.ai/academic/', status, err, xhr);
 		});
 	},
-	redirect: function(e) {
+	redirect(e) {
 		window.location = '../';
 	},
-	setStatus: function(newStatus) {
+	setStatus(newStatus) {
 		this.setState({ status: newStatus });
 	},
 
-	render: function() {
+	render() {
 		var content;
 		if (this.state.status == 'askForAction') {
 			content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
@@ -48,7 +52,7 @@ var ImportContent = React.createClass({
 			content = <div>Searching...</div>
 		} else if (this.state.status == 'showTable') {
 			if (this.state.results.length > 0) {
-				content = <WorksList results={this.state.results} setStatus={this.setStatus} redirect={this.redirect} />
+				content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />
 			} else {
 				content = (<div>
 					<p>No results found!</p>
@@ -75,7 +79,7 @@ var ImportButtons = React.createClass({
         this.props.querySciDir(e);
     },
 
-	render: function() {
+	render() {
 		return (
 			<div id="">
 				<Button className="btn-success btn-lg" onClick={this.querySciDir}>Yes, import my publications</Button>
@@ -86,7 +90,7 @@ var ImportButtons = React.createClass({
 });
 
 var WorkItem = React.createClass({
-	getInitialState: function() {
+	getInitialState() {
 		return {
 			isImported: true,
 			glyphCellClasses: 'glyphicon glyphicon-ok imported',
@@ -141,6 +145,7 @@ var WorksList = React.createClass({
 		return {
 			resultsToSend: Array.apply(null, Array(this.props.results.length)).map( (item, i) => item = i ), // indexes of works to send to database
 			allResults: this.transformResults(this.props.results), // original list. do not modify after transform
+			duplicates: this.transformResults(this.props.dupes),
 			style: {},
 		};
     },
@@ -228,7 +233,7 @@ var WorksList = React.createClass({
 		}
 	},
 
-	render: function() {
+	render() {
 		var self = this;
 		var results = this.props.results;
 		var transFormedResults = [];
@@ -249,6 +254,7 @@ var WorksList = React.createClass({
 						})}
 					</tbody>
 				</Table>
+				{this.props.dupes.length > 0 ? <DuplicatesList dupes={this.state.duplicates} /> : <span></span>}
 				<Button className="btn-success btn-lg" onClick={this.importWorks}>Import highlighted publications and continue</Button>
 				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button>
 			</div>
@@ -256,8 +262,57 @@ var WorksList = React.createClass({
 	}
 });
 
+var DuplicateItem = React.createClass({
+	getInitialState() {
+		return {
+			isImported: true,
+		};
+    },
+
+	render() {
+		var entity = this.props.entity; // TODO change props.entity to transformed version
+		var allAuthors = entity.contributors.join(", ");
+		var importFeedback = this.state.isImported ? { backgroundColor: '#bbefbb' } : { backgroundColor: 'white'};
+		var glyphCellClasses = this.state.glyphCellClasses;
+
+		return (
+			<tr>
+				<td className="import-works-details">
+					<div><strong>Title:</strong> {entity.title}</div>
+					<div><strong>Authors:</strong> {allAuthors}</div>
+				</td>
+			</tr>
+		)
+	}
+});
+
+var DuplicatesList = React.createClass({
+	render() {
+		return (
+			<div>
+				<Panel header="We found some publications that have already been uploaded to Syncholar" bsStyle="info">
+					<p>These duplicate publications won't be imported, but other scholars will be able to find you through the publication info page.</p>
+				
+					<Table id="dupes-works-list" bordered striped>
+						<thead>
+							<tr>
+								<th>Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							{this.props.dupes.map(function(item, index) { 
+							    return <DuplicateItem entity={item} index={index} key={index} />
+							})}
+						</tbody>
+					</Table>
+				</Panel>
+			</div>
+		);
+	}
+});
+
 var Required = React.createClass({
-	render: function() {
+	render() {
 		var requiredField = {color: 'red', fontWeight: '800'};
 		return (
 			<span style={requiredField}>{this.props.content}</span>
@@ -271,7 +326,7 @@ var CheckItem = React.createClass({
 	    checked: this.props.checked || false
 	 };
 	},
-	render: function () {
+	render() {
 		var item={};
 	return (
 	    <li><div className="item-box">

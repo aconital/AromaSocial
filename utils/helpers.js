@@ -8,6 +8,7 @@ var config = require('../config/configs');
 var SparkPost = require('sparkpost');
 var sp = new SparkPost('5c4cf399a6bbc1f2bd87a881d08756458b0834cb');
 var request = require('request').defaults({ encoding: null });
+var _ = require('underscore');
 
 var Parse = require('parse/node');
 Parse.initialize(config.db_name, config.username, config.password);
@@ -162,6 +163,164 @@ formatParams: function(params) {
         return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
     }).join('&')
     return queryParams;
+},
+
+// used by partitioner in routes/fetchworks.get to determine which are new and which duplicates
+pubAlreadyExists: function(pub) {
+    // for (pub in publications) {
+
+    console.log(JSON.stringify(pub['E'],null,2));
+      var pubClass = pub.hasOwnProperty('J') ? "Pub_Journal_Article" : "Pub_Conference";
+      var query = new Parse.Query(pubClass);
+      query.equalTo("doi", pub['E']['DOI']);
+      query.first({
+        success: function(object) {
+            console.log(JSON.stringify(object,null,2));
+          if (object) {
+            // response.error("A publication with this DOI already exists.");
+            console.log("\nthis IS a duplicate!")
+            return true; // A publication with this DOI already exists
+          } else {
+            console.log("\nNOT a duplicate!")
+            return false; // this is a new publication
+            // response.success();
+          }
+        },
+        error: function(error) {
+          // response.error("Could not check for duplicate publications.");
+          return false;
+        }
+      });
+    // }
+},
+
+findDuplicatePubs: function(publications) {
+    var promise = Parse.Promise.as();
+    newPubs = []
+    duplicates = []
+
+    // _.each(publications, function(pub) {
+    //     promise = promise.then(function() {
+    //         var pubClass = pub.hasOwnProperty('J') ? "Pub_Journal_Article" : "Pub_Conference";
+    //         var query = new Parse.Query(pubClass);
+    //         query.equalTo("doi", pub['E']['DOI']);
+            
+    //         return query.first();
+    //     }).then(function(doi){
+    //         console.log(JSON.stringify(doi,null,2));
+    //         if (doi) {
+    //             // response.error("A publication with this DOI already exists.");
+    //             console.log("\nthis IS a duplicate!")
+    //             duplicates.push(pub); // A publication with this DOI already exists
+    //         } else {
+    //             console.log("\nNOT a duplicate!")
+    //             newPubs.push(pub); // this is a new publication
+    //             // response.success();
+    //         }
+    //     });
+    // });
+
+    // return {new: newPubs, duplicates: duplicates};
+
+    console.log('atTEMPT 3');
+
+    // function checkPub(pub){   // returns parse promise for a particular publication
+    //     var pubClass = pub.hasOwnProperty('J') ? "Pub_Journal_Article" : "Pub_Conference",
+    //         extendedObj = JSON.parse(pub['E']),
+    //         query = new Parse.Query(pubClass);
+    //     query.equalTo("doi", extendedObj['DOI']);
+
+    //     return query.first().then(function(doi){
+    //         console.log('i hate everything');
+    //         if (doi) {
+    //             // response.error("A publication with this DOI already exists.");
+    //             console.log("\nthis IS a duplicate!")
+    //             duplicates.push(pub); // A publication with this DOI already exists
+    //         } else {
+    //             console.log("\nNOT a duplicate!")
+    //             newPubs.push(pub); // this is a new publication
+    //             // response.success();
+    //         }
+    //     });
+    // }
+
+    // Parse.Promise.then(publications.map(checkPub)) // mapping all the elements in the list to resp promises
+    //     .then(function(){   // on success
+    //         console.log('IT\'S OVER');
+    //         return {new: newPubs, duplicates: duplicates};
+    //     }).catch(function(e){    // on failure
+    //         console.log('error');
+    //         return {new: newPubs, duplicates: duplicates};
+    //     });
+
+    console.log('attempt 4');
+
+    return Parse.Promise.as().then(function() { // this just gets the ball rolling
+        var promise = Parse.Promise.as(); // define a promise
+
+        _.each(publications, function(pub) { // use underscore, its better :)
+          promise = promise.then(function() { // each time this loops the promise gets reassigned to the function below
+
+            var pubClass = pub.hasOwnProperty('J') ? "Pub_Journal_Article" : "Pub_Conference",
+                extendedObj = JSON.parse(pub['E']),
+                query = new Parse.Query(pubClass);
+            query.equalTo("doi", extendedObj['DOI']); // is this the right query syntax?
+            return query.first().then(function(doi) { // the code will wait (run async) before looping again knowing that this query (all parse queries) returns a promise. If there wasn't something returning a promise, it wouldn't wait.
+
+                console.log('i hate everything');
+                if (doi) {
+                    // response.error("A publication with this DOI already exists.");
+                    console.log("this IS a duplicate!\n");
+                    duplicates.push(pub); // A publication with this DOI already exists
+                } else {
+                    console.log("NOT a duplicate!\n");
+                    newPubs.push(pub); // this is a new publication
+                    // response.success();
+                }
+
+              return Parse.Promise.as(); // the code will wait again for the above to complete because there is another promise returning here (this is just a default promise, but you could also run something like return object.save() which would also return a promise)
+
+            }, function (error) {
+              console.error("score lookup failed with error.code: " + error.code + " error.message: " + error.message);
+            });
+          }); // edit: missing these guys
+        });
+        return promise; // this will not be triggered until the whole loop above runs and all promises above are resolved
+
+    }).then(function() {
+        console.log('IT WEORKED'); // edit: changed to a capital A
+        return {new: newPubs, duplicates: duplicates};
+    }, function (error) {
+        console.error("script failed with error.code: " + error.code + " error.message: " + error.message);
+        return {new: [], duplicates: []};
+    });
+
+
+    // for (pub in publications) {
+
+    // console.log(JSON.stringify(pub['E'],null,2));
+    //   var pubClass = pub.hasOwnProperty('J') ? "Pub_Journal_Article" : "Pub_Conference";
+    //   var query = new Parse.Query(pubClass);
+    //   query.equalTo("doi", pub['E']['DOI']);
+    //   query.first({
+    //     success: function(object) {
+    //         console.log(JSON.stringify(object,null,2));
+    //       if (object) {
+    //         // response.error("A publication with this DOI already exists.");
+    //         console.log("\nthis IS a duplicate!")
+    //         return true; // A publication with this DOI already exists
+    //       } else {
+    //         console.log("\nNOT a duplicate!")
+    //         return false; // this is a new publication
+    //         // response.success();
+    //       }
+    //     },
+    //     error: function(error) {
+    //       // response.error("Could not check for duplicate publications.");
+    //       return false;
+    //     }
+    //   });
+    // }
 }
 
 };

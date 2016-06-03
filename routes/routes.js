@@ -23,6 +23,8 @@ var hasBetaCode= require('../utils/helpers').hasBetaCode;
 var include_user= require('../utils/helpers').include_user;
 var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
 var formatParams=require('../utils/helpers').formatParams;
+var pubAlreadyExists=require('../utils/helpers').pubAlreadyExists;
+var findDuplicatePubs=require('../utils/helpers').findDuplicatePubs;
 
 module.exports=function(app,Parse,io) {
 
@@ -720,17 +722,28 @@ app.get("/fetchworks", function(req, res, next) {
     var options = {
       url: url,
       headers: {
-        "Ocp-Apim-Subscription-Key": "4e12b17ee21441fca62a50d570acc065"
+        "Ocp-Apim-Subscription-Key": "69bc82dd085d458bbcf261cf06a68558"
       }
     };
 
     function callback(error, response, body) {
       if (!error && response.statusCode == 200) {
         var data = JSON.parse(body);
-        console.log(data.entities);
+        // console.log(data.entities);
         // currently only supports importing journals/conferences
-        var publications = data.entities.filter( (entity) => (entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) );
-        res.status(200).json({status:"OK", data: publications});
+        var publications = data.entities
+              .filter( (entity) => ((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) );
+
+        // see if DOIs already exist in database.
+        // var partitioned = _.partition(publications, pubAlreadyExists);
+        // console.log(partitioned[0].length, partitioned[1].length);
+        findDuplicatePubs(publications).then(function(results) {
+          var partitioned = results;
+           
+          console.log(partitioned);
+
+          res.status(200).json({status:"OK", data: partitioned});
+        });
       } else {
         res.status(response.statusCode).json({status: "Searching for works has failed." + error});
       }
