@@ -6,6 +6,8 @@ var NewsFeed = React.createClass({
       };
    },
   componentWillMount: function() {
+      socket.on('commentReceived', this._reloadComments);
+
       $.ajax({
           url: '/newsfeeddata',
           dataType: 'json',
@@ -32,15 +34,35 @@ var NewsFeed = React.createClass({
   createOrg: function() {
     window.location = '/create/organization';
   },
-
+  _reloadComments: function(data)
+    {   var feedId= data.feedId;
+        var feedNumber=data.feedNumber;
+        $.ajax({
+            url: '/comments/'+feedId,
+            success: function(data) {
+                var feedItems= this.state.data;
+                console.log(feedItems[feedNumber]);
+//TODO UPDATE DOESNT WORK
+                feedItems[feedNumber].comments= data;
+                console.log(feedItems[feedNumber]);
+                this.setState({data: feedItems});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
   render: function() {
+
       return (
           <div className="container-newsFeed">
               <div className="row">
                   <div className="col-xs-8">
                       {this.state.data.map(function(item, i) {
-                        return (<NewsFeedList key={i}
-                                              itemId={item.itemId}
+                        return (
+                            <div>
+                            <NewsFeedList key={i}
+                                              feedId={item.feedId}
                                               objId={item.objId}
                                               userName={item.username}
                                               fullname={item.fullname}
@@ -54,7 +76,12 @@ var NewsFeed = React.createClass({
                                               comments={item.comments}
                                               description={item.description}
                                               upload={item.upload}
-                                              keywords={item.keywords} />);
+                                              keywords={item.keywords} />
+
+                                <CommentBox  feedId ={item.feedId} comments= {item.comments}/>
+                                <CommentForm feedNumber={i} feedId ={item.feedId} />
+
+                            </div>);
                       })}
                     </div>
                     <div className="col-xs-4">
@@ -219,9 +246,6 @@ var NewsFeedList = React.createClass({
               </div>
             </div>
         </div>
-        <div className="itemBox">
-          <CommentBox comments= {this.props.comments}/>
-        </div>
       </div>
 
     );
@@ -230,15 +254,16 @@ var NewsFeedList = React.createClass({
 
 var CommentBox = React.createClass({
   getInitialState: function() {
-    return {data: []};
+    return {comments: []};
+  },
+  componentWillMount: function() {
+        this.setState({comments: this.props.comments});
   },
   render: function() {
 
     return (
         <div className="commentBox">
-          <h4>Comments</h4>
-          <CommentList data={this.props.comments} />
-          <CommentForm />
+          <CommentList data={this.state.comments} />
         </div>
     );
   }
@@ -269,13 +294,23 @@ var Comment = React.createClass({
     return { __html: rawMarkup };
   },
   render: function() {
-    console.log(this.props);
+
     return (
         <div className="comment">
-          <h4 className="commentAuthor">
-            {this.props.from.name}
-          </h4>
-          <span dangerouslySetInnerHTML={this.rawMarkup()} />
+          <div className="row">
+            <div className="col-xs-1 comment-pic-col">
+              <a href={"/profile/" + this.props.from.username}><img className="comment-pic" src={this.props.from.img} alt=""/></a>
+            </div>
+            <div className="col-xs-5 comment-name">
+              <p className="commentAuthor">{this.props.from.name}</p>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-xs-12 comment-content">
+              <span dangerouslySetInnerHTML={this.rawMarkup()} />
+            </div>
+
+          </div>
         </div>
     );
   }
@@ -283,41 +318,56 @@ var Comment = React.createClass({
 
 var CommentForm = React.createClass({
   getInitialState: function() {
-    return {author: '', text: ''};
+    return {feedNumber:'',feedId: '', text: ''};
   },
-  handleAuthorChange: function(e) {
-    this.setState({author: e.target.value});
+  componentWillMount: function() {
+        this.setState({feedNumber:this.props.feedNumber,feedId: this.props.feedId});
   },
   handleTextChange: function(e) {
     this.setState({text: e.target.value});
   },
   handleSubmit: function(e) {
     e.preventDefault();
-    var author = this.state.author.trim();
-    var text = this.state.text.trim();
-    if (!text || !author) {
+    var text = this.state.text;
+    if (!text) {
       return;
     }
-    // TODO: send request to the server
-    this.setState({author: '', text: ''});
+      $.ajax({
+          url: '/comment',
+          method:'post',
+          data: {content: text, feedId: this.state.feedId,feedNumber:this.state.feedNumber},
+          success: function(data) {
+              this.setState({text: ''});
+          }.bind(this),
+          error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+          }.bind(this)
+      });
+
   },
   render: function() {
+
     return (
-        <form className="commentForm" onSubmit={this.handleSubmit}>
-          <input
-              type="text"
-              placeholder="Your name"
-              value={this.state.author}
-              onChange={this.handleAuthorChange}
-              />
-          <input
-              type="text"
-              placeholder="Say something..."
-              value={this.state.text}
-              onChange={this.handleTextChange}
-              />
-          <input type="submit" value="Post" />
-        </form>
+        <div className="row commentForm">
+          <div className="col-xs-1">
+            <img className="comment-pic" src={userImg}/>
+          </div>
+          <div className="col-xs-11">
+            <form  onSubmit={this.handleSubmit}>
+              <input
+                  className="comment-input"
+                  type="text"
+                  cols="40" rows="5"
+                  placeholder="Say something..."
+                  value={this.state.text}
+                  onChange={this.handleTextChange}
+                  />
+                <input type="submit"
+                       className="comment-submit"
+                       tabIndex="-1" />
+            </form>
+          </div>
+        </div>
     );
   }
 });
