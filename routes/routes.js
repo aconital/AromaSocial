@@ -722,28 +722,26 @@ app.get("/fetchworks", function(req, res, next) {
     var options = {
       url: url,
       headers: {
-        "Ocp-Apim-Subscription-Key": "69bc82dd085d458bbcf261cf06a68558"
+        "Ocp-Apim-Subscription-Key": "69bc82dd085d458bbcf261cf06a68558" // TODO change back
       }
     };
 
     function callback(error, response, body) {
       if (!error && response.statusCode == 200) {
         var data = JSON.parse(body);
-        // console.log(data.entities);
-        // currently only supports importing journals/conferences
+
+        // currently only supports importing journals/conferences. Will need to add another API if support for others needed
         var publications = data.entities
               .filter( (entity) => ((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) );
 
         // see if DOIs already exist in database.
-        // var partitioned = _.partition(publications, pubAlreadyExists);
-        // console.log(partitioned[0].length, partitioned[1].length);
         findDuplicatePubs(publications).then(function(results) {
           var partitioned = results;
-           
           console.log(partitioned);
 
           res.status(200).json({status:"OK", data: partitioned});
         });
+        // TODO add fail case
       } else {
         res.status(response.statusCode).json({status: "Searching for works has failed." + error});
       }

@@ -240,7 +240,7 @@ var WorksList = React.createClass({
 
 		return (
 			<div style={{width: '90%'}} className="center-block">
-				<div><h3>Please deselect the ones that don't belong to you or you don't want to import. Details of entries can be edited later on.</h3></div>
+				<div><h2>Please deselect the ones that don't belong to you or you don't want to import. Details of entries can be edited later on.</h2></div>
 				<Table id="import-works-list" bordered striped>
 					<thead>
 						<tr>
@@ -290,8 +290,8 @@ var DuplicatesList = React.createClass({
 	render() {
 		return (
 			<div>
-				<Panel header="We found some publications that have already been uploaded to Syncholar" bsStyle="info">
-					<p>These duplicate publications won't be imported, but other scholars will be able to find you through the publication info page.</p>
+				<Panel header="We found some publications that have already been uploaded to Syncholar." bsStyle="info">
+					<p>These duplicate publications won't be imported, but other scholars will be able to find you through their existing publication page.</p>
 				
 					<Table id="dupes-works-list" bordered striped>
 						<thead>
