@@ -68,6 +68,7 @@ module.exports=function(app,Parse,io) {
                     fax: result.get('fax'),
                     email: result.get('email'),
                     website: result.get('website'),
+                    picture: result.get('picture'),
                     carousel_1_img: result.get('carousel_1_img'),
                     carousel_1_head: result.get('carousel_1_head'),
                     carousel_1_body: result.get('carousel_1_body'),
@@ -320,56 +321,48 @@ module.exports=function(app,Parse,io) {
     });
 
     app.post('/organization/:objectId/pending_orgpeople_action/', function (req, res, next) {
-        var personId = req.body.personId;
         var orgId = req.params.objectId;
         var mode = req.body.mode;
-
-        var innerQuery = new Parse.Query("Organization");
-        innerQuery.equalTo("name",orgId);
-        var innerQuery2 = new Parse.Query(Parse.User);
-        innerQuery2.equalTo("objectId",personId);
-        var query = new Parse.Query('Relationship');
-        query.matchesQuery("orgId",innerQuery);
-        query.matchesQuery("userId",innerQuery2);
+        var userId = req.body.userId;
+        var query = new Parse.Query("Relationship");
+        query.equalTo("verified", false);
+        query.equalTo("orgRequest", true);
+        query.equalTo("userId", userId);
+        query.equalTo("orgId", orgId);
         query.first({
-            success: function(result) {
-                if(mode=="admin") {
-                    result.set("verified",true);
-                    result.set("isAdmin",true);
-                    result.save(null, {
-                        success:function(){
-                            res.json("Accepted!");
-                        },
-                        error:function(error){
-                            res.json({error:error});
-                        }
-                    });
-                }
-                else if(mode=="accept") {
-                    result.set("verified",true);
-                    result.save(null, {
-                        success:function(){
-                            res.json("Accepted!");
-                        },
-                        error:function(error){
-                            res.json({error:error});
-                        }
-                    });
-                }
-                else if(mode=="reject") {
-                    result.destroy({
-                        success: function(model, response){
-                            res.json("Rejected!");
-                        },
-                        error: function(model, response){
-                            res.json({error:error});
-                        }
-                    });
+            success: function (result) {
+                if (result === undefined) {
+                    console.log("No result for pending org to people request");
+                } else {
+                    if (mode === "accept") {
+                        result.set("verified", true);
+                        result.save(null, {
+                            success: function() {
+                                console.log("Person accepted org invitation");
+                                res.json("Successfully accepted");
+                            },
+                            error: function(err) {
+                                console.log(err);
+                                res.json({error: err});
+                            }
+                        })
+                    } else if (mode === "reject") {
+                        result.destroy({
+                            success: function(model, response) {
+                                console.log("Org to person entry deleted - person rejected invitation");
+                                res.json("Successfully rejected");
+                            },  
+                            error: function(model, response) {
+                                console.log("Error while destroying entry: ", response);
+                                res.json({error: response});
+                            }   
+                        });
+                    }
                 }
             },
-            error: function(error) {
-                console.log(error);
-                res.render('index', {title: error, path: req.path});
+            error: function (obj, err) {
+                console.log(err.message);
+                res.json({error: err});
             }
         });
     });
@@ -1301,9 +1294,9 @@ module.exports=function(app,Parse,io) {
                 },
                 to: {
                     userId: usr.id,
-                    name: usr.get("fullname");
-                }
-                msg: "has invited you to join their organization",
+                    name: usr.get("fullname")
+                },
+                msg: "has invited you to join their organization"
             }
             requests.push(notification);
         }).then(function() {

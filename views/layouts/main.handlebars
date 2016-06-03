@@ -3,8 +3,10 @@
 <html lang="en" prefix="og: https://ogp.me/ns#">
 <head>
     <title>Syncholar Synchronizes Scholars</title>
-    <meta name="description" content="Syncholar is a knowledge sharing platform for research labs and networks. Create a homepage for your institution, department, lab or network on Syncholar. Organize your work and research outputs on your personal dashboard.
-    Store, organize and share your knowledge with your colleagues. Discover knowledge and stay up-to-date!">
+    <meta name="description" content="Syncholar is a research labs and networks management platform. Create a homepage for your research group, lab, or network on Syncholar. Your page instantnously becomes the hub for your members to
+     share knowledge and keep up-to-date with your group's activities. Your page will literally update itself to keep your online presence up-to-date for your visitors.
+     Use your personal page as your research dashboard to organize your work and research activities.
+    Store, organize, share, and discover knowledge!">
     <meta name="keywords" content="education,socialnetwork,labs,homepage,research network, website, research, information sharing, platform, knowledge, data, model, software, code, equipment, project, paper, journal,
     publication, open access, repository, dashboard, resume, about" />
     <meta http-equiv="content-type" content="text/html;charset=UTF-8">
@@ -99,8 +101,11 @@
                                         'addr': results[0],
                                         'msg': results[1],
                                         'emailBody': emailBody,
-                                        'from': source,
-                                        'invType': invType
+                                        'from': source.id,
+                                        'invType': invType,
+                                        'orgName': source.name, 
+                                        'orgDisplayName': source.displayName,
+                                        'imgUrl': source.imgUrl
                                     }
                                     $.ajax({
                                       url: "/inviteBuddy",
@@ -317,5 +322,17 @@
 <script type="text/javascript" src="/javascripts/react-tag-input/example/vendor/ReactDND.min.js"></script>
 <script src="/javascripts/react-tag-input/dist/reactTags.min.js"></script>
 <script src="/javascripts/tag-it.js"></script>
+
+<script type="text/javascript">
+    (function(d,n){var s,a,p;s=document.createElement("script");s.type="text/javascript";s.async=true;s.src=(document.location.protocol==="https:"?"https:":"http:")+"//cdn.nudgespot.com"+"/nudgespot.js";a=document.getElementsByTagName("script");p=a[a.length-1];p.parentNode.insertBefore(s,p.nextSibling);window.nudgespot=n;n.init=function(t){function f(n,m){var a=m.split('.');2==a.length&&(n=n[a[0]],m=a[1]);n[m]=function(){n.push([m].concat(Array.prototype.slice.call(arguments,0)))}}n._version=0.1;n._globals=[t];n.people=n.people||[];n.params=n.params||[];m="track register unregister identify set_config people.delete people.create people.update people.create_property people.tag people.remove_Tag".split(" ");for(var i=0;i<m.length;i++)f(n,m[i])}})(document,window.nudgespot||[]);nudgespot.init("3cdda5064291cfa34f09a1cf0f59939c");
+</script>
+{{#if user}}
+    <script type="text/javascript">
+        var email = '{{user.email}}';
+        var first_name = '{{user.firstname}}';
+        var last_name = '{{user.lastname}}';
+        nudgespot.identify(email, {first_name: first_name, last_name: last_name});
+    </script>
+{{/if}}
 </body>
 </html>
