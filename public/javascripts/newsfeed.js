@@ -39,7 +39,9 @@ var NewsFeed = React.createClass({
               <div className="row">
                   <div className="col-xs-8">
                       {this.state.data.map(function(item, i) {
-                        return (<NewsFeedList key={i}
+                        return (
+                            <div>
+                            <NewsFeedList key={i}
                                               itemId={item.itemId}
                                               objId={item.objId}
                                               userName={item.username}
@@ -54,7 +56,12 @@ var NewsFeed = React.createClass({
                                               comments={item.comments}
                                               description={item.description}
                                               upload={item.upload}
-                                              keywords={item.keywords} />);
+                                              keywords={item.keywords} />
+
+                                <CommentBox comments= {item.comments}/>
+                                <CommentForm />
+
+                            </div>);
                       })}
                     </div>
                     <div className="col-xs-4">
@@ -219,9 +226,6 @@ var NewsFeedList = React.createClass({
               </div>
             </div>
         </div>
-        <div className="itemBox">
-          <CommentBox comments= {this.props.comments}/>
-        </div>
       </div>
 
     );
@@ -236,9 +240,7 @@ var CommentBox = React.createClass({
 
     return (
         <div className="commentBox">
-          <h4>Comments</h4>
           <CommentList data={this.props.comments} />
-          <CommentForm />
         </div>
     );
   }
@@ -272,10 +274,20 @@ var Comment = React.createClass({
     console.log(this.props);
     return (
         <div className="comment">
-          <h4 className="commentAuthor">
-            {this.props.from.name}
-          </h4>
-          <span dangerouslySetInnerHTML={this.rawMarkup()} />
+          <div className="row">
+            <div className="col-xs-1 comment-pic-col">
+              <a href={"/profile/" + this.props.from.username}><img className="comment-pic" src={this.props.from.img} alt=""/></a>
+            </div>
+            <div className="col-xs-5 comment-name">
+              <p className="commentAuthor">{this.props.from.name}</p>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-xs-12 comment-content">
+              <span dangerouslySetInnerHTML={this.rawMarkup()} />
+            </div>
+
+          </div>
         </div>
     );
   }
@@ -284,9 +296,6 @@ var Comment = React.createClass({
 var CommentForm = React.createClass({
   getInitialState: function() {
     return {author: '', text: ''};
-  },
-  handleAuthorChange: function(e) {
-    this.setState({author: e.target.value});
   },
   handleTextChange: function(e) {
     this.setState({text: e.target.value});
@@ -302,22 +311,24 @@ var CommentForm = React.createClass({
     this.setState({author: '', text: ''});
   },
   render: function() {
+;
     return (
-        <form className="commentForm" onSubmit={this.handleSubmit}>
-          <input
-              type="text"
-              placeholder="Your name"
-              value={this.state.author}
-              onChange={this.handleAuthorChange}
-              />
-          <input
-              type="text"
-              placeholder="Say something..."
-              value={this.state.text}
-              onChange={this.handleTextChange}
-              />
-          <input type="submit" value="Post" />
-        </form>
+        <div className="row commentForm">
+          <div className="col-xs-1">
+            <img className="comment-pic" src={userImg}/>
+          </div>
+          <div className="col-xs-11">
+            <form  onSubmit={this.handleSubmit}>
+              <textarea
+                  className="comment-input"
+                  type="text"
+                  placeholder="Say something..."
+                  value={this.state.text}
+                  onChange={this.handleTextChange}
+                  />
+            </form>
+          </div>
+        </div>
     );
   }
 });
