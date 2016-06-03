@@ -68,6 +68,7 @@ module.exports=function(app,Parse,io) {
                     fax: result.get('fax'),
                     email: result.get('email'),
                     website: result.get('website'),
+                    picture: result.get('picture'),
                     carousel_1_img: result.get('carousel_1_img'),
                     carousel_1_head: result.get('carousel_1_head'),
                     carousel_1_body: result.get('carousel_1_body'),
@@ -315,6 +316,53 @@ module.exports=function(app,Parse,io) {
             error: function(error) {
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
+
+    app.post('/organization/:objectId/pending_orgpeople_action/', function (req, res, next) {
+        var orgId = req.params.objectId;
+        var mode = req.body.mode;
+        var userId = req.body.userId;
+        var query = new Parse.Query("Relationship");
+        query.equalTo("verified", false);
+        query.equalTo("orgRequest", true);
+        query.equalTo("userId", userId);
+        query.equalTo("orgId", orgId);
+        query.first({
+            success: function (result) {
+                if (result === undefined) {
+                    console.log("No result for pending org to people request");
+                } else {
+                    if (mode === "accept") {
+                        result.set("verified", true);
+                        result.save(null, {
+                            success: function() {
+                                console.log("Person accepted org invitation");
+                                res.json("Successfully accepted");
+                            },
+                            error: function(err) {
+                                console.log(err);
+                                res.json({error: err});
+                            }
+                        })
+                    } else if (mode === "reject") {
+                        result.destroy({
+                            success: function(model, response) {
+                                console.log("Org to person entry deleted - person rejected invitation");
+                                res.json("Successfully rejected");
+                            },  
+                            error: function(model, response) {
+                                console.log("Error while destroying entry: ", response);
+                                res.json({error: response});
+                            }   
+                        });
+                    }
+                }
+            },
+            error: function (obj, err) {
+                console.log(err.message);
+                res.json({error: err});
             }
         });
     });
@@ -1223,6 +1271,38 @@ module.exports=function(app,Parse,io) {
             console.log(err);
         });
     });
+
+    app.get('/org2peoplerequest', function(req, res, next){
+        var currentUser= req.user;
+        var requests =[];
+        var query = new Parse.Query('Relationship');
+        query.equalTo("isAdmin", false);
+        query.equalTo("orgRequest", true);
+        query.equalTo("verified", false);
+        query.include('orgId');
+        query.include('userId');
+
+        query.each(function(result){
+            var usr = result.get("userId");
+            var org = result.get("orgId");
+            var notification = {
+              type: "org2peoplerequest",
+              from: {
+                  orgId: org.id,
+                  orgName: org.get("name"),
+                  name: org.get("displayName"),
+                  imgUrl: org.get("picture")
+              },
+              msg: "has invited you to join their organization"
+            };
+            requests.push(notification);
+        }).then(function() {
+            res.send(requests);
+        }, function(err){
+            console.log(err);
+        })
+    });
+
     function notifyadmins(orgId,user)
     {
         var innerQuery = new Parse.Query("Organization");
