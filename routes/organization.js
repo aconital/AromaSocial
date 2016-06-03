@@ -1272,7 +1272,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get('org2peoplerequest', function(req, res, next){
+    app.get('/org2peoplerequest', function(req, res, next){
         var currentUser= req.user;
         var requests =[];
         var query = new Parse.Query('Relationship');
@@ -1286,18 +1286,15 @@ module.exports=function(app,Parse,io) {
             var usr = result.get("userId");
             var org = result.get("orgId");
             var notification = {
-                type: "org2peoplerequest",
-                from: {
-                    orgId: org.id,
-                    orgName: org.get("name"),
-                    name: org.get("displayName")
-                },
-                to: {
-                    userId: usr.id,
-                    name: usr.get("fullname")
-                },
-                msg: "has invited you to join their organization"
-            }
+              type: "org2peoplerequest",
+              from: {
+                  orgId: org.id,
+                  orgName: org.get("name"),
+                  name: org.get("displayName"),
+                  imgUrl: org.get("picture")
+              },
+              msg: "has invited you to join their organization"
+            };
             requests.push(notification);
         }).then(function() {
             res.send(requests);
