@@ -195,8 +195,7 @@ var Notification = React.createClass({
         else {
             $('.notification-counter').show();
             $(".notification-counter").text(this.state.notication_list.length);
-            var notifications = $.map(this.state.notication_list, function(noti){
-                var notification = noti.notification;
+            var notifications = $.map(this.state.notication_list, function(notification){
                 if (notification.type === "org2peoplerequest") {
                     return (
                         <div id={notification.from.orgId} className="friend-request-item" key={notification.id}>

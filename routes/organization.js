@@ -323,7 +323,7 @@ module.exports=function(app,Parse,io) {
     app.post('/organization/:objectId/pending_orgpeople_action/', function (req, res, next) {
         var orgId = req.params.objectId;
         var mode = req.body.mode;
-        var userId = req.body.userId;
+        var userId = req.user.id;
         var query = new Parse.Query("Relationship");
         query.equalTo("verified", false);
         query.equalTo("orgRequest", true);
@@ -333,6 +333,7 @@ module.exports=function(app,Parse,io) {
             success: function (result) {
                 if (result === undefined) {
                     console.log("No result for pending org to people request");
+                    res.json("No entry in Relationship db");
                 } else {
                     if (mode === "accept") {
                         result.set("verified", true);
