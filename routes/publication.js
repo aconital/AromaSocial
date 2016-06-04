@@ -13,6 +13,7 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 var is_auth = require('../utils/helpers').is_auth;
+var pubTypeToClass = require('../utils/helpers').pubTypeToClass;
 
 var decodeHtmlEntity = function(str) {
   return str.replace(/&#(\d+);/g, function(match, dec) {
@@ -441,10 +442,11 @@ module.exports=function(app,Parse,io) {
         profileQuery = new Parse.Query("User");
         profileQuery.equalTo("username",req.params.username);
         profileQuery.first().then(function(user) {
-            profile = user.id;
-            var pubs=[];
-            var pubBooks = Parse.Object.extend("Pub_Book");
-            var query = new Parse.Query(pubBooks);
+            var profile = user.id;
+                otherPubs = user.get('other_pubs'); // retrieve those not uploaded by user
+                pubs=[];
+                pubBooks = Parse.Object.extend("Pub_Book");
+                query = new Parse.Query(pubBooks);
             query.equalTo('user',{ __type: "Pointer", className: "_User", objectId: profile});
             query.descending("createdAt");
             query.find().then(function(books) {
@@ -465,9 +467,16 @@ module.exports=function(app,Parse,io) {
                 }
             }).then(function() {
                 var pubConference = Parse.Object.extend("Pub_Conference");
-                var query1 = new Parse.Query(pubConference);
-                query1.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
-                query1.descending("createdAt");
+
+                var uploaded = new Parse.Query(pubConference); // get uploaded publications
+                uploaded.equalTo('other_users', user);
+                uploaded.descending("createdAt");
+
+                var other = new Parse.Query(pubConference); // get publications others have uploaded
+                other.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                other.descending("createdAt");
+
+                var query1 = new Parse.Query.or(uploaded, other);
                 query1.find().then(function (conferences) {
                     console.log("Successfully retrieved " + conferences.length + " conferences.");
                     // Do something with the returned Parse.Object values
