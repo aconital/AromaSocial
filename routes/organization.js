@@ -327,8 +327,8 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query("Relationship");
         query.equalTo("verified", false);
         query.equalTo("orgRequest", true);
-        query.equalTo("userId", userId);
-        query.equalTo("orgId", orgId);
+        query.equalTo("userId", {__type: "Pointer", className: "_User", objectId: userId});
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: orgId});
         query.first({
             success: function (result) {
                 if (result === undefined) {
