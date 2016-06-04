@@ -37,20 +37,15 @@ var NewsFeed = React.createClass({
   _reloadComments: function(data)
     {   var feedId= data.feedId;
         var feedNumber=data.feedNumber;
-        $.ajax({
-            url: '/comments/'+feedId,
-            success: function(data) {
-                var feedItems= this.state.data;
-                console.log(feedItems[feedNumber]);
-//TODO UPDATE DOESNT WORK
-                feedItems[feedNumber].comments= data;
-                console.log(feedItems[feedNumber]);
-                this.setState({data: feedItems});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
-            }.bind(this)
-        });
+        var comment= data.comment;
+        var feedItems= this.state.data.slice();
+
+                //TODO UPDATE DOESNT WORK
+                feedItems[feedNumber].comments.push(comment);
+                this.setState({data:  feedItems});
+
+
+
     },
   render: function() {
 
@@ -260,7 +255,6 @@ var CommentBox = React.createClass({
         this.setState({comments: this.props.comments});
   },
   render: function() {
-
     return (
         <div className="commentBox">
           <CommentList data={this.state.comments} />
@@ -269,11 +263,17 @@ var CommentBox = React.createClass({
   }
 });
 var CommentList = React.createClass({
+    getInitialState: function() {
+        return {comments: []};
+    },
+    componentWillMount: function() {
+        this.setState({comments: this.props.data});
+    },
   render: function() {
     var commentNodes="";
 
-    if(this.props.data.length >0) {
-       commentNodes = this.props.data.map(function (comment) {
+    if(this.state.comments.length >0) {
+       commentNodes = this.state.comments.map(function (comment) {
         return (
             <Comment from={comment.from} key={comment.id}>
               {comment.content.msg}
@@ -289,6 +289,7 @@ var CommentList = React.createClass({
   }
 });
 var Comment = React.createClass({
+
   rawMarkup: function() {
     var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
     return { __html: rawMarkup };

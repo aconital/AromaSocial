@@ -655,7 +655,18 @@ app.post('/comment',is_auth,function(req,res,next){
                         comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
                         result.set("comments",comments);
                         result.save();
-                        io.to(req.user.id).emit('commentReceived',{feedId:feedId,feedNumber:feedNumber});
+
+                        var finalComment= {
+                            id: comment.id,
+                            from :  {
+                                name: req.user.fullname,
+                                img : req.user.imgUrl,
+                                username: req.user.username
+                            },
+                            content: {msg:content}
+                        };
+
+                        io.to(req.user.id).emit('commentReceived',{feedId:feedId,feedNumber:feedNumber,comment:finalComment});
                         res.json({msg:"success"});
                     }
                 },
