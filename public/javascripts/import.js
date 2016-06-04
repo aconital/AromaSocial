@@ -18,7 +18,7 @@ var ImportContent = React.createClass({
 		e.preventDefault();
 		var self = this;
 
-		var nameQuery = 'sung kyu lim';//this.state.name.toLowerCase(); // TODO split etc
+		var nameQuery = this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
 
@@ -51,7 +51,7 @@ var ImportContent = React.createClass({
 		} else if (this.state.status == 'searching') {
 			content = <div>Searching...</div>
 		} else if (this.state.status == 'showTable') {
-			if (this.state.results.length > 0) {
+			if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
 				content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />
 			} else {
 				content = (<div>
@@ -155,24 +155,29 @@ var WorksList = React.createClass({
 
 	// send request for highlighted works to be imported
 	importWorks() {
-		var self = this;
-		var works = [];
-		for (index of this.state.resultsToSend) {
-			works.push(this.state.allResults[index]);
+		console.log(this.state.resultsToSend.length, 'now whjat');
+		if (this.state.resultsToSend.length > 0) {
+			var self = this;
+			var works = [];
+			for (index of this.state.resultsToSend) {
+				works.push(this.state.allResults[index]);
+			}
+			$.ajax({
+				url: '/import',
+				type: 'POST',
+				dataType: 'json',
+	            contentType: "application/json; charset=utf-8",
+	            data: JSON.stringify(works),
+			})
+			.done(function(data) {
+				self.setStatus('Import done!');
+			})
+			.fail(function(xhr, status, err) {
+				self.setStatus('Import failed.');
+			});
+		} else {
+			this.props.redirect();
 		}
-		$.ajax({
-			url: '/import',
-			type: 'POST',
-			dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(works),
-		})
-		.done(function(data) {
-			self.setStatus('Import done!');
-		})
-		.fail(function(xhr, status, err) {
-			self.setStatus('Import failed.');
-		});
 	},
 
 	transformResults(works) {
@@ -235,12 +240,19 @@ var WorksList = React.createClass({
 
 	render() {
 		var self = this;
-		var results = this.props.results;
+		var showNew, continueLabel;
 		var transFormedResults = [];
+		if (this.props.results > 0) {
+			showNew = {};
+			continueLabel = 'Import highlighted publications and continue';
+		} else {
+			showNew = {display: 'none'};
+			continueLabel = 'Continue';
+		}
 
 		return (
 			<div style={{width: '90%'}} className="center-block">
-				<div><h2>Please deselect the ones that don't belong to you or you don't want to import. Details of entries can be edited later on.</h2></div>
+				<div style={showNew} ><h4>Please deselect the ones that don't belong to you or you don't want to import. Details of entries can be edited later on.</h4>
 				<Table id="import-works-list" bordered striped>
 					<thead>
 						<tr>
@@ -253,9 +265,9 @@ var WorksList = React.createClass({
 						    return <WorkItem entity={item} toggleImport={self.addRemoveImport} index={index} key={index} />
 						})}
 					</tbody>
-				</Table>
+				</Table></div>
 				{this.props.dupes.length > 0 ? <DuplicatesList dupes={this.state.duplicates} /> : <span></span>}
-				<Button className="btn-success btn-lg" onClick={this.importWorks}>Import highlighted publications and continue</Button>
+				<Button className="btn-success btn-lg" onClick={this.importWorks}>{continueLabel}</Button>
 				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button>
 			</div>
 		);
@@ -291,14 +303,9 @@ var DuplicatesList = React.createClass({
 		return (
 			<div>
 				<Panel header="We found some publications that have already been uploaded to Syncholar." bsStyle="info">
-					<p>These duplicate publications won't be imported, but other scholars will be able to find you through their existing publication page.</p>
+					<p>These duplicate publications won't be imported, but other scholars will be able to find you through the existing publication page.</p>
 				
-					<Table id="dupes-works-list" bordered striped>
-						<thead>
-							<tr>
-								<th>Details</th>
-							</tr>
-						</thead>
+					<Table id="dupes-works-list" fill striped>
 						<tbody>
 							{this.props.dupes.map(function(item, index) { 
 							    return <DuplicateItem entity={item} index={index} key={index} />
