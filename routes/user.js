@@ -657,6 +657,7 @@ module.exports=function(app,Parse,io) {
             console.log("Connecting to friend threw error: ");
             console.log(err);
         });
+
     });
 
     app.get('/profile/:objectId/disconnect', is_auth, function (req, res, next) {

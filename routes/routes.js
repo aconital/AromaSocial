@@ -23,6 +23,8 @@ var hasBetaCode= require('../utils/helpers').hasBetaCode;
 var include_user= require('../utils/helpers').include_user;
 var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
 var formatParams=require('../utils/helpers').formatParams;
+var pubAlreadyExists=require('../utils/helpers').pubAlreadyExists;
+var findDuplicatePubs=require('../utils/helpers').findDuplicatePubs;
 
 module.exports=function(app,Parse,io) {
 
@@ -44,25 +46,34 @@ module.exports=function(app,Parse,io) {
   });
 
   app.post('/inviteBuddy', function(req, res, next){
+    var inviteType = req.body.invType;
+    var from = req.body.from;
     var addr = req.body.addr;
     var msg = req.body.msg;
     var emailBody = req.body.emailBody;
     var user = req.user.fullname;
-    console.log(user);
+    var orgName = req.body.orgName;
+    var orgDisplayName = req.body.orgDisplayName;
+    var imgUrl = req.body.imgUrl;
+    console.log(inviteType);
 
     // TODO: spam prevention (using captcha (?))
 
     var addrIsUser = false;
     var addrAlreadySent = false;
+    var toUser;
     var query = new Parse.Query(Parse.User);
     query.equalTo("email", addr);
     query.first({
       success: function(result) {
         if (result == undefined) {
           // user with this email doesn't exist - check invite class if email already sent to this address
+          console.log("User with given email dne");
           addrIsUser = false;
         } else {
           // user exists
+          console.log("User with given email exists");
+          toUser = result;
           addrIsUser = true;
         }
       },
@@ -72,8 +83,66 @@ module.exports=function(app,Parse,io) {
       }
     }).then(function(){
       if (addrIsUser) {
-        // do nothing - don't send email
-        res.send({reply: "User already exists with this email"});
+        // don't send email
+        console.log("So addr is user");
+        if (inviteType === "org2people") {
+          // invite user to join organization
+          console.log("org is inviting people");
+          console.log("User id is: ", toUser.id);
+          console.log("Org id is: ", from);
+          var userId = toUser.id;
+          var Relationship = Parse.Object.extend("Relationship");
+          // TODO: check if entry exists
+          var rq = new Parse.Query(Relationship);
+          rq.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: from});
+          rq.equalTo("userId", {__type: "Pointer", className: "_User", objectId: userId});
+          rq.first({
+            success: function(result) {
+              if (result === undefined) {
+                var rel = new Relationship();
+                rel.set("isAdmin", false);
+                rel.set("verified", false);
+                rel.set("orgRequest", true);
+                rel.set("userId", {__type: "Pointer", className: "_User", objectId: userId});
+                rel.set("orgId", {__type: "Pointer", className: "Organization", objectId: from});
+                rel.save(null, {
+                  success: function(relObj) {
+                    var userFullName = req.user.fullname;
+                    var notification = {
+                      id: from,
+                      type: "org2peoplerequest",
+                      from: {
+                          orgId: from,
+                          orgName: orgName,
+                          name: orgDisplayName,
+                          imgUrl: imgUrl
+                      },
+                      msg: "has invited you to join their organization"
+                    };
+                    console.log("emitting io request");
+                    io.to(userId).emit('org2peoplerequest',{data:{notification}});
+                    console.log("emitted request");
+
+                    res.send({reply: "User already exists with this email - sending notification..."});
+                  },
+                  error: function(obj, err) {
+                    console.log("Error while storing in Relationship: ", err.message);
+                    res.json({error: err});
+                  }
+                });
+              } else {
+                console.log("Already invited this user or user already part of org");
+                res.send({reply: "User already invited/part of org"});
+              }
+            },
+            error: function(obj, err) {
+              console.log("Error while querying Relationship: ", err);
+              res.json({error: err});
+            }
+          });
+        } else {
+          console.log("unexpected invite type");
+        }
       } else {
         var Invite = Parse.Object.extend("Invite");
         var inviteQuery = new Parse.Query(Invite);
@@ -96,6 +165,8 @@ module.exports=function(app,Parse,io) {
                 // send mail after we've stored in db
                 sendMail(user + ' has invited you to join Syncholar',emailBody,addr);
                 res.send({reply: "Invited"});
+              }, function(err) {
+                console.log(err);
               })
             } else {
               // don't (?)
@@ -103,12 +174,15 @@ module.exports=function(app,Parse,io) {
               res.send({reply: "Invitation email has already been sent to this user"});
             }
           },
-          error: function(err) {
-            console.log("Error while checking invite class: ", err);
+          error: function(obj, err) {
+            console.log("Error while checking invite class: ", err.message);
             res.send({reply: err});
           }
         })
       }
+    }, function(err) {
+      console.log(err);
+      res.send({reply: err});
     })
   });
 
@@ -727,10 +801,19 @@ app.get("/fetchworks", function(req, res, next) {
     function callback(error, response, body) {
       if (!error && response.statusCode == 200) {
         var data = JSON.parse(body);
-        console.log(data.entities);
-        // currently only supports importing journals/conferences
-        var publications = data.entities.filter( (entity) => (entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) );
-        res.status(200).json({status:"OK", data: publications});
+
+        // currently only supports importing journals/conferences. Will need to add another API if support for others needed
+        var publications = data.entities
+              .filter( (entity) => ((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) );
+
+        // see if DOIs already exist in database.
+        findDuplicatePubs(publications).then(function(results) {
+          var partitioned = results;
+          console.log(partitioned);
+
+          res.status(200).json({status:"OK", data: partitioned});
+        });
+        // TODO add fail case
       } else {
         res.status(response.statusCode).json({status: "Searching for works has failed." + error});
       }

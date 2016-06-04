@@ -8,6 +8,7 @@ var config = require('../config/configs');
 var SparkPost = require('sparkpost');
 var sp = new SparkPost('5c4cf399a6bbc1f2bd87a881d08756458b0834cb');
 var request = require('request').defaults({ encoding: null });
+var _ = require('underscore');
 
 var Parse = require('parse/node');
 Parse.initialize(config.db_name, config.username, config.password);
@@ -162,5 +163,79 @@ formatParams: function(params) {
         return encodeURIComponent(k) + '=' + encodeURIComponent(params[k])
     }).join('&')
     return queryParams;
+},
+
+// used by partitioner in routes/fetchworks.get to determine which are new and which duplicates
+pubAlreadyExists: function(pub) {
+    for (pub in publications) {
+
+    console.log(JSON.stringify(pub['E'],null,2));
+      var pubClass = pub.hasOwnProperty('J') ? "Pub_Journal_Article" : "Pub_Conference";
+      var query = new Parse.Query(pubClass);
+      query.equalTo("doi", pub['E']['DOI']);
+      query.first({
+        success: function(object) {
+            console.log(JSON.stringify(object,null,2));
+          if (object) {
+            // response.error("A publication with this DOI already exists.");
+            console.log("\nthis IS a duplicate!")
+            return true; // A publication with this DOI already exists
+          } else {
+            console.log("\nNOT a duplicate!")
+            return false; // this is a new publication
+            // response.success();
+          }
+        },
+        error: function(error) {
+          // response.error("Could not check for duplicate publications.");
+          return false;
+        }
+      });
+    }
+},
+
+// used by routes/fetchworks.get to determine which are new and which are duplicates
+findDuplicatePubs: function(publications) {
+    newPubs = []
+    duplicates = []
+
+    return Parse.Promise.as().then(function() {
+        var promise = Parse.Promise.as(); // define a promise
+
+        _.each(publications, function(pub) {
+            promise = promise.then(function() { // each time this loops the promise gets reassigned to the function below
+
+            var pubClass = pub.hasOwnProperty('J') ? "Pub_Journal_Article" : "Pub_Conference",
+                extendedObj = JSON.parse(pub['E']),
+                query = new Parse.Query(pubClass);
+            query.equalTo("doi", extendedObj['DOI']);
+            return query.first().then(function(doi) { // the code will wait (run async) before looping again knowing that this query (all parse queries) returns a promise.
+                if (doi) {
+                    console.log("this IS a duplicate!\n");
+                    // TODO: need to edit later to add link to contributors. Add doi.objectId to pass to client to pass to server again
+                    //       OR... make the necessary changes in here.
+                    // TODO: also show on prof?
+                    duplicates.push(pub); // A publication with this DOI already exists
+                } else {
+                    console.log("NOT a duplicate!\n");
+                    newPubs.push(pub); // this is a new publication
+                }
+
+              return Parse.Promise.as(); // the code will wait again for the above to complete because there is another promise returning here
+
+            }, function (error) {
+              console.error("score lookup failed with error.code: " + error.code + " error.message: " + error.message);
+            });
+          });
+        });
+        return promise; // this will not be triggered until the whole loop above runs and all promises above are resolved
+
+    }).then(function() {
+        return {new: newPubs, duplicates: duplicates};
+    }, function (error) {
+        console.error("findDuplicatePubs failed with error.code: " + error.code + " error.message: " + error.message);
+        return {new: [], duplicates: []};
+    });
+
 }
 };

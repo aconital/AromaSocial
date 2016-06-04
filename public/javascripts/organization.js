@@ -17,6 +17,9 @@ const tooltipEquip = (
 const tooltipConc = (
     <Tooltip className="tooltip2">Add a Connection</Tooltip>
 );
+const tooltipPeople = (
+    <Tooltip className="tooltip2">Invite people to join</Tooltip>
+);
 var Organization = React.createClass ({
     getInitialState: function() {
         return {    isAdmin: [],
@@ -886,19 +889,18 @@ var People = React.createClass({
 
     },
     inviteTrigger: function(e) {
+        console.log(e);
         e.stopPropagation();
-        invite(e.nativeEvent);
+        var source = {
+            id: objectId,
+            name: name,
+            displayName: displayName,
+            imgUrl: picture
+        };
+        invite(e.nativeEvent, "org2people", source);
     },
     render: function() {
-        return (
-            <div className="item-search-div">
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        {(isAdmin) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
-                    </tr>
-                </table>
-            </div>
-        )
+        var triggerFunc = this.inviteTrigger;
         var parent= this;
         var isAdmin= this.props.isAdmin;
         var peopleList = $.map(this.state.data,function(objects) {
@@ -911,6 +913,13 @@ var People = React.createClass({
 
             return (
                 <div id="items-list">
+                    <div className="item-search-div">
+                        <table className="item-search-field" width="100%">
+                            <tr>
+                                {(isAdmin) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltipPeople}><input className="item-add-button" onClick={triggerFunc} type="button" value="+"/></OverlayTrigger></td> : ""}
+                            </tr>
+                        </table>
+                    </div>
                     <div className="clear"></div>
                     <div><h2 className="margin-top-bottom-5">{role}</h2></div>
                     <div className="clear"></div>
