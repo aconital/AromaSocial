@@ -163,5 +163,4 @@ formatParams: function(params) {
     }).join('&')
     return queryParams;
 }
-
 };
