@@ -181,6 +181,7 @@ var Notification = React.createClass({
                 console.error("Couldnt retrieve people");
             }.bind(this)
         });
+        this.deleteNotification(notification.id);
     }
 
     },
