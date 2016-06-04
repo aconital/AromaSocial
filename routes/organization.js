@@ -1287,6 +1287,7 @@ module.exports=function(app,Parse,io) {
             var usr = result.get("userId");
             var org = result.get("orgId");
             var notification = {
+              id: org.id,
               type: "org2peoplerequest",
               from: {
                   orgId: org.id,

@@ -107,6 +107,7 @@ module.exports=function(app,Parse,io) {
                   success: function(relObj) {
                     var userFullName = req.user.fullname;
                     var notification = {
+                      id: from,
                       type: "org2peoplerequest",
                       from: {
                           orgId: from,
