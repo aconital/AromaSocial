@@ -234,9 +234,16 @@ var InfoField = React.createClass({
         var element;
         
         if (typeof this.props.initVal !== 'string') {
-            var tagArray = this.props.initVal;
+            var self = this,
+                tagArray = this.props.initVal;
+                link = '#';
+
             var tagsElement = tagArray.map(function(item) { 
-                return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;
+                // set links to profiles for contributors
+                if (self.props.name == 'contributors') {
+                    link = "/profile/" + item.replace(/ /g, "_");
+                }
+                return <a href={link} className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;
             });
             element = ( tagsElement );
         } else {
