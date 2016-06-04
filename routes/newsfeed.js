@@ -652,8 +652,13 @@ app.post('/comment',is_auth,function(req,res,next){
                 success: function (result) {
                     if (result) {
                         var comments=result.get("comments");
-                        comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
-                        result.set("comments",comments);
+                        if(comments != undefined) {
+                            comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
+                            result.set("comments",comments);
+                        }
+                        else
+                            result.set("comments",[{__type: "Pointer", className: "Comment", objectId: comment.id}]);
+                        
                         result.save();
 
                         var finalComment= {
