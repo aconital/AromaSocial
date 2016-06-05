@@ -200,6 +200,23 @@
 } .item-box:hover {
     background-color: var(--contrast-free-color);
 }
+.item-add-button-publication {
+    color: var(--white-color);
+    background-color: var(--blue-color);
+    display: inline !important;
+    border: solid;
+    border-color: var(--blue-color);
+    border-width: 1px 1px 0 1px;
+    padding: 6px 12px;
+    margin: 0 0.05em 0 0;
+    font-size: 14px;
+    border-radius:4px;
+    width:49%;
+} .item-add-button-publication:hover {
+      background-color: var(--foreground-hover-color);
+      border-color: var(--foreground-hover-color);
+      display: inline !important;
+  }
 
 .item-box-image-outside {
     border: none;

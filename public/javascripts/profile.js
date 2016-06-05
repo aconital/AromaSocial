@@ -1320,11 +1320,12 @@ var ResourceForm = React.createClass({
             <table className="item-search-field" width="100%">
                 <tr>
                     {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                    {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.open} type="button" value="+"/></OverlayTrigger></td> : ""}
+                {/*bad implementation.... different styling for publication and models/data*/}
+                   {(currentUsername == username) ? (this.props.publication) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button-publication" onClick={this.open} type="button" value="+"/></OverlayTrigger></td> :
+                       <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.open} type="button" value="+"/></OverlayTrigger></td>  : ""}
+
+                    {(currentUsername == username && this.props.publication) ? <td className="padding-left-5 "><input className="item-add-button-publication" onClick={this.redirect} type="button" value="Import Publications"/></td> : ""}
                 </tr>
-            {/* <tr>
-                    {(currentUsername == username && this.props.publication) ? <td className="padding-left-5 padding-top-5"><input className="item-add-button" onClick={this.redirect} type="button" value="Import Publications"/></td> : ""}
-                </tr>*/}
             </table>
         </div>
        {/* <Button className="pull-right add-resource-btn" onClick={this.open}>Add Data</Button>*/}
