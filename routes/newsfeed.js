@@ -652,10 +652,26 @@ app.post('/comment',is_auth,function(req,res,next){
                 success: function (result) {
                     if (result) {
                         var comments=result.get("comments");
-                        comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
-                        result.set("comments",comments);
+                        if(comments != undefined) {
+                            comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
+                            result.set("comments",comments);
+                        }
+                        else
+                            result.set("comments",[{__type: "Pointer", className: "Comment", objectId: comment.id}]);
+                        
                         result.save();
-                        io.to(req.user.id).emit('commentReceived',{feedId:feedId,feedNumber:feedNumber});
+
+                        var finalComment= {
+                            id: comment.id,
+                            from :  {
+                                name: req.user.fullname,
+                                img : req.user.imgUrl,
+                                username: req.user.username
+                            },
+                            content: {msg:content}
+                        };
+
+                        io.to(req.user.id).emit('commentReceived',{feedId:feedId,feedNumber:feedNumber,comment:finalComment});
                         res.json({msg:"success"});
                     }
                 },
