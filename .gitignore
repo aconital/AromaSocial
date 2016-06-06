@@ -2,6 +2,7 @@ node_modules/
 bower_components/
 /.idea/
 .idea/workspace.xml
+npm-debug.log
 
 # Windows image file caches
 Thumbs.db

@@ -73,8 +73,8 @@ var NewsFeed = React.createClass({
                                               upload={item.upload}
                                               keywords={item.keywords} />
 
-                                <CommentBox  feedId ={item.feedId} comments= {item.comments}/>
-                                <CommentForm feedNumber={i} feedId ={item.feedId} />
+                                <CommentBox key={"box"+item.feedId} feedId ={item.feedId} comments= {item.comments}/>
+                                <CommentForm key={"form"+item.feedId} feedNumber={i} feedId ={item.feedId} />
 
                             </div>);
                       })}
@@ -249,15 +249,24 @@ var NewsFeedList = React.createClass({
 
 var CommentBox = React.createClass({
   getInitialState: function() {
-    return {comments: []};
+    return {limit:3};
   },
-  componentWillMount: function() {
-        this.setState({comments: this.props.comments});
+  showMore:function() {
+      totalLength= this.props.comments.length;
+      var currentLimit= this.state.limit;
+      currentLimit+=5;
+      var limit =Math.min(currentLimit, totalLength);
+      this.setState({ limit: limit});
   },
   render: function() {
-    return (
+
+      var cls=this.props.comments.slice(0,this.state.limit);
+
+          return (
         <div className="commentBox">
-          <CommentList data={this.state.comments} />
+            <CommentList data={cls} />
+
+            {this.props.comments.length>this.state.limit ? <div><a onClick={this.showMore} >show more</a></div>: null}
         </div>
     );
   }
@@ -272,8 +281,8 @@ var CommentList = React.createClass({
   render: function() {
     var commentNodes="";
 
-    if(this.state.comments.length >0) {
-       commentNodes = this.state.comments.map(function (comment) {
+    if(this.props.data.length >0) {
+       commentNodes = this.props.data.map(function (comment) {
         return (
             <Comment from={comment.from} key={comment.id}>
               {comment.content.msg}
@@ -289,9 +298,14 @@ var CommentList = React.createClass({
   }
 });
 var Comment = React.createClass({
-
+    getInitialState: function() {
+        return {from: {},children:{}};
+    },
+    componentWillMount: function() {
+        this.setState({from: this.props.from,children:this.props.children.toString()});
+    },
   rawMarkup: function() {
-    var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+    var rawMarkup = marked(this.state.children, {sanitize: true});
     return { __html: rawMarkup };
   },
   render: function() {
@@ -300,18 +314,18 @@ var Comment = React.createClass({
         <div className="comment">
           <div className="row">
             <div className="col-xs-1 comment-pic-col">
-              <a href={"/profile/" + this.props.from.username}><img className="comment-pic" src={this.props.from.img} alt=""/></a>
+              <a href={"/profile/" + this.state.from.username}><img className="comment-pic" src={this.state.from.img} alt=""/></a>
             </div>
             <div className="col-xs-5 comment-name">
-              <p className="commentAuthor">{this.props.from.name}</p>
+              <p className="commentAuthor">{this.state.from.name}</p>
             </div>
           </div>
           <div className="row">
             <div className="col-xs-12 comment-content">
               <span dangerouslySetInnerHTML={this.rawMarkup()} />
             </div>
-
           </div>
+
         </div>
     );
   }

@@ -177,27 +177,46 @@ pubAlreadyExists: function(pub) {
         success: function(object) {
             console.log(JSON.stringify(object,null,2));
           if (object) {
-            // response.error("A publication with this DOI already exists.");
-            console.log("\nthis IS a duplicate!")
             return true; // A publication with this DOI already exists
           } else {
-            console.log("\nNOT a duplicate!")
             return false; // this is a new publication
-            // response.success();
           }
         },
         error: function(error) {
-          // response.error("Could not check for duplicate publications.");
           return false;
         }
       });
     }
 },
 
+// converts publication type to class name
+pubTypeToClass: function(type) {
+    switch (type) {
+        case "journal":
+            return "Pub_Journal_Article";
+        case "conference":
+            return "Pub_Conference";
+        case "book":
+        case "chapter":
+            return "Pub_Book";
+        case "report":
+            return "Pub_Report";
+        case "thesis":
+            return "Pub_Thesis";
+        case "patent":
+            return "Pub_Patent";
+        case "unpublished":
+            return "Pub_Unpublished";
+        default:
+            console.log("Warning: pub type not identified", type);
+            return "Pub_Unpublished";
+    }
+},
+
 // used by routes/fetchworks.get to determine which are new and which are duplicates
-findDuplicatePubs: function(publications) {
-    newPubs = []
-    duplicates = []
+findDuplicatePubs: function(publications, currentUser) {
+    var self = this,
+        newPubs = [], duplicates = [];
 
     return Parse.Promise.as().then(function() {
         var promise = Parse.Promise.as(); // define a promise
@@ -209,22 +228,23 @@ findDuplicatePubs: function(publications) {
                 extendedObj = JSON.parse(pub['E']),
                 query = new Parse.Query(pubClass);
             query.equalTo("doi", extendedObj['DOI']);
-            return query.first().then(function(doi) { // the code will wait (run async) before looping again knowing that this query (all parse queries) returns a promise.
-                if (doi) {
-                    console.log("this IS a duplicate!\n");
-                    // TODO: need to edit later to add link to contributors. Add doi.objectId to pass to client to pass to server again
-                    //       OR... make the necessary changes in here.
-                    // TODO: also show on prof?
-                    duplicates.push(pub); // A publication with this DOI already exists
-                } else {
-                    console.log("NOT a duplicate!\n");
-                    newPubs.push(pub); // this is a new publication
+
+            return query.first().then(function(result) { // the code will wait (run async) before looping again knowing that this query (all parse queries) returns a promise.
+                if (result) { // A publication with this DOI already exists
+                    var relation = result.relation("other_users"); // we want to associate the existing publications with the new contributor
+                    relation.add(currentUser);
+
+                    return result.save(null, { useMasterKey: true }).then(function () {
+                        duplicates.push(pub);
+                    });
+                } else { // this is a new publication
+                    newPubs.push(pub);
                 }
 
               return Parse.Promise.as(); // the code will wait again for the above to complete because there is another promise returning here
 
             }, function (error) {
-              console.error("score lookup failed with error.code: " + error.code + " error.message: " + error.message);
+              console.error("findDuplicatePubs failed with error.code: " + error.code + " error.message: " + error.message);
             });
           });
         });
@@ -236,6 +256,5 @@ findDuplicatePubs: function(publications) {
         console.error("findDuplicatePubs failed with error.code: " + error.code + " error.message: " + error.message);
         return {new: [], duplicates: []};
     });
-
 }
 };
