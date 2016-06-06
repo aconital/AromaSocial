@@ -119,7 +119,7 @@ var Publication = React.createClass ({
     deleteEntry: settingsModalDeleteEntry.bind(this),
     render: function() {
         var self = this,
-            keys = (this.state.fields) ? this.state.fields : [],
+            keys = (this.state.fields) ? this.state.fields.filter( (key) => key !== 'other_users' ) : [], // filter out the other_users relation object
             fileExists = this.state.filename || false,
             creator = (this.state.user) ? '/profile/' + this.state.user.username : '',
             avatar = this.state.creatorImg,
@@ -247,7 +247,11 @@ var InfoField = React.createClass({
             });
             element = ( tagsElement );
         } else {
-            element = ( this.props.initVal );
+            if (this.props.name == 'url') {
+                element = ( <a href={this.props.initVal}>{this.props.initVal}</a> );
+            } else {
+                element = ( this.props.initVal );
+            }
         }
 
         return (

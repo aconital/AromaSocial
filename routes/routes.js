@@ -16,6 +16,7 @@ var configs = require('../config/configs');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 var Linkedin = require('node-linkedin')('770zoik526zuxk', 'IAbJ2h0qBh2St1IZ', configs.linkedin_callback);
 
+var helpers = require('../utils/helpers');
 var sendMail = require('../utils/helpers').sendMail;
 var is_auth = require('../utils/helpers').is_auth;
 var randomString= require('../utils/helpers').randomString;
@@ -794,7 +795,7 @@ app.get("/fetchworks", function(req, res, next) {
     var options = {
       url: url,
       headers: {
-        "Ocp-Apim-Subscription-Key": "4e12b17ee21441fca62a50d570acc065"
+        "Ocp-Apim-Subscription-Key": configs.msftCogServAPIKey
       }
     };
 
@@ -806,14 +807,17 @@ app.get("/fetchworks", function(req, res, next) {
         var publications = data.entities
               .filter( (entity) => ((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) );
 
-        // see if DOIs already exist in database.
-        findDuplicatePubs(publications).then(function(results) {
-          var partitioned = results;
-          console.log(partitioned);
+        var user = new Parse.Query(Parse.User);
+        user.get(req.user.id).then(function(result) { 
+          // see if DOIs already exist in database.
+          findDuplicatePubs(publications, result).then(function(results) {
+            var partitioned = results;
+            console.log(partitioned);
 
-          res.status(200).json({status:"OK", data: partitioned});
+            res.status(200).json({status:"OK", data: partitioned});
+          });
+          // TODO add fail case
         });
-        // TODO add fail case
       } else {
         res.status(response.statusCode).json({status: "Searching for works has failed." + error});
       }
@@ -839,7 +843,7 @@ app.post("/import", function(req, res, next) {
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
         pub.set('title', work.title);
-        pub.set('doi', work.doi);
+        pub.set('doi', work.doi.replace(/^(doi:)/i, '')); // entries starting with 'doi:' must be stripped for proper duplicate detection
         pub.set('publication_date', new Date(work.publication_date));
 
         // journal article fields
