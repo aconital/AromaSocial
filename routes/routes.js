@@ -843,7 +843,7 @@ app.post("/import", function(req, res, next) {
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
         pub.set('title', work.title);
-        pub.set('doi', work.doi);
+        pub.set('doi', work.doi.replace(/^(doi:)/i, '')); // entries starting with 'doi:' must be stripped for proper duplicate detection
         pub.set('publication_date', new Date(work.publication_date));
 
         // journal article fields

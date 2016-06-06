@@ -468,15 +468,15 @@ module.exports=function(app,Parse,io) {
             }).then(function() {
                 var pubConference = Parse.Object.extend("Pub_Conference");
 
-                var uploaded = new Parse.Query(pubConference); // get uploaded publications
-                uploaded.equalTo('other_users', user);
-                uploaded.descending("createdAt");
+                var uploadedC = new Parse.Query(pubConference); // get publications others have uploaded
+                uploadedC.equalTo('other_users', user);
+                uploadedC.descending("createdAt");
 
-                var other = new Parse.Query(pubConference); // get publications others have uploaded
-                other.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
-                other.descending("createdAt");
+                var otherC = new Parse.Query(pubConference); // get uploaded publications
+                otherC.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                otherC.descending("createdAt");
 
-                var query1 = new Parse.Query.or(uploaded, other);
+                var query1 = new Parse.Query.or(uploadedC, otherC);
                 query1.find().then(function (conferences) {
                     console.log("Successfully retrieved " + conferences.length + " conferences.");
                     // Do something with the returned Parse.Object values
@@ -495,9 +495,16 @@ module.exports=function(app,Parse,io) {
                     }
                 }).then(function () {
                     var pubJournal = Parse.Object.extend("Pub_Journal_Article");
-                    var query2 = new Parse.Query(pubJournal);
-                    query2.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
-                    query2.descending("createdAt");
+
+                    var uploadedJ = new Parse.Query(pubJournal); // get publications others have uploaded
+                    uploadedJ.equalTo('other_users', user);
+                    uploadedJ.descending("createdAt");
+
+                    var otherJ = new Parse.Query(pubJournal); // get uploaded publications
+                    otherJ.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                    otherJ.descending("createdAt");
+
+                    var query2 = new Parse.Query.or(uploadedJ, otherJ);
                     query2.find().then(function (journals) {
                         console.log("Successfully retrieved " + journals.length + " articles.");
                         // Do something with the returned Parse.Object values

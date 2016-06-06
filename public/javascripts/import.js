@@ -242,7 +242,7 @@ var WorksList = React.createClass({
 		var self = this;
 		var showNew, continueLabel;
 		var transFormedResults = [];
-		if (this.props.results > 0) {
+		if (this.props.results.length > 0) {
 			showNew = {};
 			continueLabel = 'Import highlighted publications and continue';
 		} else {
