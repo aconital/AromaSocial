@@ -16,8 +16,12 @@ var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 var is_auth = require('../utils/helpers').is_auth;
 
 module.exports=function(app,Parse,io) {
-    app.get('/allusers', function(req, res, next) {
+    app.post('/allusers', function(req, res, next) {
+        var str = req.body.substr;
+
         var q = new Parse.Query("User");
+        q.limit(1000);
+        q.contains("fullname", str);
         q.find({
             success: function(items) {
                 console.log("ALL USERS: ")
