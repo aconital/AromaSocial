@@ -8,20 +8,23 @@ $(function() {
   if ($('.auto').length != 0) {
     $('.auto').catcomplete({
             source: function(req, res) {
+              var str = req.term;
               var r = []; 
               $.when(
                 $.ajax({
                   url: '/allusers',
                   dataType: 'json',
+                  type: 'POST',
+                  data: {substr: str},
                   cache: false,
                   success: function(data) {
-                    console.log(data);
-                    var arr = $.grep(data, function(item){
-                      return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                    });
-                    $.map(arr, function(item){
+                    console.log("USER SUCCESS DATA: ", data);
+                    // var arr = $.grep(data, function(item){
+                    //   return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                    // });
+                    $.map(data, function(item){
                       var dlink = "/profile/" + item.username;
-                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink});
+                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture, link: dlink});
                     });
                   },
                   error: function(xhr) {
@@ -31,15 +34,17 @@ $(function() {
                 $.ajax({
                   url: '/allpublications',
                   dataType: 'json',
+                  type: 'POST',
+                  data: {substr: str},
                   cache: false,
                   success: function(data) {
-                    //console.log("DATA RECEIVED FOR PUBS: ")
-                    //console.log(data);
-                    var arr = $.grep(data, function(item){
-                      console.log(item.title);
-                      return item.title.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                    });
-                    $.map(arr, function(item){
+                    console.log("DATA RECEIVED FOR PUBS: ")
+                    console.log(data);
+                    // var arr = $.grep(data, function(item){
+                    //   console.log(item.title);
+                    //   return item.title.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                    // });
+                    $.map(data, function(item){
                       //console.log("PUB ITEM: ");
                       //console.log(item);
                       var type = item.type;
@@ -54,13 +59,16 @@ $(function() {
                 $.ajax({
                   url: '/allorganizations',
                   dataType: 'json',
+                  type: 'POST',
+                  data: {substr: str},
                   cache: false,
                   success: function(data) {
-                    //console.log(data);
-                    var arr = $.grep(data, function(item){
-                      return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                    });
-                    $.map(arr, function(item){
+                    console.log("DATA RECEIVED FOR ORGS: ")
+                    console.log(data);
+                    // var arr = $.grep(data, function(item){
+                    //   return item.name.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
+                    // });
+                    $.map(data, function(item){
                       var dlink = "/organization/" + item.name;
                       r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink});
                     });

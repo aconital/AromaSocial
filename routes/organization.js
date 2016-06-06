@@ -16,9 +16,13 @@ var is_auth = require('../utils/helpers').is_auth;
 
 module.exports=function(app,Parse,io) {
 
-    app.get('/allorganizations', function(req, res, next) {
+    app.post('/allorganizations', function(req, res, next) {
         var currentUser = req.user;
+        var str = req.body.substr;
+        console.log("string to match in org: ", str);
         var query = new Parse.Query('Organization');
+        query.limit(1000);
+        query.contains("title", str);
         query.find({
             success: function(items) {
                 var results = [];
