@@ -90,8 +90,8 @@ var CustomTags = React.createClass({
             if (this.state.idMap[tag] != null) {
                 // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
                 // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
-                // this.props.changeFunc(this.props.name, this.state.ids);
-                this.props.changeFunc(this.props.name, this.state.tags);
+                 this.props.changeFunc(this.props.name, this.state.ids);
+                // this.props.changeFunc(this.props.name, this.state.tags);
             }
         }
     },
@@ -1879,7 +1879,7 @@ var ResourceAddForm = React.createClass({
                     </div>
                     
                     
-                    <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
+                    {/*<ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />*/}
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
                     <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                     <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
@@ -1899,20 +1899,20 @@ var ResourceAddForm = React.createClass({
             </div>
 		);
 	},
-    handleAcTagChange: function(type, tags) {
-        // var changedState = {};
-        // changedState[type] = ids;
-        // this.setState(changedState);
-        var newState = [];
-        for (var i = 0; i < tags.length; i++) {
-            var t = tags[i];
-            console.log(t.id);
-            console.log(t.text);
-            newState.push(t.text);
-        }
+    handleAcTagChange: function(type, ids) {
         var changedState = {};
-        changedState[type] = newState;
+        changedState[type] = ids;
         this.setState(changedState);
+        // var newState = [];
+        // for (var i = 0; i < tags.length; i++) {
+        //     var t = tags[i];
+        //     console.log(t.id);
+        //     console.log(t.text);
+        //     newState.push(t.text);
+        // }
+        // var changedState = {};
+        // changedState[type] = newState;
+        // this.setState(changedState);
     },
 	handleChange: function(e) {
 	    var changedState = {};
