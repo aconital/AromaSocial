@@ -669,7 +669,7 @@ module.exports=function(app,Parse,io) {
             // set correct object and send to Parse
             var PubType = (reqBody.type == "Pub_Chapter" ? Parse.Object.extend("Pub_Book") : Parse.Object.extend(reqBody.type));
             var pub = new PubType();
-            var pubClass = reqBody.type; // save field before being overwritten
+            var pubClass = reqBody.type; // save class before being overwritten
 
             pub.set('contributors', JSON.parse(reqBody.collaborators));
             pub.set('abstract', reqBody.description);
@@ -677,7 +677,7 @@ module.exports=function(app,Parse,io) {
             pub.set('keywords', JSON.parse(reqBody.keywords));
             pub.set('url', reqBody.url);
             pub.set('title', reqBody.title);
-            pub.set('doi', reqBody.doi);
+            pub.set('doi', reqBody.doi.replace(/^(doi:)/i, ''));
             pub.set('publication_date', new Date(reqBody.creationDate));
             pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
 

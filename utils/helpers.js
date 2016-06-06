@@ -216,9 +216,7 @@ pubTypeToClass: function(type) {
 // used by routes/fetchworks.get to determine which are new and which are duplicates
 findDuplicatePubs: function(publications, currentUser) {
     var self = this,
-        newPubs = [], duplicates = [],
-        existingPubs = []; // if there are duplicates, we want to associate the existing publications with the new contributor.
-        // existingPubs = {journal: [], conference: []};
+        newPubs = [], duplicates = [];
 
     return Parse.Promise.as().then(function() {
         var promise = Parse.Promise.as(); // define a promise
@@ -232,22 +230,15 @@ findDuplicatePubs: function(publications, currentUser) {
             query.equalTo("doi", extendedObj['DOI']);
 
             return query.first().then(function(result) { // the code will wait (run async) before looping again knowing that this query (all parse queries) returns a promise.
-                if (result) {
-                    console.log("this IS a duplicate!\n");
-                    // TODO: need to edit later to add link to contributors. Add doi.objectId to pass to client to pass to server again
-                    //       OR... make the necessary changes in here.
-                    // TODO: also show on prof?
-                    var relation = result.relation("other_users");
+                if (result) { // A publication with this DOI already exists
+                    var relation = result.relation("other_users"); // we want to associate the existing publications with the new contributor
                     relation.add(currentUser);
 
                     return result.save(null, { useMasterKey: true }).then(function () {
-                        duplicates.push(pub); // A publication with this DOI already exists
-                        existingPubs.push({id: result.id, type: result.get('type')});
+                        duplicates.push(pub);
                     });
-                    // existingPubs[result.get('type')].push(result.id); // add the objectIds of the existing publications
-                } else {
-                    console.log("NOT a duplicate!\n");
-                    newPubs.push(pub); // this is a new publication
+                } else { // this is a new publication
+                    newPubs.push(pub);
                 }
 
               return Parse.Promise.as(); // the code will wait again for the above to complete because there is another promise returning here
@@ -260,21 +251,7 @@ findDuplicatePubs: function(publications, currentUser) {
         return promise; // this will not be triggered until the whole loop above runs and all promises above are resolved
 
     }).then(function() {
-        // console.log('get user');
-        // var user = new Parse.Query(Parse.User);
-        // return user.get(currentUser.id)
-        // .then(function (result) {
-        //     // might want to append/merge?
-        //     console.log(existingPubs);
-        //     result.set('other_pubs', existingPubs)
-        //     console.log('set user');
-        //     return result.save(null, { useMasterKey: true })
-        //     .then(function () {
-                console.log('updated user');
-                return {new: newPubs, duplicates: duplicates};
-        //     });
-        // });
-        
+        return {new: newPubs, duplicates: duplicates};
     }, function (error) {
         console.error("findDuplicatePubs failed with error.code: " + error.code + " error.message: " + error.message);
         return {new: [], duplicates: []};

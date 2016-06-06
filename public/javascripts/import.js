@@ -318,45 +318,6 @@ var DuplicatesList = React.createClass({
 	}
 });
 
-var Required = React.createClass({
-	render() {
-		var requiredField = {color: 'red', fontWeight: '800'};
-		return (
-			<span style={requiredField}>{this.props.content}</span>
-		);
-	},
-});
-
-var CheckItem = React.createClass({
-	getInitialState: function () {
-	return {
-	    checked: this.props.checked || false
-	 };
-	},
-	render() {
-		var item={};
-	return (
-	    <li><div className="item-box">
-			<div key={item.objectId}>
-			    <div className="item-box-left">
-			        <div className="item-box-image-outside">
-			            <a href={'/project/'+item.objectId}><img src={item.image_URL} className="item-box-image"/></a>
-			        </div>
-			    </div>
-			    <div className="item-box-right">
-			        <a href={'/project/'+item.objectId} className="body-link"><h4 className="margin-top-bottom-5">TITLE</h4></a>
-			        <table className="item-box-right-tags">
-			            <tr><td>Date: </td><td>DATE</td></tr>
-			        </table>
-			    </div>
-			</div>
-		</div></li>
-	);
-	},
-	handleClick: function(e) {
-	  this.setState({checked: e.target.checked});
-	}
-});
 
 $( document ).ready(function() {
 	ReactDOM.render(<ImportContent />, document.getElementById('content'));
