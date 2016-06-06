@@ -1174,7 +1174,7 @@ var Models = React.createClass({
             var typeList = [];
             for (var i in items) {
                 var item = items[i];
-                item.start_date = (new Date(item.start_date)).toUTCString().slice(0,-12);
+                item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
             return (
