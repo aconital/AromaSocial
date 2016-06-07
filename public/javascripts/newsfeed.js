@@ -303,7 +303,7 @@ var Comment = React.createClass({
     },
     componentWillMount: function() {
         this.setState({from: this.props.from,children:this.props.children.toString(),createdAt:moment(this.props.createdAt).fromNow()});
-        setInterval(this.refreshTime, 60000);
+        setInterval(this.refreshTime, 30000);
     },
     refreshTime: function () {
       this.setState({createdAt:moment(this.props.createdAt).fromNow()});
