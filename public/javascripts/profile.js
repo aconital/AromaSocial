@@ -34,7 +34,7 @@ var CustomTags = React.createClass({
                         // });
                         $.map(data, function(item){
                             resultArr.push(item.fullname)
-                            nameToIds[item.fullname] = item.objectId
+                            nameToIds[item.fullname] = item.username
                         })
                         console.log(resultArr)
                     },
@@ -1391,7 +1391,21 @@ var PublicationAddForm = React.createClass({
 		unpub_location: '' //unpublished article-specific fields
         };
     },
-
+    handleAcTagChange: function(type, ids) {
+        var changedState = {};
+        changedState[type] = ids;
+        this.setState(changedState);
+        // var newState = [];
+        // for (var i = 0; i < tags.length; i++) {
+        //     var t = tags[i];
+        //     console.log(t.id);
+        //     console.log(t.text);
+        //     newState.push(t.text);
+        // }
+        // var changedState = {};
+        // changedState[type] = newState;
+        // this.setState(changedState);
+    },
 	render: function() {
 		var self = this;
 		var titleLabel = "Title:";
@@ -1513,7 +1527,11 @@ var PublicationAddForm = React.createClass({
 				</Input>
 				{showBookChapterTitle(this.state.type)}
                 <Input type="text" placeholder={titleLabel} name="title" required onChange={this.handleChange} value={this.state.title} />
-                <ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />
+                
+                <div className="rcorners6">
+                        <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Contributors:" name="collaborators" value={this.state.collaborators} />
+                </div>
+                {/*<ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />*/}
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
                 <Input type="textarea" placeholder="Abstract:" name="description" onChange={this.handleChange} value={this.state.description} />
