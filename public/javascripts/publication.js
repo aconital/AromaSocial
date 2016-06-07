@@ -40,7 +40,7 @@ var Publication = React.createClass ({
     componentWillMount: function() {
         var self = this;
         var fetchPath = "/publication/"+objectId;
-        var staticFields = ['createdAt','updatedAt','user','abstract','filename','objectId','updatePath','title', 'type'];
+        var staticFields = ['createdAt','updatedAt','user','abstract','filename','objectId','updatePath','title','type','file'];
 
         $.ajax({
             url: fetchPath,
@@ -120,14 +120,13 @@ var Publication = React.createClass ({
     render: function() {
         var self = this,
             keys = (this.state.fields) ? this.state.fields.filter( (key) => key !== 'other_users' ) : [], // filter out the other_users relation object
-            fileExists = this.state.filename || false,
             creator = (this.state.user) ? '/profile/' + this.state.user.username : '',
             avatar = this.state.creatorImg,
             details, // holds dynamically-filled information table
-            fileExists;
+            downloadIcon;
 
-        if (this.state.filename || false) {
-            fileExists = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
+        if (filename || false) {
+            downloadIcon = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         if (currentUserId == creatorId) {
@@ -146,7 +145,7 @@ var Publication = React.createClass ({
                 <div className="item-panel">
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" style={{width:'88%'}} onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
                     <h2 className="corner">
-                        {fileExists}
+                        {downloadIcon}
                         {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
                     </h2>
                     <p className="p-noneditable"><strong>Abstract:</strong></p>
@@ -207,7 +206,6 @@ var InfoEditField = React.createClass({
     render: function() {
         var capitalized = this.props.name.capitalize();
         var element;
-
         // set the left-hand side of Information table. Parse obj properties stored as Array need to use ReactTagsInput.
         if (this.state.isTags) {
             var tagsElement = this.props.initVal;
@@ -230,9 +228,9 @@ var InfoEditField = React.createClass({
 
 var InfoField = React.createClass({
     render: function() {
-        var capitalized = this.props.name.capitalize();
-        var element;
-        
+        var capitalized = this.props.name.capitalize(),
+            element;
+
         if (typeof this.props.initVal !== 'string') {
             var self = this,
                 tagArray = this.props.initVal;
@@ -243,7 +241,7 @@ var InfoField = React.createClass({
                 // set links to profiles for contributors
                 if (self.props.name == 'contributors') {
                     var label = item.replace(/_/g, " ").replace(/(\.\d*)/g, "");
-                    var link = "/profile/" + item;
+                    var link = "/profile/" + item.replace(/_/g, " ");
                 }
                 return <a href={link} className="tagsinput-tag-link react-tagsinput-tag">{label}</a>;
             });
