@@ -239,11 +239,13 @@ var InfoField = React.createClass({
                 link = '#';
 
             var tagsElement = tagArray.map(function(item) { 
+                var label = item;
                 // set links to profiles for contributors
                 if (self.props.name == 'contributors') {
-                    link = "/profile/" + item.replace(/ /g, "_");
+                    var label = item.replace(/_/g, " ").replace(/(\.\d*)/g, "");
+                    var link = "/profile/" + item;
                 }
-                return <a href={link} className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;
+                return <a href={link} className="tagsinput-tag-link react-tagsinput-tag">{label}</a>;
             });
             element = ( tagsElement );
         } else {

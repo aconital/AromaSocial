@@ -34,7 +34,10 @@ var CustomTags = React.createClass({
                         // });
                         $.map(data, function(item){
                             resultArr.push(item.fullname)
-                            nameToIds[item.fullname] = item.username
+                            nameToIds[item.username] = {
+                                fullname: item.fullname,
+                                used: false
+                            };
                         })
                         console.log(resultArr)
                     },
@@ -51,14 +54,40 @@ var CustomTags = React.createClass({
             idMap: nameToIds
         }
     },
-    isInTags: function(tag) {
+    addTag: function(tag) {
+        // var tags = this.state.tags;
+        // for(var i = 0; i < tags.length; i++) {
+        //     if (tags[i].text == tag) {
+        //         return true;
+        //     }
+        // }
+        // return false;
+        var m = this.state.idMap;
         var tags = this.state.tags;
-        for(var i = 0; i < tags.length; i++) {
-            if (tags[i].text == tag) {
-                return true;
+        var ids = this.state.ids;
+        var result;
+        for (var i in m) {
+            if (m[i].fullname === tag && m[i].used === false) {
+                m[i].used = true;
+                tags.push({
+                    id: tags.length + 1,
+                    text: tag
+                });
+                this.setState({tags: tags});
+                ids.push(i);
+                this.setState({ids: ids});
+                return;
             }
         }
-        return false;
+        for (var i in m) {
+            if (m[i].fullname === tag && m[i].used === true) {
+                console.log("Duplicate. Don't add");
+                return;
+            }
+        }
+        ids.push(tag);
+        this.setState({ids: ids});
+        console.log("user not in system. Just adding tag");
     },
     handleDelete: function(i) {
         var tags = this.state.tags;
@@ -67,33 +96,35 @@ var CustomTags = React.createClass({
     },
     handleAddition: function(tag) {
         var tags = this.state.tags;
-        if (this.isInTags(tag)) {
-            console.log("Duplicate tag found. Not adding.");
-        } else {
-            tags.push({
-                id: tags.length + 1,
-                text: tag
-            });
-            this.setState({tags: tags});
+        // if (this.isInTags(tag)) {
+        //     console.log("Duplicate tag found. Not adding.");
+        // } else {
+            this.addTag(tag);
+            this.props.changeFunc(this.props.name, this.state.ids);
+            // tags.push({
+            //     id: tags.length + 1,
+            //     text: tag
+            // });
+            // this.setState({tags: tags});
 
-            var ids = this.state.ids;
-            if (this.state.idMap[tag] == undefined) {
-                ids.push(tag);
-            } else {
-                ids.push(this.state.idMap[tag]);
-            }
-            this.setState({ids: ids});
+            // var ids = this.state.ids;
+            // if (this.state.idMap[tag] == undefined) {
+            //     ids.push(tag);
+            // } else {
+            //     ids.push(this.state.idMap[tag]);
+            // }
+            // this.setState({ids: ids});
 
 
-            console.log("ID MAP ENTRY: ");
-            console.log(this.state.ids);
-            if (this.state.idMap[tag] != null) {
-                // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
-                // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
-                 this.props.changeFunc(this.props.name, this.state.ids);
-                // this.props.changeFunc(this.props.name, this.state.tags);
-            }
-        }
+            // console.log("ID MAP ENTRY: ");
+            // console.log(this.state.ids);
+            // if (this.state.idMap[tag] != null) {
+            //     // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
+            //     // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
+            //      this.props.changeFunc(this.props.name, this.state.ids);
+            //     // this.props.changeFunc(this.props.name, this.state.tags);
+            // }
+        //}
     },
     handleDrag: function(tag, currPos, newPos) {
         var tags = this.state.tags;
@@ -1077,6 +1108,8 @@ var Publications = React.createClass({
         var itemsList = $.map(this.state.data,function(items) {
             var type = items[0].type.capitalize();
             var typeList = [];
+            // var label = items.replace(/_/g, " ").replace(/(\.\d*)/g, "");
+            // var link = "/profile/" + items;
             for (var i in items) {
                 var item = items[i];
                 item.date = (new Date(item.date)).toUTCString().slice(8,-12);
@@ -1092,8 +1125,9 @@ var Publications = React.createClass({
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td>Authors: </td><td>{item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;})}</td></tr>
-                                {(item.type == "journal")? <tr><td>Publishcation Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date} </td></tr> }
+                                <tr><td>Authors: </td><td>{item.contributors.map(function(contributor) { 
+                                    return <a href={contributor} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;})}</td></tr>
+                                {(item.type == "journal")? <tr><td>Publication Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date}</td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
