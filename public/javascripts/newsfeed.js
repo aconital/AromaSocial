@@ -302,14 +302,18 @@ var Comment = React.createClass({
         return {from: {},children:{},createdAt:""};
     },
     componentWillMount: function() {
-        this.setState({from: this.props.from,children:this.props.children.toString(),createdAt:this.props.createdAt});
+        this.setState({from: this.props.from,children:this.props.children.toString(),createdAt:moment(this.props.createdAt).fromNow()});
+        setInterval(this.refreshTime, 60000);
+    },
+    refreshTime: function () {
+      this.setState({createdAt:moment(this.props.createdAt).fromNow()});
     },
   rawMarkup: function() {
     var rawMarkup = marked(this.state.children, {sanitize: true});
     return { __html: rawMarkup };
   },
   render: function() {
-   var createdAt= moment(this.state.createdAt).fromNow();
+
     return (
         <div className="comment">
           <div className="row">
@@ -318,7 +322,7 @@ var Comment = React.createClass({
             </div>
             <div className="col-xs-5 comment-name">
               <p className="commentAuthor">{this.state.from.name}</p>
-              <p className="commentDate">{createdAt}</p>
+              <p className="commentDate">{this.state.createdAt}</p>
             </div>
           </div>
           <div className="row">
