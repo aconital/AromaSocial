@@ -284,7 +284,7 @@ var CommentList = React.createClass({
     if(this.props.data.length >0) {
        commentNodes = this.props.data.map(function (comment) {
         return (
-            <Comment from={comment.from} key={comment.id}>
+            <Comment createdAt={comment.createdAt} from={comment.from} key={comment.id}>
               {comment.content.msg}
             </Comment>
         );
@@ -299,17 +299,17 @@ var CommentList = React.createClass({
 });
 var Comment = React.createClass({
     getInitialState: function() {
-        return {from: {},children:{}};
+        return {from: {},children:{},createdAt:""};
     },
     componentWillMount: function() {
-        this.setState({from: this.props.from,children:this.props.children.toString()});
+        this.setState({from: this.props.from,children:this.props.children.toString(),createdAt:this.props.createdAt});
     },
   rawMarkup: function() {
     var rawMarkup = marked(this.state.children, {sanitize: true});
     return { __html: rawMarkup };
   },
   render: function() {
-
+   var createdAt= moment(this.state.createdAt).fromNow();
     return (
         <div className="comment">
           <div className="row">
@@ -318,6 +318,7 @@ var Comment = React.createClass({
             </div>
             <div className="col-xs-5 comment-name">
               <p className="commentAuthor">{this.state.from.name}</p>
+              <p className="commentDate">{createdAt}</p>
             </div>
           </div>
           <div className="row">

@@ -62,7 +62,8 @@ module.exports=function(app,Parse,io) {
                                     img : commentsList[c].get("from").get("picture").url(),
                                     username: commentsList[c].get("from").get("username")
                                 },
-                                content: commentsList[c].get("content")
+                                content: commentsList[c].get("content"),
+                                createdAt: commentsList[c].get("createdAt")
                             };
                             comments.push(comment);
                             commentId++;
