@@ -13,6 +13,10 @@ var is_auth = require('../utils/helpers').is_auth;
 
 module.exports = function(app, Parse, io) {
 	app.get('/search', function(req, res, next) {
-		res.render('search', {});
+		var searchString = req.params.searchQuery;
+		console.log("String searched: ", searchString);
+		res.render('search', {
+			searchString: searchString
+		});
 	});
 }

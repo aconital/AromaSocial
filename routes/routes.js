@@ -121,7 +121,7 @@ module.exports=function(app,Parse,io) {
                       msg: "has invited you to join their organization"
                     };
                     console.log("emitting io request");
-                    io.to(userId).emit('org2peoplerequest',{data:{notification}});
+                      io.to(userId).emit('org2peoplerequest',{data: notification});
                     console.log("emitted request");
 
                     res.send({reply: "User already exists with this email - sending notification..."});
@@ -804,8 +804,9 @@ app.get("/fetchworks", function(req, res, next) {
         var data = JSON.parse(body);
 
         // currently only supports importing journals/conferences. Will need to add another API if support for others needed
-        var publications = data.entities
-              .filter( (entity) => ((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) );
+          var publications = data.entities.filter(function (entity) {
+              return (entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E');
+          });
 
         var user = new Parse.Query(Parse.User);
         user.get(req.user.id).then(function(result) { 
