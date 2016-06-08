@@ -32,6 +32,7 @@ var SearchFeed = React.createClass({
     //});
     var that = this;
     var str = searchString;
+    console.log("Search string: ", str);
     var r = [];
     $.when(
         $.ajax({
@@ -44,7 +45,13 @@ var SearchFeed = React.createClass({
             console.log("USER SUCCESS DATA: ", data);
             $.map(data, function(item){
               var dlink = "/profile/" + item.username;
-              r.push({type: "user", fullname: item.fullname, img: item.picture, link: dlink});
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/user.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "user", fullname: item.fullname, img: pic, link: dlink, about: item.about});
             });
           },
           error: function(xhr) {
@@ -65,7 +72,7 @@ var SearchFeed = React.createClass({
               console.log(item);
               var type = item.type;
               var dlink = "/publication/" + type + "/" + item.objectId;
-              r.push({type: "publication", title: item.title, imgs: "/images/paper.png", link: dlink});
+              r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink});
             });
           },
           error: function(xhr) {
@@ -143,58 +150,107 @@ var SearchFeed = React.createClass({
           break;
       }
     });
-
     return (
         <div>
           SEARCH STUFF
           <div>
-              {users.map(function (user) {
+              <b> Users </b>
+                <ul id="rig">
+                {users.map(function (user) {
+                  return (
+                      <span >
+                        <a href={user.link}>{user.fullname}</a>
+                        <li>
+                          <a className="rig-cell" href={user.link}>
+                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={user.img}/>
+                            <span className="rig-overlay"></span>
+                            <span className="rig-text">{user.about}</span>
+                          </a>
+                        </li>
+                      </span>
+                  )
+                })}
+                </ul>
+          </div>
+
+          <div>
+            <b> Models </b>
+            <ul id="rig">
+              {models.map(function (model) {
                 return (
-                    <div>
-                      <a href={user.link}>{user.fullname}</a>
-                    </div>
+                    <span >
+                        <a href={model.link}>{model.title}</a>
+                        <li>
+                          <a className="rig-cell" href={model.link}>
+                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={model.img}/>
+                            <span className="rig-overlay"></span>
+                            <span className="rig-text">{model.about}</span>
+                          </a>
+                        </li>
+                      </span>
                 )
               })}
+            </ul>
           </div>
 
           <div>
-            {models.map(function (model) {
-              return (
-                  <div>
-                    <a href={model.link}>{model.title}</a>
-                  </div>
-              )
-            })}
+            <b> Data </b>
+            <ul id="rig">
+              {data.map(function (datum) {
+                return (
+                    <span >
+                        <a href={datum.link}>{datum.title}</a>
+                        <li>
+                          <a className="rig-cell" href={datum.link}>
+                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={datum.img}/>
+                            <span className="rig-overlay"></span>
+                            <span className="rig-text">{datum.about}</span>
+                          </a>
+                        </li>
+                      </span>
+                )
+              })}
+            </ul>
           </div>
 
           <div>
-            {data.map(function (datum) {
-              return (
-                  <div>
-                    <a href={datum.link}>{datum.title}</a>
-                  </div>
-              )
-            })}
+            <b> Publications </b>
+            <ul id="rig">
+              {publications.map(function (pub) {
+                return (
+                    <span >
+                        <a href={pub.link}>{pub.title}</a>
+                        <li>
+                          <a className="rig-cell" href={pub.link}>
+                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={pub.img}/>
+                            <span className="rig-overlay"></span>
+                            <span className="rig-text">{pub.about}</span>
+                          </a>
+                        </li>
+                      </span>
+                )
+              })}
+            </ul>
           </div>
 
           <div>
-            {publications.map(function (pub) {
-              return (
-                  <div>
-                    <a href={pub.link}>{pub.title}</a>
-                  </div>
-              )
-            })}
-          </div>
-
-          <div>
-            {organizations.map(function (org) {
-              return (
-                  <div>
-                    <a href={org.link}>{org.title}</a>
-                  </div>
-              )
-            })}
+            <b> Organizations </b>
+            <ul id="rig">
+              {organizations.map(function (org) {
+                return (
+                    <span >
+                        <a href={org.link}>{org.title}</a>
+                        <li>
+                          <a className="rig-cell" href={org.link}>
+                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={org.img}/>
+                            <span className="rig-overlay"></span>
+                            <span className="rig-text">{org.about}</span>
+                          </a>
+                        </li>
+                      </span>
+                )
+              })}
+            </ul>
           </div>
 
         </div>
