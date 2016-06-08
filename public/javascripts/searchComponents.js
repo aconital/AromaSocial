@@ -142,63 +142,6 @@ var SearchFeed = React.createClass({
         case "default":
           break;
       }
-    //  for (var key in item) {
-    //      console.log("KEY", key);
-    //      var link = "/";
-    //      var obj = item[key];
-    //      console.log("OBJ IS ====>>>");
-    //      console.log(obj["about"]);
-    //      switch (obj["type"]) {
-    //        case "user":
-    //          usersFound = true;
-    //          link = "/profile/" + key;
-    //          users.push({
-    //            "obj": obj,
-    //            "link": link,
-    //            "key" : key
-    //          });
-    //          break;
-    //        case "model":
-    //          modelsFound = true;
-    //          link = "/model/"  + obj["id"];
-    //          models.push({
-    //            "obj": obj,
-    //            "link": link,
-    //            "key" : key
-    //          });
-    //          break;
-    //        case "data":
-    //          dataFound = true;
-    //          link = "/data/" + obj["id"];
-    //          data.push({
-    //            "obj": obj,
-    //            "link": link,
-    //            "key": key
-    //          });
-    //          break;
-    //        case "publication":
-    //          pubsFound = true;
-    //          link = "/publication/" + obj["id"];
-    //          publications.push({
-    //            "obj": obj,
-    //            "link": link,
-    //            "key": key
-    //          });
-    //          break;
-    //        case "organization":
-    //          orgsFound = true;
-    //          link = "/organization/" + obj["id"];
-    //          organizations.push({
-    //            "obj": obj,
-    //            "link": link,
-    //            "key": key
-    //          });
-    //          break;
-    //        case "default":
-    //          link = "/";
-    //        break;
-    //    };
-    //}
     });
 
     return (
