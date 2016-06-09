@@ -3,6 +3,7 @@ Parse.serverURL = 'https://52.33.206.191:1337/parse/';
 var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var Input = ReactBootstrap.Input;
+var ListGroup = ReactBootstrap.ListGroup, ListGroupItem = ReactBootstrap.ListGroupItem;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 
 // printf-like function
@@ -34,13 +35,14 @@ var Publication = React.createClass ({
         keywords: keywords,
         pub_class: pub_class,
         fields: '',
-        abstract: ''
+        abstract: '',
+        other_urls: []
         };
     },
     componentWillMount: function() {
         var self = this;
         var fetchPath = "/publication/"+objectId;
-        var staticFields = ['createdAt','updatedAt','user','abstract','filename','objectId','updatePath','title','type','file'];
+        var staticFields = ['createdAt','updatedAt','user','abstract','filename','objectId','updatePath','title','type','other_urls'];
 
         $.ajax({
             url: fetchPath,
@@ -59,6 +61,8 @@ var Publication = React.createClass ({
                             fields.push(property);
                         } else if (property === 'abstract') {
                             this.setState({description: result[property]});
+                        } else if (property === 'other_urls') {
+                            this.setState({other_urls: result[property]});
                         }
                     }
                 }
@@ -135,7 +139,7 @@ var Publication = React.createClass ({
             });
         } else {
             var details = keys.map(function(name) {
-                return <InfoField key={name} name={name} initVal={self.state[name]} />;
+                return <InfoField key={name} name={name} initVal={self.state[name]} urls={self.state.other_urls} />;
             });
         }
 
@@ -239,19 +243,23 @@ var InfoField = React.createClass({
                 tagArray = this.props.initVal;
                 link = '#';
 
-            var tagsElement = tagArray.map(function(item) { 
-                var label = item;
-                // set links to profiles for contributors
-                if (self.props.name == 'contributors') {
-                    var label = item.replace(/_/g, " ").replace(/(\.\d*)/g, "");
-                    var link = "/profile/" + item.replace(/ /g, "_"); // fallback for older publications
-                }
-                return <a href={link} className="tagsinput-tag-link react-tagsinput-tag">{label}</a>;
-            });
-            element = ( tagsElement );
+            if (this.props.name != 'other_urls') {
+                var tagsElement = tagArray.map(function(item, i) { 
+                    var label = item;
+                    // set links to profiles for contributors
+                    if (self.props.name == 'contributors') {
+                        var label = item.replace(/_/g, " ").replace(/(\.\d*)/g, "");
+                        var link = "/profile/" + item.replace(/ /g, "_"); // fallback for older publications
+                    }
+                    return <a href={link} className="tagsinput-tag-link react-tagsinput-tag" key={i}>{label}</a>;
+                });
+                element = ( tagsElement );
+            }
         } else {
+            var otherUrls = this.props.urls.length > 0 ? (<OtherUrlsModal urls={this.props.urls}/>) : ''; // show other links if available
+
             if (this.props.name == 'url') {
-                element = ( <a href={this.props.initVal} target="_blank">{this.props.initVal}</a> );
+                element = ( <span><a href={this.props.initVal} target="_blank">{this.props.initVal}</a>{otherUrls}</span> );
             } else {
                 element = ( this.props.initVal );
             }
@@ -267,6 +275,45 @@ var InfoField = React.createClass({
             </tr>
         );
     },
+});
+
+var OtherUrlsModal = React.createClass({
+    getInitialState() {
+        return { 
+            showModal: false,
+            isDisabled: false };
+    },
+    close() {
+        this.setState({ showModal: false });
+    },
+    open() {
+        this.setState({ showModal: true });
+    },
+
+    render() {
+        var urlList = this.props.urls.map( (url, i) => (<ListGroupItem key={i}><a href={url} target="_blank">{url}</a></ListGroupItem>) );
+
+        return (
+            <span>
+                <a className="space" onClick={this.open}>See more...</a>
+
+                <Modal show={this.state.showModal} onHide={this.close}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Other Links</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>You can also access this publication through any of the links below:</p>
+                        <ListGroup style={{wordWrap: 'break-word'}}>
+                            {urlList}
+                        </ListGroup>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this.close}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
+            </span>
+        );
+    }
 });
 
 $( document ).ready(function() {
