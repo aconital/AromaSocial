@@ -151,14 +151,12 @@ var SearchFeed = React.createClass({
         })
     ).then(function() {
           that.setState({data: r});
-        });
+    });
   },
   componentDidMount: function() {
-    console.log("Browser rendering working!");
     this.loadSearchFeed();
   },
   render: function() {
-    console.log("IN RENDERING")
     var users = [];
     var models = [];
     var data = [];
@@ -180,22 +178,18 @@ var SearchFeed = React.createClass({
           break;
         case "model":
           modelsFound = true;
-          link = "/model/" + item.objectId;
           models.push(item);
           break;
         case "data":
           dataFound = true;
-          link = "/data/" + item.objectId;
           data.push(item);
           break;
         case "publication":
           pubsFound = true;
-          link = "/publication/" + item.objectId;
           publications.push(item);
           break;
         case "organization":
           orgsFound = true;
-          link = "/organization/" + item.orgName;
           organizations.push(item);
           break;
         case "default":
@@ -205,7 +199,7 @@ var SearchFeed = React.createClass({
     return (
         <div>
           <div>
-              <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Users </h2></div>
+              <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Users </h3></div>
                 <ul id="rig">
                 {users.map(function (user) {
                   return (
@@ -228,7 +222,7 @@ var SearchFeed = React.createClass({
           </div>
 
           <div>
-            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Models </h2></div>
+            <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Models </h3></div>
             <ul id="rig">
               {models.map(function (model) {
                 return (
@@ -251,7 +245,7 @@ var SearchFeed = React.createClass({
           </div>
 
           <div>
-            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Data </h2></div>
+            <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Data </h3></div>
             <ul id="rig">
               {data.map(function (datum) {
                 return (
@@ -274,7 +268,7 @@ var SearchFeed = React.createClass({
           </div>
 
           <div>
-            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Publications </h2></div>
+            <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Publications </h3></div>
             <ul id="rig">
               {publications.map(function (pub) {
                 return (
@@ -297,7 +291,7 @@ var SearchFeed = React.createClass({
           </div>
 
           <div>
-            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Organizations </h2></div>
+            <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Organizations </h3></div>
             <ul id="rig">
               {organizations.map(function (org) {
                 return (
