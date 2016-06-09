@@ -1,26 +1,30 @@
-/*.flex-container {*/
-    /*display: -webkit-flex;*/
-    /*display: flex;*/
-    /*/!*width: 400px;*!/*/
-    /*/!*height: 250px;*!/*/
-    /*background-color: lightgrey;*/
-/*}*/
-
-/*.flex-item {*/
-    /*background-color: cornflowerblue;*/
-    /*/!*width: 100px;*!/*/
-    /*/!*height: 100px;*!/*/
-    /*/!*margin: 10px;*!/*/
-/*}*/
+.headerDiv {
+    max-width:900px;
+    /*border-radius: 2px;*/
+    background-color:rgba(0,0,0,0.7);
+    border-left: 5px solid black;
+    border-right: 5px solid black;
+    border-top: 5px solid black;
+    border-bottom: 5px solid black;
+    margin: 10px auto 0 auto;
+    text-align: center;
+}
 
 #rig {
     max-width:900px;
     margin:0 auto; /*center aligned*/
     padding:0;
-    font-size:0; /* Remember to change it back to normal font size if have captions */
+    font-size:15px; /* Remember to change it back to normal font size if have captions */
+    font-weight: bold;
+    text-align: center;
     list-style:none;
-    background-color:#000;
+    background-color:rgba(0,0,0,0.7);
+    border-radius: 2px;
+    border-left: 5px solid black;
+    border-right: 5px solid black;
+    border-bottom: 5px solid black;
 }
+
 #rig li {
     display: inline-block;
     *display:inline;/*for IE6 - IE7*/
@@ -38,6 +42,8 @@
     display:block;
     position: relative;
     overflow:hidden;
+    transform:scale(1);
+    transition:all 1s;
 }
 
 /* If have the image layer */
@@ -52,6 +58,12 @@
 
 #rig li:hover .rig-img {
     transform:scale(1.05);
+    z-index: 1000;
+}
+
+#rig li:hover .rig-cell {
+    transform:scale(1.20);
+    z-index: 1001;
 }
 
 /* If have the overlay layer */
@@ -72,6 +84,7 @@
 }
 #rig li:hover .rig-overlay {
     opacity:0.8;
+    z-index: 999;
 }
 
 /* If have captions */
@@ -84,20 +97,23 @@
     width:100%;
     text-align:center;
     text-transform:capitalize;
-    font-size:18px;
+    font-size:15px;
     font-weight:bold;
     font-family: 'Oswald', sans-serif;
     font-weight:normal!important;
-    top:40%;
+    top:10%;
     color:white;
     opacity:0;
     filter:alpha(opacity=0);/*For older IE*/
     transform:translateY(-20px);
     transition:all .3s;
+    text-overflow: ellipsis;
 }
 #rig li:hover .rig-text {
     transform:translateY(0px);
+    transform:scale(0.8);
     opacity:0.9;
+    z-index: 1002;
 }
 
 @media (max-width: 9000px) {

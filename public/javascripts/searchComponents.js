@@ -136,7 +136,13 @@ var SearchFeed = React.createClass({
             console.log(data);
             $.map(data, function(item){
               var dlink = "/organization/" + item.name;
-              r.push({type: "organization", title: item.displayName, img: item.picture, link: dlink, about: item.about});
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/user.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "organization", title: item.displayName, img: pic, link: dlink, about: item.about});
             });
           },
           error: function(xhr) {
@@ -198,17 +204,19 @@ var SearchFeed = React.createClass({
     });
     return (
         <div>
-          SEARCH STUFF
           <div>
-              <b> Users </b>
+              <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Users </h2></div>
                 <ul id="rig">
                 {users.map(function (user) {
                   return (
-                      <span >
-                        <a href={user.link}>{user.fullname}</a>
+                      <span>
+                        <a href={user.link}></a>
                         <li>
                           <a className="rig-cell" href={user.link}>
-                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={user.img}/>
+                            <figure>
+                              <img className="rig-img" style={{width:"100%", height:"100%"}} src={user.img}/>
+                              <figcaption style={{color:"#F8F8FF"}}>{user.fullname}</figcaption>
+                            </figure>
                             <span className="rig-overlay"></span>
                             <span className="rig-text">{user.about}</span>
                           </a>
@@ -220,15 +228,18 @@ var SearchFeed = React.createClass({
           </div>
 
           <div>
-            <b> Models </b>
+            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Models </h2></div>
             <ul id="rig">
               {models.map(function (model) {
                 return (
                     <span >
-                        <a href={model.link}>{model.title}</a>
+                        <a href={model.link}></a>
                         <li>
                           <a className="rig-cell" href={model.link}>
-                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={model.img}/>
+                            <figure>
+                              <img className="rig-img" style={{width:"100%", height:"100%"}} src={model.img}/>
+                              <figcaption style={{color:"#F8F8FF"}}>{model.title}</figcaption>
+                            </figure>
                             <span className="rig-overlay"></span>
                             <span className="rig-text">{model.about}</span>
                           </a>
@@ -240,7 +251,7 @@ var SearchFeed = React.createClass({
           </div>
 
           <div>
-            <b> Data </b>
+            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Data </h2></div>
             <ul id="rig">
               {data.map(function (datum) {
                 return (
@@ -248,7 +259,10 @@ var SearchFeed = React.createClass({
                         <a href={datum.link}>{datum.title}</a>
                         <li>
                           <a className="rig-cell" href={datum.link}>
-                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={datum.img}/>
+                            <figure>
+                              <img className="rig-img" style={{width:"100%", height:"100%"}} src={datum.img}/>
+                              <figcaption style={{color:"#F8F8FF"}}>{datum.title}</figcaption>
+                            </figure>
                             <span className="rig-overlay"></span>
                             <span className="rig-text">{datum.about}</span>
                           </a>
@@ -260,37 +274,43 @@ var SearchFeed = React.createClass({
           </div>
 
           <div>
-            <b> Publications </b>
+            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Publications </h2></div>
             <ul id="rig">
               {publications.map(function (pub) {
                 return (
-                    <span >
-                        <a href={pub.link}>{pub.title}</a>
+                    <span>
+                        <a href={pub.link}></a>
                         <li>
                           <a className="rig-cell" href={pub.link}>
-                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={pub.img}/>
+                            <figure>
+                              <img className="rig-img" style={{width:"100%", height:"100%"}} src={pub.img}/>
+                              <figcaption style={{color:"#F8F8FF"}}>{pub.title}</figcaption>
+                            </figure>
                             <span className="rig-overlay"></span>
-                            <span className="rig-text">{pub.about}</span>
+                            <span className="rig-text">Go to Publication</span>
                           </a>
                         </li>
-                      </span>
+                    </span>
                 )
               })}
             </ul>
           </div>
 
           <div>
-            <b> Organizations </b>
+            <div className="headerDiv"><h2 style={{color:"#F8F8FF"}}> Organizations </h2></div>
             <ul id="rig">
               {organizations.map(function (org) {
                 return (
                     <span >
-                        <a href={org.link}>{org.title}</a>
+                        <a href={org.link}></a>
                         <li>
                           <a className="rig-cell" href={org.link}>
-                            <img className="rig-img" style={{width:"200px", height:"200px"}} src={org.img}/>
+                            <figure>
+                              <img className="rig-img" style={{width:"100%", height:"100%"}} src={org.img}/>
+                              <figcaption style={{color:"#F8F8FF"}}>{org.title}</figcaption>
+                            </figure>
                             <span className="rig-overlay"></span>
-                            <span className="rig-text">{org.about}</span>
+                            <span className="rig-text">Go to Organization</span>
                           </a>
                         </li>
                       </span>

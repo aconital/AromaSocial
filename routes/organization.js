@@ -22,7 +22,7 @@ module.exports=function(app,Parse,io) {
         console.log("string to match in org: ", str);
         var query = new Parse.Query('Organization');
         query.limit(1000);
-        query.contains("title", str);
+        query.contains("displayName", str);
         query.find({
             success: function(items) {
                 var results = [];
