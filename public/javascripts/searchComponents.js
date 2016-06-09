@@ -8,10 +8,10 @@ var SearchFeed = React.createClass({
       orgData: [],
       dataData: [],
       showUsers: true,
-      showModels: true,
-      showData: true,
-      showPublications: true,
-      showOrganizations: true
+      showModels: false,
+      showData: false,
+      showPublications: false,
+      showOrganizations: false
     };
   },
   loadUserFeed: function() {
@@ -524,11 +524,11 @@ var SearchFeed = React.createClass({
               </li>
               </ul>
             </div>
-            {userDiv}
-            {modelDiv}
-            {dataDiv}
-            {pubDiv}
-            {orgDiv}
+            {(this.state.showUsers) ? userDiv:null}
+            {(this.state.showModels) ? modelDiv:null}
+            {(this.state.showData) ? dataDiv:null}
+            {(this.state.showPublications) ? pubDiv:null}
+            {(this.state.showOrganizations) ? orgDiv:null}
         </div>
     )
   }
