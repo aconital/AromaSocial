@@ -835,14 +835,15 @@ app.post("/import", function(req, res, next) {
       var work = req.body[i];
 
       if (work.hasOwnProperty('journal')) {
-        var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO refactor into helper functions; future support for others
+        var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO refactor into helper function(?)
         var pub = new PubType();
 
         pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-        pub.set('contributors', namesToUsernames(work.contributors, req.user));
+        pub.set('contributors', namesToUsernames(work.contributors, req.user)); // transform names to usernames
         pub.set('abstract', work.abstract);
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
+        pub.set('other_urls', work.other_urls);
         pub.set('title', work.title);
         pub.set('doi', work.doi.replace(/^(doi:)/i, '')); // entries starting with 'doi:' must be stripped for proper duplicate detection
         pub.set('publication_date', new Date(work.publication_date));
@@ -859,12 +860,13 @@ app.post("/import", function(req, res, next) {
         var pub = new PubType();
 
         pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-        pub.set('contributors', namesToUsernames(work.contributors, req.user)); // transform names to usernames
+        pub.set('contributors', namesToUsernames(work.contributors, req.user));
         pub.set('abstract', work.abstract);
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
+        pub.set('other_urls', work.other_urls);
         pub.set('title', work.title);
-        pub.set('doi', work.doi);
+        pub.set('doi', work.doi.replace(/^(doi:)/i, ''));
         pub.set('publication_date', new Date(work.publication_date));
 
         // conference fields

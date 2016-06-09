@@ -18,7 +18,7 @@ var ImportContent = React.createClass({
 		e.preventDefault();
 		var self = this;
 
-		var nameQuery = //this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
+		var nameQuery = this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
 
@@ -214,11 +214,12 @@ var WorksList = React.createClass({
 			publication['volume'] = extended.hasOwnProperty('V') ? extended.V.toString() : '';
 			publication['issue'] = extended.hasOwnProperty('I') ? extended.I.toString() : '';
 			publication['page'] = (extended.hasOwnProperty('FP') && extended.hasOwnProperty('LP')) ? extended.FP+'-'+extended.LP : '';
-			// publication['other_urls'] = 'TODO';
+			publication['other_urls'] = extended.hasOwnProperty('S') ? extended.S.slice(1).map( (src) => src.U ) : [];
 			if (extended.hasOwnProperty('VFN')) { // if VFN exists, update current name of publisher
 				publication[publication.type] = extended.VFN;
 			}
 		}
+		console.log(publication);
 		return publication;
 	},
 
