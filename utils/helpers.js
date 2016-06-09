@@ -260,14 +260,15 @@ findDuplicatePubs: function(publications, currentUser) {
 
 // contributor names should be formatted as usernames
 namesToUsernames(names, user) {
-    for (name in names) {
+    var usernames = _.map(names, function(name) {
+        console.log(name);
         if (name == user.fullname) {
-            name = user.username;
+            return user.username;
         } else {
-            name = name.replace(/ /g, "_");
+            return name.replace(/ /g, "_");
         }
-    }
-    return names;
+    });
+    return usernames;
 }
 
 };

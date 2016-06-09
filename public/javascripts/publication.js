@@ -209,6 +209,9 @@ var InfoEditField = React.createClass({
         // set the left-hand side of Information table. Parse obj properties stored as Array need to use ReactTagsInput.
         if (this.state.isTags) {
             var tagsElement = this.props.initVal;
+            // if (this.props.name = 'contributors') {
+            //     tagsElement = this.props.initVal.map( (name) => name.replace(/_/g, " ").replace(/(\.\d*)/g, "") );
+            // }
 
             element = ( <ReactTagsInput className="l-editable-input" type="text" id="{this.props.name}" name="{this.props.name}" ref="tags" placeholder="" onChange={this.handleChange} onBlur={this.submitChange} value={tagsElement} /> );
         } else {

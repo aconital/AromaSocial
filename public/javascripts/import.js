@@ -18,7 +18,7 @@ var ImportContent = React.createClass({
 		e.preventDefault();
 		var self = this;
 
-		var nameQuery = this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
+		var nameQuery = //this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
 
@@ -155,7 +155,6 @@ var WorksList = React.createClass({
 
 	// send request for highlighted works to be imported
 	importWorks() {
-		console.log(this.state.resultsToSend.length, 'now whjat');
 		if (this.state.resultsToSend.length > 0) {
 			var self = this;
 			var works = [];

@@ -26,6 +26,7 @@ var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
 var formatParams=require('../utils/helpers').formatParams;
 var pubAlreadyExists=require('../utils/helpers').pubAlreadyExists;
 var findDuplicatePubs=require('../utils/helpers').findDuplicatePubs;
+var namesToUsernames=require('../utils/helpers').namesToUsernames;
 
 module.exports=function(app,Parse,io) {
 
@@ -778,7 +779,6 @@ app.get('/auth/linkedin/callback',function(req,res){
  *
  ********************************************/
 app.get("/import",is_auth, function (req,res,next) {
-  console.log(req.user);
   res.render("import");
 });
 
@@ -839,7 +839,7 @@ app.post("/import", function(req, res, next) {
         var pub = new PubType();
 
         pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-        pub.set('contributors', work.contributors);
+        pub.set('contributors', namesToUsernames(work.contributors, req.user));
         pub.set('abstract', work.abstract);
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
@@ -859,7 +859,7 @@ app.post("/import", function(req, res, next) {
         var pub = new PubType();
 
         pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-        pub.set('contributors', helpers.namesToUsernames(work.contributors, req.user)); // transform names to usernames
+        pub.set('contributors', namesToUsernames(work.contributors, req.user)); // transform names to usernames
         pub.set('abstract', work.abstract);
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
