@@ -24,12 +24,16 @@ module.exports=function(app,Parse,io) {
                 if(result!=null){
                     for (var i = 0; i < result.length; i++) {
                         var object = result[i];
-                        var admin = {
-                            madeBy: object.get("madeBy"),
+                        var disc = {
+                            madeBy: {
+                                username: object.get("madeBy").get("username"),
+                                fullname: object.get("madeBy").get("fullname"),
+                                imgUrl :object.get("madeBy").get("picture").url()
+                            },
                             topic: object.get("topic"),
                             content: object.get("content")
                         };
-                        discussions.push(admin);
+                        discussions.push(disc);
                     }
                 }
                 res.json({discussions:discussions});
@@ -41,14 +45,44 @@ module.exports=function(app,Parse,io) {
         });
     });
     app.get('/organization/:objectId/discussions/:discId',function(req,res,next){
+        var Discussion = Parse.Object.extend("Discussion");
+        var query = new Parse.Query(Discussion);
+        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        query.equalTo("objectId",req.params.discId);
+        query.include("madeBy");
+        query.include("posts");
+        query.descending("createdAt");
+        query.first({
+            success: function (result) {
 
+                if(result!=null){
+
+                    var discssion={
+                        madeBy: {
+                            username: result.get("madeBy").get("username"),
+                            fullname: result.get("madeBy").get("fullname"),
+                            imgUrl :result.get("madeBy").get("picture").url()
+                        },
+                        topic: result.get("topic"),
+                        content: result.get("content"),
+                        posts: result.get("posts")
+                    };
+
+                     res.json(discssion);
+
+                }
+
+            },
+            error: function (error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
     });
 
     app.post('/organization/:objectId/discussions',is_auth,function(req,res,next){
      var topic = req.body.topic;
-        console.log(topic);
      var content = req.body.content;
-        console.log(content);
         if(topic == undefined || topic == "")
              res.json({error : "topic cannot be empty"});
         else
