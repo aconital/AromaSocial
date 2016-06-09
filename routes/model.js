@@ -21,6 +21,29 @@ module.exports=function(app,Parse,io) {
      * MODEL
      *
      ********************************************/
+    app.post('/allmodels', function(req, res, next) {
+        var str = req.body.substr;
+
+        var q = new Parse.Query("Model");
+        q.limit(1000);
+        q.contains("title", str);
+        q.find({
+            success: function(items) {
+                console.log("ALL MODELS: ");
+                console.log(items);
+                var results = [];
+                for (var i = 0; i < items.length; i++) {
+                    var obj = items[i];
+                    results.push(obj);
+                }
+                res.send(results);
+            },
+            error: function(error) {
+                console.log("Error while getting all models");
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+    });
     app.get('/model', is_auth, function (req, res, next) {
         res.render('model', {title: 'Model', path: req.path});
     });

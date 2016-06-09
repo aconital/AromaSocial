@@ -59,6 +59,52 @@ var SearchFeed = React.createClass({
           }
         }),
         $.ajax({
+          url: '/allmodels',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("MODEL SUCCESS DATA: ", data);
+            $.map(data, function(item){
+              var dlink = "/model/" + item.objectId;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/model.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "model", fullname: item.fullname, img: pic, link: dlink, about: item.abstract});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
+          url: '/alldata',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("DATA SUCCESS DATA: ", data);
+            $.map(data, function(item){
+              var dlink = "/data/" + item.objectId;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/data.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "data", fullname: item.fullname, img: pic, link: dlink, about: item.description});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
           url: '/allpublications',
           dataType: 'json',
           type: 'POST',
@@ -72,7 +118,7 @@ var SearchFeed = React.createClass({
               console.log(item);
               var type = item.type;
               var dlink = "/publication/" + type + "/" + item.objectId;
-              r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink});
+              r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink, about: item.abstract});
             });
           },
           error: function(xhr) {
@@ -90,7 +136,7 @@ var SearchFeed = React.createClass({
             console.log(data);
             $.map(data, function(item){
               var dlink = "/organization/" + item.name;
-              r.push({type: "organization", title: item.displayName, img: item.picture, link: dlink});
+              r.push({type: "organization", title: item.displayName, img: item.picture, link: dlink, about: item.about});
             });
           },
           error: function(xhr) {
@@ -187,7 +233,7 @@ var SearchFeed = React.createClass({
                             <span className="rig-text">{model.about}</span>
                           </a>
                         </li>
-                      </span>
+                    </span>
                 )
               })}
             </ul>
