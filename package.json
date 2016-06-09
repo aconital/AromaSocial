@@ -33,6 +33,7 @@
     "react-bootstrap": "^0.29.3",
     "react-categorized-tag-input": "^2.0.2",
     "react-dom": "^15.0.2",
+    "react-expandable-nav": "^0.1.19",
     "react-loading": "0.0.9",
     "react-tagsinput": "^3.6.0",
     "request": "^2.72.0",
