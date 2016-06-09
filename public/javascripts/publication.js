@@ -241,14 +241,14 @@ var InfoField = React.createClass({
                 // set links to profiles for contributors
                 if (self.props.name == 'contributors') {
                     var label = item.replace(/_/g, " ").replace(/(\.\d*)/g, "");
-                    var link = "/profile/" + item.replace(/_/g, " ");
+                    var link = "/profile/" + item.replace(/ /g, "_"); // fallback for older publications
                 }
                 return <a href={link} className="tagsinput-tag-link react-tagsinput-tag">{label}</a>;
             });
             element = ( tagsElement );
         } else {
             if (this.props.name == 'url') {
-                element = ( <a href={this.props.initVal}>{this.props.initVal}</a> );
+                element = ( <a href={this.props.initVal} target="_blank">{this.props.initVal}</a> );
             } else {
                 element = ( this.props.initVal );
             }

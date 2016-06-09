@@ -215,6 +215,7 @@ var WorksList = React.createClass({
 			publication['volume'] = extended.hasOwnProperty('V') ? extended.V.toString() : '';
 			publication['issue'] = extended.hasOwnProperty('I') ? extended.I.toString() : '';
 			publication['page'] = (extended.hasOwnProperty('FP') && extended.hasOwnProperty('LP')) ? extended.FP+'-'+extended.LP : '';
+			// publication['other_urls'] = 'TODO';
 			if (extended.hasOwnProperty('VFN')) { // if VFN exists, update current name of publisher
 				publication[publication.type] = extended.VFN;
 			}
