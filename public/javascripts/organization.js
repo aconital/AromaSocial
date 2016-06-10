@@ -341,29 +341,19 @@ var Home = React.createClass({
         });
     },
     render:function(){
-        var discussions= this.state.discussions;
+        var discussions= this.state.discussions.map(function (disc) {
+            return (
+                <Discussion topic ={disc.topic} createdAt={disc.created} madeBy={disc.madeBy} key={disc.id}>
+                    {disc.content.msg}
+                </Discussion>
+            );
+        });
+
         return (
             <div className="row">
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                   <div className="items-list">
-                      {discussions.map(disc =>
-                          <div key={disc.id} className="item-box" id="item-list">
-                              <div className="item-box-left">
-                                  <div className="item-box-image-outside">
-                                      <a href={disc.madeBy.username}><img src={disc.madeBy.imgUrl} className="item-box-image" /></a>
-                                  </div>
-                              </div>
-                              <div className="item-box-right">
-                                  <a href={disc.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{disc.madeBy.fullname}</h4></a>
-                                  <p>{disc.madeBy.about}</p>
-                                  <p className="commentDate">{disc.created}</p>
-                              </div>
-                              <div className="item-box-right">
-                                  <p><a>{disc.topic}</a></p>
-                                    <p>{disc.content.msg}</p>
-                              </div>
-                          </div>
-                      )}
+                      {discussions}
                   </div>
                 </div>
                 <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
@@ -401,7 +391,44 @@ var Home = React.createClass({
         );
     }
 });
+var Discussion = React.createClass ({
+    getInitialState: function() {
+        return {createdAt:""};
+    },
+    componentWillMount: function() {
+        this.setState({createdAt:moment(this.props.createdAt).fromNow()});
+        setInterval(this.refreshTime, 30000);
+    },
+    refreshTime: function () {
+        this.setState({createdAt:moment(this.props.createdAt).fromNow()});
+    },
+    rawMarkup: function() {
+        var rawMarkup = marked(this.props.children, {sanitize: true});
+        return { __html: rawMarkup };
+    },
+    render:function(){
+        return (
+            <div  className="item-box" id="item-list">
+                <div className="item-box-left">
+                    <div className="item-box-image-outside">
+                        <a href={this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="item-box-image" /></a>
+                    </div>
+                </div>
+                <div className="item-box-right">
+                    <a href={this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
+                    <p>{this.props.madeBy.about}</p>
+                    <p className="commentDate">{this.state.createdAt}</p>
+                </div>
+                <div className="item-box-right">
+                    <p><a>{this.props.topic}</a></p>
+                    <p dangerouslySetInnerHTML={this.rawMarkup()} />
+                </div>
+            </div>
+        );
+    }
 
+
+});
 var About = React.createClass({
     getInitialState: function(){
         return {about: about,
