@@ -249,16 +249,15 @@ var InfoField = React.createClass({
                     // set links to profiles for contributors
                     if (self.props.name == 'contributors') {
                         var label = item.replace(/_/g, " ").replace(/(\.\d*)/g, "");
-                        var link = "/profile/" + item.replace(/ /g, "_"); // fallback for older publications
+                        var link = "/profile/" + item.replace(/ /g, "_"); // fallback for publications w/o username-formatted contributors
                     }
                     return <a href={link} className="tagsinput-tag-link react-tagsinput-tag" key={i}>{label}</a>;
                 });
                 element = ( tagsElement );
             }
         } else {
-            var otherUrls = this.props.urls.length > 0 ? (<OtherUrlsModal urls={this.props.urls}/>) : ''; // show other links if available
-
             if (this.props.name == 'url') {
+                var otherUrls = this.props.urls.length > 0 ? (<OtherUrlsModal urls={this.props.urls}/>) : ''; // show other links if available
                 element = ( <span><a href={this.props.initVal} target="_blank">{this.props.initVal}</a>{otherUrls}</span> );
             } else {
                 element = ( this.props.initVal );
