@@ -37,7 +37,6 @@ var Organization = React.createClass ({
     },
     componentWillMount: function() {
         var connectURL= "/organization/"+objectId+"/join-status";
-        var orgURL= "/organization/"+objectId;
 
         $.ajax({
             url: connectURL,
@@ -237,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
@@ -270,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
@@ -289,15 +288,16 @@ var OrganizationMenu = React.createClass ({
     render: function() {
         var self = this;
 
-        var tabMap = {0: <About objectId={objectId} />,
-            1: <People isAdmin={this.props.isAdmin} />,
-            2: <Connections isAdmin={this.props.isAdmin}  />,
-            3: <Equipments objectId={objectId}/>,
-            4: <Projects objectId={objectId}/>,
-            // 4: <Knowledge/>,
-            5: <Publications objectId={objectId}/>,
-            6: <Data objectId={objectId}/>,
-            7: <Models objectId={objectId}/>
+        var tabMap = {
+            0: <Home objectId={objectId} />,
+            1: <About objectId={objectId} />,
+            2: <People isAdmin={this.props.isAdmin} />,
+            3: <Connections isAdmin={this.props.isAdmin}  />,
+            4: <Equipments objectId={objectId}/>,
+            5: <Projects objectId={objectId}/>,
+            6: <Publications objectId={objectId}/>,
+            7: <Data objectId={objectId}/>,
+            8: <Models objectId={objectId}/>
 
         };
         return (
@@ -318,6 +318,50 @@ var OrganizationMenu = React.createClass ({
                 <div id="content" className="content">
                     {tabMap.hasOwnProperty(self.state.focused) ? tabMap[self.state.focused] : ""}
                 </div>
+            </div>
+        );
+    }
+});
+
+var Home = React.createClass({
+
+    render:function(){
+        return (
+            <div className="row">
+                <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+
+                </div>
+                <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                    <div className = "createorg_panel">
+                        <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
+                    </div>
+                    <div className = "panel search-panel your-groups">
+                        <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
+                            <div className="list-group">
+                                <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
+                                <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
+                            </div>
+                    </div>
+
+                    <div className="row">
+                        <div>
+                        <h4><span className="nfButton">Members <a href="#"><small>(124)</small></a></span></h4>
+                        </div>
+                        <div className="member-section">
+                         <ul className="thumbnail-list">
+                             <li><img src="http://159.203.60.67:1336/parse/files/development/f288f2f08b4f197c3d077fce068690d9_user_picture.jpg" /></li>
+                             <li><img src="http://159.203.60.67:1336/parse/files/development/96c7110632da4e71812e74f8d2206bd7_user_picture.jpg" /></li>
+                             <li><img src="http://159.203.60.67:1336/parse/files/development/8e73c4c765a8dc93ae945883e21ef82e_user_picture.jpg" /></li>
+                             <li><img src="http://159.203.60.67:1336/parse/files/development/51bc3e7b22434d0036dc3f8821e0f0ce_user.png" /></li>
+                         </ul>
+                        </div>
+                        <div className = "createorg_panel">
+                            <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         );
     }

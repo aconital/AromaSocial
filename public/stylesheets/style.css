@@ -14,7 +14,7 @@
     --white-color: #fff;
     --link-color: #0066cc;
     --text-color: red;
-    --blue-color: #1e88e5;
+    --blue-color: #008cc9;
 }
 
 html {
@@ -5675,9 +5675,9 @@ a.newsfeed-link:hover {
   background-color: var(--foreground-color);
   border-color: none !important;
   padding: 5px 15px;
-  margin-top: 25px;
+  margin-top: 0px;
   margin-right: 0.04em;
-  border-radius: 3px;}
+  border-radius: 0px;}
 
 .white {
   color: white;
@@ -6736,4 +6736,35 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
 
 .about-middiv{
   background-color: #F2F2F2;
+}
+
+.thumbnail-list{
+  /* remove default list styles */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* remove spaces between li tags*/
+  font-size: 0;
+}
+.thumbnail-list li {
+  display: inline-block;
+  vertical-align: top;
+  width: 25%;
+  padding: 2%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.thumbnail-list img {
+  width: 100px;
+  height: 100px;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  border-radius: 50px;
+
+  display: block;
+  background-position: center center;
+  background-repeat: no-repeat;
+
 }
