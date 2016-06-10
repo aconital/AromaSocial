@@ -212,7 +212,7 @@ var InfoEditField = React.createClass({
     },
     render: function() {
         var capitalized = this.props.name.capitalize(), //TODO remove length condition when ready
-            editUrlBtn = (this.props.name == 'url' && this.props.urls.length > 9000) ? ( <EditUrlsModal urls={this.props.urls}/> ) : '',
+            editUrlBtn = (this.props.name == 'url' && this.props.urls.length > 9000) ? ( <EditUrlsModal urls={this.props.urls} submitChange={this.props.submitChange} /> ) : '',
             element;
 
         // set the left-hand side of Information table. Parse obj properties stored as Array need to use ReactTagsInput.
@@ -324,26 +324,50 @@ var EditUrlsModal = React.createClass({
     getInitialState() {
         return { 
             showModal: false,
-            isDisabled: false };
+            isDisabled: false,
+            updatedUrlList: this.props.urls.slice(0) };
     },
     close() {
+        // TODO: clear data?
         this.setState({ showModal: false });
     },
     open() {
         this.setState({ showModal: true });
     },
-    addUrl() {
-        alert('TODO');
+    addUrl(urls) {
+        urls.push('');
+        this.setState({updatedUrlList: urls});
     },
-    handleChange() {
-        alert('TODO');
+    handleChange(i, urls, e) {
+        urls[i] = e.target.value;
+        this.setState({updatedUrlList: urls});
     },
     submitChange() {
-        alert('TODO');
+        alert('TODO, submitChange');
+        var listToSend = [], 
+            i = 0, lenOrig = this.props.urls.length,
+            j = 0, lenUpdate = this.state.updatedUrlList.length;
+        // compare updated list with original. discard empty entries
+        while (i < lenOrig && j < lenUpdate) {
+            if (this.props.urls[i] === this.state.updatedUrlList[j]) {
+                listToSend.push(this.props.urls[i]);
+            } else if (this.state.updatedUrlList[j].length > 4) { // arbitrary number to catch impossible entries. TODO: actual validation?
+                listToSend.push(this.state.updatedUrlList[j]);
+            }
+            i++;
+            j++;
+        }
+        while (j < lenUpdate) { // process new entries
+            if (this.state.updatedUrlList[j].length > 4) {
+                listToSend.push(this.state.updatedUrlList[j]);
+            }
+            j++;
+        }
     },
 
     render() {
-        var urlList = this.props.urls.map( (url, i) => (<input className="p-editable" type="text" key={i} name={this.props.name} onChange={this.handleChange} value={url} />) );
+        var urls = this.state.updatedUrlList;
+        var urlList = (this.state.updatedUrlList).map( (url, i) => (<input className="p-editable" type="text" key={i} name={this.props.name} onChange={this.handleChange.bind(this, i, urls)} value={url} placeholder="Enter an alternative URL..." />) );
 
         return (
             <span>
@@ -357,7 +381,7 @@ var EditUrlsModal = React.createClass({
                         <p>You can edit and add other links for accessing the publication here.</p>
                         <ListGroup>
                             {urlList}
-                            <ListGroupItem bsStyle="info" onClick={this.addUrl} style={{textAlign: 'center'}}>Add New Link</ListGroupItem>
+                            <ListGroupItem bsStyle="info" onClick={this.addUrl.bind(this, urls)} style={{textAlign: 'center'}}>Add New Link</ListGroupItem>
                         </ListGroup>
                     </Modal.Body>
                     <Modal.Footer>
