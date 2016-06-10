@@ -25,13 +25,16 @@ module.exports=function(app,Parse,io) {
                     for (var i = 0; i < result.length; i++) {
                         var object = result[i];
                         var disc = {
+                            id: object.id,
                             madeBy: {
                                 username: object.get("madeBy").get("username"),
                                 fullname: object.get("madeBy").get("fullname"),
+                                about: object.get("madeBy").get("about"),
                                 imgUrl :object.get("madeBy").get("picture").url()
                             },
                             topic: object.get("topic"),
-                            content: object.get("content")
+                            content: object.get("content"),
+                            created: object.get("createdAt")
                         };
                         discussions.push(disc);
                     }
@@ -61,11 +64,13 @@ module.exports=function(app,Parse,io) {
                         madeBy: {
                             username: result.get("madeBy").get("username"),
                             fullname: result.get("madeBy").get("fullname"),
+                            about: object.get("madeBy").get("about"),
                             imgUrl :result.get("madeBy").get("picture").url()
                         },
                         topic: result.get("topic"),
                         content: result.get("content"),
-                        posts: result.get("posts")
+                        posts: result.get("posts"),
+                        created: object.get("createdAt")
                     };
 
                      res.json(discssion);
