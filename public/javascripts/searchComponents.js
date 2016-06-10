@@ -391,7 +391,7 @@ var SearchFeed = React.createClass({
       }
     });
     var userDiv = <div>
-                    <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Users </h3></div>
+                    <div className="headerDiv"><h3> Users </h3></div>
                       <ul id="rig">
                         {users.map(function (user) {
                           return (
@@ -414,7 +414,7 @@ var SearchFeed = React.createClass({
                   </div>;
 
     var modelDiv = <div>
-                    <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Models </h3></div>
+                    <div className="headerDiv"><h3> Models </h3></div>
                       <ul id="rig">
                         {models.map(function (model) {
                           return (
@@ -437,7 +437,7 @@ var SearchFeed = React.createClass({
                     </div>;
 
     var dataDiv =  <div>
-                    <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Data </h3></div>
+                    <div className="headerDiv"><h3> Data </h3></div>
                       <ul id="rig">
                         {data.map(function (datum) {
                           return (
@@ -460,7 +460,7 @@ var SearchFeed = React.createClass({
                     </div>;
 
     var pubDiv = <div>
-                  <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Publications </h3></div>
+                  <div className="headerDiv"><h3> Publications </h3></div>
                     <ul id="rig">
                       {publications.map(function (pub) {
                         return (
@@ -483,7 +483,7 @@ var SearchFeed = React.createClass({
                   </div>;
 
     var orgDiv =  <div>
-                    <div className="headerDiv"><h3 style={{color:"#F8F8FF"}}> Organizations </h3></div>
+                    <div className="headerDiv"><h3> Organizations </h3></div>
                       <ul id="rig">
                         {organizations.map(function (org) {
                           return (
@@ -506,7 +506,7 @@ var SearchFeed = React.createClass({
                   </div>;
 
     return (
-        <div>
+        <div className="mainSearchDiv">
             <div className="filter">
               <ul className="cf">
               <li><a className="dropdown" href="#">Filter Results</a>
