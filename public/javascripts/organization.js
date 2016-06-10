@@ -329,7 +329,46 @@ var Home = React.createClass({
         return (
             <div className="row">
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                  <div className="items-list">
+                      <div className="item-box" id="item-list">
+                          <div className="item-box-left">
+                              <div className="item-box-image-outside">
+                                  <a href=""><img src="http://159.203.60.67:1336/parse/files/development/f288f2f08b4f197c3d077fce068690d9_user_picture.jpg" className="item-box-image" /></a>
+                              </div>
+                          </div>
+                          <div className="item-box-right">
+                              <a href="" className="body-link"><h4 className="margin-top-bottom-5">Hirad Roshandel</h4></a>
+                              <p>Software Developer</p>
+                              <p className="commentDate">2 hours ago</p>
+                          </div>
+                          <div className="item-box-right">
+                              <p><a>What is discussion board (discussion group, message board, online ...</a></p>
+                                <p>A discussion board (known also by various other names such as discussion group, discussion forum, message board, and online forum) is a general term for any online "bulletin board" where you can leave and expect to see responses to messages you have left.</p>
+                          </div>
+                      </div>
 
+
+                      <div className="item-box" id="item-list">
+                          <div className="item-box-left">
+                              <div className="item-box-image-outside">
+                                  <a href=""><img src="http://159.203.60.67:1336/parse/files/development/96c7110632da4e71812e74f8d2206bd7_user_picture.jpg" className="item-box-image" /></a>
+                              </div>
+                          </div>
+                          <div className="item-box-right">
+                              <a href="" className="body-link"><h4 className="margin-top-bottom-5">Shariq</h4></a>
+                              <p>Software Developer</p>
+                              <p className="commentDate">6 days ago</p>
+                          </div>
+                          <div className="item-box-right">
+                              <p><a>35 Questions That Will Change Your Life - Forbes</a></p>
+                              <p>Why don't you do the things you know you should be doing? Life isn't about figuring out what to do.  The real challenge is (not so) simply doing the things we know we should be doing.
+
+                                  What are your values and are you being true to them? Write down the 3 most important aspects of each of these areas: family, romantic relationships, friends, work, health, sex and spirituality.  These are your values.  When we don't act congruently with what we value, symptoms of discomfort arise.</p>
+                          </div>
+                      </div>
+
+
+                  </div>
                 </div>
                 <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
                     <div className = "createorg_panel">
@@ -345,7 +384,7 @@ var Home = React.createClass({
 
                     <div className="row">
                         <div>
-                        <h4><span className="nfButton">Members <a href="#"><small>(124)</small></a></span></h4>
+                        <h4><span className="nfButton">Members <small>(<a href="#">124</a>)</small></span></h4>
                         </div>
                         <div className="member-section">
                          <ul className="thumbnail-list">
