@@ -1,6 +1,7 @@
 var SearchFeed = React.createClass({
   getInitialState: function() {
     return {
+      firstTime: true,
       data: [],
       userData: [],
       modData: [],
@@ -26,7 +27,7 @@ var SearchFeed = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("USER SUCCESS DATA: ", data);
+            console.log("USER SUCCESS");
             $.map(data, function(item){
               var dlink = "/profile/" + item.username;
               var pic;
@@ -58,7 +59,7 @@ var SearchFeed = React.createClass({
         data: {substr: str},
         cache: false,
         success: function(data) {
-          console.log("MODEL SUCCESS DATA: ", data);
+          console.log("MODEL SUCCESS");
           $.map(data, function(item){
             var dlink = "/model/" + item.objectId;
             var pic;
@@ -90,7 +91,7 @@ var SearchFeed = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("DATA SUCCESS DATA: ", data);
+            console.log("DATA SUCCESS DATA");
             $.map(data, function(item){
               var dlink = "/data/" + item.objectId;
               var pic;
@@ -122,11 +123,8 @@ var SearchFeed = React.createClass({
         data: {substr: str},
         cache: false,
         success: function(data) {
-          console.log("DATA RECEIVED FOR PUBS: ")
-          console.log(data);
+          console.log("PUBS SUCCESS");
           $.map(data, function(item){
-            console.log("PUB ITEM: ");
-            console.log(item);
             var type = item.type;
             var dlink = "/publication/" + type + "/" + item.objectId;
             r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink, about: item.abstract});
@@ -152,8 +150,7 @@ var SearchFeed = React.createClass({
         data: {substr: str},
         cache: false,
         success: function(data) {
-          console.log("DATA RECEIVED FOR ORGS: ")
-          console.log(data);
+          console.log("ORGS SUCCESS");
           $.map(data, function(item){
             var dlink = "/organization/" + item.name;
             var pic;
@@ -184,7 +181,7 @@ var SearchFeed = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("USER SUCCESS DATA: ", data);
+            console.log("USER SUCCESS");
             $.map(data, function(item){
               var dlink = "/profile/" + item.username;
               var pic;
@@ -207,7 +204,7 @@ var SearchFeed = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("MODEL SUCCESS DATA: ", data);
+            console.log("MODEL SUCCESS");
             $.map(data, function(item){
               var dlink = "/model/" + item.objectId;
               var pic;
@@ -230,7 +227,7 @@ var SearchFeed = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("DATA SUCCESS DATA: ", data);
+            console.log("DATA SUCCESS");
             $.map(data, function(item){
               var dlink = "/data/" + item.objectId;
               var pic;
@@ -253,11 +250,8 @@ var SearchFeed = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("DATA RECEIVED FOR PUBS: ")
-            console.log(data);
+            console.log("PUB SUCCESS");
             $.map(data, function(item){
-              console.log("PUB ITEM: ");
-              console.log(item);
               var type = item.type;
               var dlink = "/publication/" + type + "/" + item.objectId;
               r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink, about: item.abstract});
@@ -274,8 +268,7 @@ var SearchFeed = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("DATA RECEIVED FOR ORGS: ")
-            console.log(data);
+            console.log("ORG SUCCESS")
             $.map(data, function(item){
               var dlink = "/organization/" + item.name;
               var pic;
@@ -296,7 +289,11 @@ var SearchFeed = React.createClass({
     });
   },
   componentDidMount: function() {
-    this.loadSearchFeed();
+    console.log("TIME STATUS =========> ", this.state.firstTime);
+    if (this.state.firstTime === true) {
+      this.loadSearchFeed();
+    }
+    this.setState({firstTime:false});
     // var that = this;
     // var p = new Promise(function(resolve, reject){
     //   (that.state.showUsers) ? that.loadUserFeed(): this.setState({userData: []});
@@ -368,7 +365,6 @@ var SearchFeed = React.createClass({
     var orgsFound = false;
 
     this.state.data.map(function(item){
-      console.log("ITEM: ", item);
       switch(item.type) {
         case "user":
           usersFound = true;
