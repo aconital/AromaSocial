@@ -74,7 +74,7 @@ var SettingsModal = React.createClass({
     render() {
 
         const tooltip_del = (
-            <Tooltip><strong>Delete!</strong></Tooltip>
+            <Tooltip id="tooltip_del"><strong>Delete!</strong></Tooltip>
         );
         return (
             <span>

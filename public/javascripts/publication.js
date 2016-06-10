@@ -135,7 +135,7 @@ var Publication = React.createClass ({
 
         if (currentUserId == creatorId) {
             details = keys.map(function(name) {
-                    return <InfoEditField key={name} name={name} initVal={self.state[name]} handleChange={self.handleChildChange} submitChange={self.submitChildChange} />;
+                    return <InfoEditField key={name} name={name} initVal={self.state[name]} handleChange={self.handleChildChange} submitChange={self.submitChildChange} urls={self.state.other_urls} />;
             });
         } else {
             var details = keys.map(function(name) {
@@ -207,9 +207,14 @@ var InfoEditField = React.createClass({
             console.log('no changes');
         }
     },
+    openUrlsModal: function() {
+
+    },
     render: function() {
-        var capitalized = this.props.name.capitalize();
-        var element;
+        var capitalized = this.props.name.capitalize(), //TODO remove length condition when ready
+            editUrlBtn = (this.props.name == 'url' && this.props.urls.length > 9000) ? ( <EditUrlsModal urls={this.props.urls}/> ) : '',
+            element;
+
         // set the left-hand side of Information table. Parse obj properties stored as Array need to use ReactTagsInput.
         if (this.state.isTags) {
             var tagsElement = this.props.initVal;
@@ -217,14 +222,14 @@ var InfoEditField = React.createClass({
             //     tagsElement = this.props.initVal.map( (name) => name.replace(/_/g, " ").replace(/(\.\d*)/g, "") );
             // }
 
-            element = ( <ReactTagsInput className="l-editable-input" type="text" id="{this.props.name}" name="{this.props.name}" ref="tags" placeholder="" onChange={this.handleChange} onBlur={this.submitChange} value={tagsElement} /> );
+            element = ( <ReactTagsInput className="l-editable-input" type="text" key={this.props.name} name={this.props.name} ref="tags" placeholder="" onChange={this.handleChange} onBlur={this.submitChange} value={tagsElement} /> );
         } else {
-            element = ( <input className="p-editable" type="text" id="{this.props.name}" name="{this.props.name}" onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal} /> );
+            element = ( <input className="p-editable" type="text" key={this.props.name} name={this.props.name} onChange={this.handleChange} onBlur={this.submitChange} value={this.props.initVal} /> );
         }
 
         return (
             <tr className="no-margin">
-                <td className="publication-table-info-left"><label htmlFor="{this.props.name}">{capitalized}:</label></td>
+                <td className="publication-table-info-left"><label htmlFor="{this.props.name}">{capitalized}: {editUrlBtn}</label></td>
                 <td className="publication-table-info-right">
                     {element}
                 </td>
@@ -257,7 +262,7 @@ var InfoField = React.createClass({
             }
         } else {
             if (this.props.name == 'url') {
-                var otherUrls = this.props.urls.length > 0 ? (<OtherUrlsModal urls={this.props.urls}/>) : ''; // show other links if available
+                var otherUrls = this.props.urls.length > 0 ? (<ViewUrlsModal urls={this.props.urls}/>) : ''; // show other links if available
                 element = ( <span><a href={this.props.initVal} target="_blank">{this.props.initVal}</a>{otherUrls}</span> );
             } else {
                 element = ( this.props.initVal );
@@ -276,7 +281,7 @@ var InfoField = React.createClass({
     },
 });
 
-var OtherUrlsModal = React.createClass({
+var ViewUrlsModal = React.createClass({
     getInitialState() {
         return { 
             showModal: false,
@@ -308,6 +313,55 @@ var OtherUrlsModal = React.createClass({
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={this.close}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
+            </span>
+        );
+    }
+});
+
+var EditUrlsModal = React.createClass({
+    getInitialState() {
+        return { 
+            showModal: false,
+            isDisabled: false };
+    },
+    close() {
+        this.setState({ showModal: false });
+    },
+    open() {
+        this.setState({ showModal: true });
+    },
+    addUrl() {
+        alert('TODO');
+    },
+    handleChange() {
+        alert('TODO');
+    },
+    submitChange() {
+        alert('TODO');
+    },
+
+    render() {
+        var urlList = this.props.urls.map( (url, i) => (<input className="p-editable" type="text" key={i} name={this.props.name} onChange={this.handleChange} value={url} />) );
+
+        return (
+            <span>
+                <span className="glyphicon glyphicon-plus-sign" onClick={this.open}></span>
+
+                <Modal show={this.state.showModal} onHide={this.close}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Other Links</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>You can edit and add other links for accessing the publication here.</p>
+                        <ListGroup>
+                            {urlList}
+                            <ListGroupItem bsStyle="info" onClick={this.addUrl} style={{textAlign: 'center'}}>Add New Link</ListGroupItem>
+                        </ListGroup>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this.close}>Close</Button><Button className="btn-success" onClick={this.submitChange}>Save</Button>
                     </Modal.Footer>
                 </Modal>
             </span>
