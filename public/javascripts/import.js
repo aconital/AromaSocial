@@ -25,6 +25,7 @@ var ImportContent = React.createClass({
 		$.ajax({
 			url: '/fetchworks?name=' + nameQuery,
 			type: "GET",
+			timeout: 60000, // 1 minute timeout
 		})
 		.done(function(data) {
 			// var entities = data.data['entities'];
@@ -34,7 +35,8 @@ var ImportContent = React.createClass({
 							status: 'showTable' });
 		})
 		.fail(function(xhr, status, err) {
-			console.error('http://.projectoxford.ai/academic/', status, err, xhr);
+			// console.error('http://.projectoxford.ai/academic/', status, err, xhr);
+			self.setState({ status: 'An error has occured. Please try again later. If you keep running into this error, please file a bug report with the following information: Status Code ' + xhr.status + ', ' + xhr.statusText});
 		});
 	},
 	redirect(e) {

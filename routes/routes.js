@@ -796,7 +796,7 @@ app.get("/fetchworks", function(req, res, next) {
     var options = {
       url: url,
       headers: {
-        "Ocp-Apim-Subscription-Key": configs.msftCogServAPIKey
+        "Ocp-Apim-Subscription-Key": "f77cb8e7af0c4868875a7917b8bbaade"
       }
     };
 
@@ -820,7 +820,7 @@ app.get("/fetchworks", function(req, res, next) {
           // TODO add fail case
         });
       } else {
-        res.status(response.statusCode).json({status: "Searching for works has failed." + error});
+        res.status(response.statusCode).json({status: "Searching for works has failed. " + error});
       }
     }
 
