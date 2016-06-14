@@ -1393,6 +1393,7 @@ var PublicationAddForm = React.createClass({
         fromModelTab: false,
         buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
         formFeedback: '',
+        alertVisible: false,
         fileFeedback: {},
         autoFillStatus: '',
         submitButtonText: 'Continue',
@@ -1538,9 +1539,13 @@ var PublicationAddForm = React.createClass({
 			}
         };
 
+        if (this.state.alertVisible) {
+            var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
+        } else {var alert = "";}
 
 		return (
 		<div>
+            {alert}
 			<form className="form" onSubmit={this.handleSubmitData}>
 			    <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
@@ -1755,8 +1760,9 @@ var PublicationAddForm = React.createClass({
 
 	handleSubmitData: function(e) {
         e.preventDefault();
-        this.setState({submitButtonText: "Please wait. We're uploading..."});
-        this.setState({submitButtonDisabled: true});
+        this.setState({submitButtonText: "Please wait. We're uploading...",
+                        submitButtonDisabled: true,
+                        alertVisible: false});
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
         				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
@@ -1777,6 +1783,8 @@ var PublicationAddForm = React.createClass({
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error(path + "/publication", status, err.toString());
+                this.setState({formFeedback: err.toString(), alertVisible: true,
+                            submitButtonText: "Continue",submitButtonDisabled: false});
 			}.bind(this)
 		});
 
@@ -1918,7 +1926,7 @@ var ResourceAddForm = React.createClass({
                     <div className="well" style={this.buttonStyles}>
                         <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
                             style={{background: this.state.pictureFeedback}}>
-                            Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                            Add Picture (gif/jpg/png) <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                         </Button>
                         <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
                             Select Files... <input type="file" onChange={this.handleFile} />
@@ -1984,8 +1992,9 @@ var ResourceAddForm = React.createClass({
 	handleSubmitData: function(e) {
         console.log(e);
         e.preventDefault();
-        this.setState({submitButtonText: "Please Wait. We're uploading"});
-        this.setState({submitButtonDisabled: true});
+        this.setState({submitButtonText: "Please Wait. We're uploading",
+                        submitButtonDisabled: true,
+                        alertVisible: false});
         var endpoint = this.props.fromModelTab ? "/model" : "/data";
         var dataForm = {picture: this.state.picture,
                         pictureType: this.state.pictureType,
@@ -2016,6 +2025,8 @@ var ResourceAddForm = React.createClass({
 				}.bind(this),
 				error: function(xhr, status, err) {
 					console.error(path + endpoint, status, err.toString());
+                    this.setState({formFeedback: err.toString(), alertVisible: true,
+                            submitButtonText: "Continue",submitButtonDisabled: false});
 				}.bind(this)
 			});
 		}
@@ -2027,7 +2038,8 @@ var ResourceAddForm = React.createClass({
             if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
-            this.setState({formFeedback: message, alertVisible: true});
+            this.setState({formFeedback: message, alertVisible: true,
+                            submitButtonText: "Continue",submitButtonDisabled: false});
 		}
         return;
     },
@@ -2202,7 +2214,7 @@ var ProjectAddForm = React.createClass({
 			    <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
                     	style={{background: this.state.pictureFeedback}}>
-                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                        Add Picture (gif/jpg/png) <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                     </Button>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
                         Select Files... <input type="file" onChange={this.handleFile} />
