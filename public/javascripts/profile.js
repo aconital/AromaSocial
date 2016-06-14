@@ -1573,8 +1573,8 @@ var PublicationAddForm = React.createClass({
                 {/*<ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />*/}
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
-                <Input type="textarea" placeholder="Abstract:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <Input type="textarea" placeholder="Abstract:" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
+                <ReactTagsInput type="text" placeholder="Keywords (use tab key to separate):" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1941,8 +1941,8 @@ var ResourceAddForm = React.createClass({
                     
                     {/*<ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />*/}
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
-                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
-                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                    <ReactTagsInput type="text" placeholder="Keywords (use tab key to separate):" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
                     <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
                     <Input type="text" placeholder="URL (Link to model)" name="url" onChange={this.handleChange} value={this.state.url} />
                     
@@ -2227,9 +2227,9 @@ var ProjectAddForm = React.createClass({
                     {/* <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />*/}
                 <Input type="date" placeholder="Start Date:" name="startDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
                 <Input type="date" placeholder="End Date:" name="endDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.endDate} />
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} rows="5" />
                 <Input type="text" placeholder="Client:" name="client" onChange={this.handleChange} value={this.state.client} />
-                <ReactTagsInput type="textarea" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <ReactTagsInput type="textarea" placeholder="Keywords (use tab key to separate):" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL:" name="url" onChange={this.handleChange} value={this.state.url} />
                     {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
                 </Modal.Body>
