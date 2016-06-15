@@ -211,16 +211,20 @@ var InfoEditField = React.createClass({
 
     },
     render: function() {
-        var capitalized = this.props.name.capitalize(), //TODO remove length condition when ready
-            editUrlBtn = (this.props.name == 'url' && this.props.urls.length > 9000) ? ( <EditUrlsModal urls={this.props.urls} submitChange={this.props.submitChange} /> ) : '',
+        var capitalized = this.props.name.capitalize(),
+            editUrlBtn = (this.props.name == 'url' && this.props.urls) ? ( <EditUrlsModal urls={this.props.urls} submitChange={this.props.submitChange} /> ) : '',
             element;
 
         // set the left-hand side of Information table. Parse obj properties stored as Array need to use ReactTagsInput.
         if (this.state.isTags) {
             var tagsElement = this.props.initVal;
-            // if (this.props.name = 'contributors') {
-            //     tagsElement = this.props.initVal.map( (name) => name.replace(/_/g, " ").replace(/(\.\d*)/g, "") );
-            // }
+            if (this.props.name = 'contributors') { // TODO: replace workaround. Major issues here with overwriting usernames when saving
+                tagsElement = this.props.initVal.map(function(name) {
+                    var label = name.replace(/_/g, " ").replace(/(\.\d*)/g, ""),
+                        link = '/profile/' + name;
+                    return (<a href={link}>{label}</a>);
+                });
+            }
 
             element = ( <ReactTagsInput className="l-editable-input" type="text" key={this.props.name} name={this.props.name} ref="tags" placeholder="" onChange={this.handleChange} onBlur={this.submitChange} value={tagsElement} /> );
         } else {
@@ -363,6 +367,7 @@ var EditUrlsModal = React.createClass({
             }
             j++;
         }
+        this.props.submitChange({urls: this.state.updatedUrlList}); // POST update
     },
 
     render() {
