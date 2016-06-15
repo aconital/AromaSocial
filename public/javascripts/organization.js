@@ -343,7 +343,7 @@ var Home = React.createClass({
     render:function(){
         var discussions= this.state.discussions.map(function (disc) {
             return (
-                <Discussion topic ={disc.topic} createdAt={disc.created} madeBy={disc.madeBy} key={disc.id}>
+                <Discussion discId= {disc.id} topic ={disc.topic} createdAt={disc.created} madeBy={disc.madeBy} key={disc.id}>
                     {disc.content.msg}
                 </Discussion>
             );
@@ -395,7 +395,7 @@ var Discussion = React.createClass ({
     getInitialState: function() {
         return {createdAt:""};
     },
-    componentWillMount: function() {
+    componentDidMount: function() {
         this.setState({createdAt:moment(this.props.createdAt).fromNow()});
         setInterval(this.refreshTime, 30000);
     },
@@ -408,20 +408,18 @@ var Discussion = React.createClass ({
     },
     render:function(){
         return (
-            <div  className="item-box" id="item-list">
-                <div className="item-box-left">
-                    <div className="item-box-image-outside">
-                        <a href={this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="item-box-image" /></a>
-                    </div>
+            <div  className="row discussion-row" id="item-list">
+                <div className="col-xs-3 col-lg-2 discussion-user-img">
+                        <a href={"/profile/"+this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="discussion-userImg" /></a>
                 </div>
-                <div className="item-box-right">
-                    <a href={this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
-                    <p>{this.props.madeBy.about}</p>
-                    <p className="commentDate">{this.state.createdAt}</p>
+                <div className="col-xs-9 col-lg-10 discussion-user-info">
+                    <a href={"/profile/"+this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
+                    <p className="discussion-about">{this.props.madeBy.about}</p>
+                    <p className="discussion-Date">{this.state.createdAt}</p>
                 </div>
-                <div className="item-box-right">
-                    <p><a>{this.props.topic}</a></p>
-                    <p dangerouslySetInnerHTML={this.rawMarkup()} />
+                <div className="discussion-box-right">
+                    <p ><a href={"/organization/"+objectId+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
+                    <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                 </div>
             </div>
         );

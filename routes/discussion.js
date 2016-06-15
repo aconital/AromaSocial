@@ -47,7 +47,11 @@ module.exports=function(app,Parse,io) {
             }
         });
     });
-    app.get('/organization/:objectId/discussions/:discId',function(req,res,next){
+    app.get('/organization/:objectId/discussions/:discId',is_auth,function(req,res,next){
+        res.render('discussion',{orgId: req.params.objectId,discId:req.params.discId});
+    });
+    app.get('/organization/:objectId/discussions/:discId/:page',is_auth,function(req,res,next){
+
         var Discussion = Parse.Object.extend("Discussion");
         var query = new Parse.Query(Discussion);
         query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
@@ -60,23 +64,23 @@ module.exports=function(app,Parse,io) {
 
                 if(result!=null){
 
-                    var discssion={
+                    var discussion={
                         madeBy: {
                             username: result.get("madeBy").get("username"),
                             fullname: result.get("madeBy").get("fullname"),
-                            about: object.get("madeBy").get("about"),
+                            about: result.get("madeBy").get("about"),
                             imgUrl :result.get("madeBy").get("picture").url()
                         },
                         topic: result.get("topic"),
                         content: result.get("content"),
                         posts: result.get("posts"),
-                        created: object.get("createdAt")
+                        created: result.get("createdAt")
                     };
 
-                     res.json(discssion);
+                     res.json({discussion:discussion});
 
-                }
-
+                }else
+                res.json({});
             },
             error: function (error) {
                 console.log(error);
