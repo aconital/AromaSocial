@@ -58,12 +58,30 @@ module.exports=function(app,Parse,io) {
         query.equalTo("objectId",req.params.discId);
         query.include("madeBy");
         query.include("posts");
+        query.include("posts.from");
         query.descending("createdAt");
         query.first({
             success: function (result) {
 
                 if(result!=null){
-
+                    var posts=[];
+                    var jsonPosts= result.get("posts");
+                    for(var p in jsonPosts)
+                    {
+                        var p =jsonPosts[p];
+                        var post = {
+                            id: p.id,
+                            from :  {
+                                name: p.get("from").get("fullname"),
+                                about: p.get("from").get("about"),
+                                img : p.get("from").get("picture").url(),
+                                username: p.get("from").get("username")
+                            },
+                            content: p.get("content"),
+                            createdAt: p.get("createdAt")
+                        };
+                        posts.push(post);
+                    }
                     var discussion={
                         madeBy: {
                             username: result.get("madeBy").get("username"),
@@ -73,7 +91,7 @@ module.exports=function(app,Parse,io) {
                         },
                         topic: result.get("topic"),
                         content: result.get("content"),
-                        posts: result.get("posts"),
+                        posts: posts,
                         created: result.get("createdAt")
                     };
 

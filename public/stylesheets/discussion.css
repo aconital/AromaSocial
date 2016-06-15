@@ -1,0 +1,52 @@
+.discussion-row
+{   padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    padding-left: 10px;
+    background-color: #fffbec;
+    margin-bottom: 15px;
+}
+
+.discussion-user-img{
+    padding-right: 0;
+    text-align: center;
+}
+.discussion-user-info{
+    padding-left: 0;
+}
+.discussion-userImg{
+    width: 70px;
+    height: 70px;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    display: block;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+}
+.discussion-about {
+    margin-bottom: 5px;
+}
+.discussion-Date {
+    color: #90949c;
+    font-size: 11px;
+}
+.discussion-topic{
+    text-overflow:ellipsis;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+}
+.discussion-content{
+    text-overflow:ellipsis;
+
+}
+
+.post-row
+{   padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    padding-left: 10px;
+    background-color: #fff;
+    margin-bottom: 15px;}

@@ -23,6 +23,7 @@ var Home = React.createClass({
     render:function(){
         var discussion= "";
        if(this.state.discussion != null) {
+           console.log(this.state.discussion.posts);
            discussion = <Discussion discId={this.state.discussion.id} topic={this.state.discussion.topic}
                                     createdAt={this.state.discussion.created} madeBy={this.state.discussion.madeBy}
                                     posts ={this.state.discussion.posts} key={this.state.discussion.id}>{this.state.discussion.content.msg}</Discussion>;
@@ -86,25 +87,66 @@ var Discussion = React.createClass ({
     },
     render:function(){
         var posts = this.props.posts.map(function (post) {
+            console.log(post);
             return (
-                <Post discId= {disc.id} topic ={disc.topic} createdAt={disc.created} madeBy={disc.madeBy} key={disc.id}>
-                    {disc.content.msg}
+                <Post postId= {post.id} createdAt={post.createdAt} from={post.from} key={post.id}>
+                    {post.content.msg}
                 </Post>
             );
         });
 
         return (
-            <div  className="row discussion-row" id="item-list">
+            <div className="container">
+                <div  className="row discussion-row" id="item-list">
+                    <div className="col-xs-3 col-lg-2 discussion-user-img">
+                        <a href={"/profile/"+this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="discussion-userImg" /></a>
+                    </div>
+                    <div className="col-xs-9 col-lg-10 discussion-user-info">
+                        <a href={"/profile/"+this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
+                        <p className="discussion-about">{this.props.madeBy.about}</p>
+                        <p className="discussion-Date">{this.state.createdAt}</p>
+                    </div>
+                    <div className="discussion-box-right">
+                        <p ><a href={"/organization/"+orgId+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
+                        <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
+                    </div>
+                </div>
+                {posts}
+            </div>
+        );
+    }
+
+
+});
+
+var Post = React.createClass ({
+    getInitialState: function() {
+        return {createdAt:""};
+    },
+    componentDidMount: function() {
+        this.setState({createdAt:moment(this.props.createdAt).fromNow()});
+        setInterval(this.refreshTime, 30000);
+    },
+    refreshTime: function () {
+        this.setState({createdAt:moment(this.props.createdAt).fromNow()});
+    },
+    rawMarkup: function() {
+        var rawMarkup = marked(this.props.children, {sanitize: true});
+        return { __html: rawMarkup };
+    },
+    render:function(){
+
+        return (
+            <div  className="row post-row" id="item-list">
                 <div className="col-xs-3 col-lg-2 discussion-user-img">
-                    <a href={"/profile/"+this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="discussion-userImg" /></a>
+                    <a href={"/profile/"+this.props.from.username}><img src={this.props.from.img} className="discussion-userImg" /></a>
                 </div>
                 <div className="col-xs-9 col-lg-10 discussion-user-info">
-                    <a href={"/profile/"+this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
-                    <p className="discussion-about">{this.props.madeBy.about}</p>
+                    <a href={"/profile/"+this.props.from.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.from.name}</h4></a>
+                    <p className="discussion-about">{this.props.from.about}</p>
                     <p className="discussion-Date">{this.state.createdAt}</p>
                 </div>
                 <div className="discussion-box-right">
-                    <p ><a href={"/organization/"+orgId+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
                     <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                 </div>
             </div>
@@ -113,5 +155,4 @@ var Discussion = React.createClass ({
 
 
 });
-
 ReactDOM.render(<Home />, document.getElementById('content'));
