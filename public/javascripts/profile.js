@@ -1126,7 +1126,7 @@ var Publications = React.createClass({
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
                                 <tr><td>Authors: </td><td>{item.contributors.map(function(contributor) { 
-                                    return <a href={contributor} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;})}</td></tr>
+                                    return <a href={contributor.replace(/ /g, "_")} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;})}</td></tr>
                                 {(item.type == "journal")? <tr><td>Publication Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date}</td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
