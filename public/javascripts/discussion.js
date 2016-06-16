@@ -6,6 +6,8 @@ var Home = React.createClass({
         return {discussion:null}
     },
     componentWillMount : function() {
+        socket.on('DiscussionPostReceived', this._reloadPosts);
+
         var discussionsUrl= "/organization/"+orgId+"/discussions/"+discId+"/1";
 
         $.ajax({
@@ -20,19 +22,34 @@ var Home = React.createClass({
             }.bind(this)
         });
     },
+    _reloadPosts: function(data)
+    {
+        var post= data.post;
+        var disc= this.state.discussion;
+        disc.posts.push(post);
+        this.setState({discussion:  disc});
+
+    },
     render:function(){
         var discussion= "";
        if(this.state.discussion != null) {
-           console.log(this.state.discussion.posts);
            discussion = <Discussion discId={this.state.discussion.id} topic={this.state.discussion.topic}
                                     createdAt={this.state.discussion.created} madeBy={this.state.discussion.madeBy}
                                     posts ={this.state.discussion.posts} key={this.state.discussion.id}>{this.state.discussion.content.msg}</Discussion>;
        }
         return (
             <div className="row">
-                <div className="col-xs-12 col-sm-9 col-md-9 col-lg-9">
-                    <div className="items-list">
+                <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                    <div className="items-list discussion-list">
                         {discussion}
+                        <div className="row">
+                            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <h4 className="discussion-form-headline">Reply to discussion</h4>
+                            </div>
+                            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                {this.state.discussion!=null?<CommentForm key={this.state.discussion.id} feedId ={this.state.discussion.id} />:""}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="col-xs-12 col-sm-3 col-md-3 col-lg-3">
@@ -87,7 +104,6 @@ var Discussion = React.createClass ({
     },
     render:function(){
         var posts = this.props.posts.map(function (post) {
-            console.log(post);
             return (
                 <Post postId= {post.id} createdAt={post.createdAt} from={post.from} key={post.id}>
                     {post.content.msg}
@@ -106,8 +122,8 @@ var Discussion = React.createClass ({
                         <p className="discussion-about">{this.props.madeBy.about}</p>
                         <p className="discussion-Date">{this.state.createdAt}</p>
                     </div>
-                    <div className="discussion-box-right">
-                        <p ><a href={"/organization/"+orgId+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
+                    <div className="col-xs-12 col-lg-12">
+                        <p ><a className="discussion-topic">{this.props.topic}</a></p>
                         <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                     </div>
                 </div>
@@ -146,7 +162,7 @@ var Post = React.createClass ({
                     <p className="discussion-about">{this.props.from.about}</p>
                     <p className="discussion-Date">{this.state.createdAt}</p>
                 </div>
-                <div className="discussion-box-right">
+                <div className="col-xs-12 col-lg-12" >
                     <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                 </div>
             </div>
@@ -154,5 +170,55 @@ var Post = React.createClass ({
     }
 
 
+});
+
+var CommentForm = React.createClass({
+    getInitialState: function() {
+        return {discId: '', text: ''};
+    },
+    componentWillMount: function() {
+        this.setState({discId: this.props.discId});
+    },
+    handleTextChange: function(e) {
+        this.setState({text: e.target.value});
+    },
+    handleSubmit: function(e) {
+        e.preventDefault();
+        var text = this.state.text;
+        if (!text || text.trim()== "") {
+            return;
+        }
+        $.ajax({
+            url: '/organization/'+orgId+'/discussions/'+discId,
+            method:'post',
+            data: {content: text},
+            success: function(data) {
+                this.setState({text: ''});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+
+    },
+    render: function() {
+
+        return (
+            <div className="row discussionForm">
+                <div className="col-xs-12">
+                    <form>
+                        <textarea
+                            rows="8" cols="50"
+                            className="discussion-input"
+                            placeholder="Say something..."
+                            value = {this.state.text}
+                            onChange={this.handleTextChange}>
+                            </textarea>
+                        <a onClick={this.handleSubmit} className="submit-discussion">Submit</a>
+                    </form>
+                </div>
+            </div>
+        );
+    }
 });
 ReactDOM.render(<Home />, document.getElementById('content'));

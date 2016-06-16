@@ -131,6 +131,62 @@ module.exports=function(app,Parse,io) {
             });
         }
     });
+    app.post('/organization/:objectId/discussions/:discId',is_auth,function(req,res,next){
+        var discId= req.params.discId;
+        var content = req.body.content;
+
+        var Discussion_post = Parse.Object.extend("Discussion_post");
+        var dPost = new Discussion_post();
+        dPost.set('from', {__type: "Pointer", className: "_User", objectId: req.user.id});
+        dPost.set('content', {msg: content});
+        dPost.set('discussionId',{__type: "Pointer", className: "Discussion", objectId: discId})
+        dPost.save(null, {
+            success: function (discPost) {
+                var query= new Parse.Query('Discussion');
+                query.equalTo("objectId", discId);
+                query.first({
+                    success: function (result) {
+                        if (result) {
+                            var posts=result.get("posts");
+                            if(posts != undefined) {
+                                posts.push({__type: "Pointer", className: "Discussion_post", objectId: discPost.id});
+                                result.set("posts",posts);
+                            }
+                            else
+                                result.set("posts",[{__type: "Pointer", className: "Discussion_post", objectId: discPost.id}]);
+
+                            result.save();
+
+                            var finalPost= {
+                                id: discPost.id,
+                                from :  {
+                                    name: req.user.fullname,
+                                    img : req.user.imgUrl,
+                                    about : req.user.about,
+                                    username: req.user.username
+                                },
+                                createdAt:discPost.get("createdAt"),
+                                content: {msg:content}
+                            };
+
+                            io.to(req.user.id).emit('DiscussionPostReceived',{discId:discId,post:finalPost});
+                            res.json({msg:"success"});
+                        }
+                    },
+                    error: function ( error) {
+                        console.log("Couldnt save cookie token")
+                    }
+                });
+            },
+            error: function (comment, error) {
+                // Execute any logic that should take place if the save fails.
+                // error is a Parse.Error with an error code and message.
+                alert('Failed to create new object, with error code: ' + error.message);
+                res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
+            }
+        });
+
+    });
     app.delete('/organization/:objectId/discussions',function(req,res,next){
 
     });

@@ -341,17 +341,26 @@ var Home = React.createClass({
         });
     },
     render:function(){
-        var discussions= this.state.discussions.map(function (disc) {
-            return (
-                <Discussion discId= {disc.id} topic ={disc.topic} createdAt={disc.created} madeBy={disc.madeBy} key={disc.id}>
-                    {disc.content.msg}
-                </Discussion>
-            );
-        });
-
+        var discussions;
+            if(this.state.discussions.length>0)
+            {
+                discussions = this.state.discussions.map(function (disc) {
+                    return (
+                        <Discussion discId={disc.id} topic={disc.topic} createdAt={disc.created} madeBy={disc.madeBy}
+                                    key={disc.id}>
+                            {disc.content.msg}
+                        </Discussion>
+                    );
+                });
+            }
+        else
+            {
+                discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+            }
         return (
             <div className="row">
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                    <h4 className="discussion-form-headline">Recent discussions <a className="create-discussion-list">Create New</a></h4>
                   <div className="items-list">
                       {discussions}
                   </div>
