@@ -325,7 +325,7 @@ var OrganizationMenu = React.createClass ({
 
 var Home = React.createClass({
     getInitialState: function() {
-        return {discussions:[]}
+        return {showModal:false,discussions:[]}
     },
     componentWillMount : function() {
         var discussionsUrl= "/organization/"+objectId+"/discussions";
@@ -339,6 +339,12 @@ var Home = React.createClass({
                 console.error("Couldn't Retrieve discussions!");
             }.bind(this)
         });
+    },
+    openModal:function(){
+        this.setState({showModal:true});
+    },
+    closeModal:function(){
+        this.setState({showModal:false});
     },
     render:function(){
         var discussions;
@@ -359,8 +365,16 @@ var Home = React.createClass({
             }
         return (
             <div className="row">
+                <Modal show={this.state.showModal} onHide={this.closeModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create New Discussion</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                           <CreateDiscussion/>
+                    </Modal.Body>
+                </Modal>
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-                    <h4 className="discussion-form-headline">Recent discussions <a className="create-discussion-list">Create New</a></h4>
+                    <h4 className="discussion-form-headline">Recent discussions <a onClick={this.openModal}className="create-discussion-list">Create New</a></h4>
                   <div className="items-list">
                       {discussions}
                   </div>
@@ -396,6 +410,66 @@ var Home = React.createClass({
                 </div>
 
 
+            </div>
+        );
+    }
+});
+var CreateDiscussion = React.createClass({
+    getInitialState: function() {
+        return {content: '', topic: ''};
+    },
+    handleTopicChange: function(e) {
+        this.setState({topic: e.target.value});
+    },
+    handleContentChange: function(e) {
+        this.setState({content: e.target.value});
+    },
+    handleSubmit: function(e) {
+        e.preventDefault();
+        var topic = this.state.topic;
+        var content = this.state.content;
+        if (!topic || topic.trim()== "" || !content || content.trim()=="") {
+            return;
+        }
+        $.ajax({
+            url: '/organization/'+objectId+'/discussions/',
+            method:'post',
+            data: {topic: topic,content:content},
+            success: function(data) {
+                this.setState({topic: '',content:''});
+                location.reload();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+
+    },
+    render:function(){
+        return (
+            <div className="row">
+                <div className="col-xs-12">
+                    <form>
+                        <label>Title</label>
+                        <input
+                            placeholder="Choose a title for your discussion"
+                            className="creatediscussion-topic"
+                            type="text"
+                            value={this.state.topic}
+                            onChange={this.handleTopicChange}
+                            />
+                        <textarea
+                         rows="8" cols="50"
+                         className="creatediscussion-input"
+                         placeholder=""
+                         value = {this.state.content}
+                         onChange={this.handleContentChange}>
+                        </textarea>
+                    </form>
+                    <div>
+                        <a onClick={this.handleSubmit} className="submit-discussion">Submit</a>
+                    </div>
+                </div>
             </div>
         );
     }

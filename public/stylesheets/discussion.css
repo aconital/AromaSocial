@@ -106,3 +106,12 @@ text-decoration: none
 {float:right}
 .create-discussion-list:hover
 {text-decoration: none}
+
+.creatediscussion-topic{
+    padding-left: 10px;
+    width: 100%;
+}
+.creatediscussion-input
+{   width: 100%;
+    margin-top: 25px;
+}
