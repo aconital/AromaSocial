@@ -42,7 +42,7 @@ var Publication = React.createClass ({
     componentWillMount: function() {
         var self = this;
         var fetchPath = "/publication/"+objectId;
-        var staticFields = ['createdAt','updatedAt','user','abstract','filename','objectId','updatePath','title','type','other_urls'];
+        var staticFields = ['createdAt','updatedAt','user','abstract','file','objectId','updatePath','title','type','other_urls'];
 
         $.ajax({
             url: fetchPath,
@@ -347,7 +347,6 @@ var EditUrlsModal = React.createClass({
         this.setState({updatedUrlList: urls});
     },
     submitChange() {
-        alert('TODO, submitChange');
         var listToSend = [], 
             i = 0, lenOrig = this.props.urls.length,
             j = 0, lenUpdate = this.state.updatedUrlList.length;
@@ -367,7 +366,8 @@ var EditUrlsModal = React.createClass({
             }
             j++;
         }
-        this.props.submitChange({urls: this.state.updatedUrlList}); // POST update
+        this.props.submitChange({other_urls: listToSend}); // POST update
+        this.close();
     },
 
     render() {
