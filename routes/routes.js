@@ -806,7 +806,7 @@ app.get("/fetchworks", function(req, res, next) {
 
         // currently only supports importing journals/conferences. Will need to add another API if support for others needed
         var publications = data.entities
-              .filter( (entity) => ((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) );
+              .filter( function(entity) {((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) });
 
         var user = new Parse.Query(Parse.User);
         user.get(req.user.id).then(function(result) { 
