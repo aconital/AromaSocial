@@ -24,7 +24,7 @@ $(function() {
                     // });
                     $.map(data, function(item){
                       var dlink = "/profile/" + item.username;
-                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture, link: dlink});
+                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink});
                     });
                   },
                   error: function(xhr) {
