@@ -107,9 +107,7 @@ $(function() {
                               +"<a style='cursor: pointer'>"
                                 + item.label
                               + "</a>"
-                            +"</div>"
-                            +"<div class='item-box-button'>"
-                              +"<button>See More</button>"
+                              +"<button style='float:right'>See More</button>"
                             +"</div>"
                       + "</div></div></div></div>")
                      .appendTo(ul);
