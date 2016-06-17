@@ -48,7 +48,23 @@ module.exports=function(app,Parse,io) {
         });
     });
     app.get('/organization/:objectId/discussions/:discId',is_auth,function(req,res,next){
-        res.render('discussion',{orgId: req.params.objectId,discId:req.params.discId});
+        var Organization = Parse.Object.extend("Organization");
+        var query = new Parse.Query(Organization);
+        query.equalTo("objectId",req.params.objectId);
+        query.first({
+            success: function (r) {
+                if(r!=null){
+                   var orgName=r.get("name");
+                    res.render('discussion',{orgName:orgName,orgId: req.params.objectId,discId:req.params.discId});
+                }
+                else
+                    res.render('index', {title: error, path: req.path})
+            },
+            error: function (error) {
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+
     });
     app.get('/organization/:objectId/discussions/:discId/:page',is_auth,function(req,res,next){
 
@@ -83,6 +99,7 @@ module.exports=function(app,Parse,io) {
                         posts.push(post);
                     }
                     var discussion={
+                        id: result.id,
                         madeBy: {
                             username: result.get("madeBy").get("username"),
                             fullname: result.get("madeBy").get("fullname"),
@@ -188,11 +205,47 @@ module.exports=function(app,Parse,io) {
 
     });
     //delete a whole discussion and its posts
-    app.delete('/organization/:objectId/discussions',function(req,res,next){
-        var discId= req.body.discId
+    app.delete('/organization/:objectId/discussions',is_auth,function(req,res,next){
+        var discId= req.body.discId;
+        var orgName = req.body.orgName;
+
+        var Discussion_post = Parse.Object.extend("Discussion_post");
+        var query = new Parse.Query(Discussion_post);
+        query.equalTo("discussionId",{ __type: "Pointer", className: "Discussion", objectId: discId});
+        query.find().then(function(results) {
+            return Parse.Object.destroyAll(results, {useMasterKey: true});
+        }).then(function() {
+                var Discussion = Parse.Object.extend("Discussion");
+                var query = new Parse.Query(Discussion);
+                query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+                query.equalTo("objectId",discId);
+                query.first({
+                    success: function (r) {
+                        if(r!=null){
+                           r.destroy({
+                               success: function(model, response){
+                                   res.json({url:'/organization/'+orgName});
+                               },
+                               error: function(model, response){
+                                   res.json({error:error});
+                               }
+                           });
+                        }
+                        else
+                            res.json({error:"Oops! Something went wrong!"});
+                    },
+                    error: function (error) {
+                        res.render('index', {title: error, path: req.path});
+                    }
+                });
+        }, function(error) {
+            res.json({error:"Could not delete the discussion"})
+        });
     });
+
+
     //delete a post in discussion
-    app.delete('/organization/:objectId/discussions/:discId',function(req,res,next){
+    app.delete('/organization/:objectId/discussions/:discId',is_auth,function(req,res,next){
         var postId= req.body.postId;
 
         var Discussion_post = Parse.Object.extend("Discussion_post");

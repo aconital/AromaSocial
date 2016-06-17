@@ -40,6 +40,7 @@ var Home = React.createClass({
     render:function(){
         var discussion= "";
        if(this.state.discussion != null) {
+
            discussion = <Discussion discId={this.state.discussion.id} topic={this.state.discussion.topic}
                                     createdAt={this.state.discussion.created} madeBy={this.state.discussion.madeBy}
                                     posts ={this.state.discussion.posts} key={this.state.discussion.id}>{this.state.discussion.content.msg}</Discussion>;
@@ -109,8 +110,8 @@ var Discussion = React.createClass ({
         var rawMarkup = marked(this.props.children, {sanitize: true});
         return { __html: rawMarkup };
     },
-    deleteDiscussion:function()
-    {
+    deleteDiscussion:function(discId)
+    {   console.log(discId);
         swal({   title: "Are you sure?",
             text: "You will not be able to recover this discussion and its posts!",
             type: "warning",
@@ -119,8 +120,18 @@ var Discussion = React.createClass ({
             confirmButtonText: "Yes, delete it!",
             loseOnConfirm: false },
             function(){
-
-                swal("Deleted!", "Your imaginary file has been deleted.", "success");
+                $.ajax({
+                    type: 'DELETE',
+                    url: "/organization/"+orgId+"/discussions/",
+                    data:{discId:discId,orgName:orgName},
+                    success: function(data) {
+                        swal("Deleted!", "Your Discussion has been deleted.", "success");
+                        window.location.replace(data.url)
+                    }.bind(this),
+                    error: function(xhr, status, err) {
+                        console.error("Couldn't Retrieve discussions!");
+                    }.bind(this)
+                });
             });
     },
     render:function(){
@@ -144,7 +155,7 @@ var Discussion = React.createClass ({
                         <p className="discussion-Date">{this.state.createdAt}</p>
                     </div>
                     <div className="col-xs-9 col-lg-1">
-                        { username == this.props.madeBy.username? <a onClick={this.deleteDiscussion} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
+                        { username == this.props.madeBy.username? <a onClick={this.deleteDiscussion.bind(this,this.props.discId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
                     </div>
 
                     <div className="col-xs-12 col-lg-12">
