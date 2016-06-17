@@ -489,18 +489,45 @@ var Discussion = React.createClass ({
         var rawMarkup = marked(this.props.children, {sanitize: true});
         return { __html: rawMarkup };
     },
+    deleteDiscussion:function(discId)
+    { console.log(discId);
+    swal({   title: "Are you sure?",
+            text: "You will not be able to recover this discussion and its posts!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            loseOnConfirm: false },
+        function(){
+            $.ajax({
+                type: 'DELETE',
+                url: "/organization/"+objectId+"/discussions/",
+                data:{discId:discId,orgName:name},
+                success: function(data) {
+                    swal("Deleted!", "Your Discussion has been deleted.", "success");
+                    location.reload();
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error("Couldn't Retrieve discussions!");
+                }.bind(this)
+            });
+        });
+},
     render:function(){
         return (
             <div  className="row discussion-row" id="item-list">
                 <div className="col-xs-3 col-lg-2 discussion-user-img">
                         <a href={"/profile/"+this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="discussion-userImg" /></a>
                 </div>
-                <div className="col-xs-9 col-lg-10 discussion-user-info">
+                <div className="col-xs-8 col-lg-9 discussion-user-info">
                     <a href={"/profile/"+this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
                     <p className="discussion-about">{this.props.madeBy.about}</p>
                     <p className="discussion-Date">{this.state.createdAt}</p>
                 </div>
-                <div className="discussion-box-right">
+                <div className="col-xs-1 col-lg-1">
+                    { currentUsername == this.props.madeBy.username? <a onClick={this.deleteDiscussion.bind(this,this.props.discId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
+                </div>
+                <div className="col-xs-12 col-lg-12">
                     <p ><a href={"/organization/"+objectId+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
                     <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                 </div>

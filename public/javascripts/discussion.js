@@ -149,12 +149,12 @@ var Discussion = React.createClass ({
                     <div className="col-xs-3 col-lg-2 discussion-user-img">
                         <a href={"/profile/"+this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="discussion-userImg" /></a>
                     </div>
-                    <div className="col-xs-9 col-lg-9 discussion-user-info">
+                    <div className="col-xs-8 col-lg-9 discussion-user-info">
                         <a href={"/profile/"+this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
                         <p className="discussion-about">{this.props.madeBy.about}</p>
                         <p className="discussion-Date">{this.state.createdAt}</p>
                     </div>
-                    <div className="col-xs-9 col-lg-1">
+                    <div className="col-xs-1 col-lg-1">
                         { username == this.props.madeBy.username? <a onClick={this.deleteDiscussion.bind(this,this.props.discId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
                     </div>
 
@@ -216,12 +216,12 @@ var Post = React.createClass ({
                 <div className="col-xs-3 col-lg-2 discussion-user-img">
                     <a href={"/profile/"+this.props.from.username}><img src={this.props.from.img} className="discussion-userImg" /></a>
                 </div>
-                <div className="col-xs-9 col-lg-9 discussion-user-info">
+                <div className="col-xs-8 col-lg-9 discussion-user-info">
                     <a href={"/profile/"+this.props.from.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.from.name}</h4></a>
                     <p className="discussion-about">{this.props.from.about}</p>
                     <p className="discussion-Date">{this.state.createdAt}</p>
                 </div>
-                <div className="col-xs-9 col-lg-1">
+                <div className="col-xs-1 col-lg-1">
                     { username == this.props.from.username? <a onClick={this.deletePost.bind(this,this.props.postId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
                 </div>
 
