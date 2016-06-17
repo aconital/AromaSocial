@@ -124,11 +124,12 @@
     font-weight: bold;
     text-align: center;
     list-style:none;
-    background-color:rgba(0,0,0,0.5);
+    background-color:white;
+    /*background-color:rgba(0,0,0,0.5);*/
     border-radius: 1px;
-    border-left: 5px solid black;
+    /*border-left: 5px solid black;
     border-right: 5px solid black;
-    border-bottom: 5px solid black;
+    border-bottom: 5px solid black;*/
    /* border-top: 5px solid white;*/
 }
 

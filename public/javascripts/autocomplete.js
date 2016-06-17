@@ -97,12 +97,41 @@ $(function() {
             }
      }).data("custom-catcomplete")._renderItem = function(ul, item) {
              return $("<div></div>").data("ui-autocomplete-item", item)
-                     .append("<div class='item-box'>"+"<div class='item-box-left'>"+"<div class='item-box-image-outside'>"+"<a style='cursor: pointer'>"+ "<img class='search-img' src='" + item.imgsrc + "' />" +"</a>"+"</div></div>"+
-                 "<div class='item-box-right'>"+"<a style='cursor: pointer'>" + item.label + "</a>"+"</div></div>")
+                     .append("<div class='item-box'>"
+                      +"<div class='item-box-left'>"
+                        +"<div class='item-box-image-outside'>"
+                          +"<a style='cursor: pointer'>"
+                            +"<img class='search-img' src='" + item.imgsrc + "' />"
+                            +"</a>"+"</div></div>"
+                            +"<div class='item-box-right'>"
+                              +"<a style='cursor: pointer'>"
+                                + item.label
+                              + "</a>"
+                            +"</div>"
+                            +"<div class='item-box-button'>"
+                              +"<button>See More</button>"
+                            +"</div>"
+                      + "</div></div></div></div>")
                      .appendTo(ul);
      };
     }   
 });
+
+// function(ul, item) {
+//              return $("<div></div>").data("ui-autocomplete-item", item)
+//                      .append("<div class='item-box'>"
+//                       +"<div class='item-box-left'>"
+//                         +"<div class='item-box-image-outside'>"
+//                           +"<a style='cursor: pointer'>"
+//                             +"<img class='search-img' src='" + item.imgsrc + "' />"
+//                             +"</a>"+"</div></div>"
+//                             +"<div class='item-box-right'>"
+//                               +"<a style='cursor: pointer'>"
+//                                 + item.label
+//                               + "</a>"
+//                       +"</div></div>")
+//                      .appendTo(ul);
+//      };
 
 // $( "#SearchInput" ).autocomplete({ .... }).data( "autocomplete" )._renderItem = function( ul, item ) {
 //         return $( "<li></li>" )
