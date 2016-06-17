@@ -6,8 +6,8 @@ var Home = React.createClass({
         return {discussion:null}
     },
     componentWillMount : function() {
-        socket.on('DiscussionPostReceived', this._reloadPosts);
-
+        socket.on('DiscussionPostReceived', this._PostAdded);
+        socket.on('DiscussionPostDeleted',this._PostDeleted);
         var discussionsUrl= "/organization/"+orgId+"/discussions/"+discId+"/1";
 
         $.ajax({
@@ -22,11 +22,18 @@ var Home = React.createClass({
             }.bind(this)
         });
     },
-    _reloadPosts: function(data)
-    {
-        var post= data.post;
+    _PostAdded: function(data)
+    {   var post= data.post;
         var disc= this.state.discussion;
         disc.posts.push(post);
+        this.setState({discussion:  disc});
+
+    },
+    _PostDeleted: function(data)
+    {
+        var postId= data.postId;
+        var disc= this.state.discussion;
+        disc.posts=_.without( disc.posts, _.findWhere( disc.posts, {id: postId}));
         this.setState({discussion:  disc});
 
     },
@@ -102,6 +109,20 @@ var Discussion = React.createClass ({
         var rawMarkup = marked(this.props.children, {sanitize: true});
         return { __html: rawMarkup };
     },
+    deleteDiscussion:function()
+    {
+        swal({   title: "Are you sure?",
+            text: "You will not be able to recover this discussion and its posts!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            loseOnConfirm: false },
+            function(){
+
+                swal("Deleted!", "Your imaginary file has been deleted.", "success");
+            });
+    },
     render:function(){
         var posts = this.props.posts.map(function (post) {
             return (
@@ -117,11 +138,15 @@ var Discussion = React.createClass ({
                     <div className="col-xs-3 col-lg-2 discussion-user-img">
                         <a href={"/profile/"+this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="discussion-userImg" /></a>
                     </div>
-                    <div className="col-xs-9 col-lg-10 discussion-user-info">
+                    <div className="col-xs-9 col-lg-9 discussion-user-info">
                         <a href={"/profile/"+this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
                         <p className="discussion-about">{this.props.madeBy.about}</p>
                         <p className="discussion-Date">{this.state.createdAt}</p>
                     </div>
+                    <div className="col-xs-9 col-lg-1">
+                        { username == this.props.madeBy.username? <a onClick={this.deleteDiscussion} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
+                    </div>
+
                     <div className="col-xs-12 col-lg-12">
                         <p ><a className="discussion-topic">{this.props.topic}</a></p>
                         <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
@@ -150,6 +175,29 @@ var Post = React.createClass ({
         var rawMarkup = marked(this.props.children, {sanitize: true});
         return { __html: rawMarkup };
     },
+     deletePost:function(postId)
+     {
+            swal({   title: "Are you sure?",
+                    text: "You will not be able to recover this post!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, delete it!",
+                    closeOnConfirm: false },
+                function(){
+                    $.ajax({
+                        type: 'DELETE',
+                        url: "/organization/"+orgId+"/discussions/"+discId,
+                        data:{postId:postId},
+                        success: function(data) {
+                            swal("Deleted!", "Your post has been deleted.", "success");
+                        }.bind(this),
+                        error: function(xhr, status, err) {
+                            console.error("Couldn't Retrieve discussions!");
+                        }.bind(this)
+                    });
+                });
+     },
     render:function(){
 
         return (
@@ -157,11 +205,15 @@ var Post = React.createClass ({
                 <div className="col-xs-3 col-lg-2 discussion-user-img">
                     <a href={"/profile/"+this.props.from.username}><img src={this.props.from.img} className="discussion-userImg" /></a>
                 </div>
-                <div className="col-xs-9 col-lg-10 discussion-user-info">
+                <div className="col-xs-9 col-lg-9 discussion-user-info">
                     <a href={"/profile/"+this.props.from.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.from.name}</h4></a>
                     <p className="discussion-about">{this.props.from.about}</p>
                     <p className="discussion-Date">{this.state.createdAt}</p>
                 </div>
+                <div className="col-xs-9 col-lg-1">
+                    { username == this.props.from.username? <a onClick={this.deletePost.bind(this,this.props.postId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
+                </div>
+
                 <div className="col-xs-12 col-lg-12" >
                     <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                 </div>

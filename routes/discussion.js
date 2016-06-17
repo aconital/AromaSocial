@@ -187,10 +187,57 @@ module.exports=function(app,Parse,io) {
         });
 
     });
+    //delete a whole discussion and its posts
     app.delete('/organization/:objectId/discussions',function(req,res,next){
-
+        var discId= req.body.discId
     });
+    //delete a post in discussion
     app.delete('/organization/:objectId/discussions/:discId',function(req,res,next){
+        var postId= req.body.postId;
+
+        var Discussion_post = Parse.Object.extend("Discussion_post");
+        var query = new Parse.Query(Discussion_post);
+        query.equalTo("objectId",postId);
+        query.first({
+            success: function (result) {
+                if(result!=null){
+
+                       result.destroy({
+                           success: function(model, response){
+                               var Discussion = Parse.Object.extend("Discussion");
+                               var query = new Parse.Query(Discussion);
+                               query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+                               query.equalTo("objectId",req.params.discId);
+                               query.first({
+                                   success: function (r) {
+                                       if(r!=null){
+                                            r.remove("posts",{"__type":"Pointer","className":"Discussion_post","objectId":postId});
+                                            r.save(null, { useMasterKey: true }).then(function () {
+                                                io.to(req.user.id).emit('DiscussionPostDeleted',{discId:req.params.discId,postId:postId});
+                                               res.json({msg: "success"});
+                                           });
+                                       }
+                                       else
+                                       res.json({error:"Oops! Something went wrong!"});
+                                   },
+                                   error: function (error) {
+                                       res.render('index', {title: error, path: req.path});
+                                   }
+                               });
+                           },
+                           error: function(model, response){
+                               res.json({error:"Could not delete the post"});
+                           }
+                       });
+                }
+                else
+                res.json({error:"Post didn't found!"});
+            },
+            error: function (error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
 
     });
 
