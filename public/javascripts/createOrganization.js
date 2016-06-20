@@ -105,11 +105,8 @@ var CreateOrganization = React.createClass({
 							street: this.state.street,
 							postalcode: this.state.postalcode,
 							website: this.state.website};
-			this.setState({createStatus: 'Please wait...'});
-
 			this.setState({buttonInputText: "Getting our ducks in a row..."});
 			this.setState({buttonInputDisabled: true});
-
 			$.ajax({
 				url: '/create/organization',
 				dataType: 'json',
@@ -119,7 +116,8 @@ var CreateOrganization = React.createClass({
 				processData: false,
 				success: function(data) {
 					this.setState({createStatus: 'Homepage created! Redirecting...'});
-					window.location = '../organization/' + data.location;
+					console.log(data.org_url);
+					window.location = '../organization/' + data.org_url;
 				}.bind(this),
 				error: function(xhr, status, err) {
 					console.error('/create/organization', status, err.toString());
