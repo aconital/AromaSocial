@@ -419,7 +419,7 @@ var Home = React.createClass({
                     </div>
                     <div className="row home-connections-box">
                         <div>
-                            <h4><span className="nfButton">Connections <small>(<a href="#">3</a>)</small></span></h4>
+                            <h4><span className="nfButton">Networks <small>(<a href="#">3</a>)</small></span></h4>
                         </div>
                         <div className="member-section">
                             <ul className="thumbnail-list">
