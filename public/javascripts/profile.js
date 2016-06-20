@@ -85,6 +85,11 @@ var CustomTags = React.createClass({
                 return;
             }
         }
+        tags.push({
+                    id: tags.length + 1,
+                    text: tag
+                });
+                this.setState({tags: tags});
         ids.push(tag);
         this.setState({ids: ids});
         console.log("user not in system. Just adding tag");

@@ -3,6 +3,18 @@ function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
+var userHandler = function(item) {
+
+}
+
+var pubHandler = function(item) {
+
+}
+
+var orgHandler = function(item) {
+
+}
+
 // ALL
 $(function() {
   if ($('.auto').length != 0) {
@@ -24,7 +36,7 @@ $(function() {
                     // });
                     $.map(data, function(item){
                       var dlink = "/profile/" + item.username;
-                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink});
+                      r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink, buttonText: 'Connect'});
                     });
                   },
                   error: function(xhr) {
@@ -49,7 +61,7 @@ $(function() {
                       //console.log(item);
                       var type = item.type;
                       var dlink = "/publication/" + type + "/" + item.objectId;
-                      r.push({label: item.title, value: item.title, category: toTitleCase(item.type), imgsrc: "/images/paper.png", link: dlink});
+                      r.push({label: item.title, value: item.title, category: toTitleCase(item.type), imgsrc: "/images/paper.png", link: dlink, buttonText: 'See More'});
                     });
                   },
                   error: function(xhr) {
@@ -70,7 +82,7 @@ $(function() {
                     // });
                     $.map(data, function(item){
                       var dlink = "/organization/" + item.name;
-                      r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink});
+                      r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink, buttonText: 'Join'});
                     });
                   },
                   error: function(xhr) {
@@ -78,6 +90,7 @@ $(function() {
                   }
                 })
              ).then(function() {
+              console.log(r);
               res(r);
             });
                 
@@ -92,10 +105,17 @@ $(function() {
                 event.preventDefault();
                 return false;
             },
-            select: function(event, ui) {
-              window.location.href = ui.item.link;
+            select: function(e, ui) {
+              console.log(ui);
+              console.log(e);
+              if (e.toElement.name === 'itemName') {
+                window.location.href = ui.item.link;
+              } else if (e.toElement.name === 'itemButton') {
+                console.log("Button pressed");
+              }
             }
      }).data("custom-catcomplete")._renderItem = function(ul, item) {
+            // check type of item here and deal with it
              return $("<div></div>").data("ui-autocomplete-item", item)
                      .append("<div class='item-box'>"
                       +"<div class='item-box-left'>"
@@ -104,10 +124,10 @@ $(function() {
                             +"<img class='search-img' src='" + item.imgsrc + "' />"
                             +"</a>"+"</div></div>"
                             +"<div class='item-box-right'>"
-                              +"<a style='cursor: pointer'>"
+                              +"<a name='itemName' style='cursor: pointer'>"
                                 + item.label
                               + "</a>"
-                              +"<button style='float:right'>See More</button>"
+                              +"<button name='itemButton' style='float:right'>" + item.buttonText + "</button>"
                             +"</div>"
                       + "</div></div></div></div>")
                      .appendTo(ul);

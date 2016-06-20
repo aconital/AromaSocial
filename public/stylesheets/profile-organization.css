@@ -179,11 +179,7 @@
 } .item-box-right {
     float:left;
     width:80%;
-}
-.item-box-button {
-
-}
-.item-search-field {
+} .item-search-field {
     margin: 0px;
 } .item-add-button {
     color: var(--white-color);
