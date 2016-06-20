@@ -1254,7 +1254,7 @@ module.exports=function(app,Parse,io) {
                         id: "org_" + r.get("orgId1").id + "_" + r.get("orgId0").id + "_inv",
                         type: "org2orgrequest",
                         from: {
-                            userId: r.get("orgId1").id,
+                            userId: r.get("orgId1").get("name"),
                             username: r.get("orgId1").get("name"),
                             name: r.get("orgId1").get("displayName"),
                             userImgUrl: r.get("orgId1").get("picture").url(),
