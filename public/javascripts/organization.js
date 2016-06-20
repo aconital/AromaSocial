@@ -345,7 +345,17 @@ var Home = React.createClass({
     },
     closeModal:function(){
         this.setState({showModal:false});
-    },
+    },inviteTrigger: function(e) {
+    console.log(e);
+    e.stopPropagation();
+    var source = {
+        id: objectId,
+        name: name,
+        displayName: displayName,
+        imgUrl: picture
+    };
+    invite(e.nativeEvent, "org2people", source);
+},
     render:function(){
         var discussions;
             if(this.state.discussions.length>0)
@@ -404,7 +414,7 @@ var Home = React.createClass({
                          </ul>
                         </div>
                         <div className = "createorg_panel">
-                            <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
+                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
                         </div>
                     </div>
                 </div>
