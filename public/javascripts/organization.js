@@ -417,6 +417,21 @@ var Home = React.createClass({
                             <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
                         </div>
                     </div>
+                    <div className="row home-connections-box">
+                        <div>
+                            <h4><span className="nfButton">Connections <small>(<a href="#">3</a>)</small></span></h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="thumbnail-list">
+                                <li><img src="http://159.203.60.67:1336/parse/files/development/9fdb1cf649b1814567ef53dbbed0a7de_org_picture.png" /></li>
+                                <li><img src="https://upload.wikimedia.org/wikipedia/en/0/03/Uwaterloo_seal.gif" /></li>
+                                <li><img src="https://meds.queensu.ca/templates/medicine/img/QueensLogo_colour.png" /></li>
+                            </ul>
+                        </div>
+                        <div className = "createorg_panel">
+                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>
+                        </div>
+                    </div>
                 </div>
 
 
