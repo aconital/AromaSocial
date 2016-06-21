@@ -222,7 +222,7 @@ var InfoEditField = React.createClass({
                 tagsElement = this.props.initVal.map(function(name) {
                     var label = name.replace(/_/g, " ").replace(/(\.\d*)/g, ""),
                         link = '/profile/' + name;
-                    return (<a href={link}>{label}</a>);
+                    return label;
                 });
             }
 

@@ -3,7 +3,7 @@ var Modal = ReactBootstrap.Modal;
 var Button = ReactBootstrap.Button;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 var Tooltip = ReactBootstrap.Tooltip;
-
+var Tab = ReactBootstrap.Tab, Tabs = ReactBootstrap.Tabs;
 
 // used when the settings modal is accessed from a list of entries (eg. profile, organization)
 var settingsModalDeleteListEntry = function(path, callback) {
@@ -49,6 +49,7 @@ var SettingsModal = React.createClass({
         return { 
             showModal: false,
             isDisabled: false,
+            activeKey: 3,
             message: 'This action cannot be undone.' };
     },
     close() {
@@ -70,47 +71,93 @@ var SettingsModal = React.createClass({
         }
         console.log("end");
     },
+    handleSelect(eventKey) {
+        event.preventDefault();
+        console.log(`selected ${eventKey}`);
+        this.setState({ activeKey: eventKey });
+    },
 
     render() {
-
-        const tooltip_del = (
-            <Tooltip id="tooltip_del"><strong>Delete!</strong></Tooltip>
+        const tooltip_settings = (
+            <Tooltip id="tooltip_settings"><strong>Settings</strong></Tooltip>
         );
+
         return (
             <span>
-                <OverlayTrigger placement="top" overlay={tooltip_del}>
-                    <span className="glyphicon glyphicon-remove space settings-btn" onClick={this.open}></span>
+                <OverlayTrigger placement="top" overlay={tooltip_settings}>
+                    <span className="glyphicon glyphicon-pencil space settings-btn" onClick={this.open}></span>
                 </OverlayTrigger>
 
                 <Modal show={this.state.showModal} onHide={this.close}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Confirmation</Modal.Title>
+                        <Modal.Title>Settings</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/*<div id="">
-                            <h4>Update Uploaded File</h4>
-                            <input className="form-control" type="file" name="publication-upload" id="" required onChange={this.handleFile} />
-                        </div>
-
-                        <div id="">
-                            <h4>Update Uploaded Picture</h4>
-                            <input className="form-control" type="file" name="publication-upload" id="" required onChange={this.handlePicture} />
-                        </div>
-
-                        <div id="">
-                            <h4>Delete Entry</h4>
-                            <p>Caution: This action cannot be undone. Please save changes to complete the operation.</p>
-                            <Button block bsStyle="danger" onClick={this.TODO}>Delete</Button>
-                        </div>*/}
-
-                        <h4>Are you sure you want to delete this entry?</h4>
-                        <p>{this.state.message}</p>
+                        <Tabs activeKey={this.state.activeKey} onSelect={this.handleSelect}>
+                            <Tab  eventKey={1} title="Update File">
+                                <UpdateTab type="File" msg={this.state.message} />
+                            </Tab>
+                            <Tab  eventKey={2} title="Update Picture">
+                                <UpdateTab type="Picture" msg={this.state.message} />
+                            </Tab>
+                            <Tab eventKey={3} title="Delete">
+                                <DeleteTab delete={this.delete} msg={this.state.message} />
+                            </Tab>
+                        </Tabs>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button onClick={this.close}>Cancel</Button><Button bsStyle="danger" className="del-btn" onClick={this.delete} disabled={this.state.isDisabled}>Delete</Button>
+                        <Button onClick={this.close}>Cancel</Button><Button bsStyle="primary" className="del-btn" onClick={this.close} disabled={this.state.isDisabled}>Save</Button>
                     </Modal.Footer>
                 </Modal>
             </span>
+        );
+    }
+});
+
+var UpdateTab = React.createClass({
+    getInitialState() {
+        return {
+            disabled: false,
+        };
+    },
+
+    render() {
+        return (
+            <div id="">
+                <h4>Update Uploaded {this.props.type}</h4>
+                <p>You can upload a new {this.props.type} to associate with this entry page.</p>
+                <input className="form-control" type="file" name="publication-upload" id="" required onChange={this.handleFile} />
+            </div>
+        );
+    }
+});
+
+var DeleteTab = React.createClass({
+    getInitialState() {
+        return {
+            disabled: false,
+            buttonText: 'Delete'
+        };
+    },
+    handleButton(e) {
+        var conf = confirm("Are you sure you want to delete this page?");
+        if (conf == true) {
+            this.setState({ disabled: true,
+                            buttonText: 'Deleting entry. Please wait...' });
+            this.props.delete();
+        } else {
+            console.log("not deleted");
+        }
+    },
+
+    render() {
+        return (
+            <div id="">
+                <h4>Delete Entry</h4>
+                <p>You can delete the current entry page and all of its contents.</p>
+                <p>Caution: This action cannot be undone.</p>
+                <Button block bsStyle="danger" disabled={this.state.disabled} onClick={this.handleButton}>{this.state.buttonText}</Button>
+            </div>
         );
     }
 });
