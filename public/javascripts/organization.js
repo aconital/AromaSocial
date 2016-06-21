@@ -236,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About']} />
                         </div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About']} />
                         </div>
                     </div>
                 </div>
@@ -285,10 +285,7 @@ var OrganizationMenu = React.createClass ({
     clicked: function (index) {
         this.setState({activeLabelIndex: index, selectedTab: index});
     },
-    showPeople: function (index) {
-        this.setState({activeLabelIndex: -1, selectedTab: index});
-    },
-    showConnections: function (index)
+    showTab:function(index)
     {
         this.setState({activeLabelIndex: -1, selectedTab: index});
     },
@@ -296,7 +293,14 @@ var OrganizationMenu = React.createClass ({
         var self = this;
 
         var tabMap = {
-            0: <Home viewConnections={this.showConnections.bind(self,8)} viewPeople={this.showPeople.bind(self,7)} objectId={objectId} />,
+            0: <Home showEquipment={this.showTab.bind(self,2)}
+                     showProjects={this.showTab.bind(self,3)}
+                     showPublications={this.showTab.bind(self,4)}
+                     showData={this.showTab.bind(self,5)}
+                     showModels={this.showTab.bind(self,6)}
+                     viewPeople={this.showTab.bind(self,7)}
+                     viewConnections={this.showTab.bind(self,8)}
+                     objectId={objectId} />,
             1: <About objectId={objectId} />,
             2: <Equipments objectId={objectId}/>,
             3: <Projects objectId={objectId}/>,
@@ -472,35 +476,45 @@ var Home = React.createClass({
                         <div className="member-section">
                             <ul className="resource-list">
                                 <li className="resource-item">
+                                    <a onClick={this.props.showData}>
                                     <div>
                                         <img className="resource-img" src="../images/figures.png"/>
                                         <span className="resource-caption">Figures &amp; Data</span>
                                     </div>
+                                    </a>
 
                                 </li>
                                 <li className="resource-item">
+                                    <a onClick={this.props.showModels}>
                                     <div>
                                         <img className="resource-img" src="../images/code.png"/>
                                         <span className="resource-caption">Software &amp; Code</span>
                                     </div>
+                                    </a>
                                 </li>
                                 <li className="resource-item">
+                                    <a onClick={this.props.showPublications}>
                                     <div>
                                         <img className="resource-img" src="../images/publication.png"/>
                                         <span className="resource-caption">Publications</span>
                                     </div>
+                                    </a>
                                 </li>
                                 <li className="resource-item">
+                                    <a onClick={this.props.showEquipment}>
                                     <div>
                                         <img className="resource-img" src="../images/equipment.png"/>
                                         <span className="resource-caption">Equipments</span>
                                     </div>
+                                    </a>
                                 </li>
                                 <li className="resource-item">
+                                    <a onClick={this.props.showProjects}>
                                     <div>
                                         <img className="resource-img" src="../images/project.png"/>
                                         <span className="resource-caption">Projects</span>
                                     </div>
+                                    </a>
                                 </li>
                             </ul>
                         </div>
