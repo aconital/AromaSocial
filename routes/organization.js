@@ -1283,6 +1283,51 @@ module.exports=function(app,Parse,io) {
         })
     });
 
+
+    app.get("/organization/:objectId/partialMembers",function(req,res,next){
+        var people =[];
+        var counter=0;
+        var query = new Parse.Query('Relationship');
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
+        query.include('userId');
+        query.each(function(result) {
+
+
+            var verified= result.get('verified');
+            var user= result.get('userId');
+            var username= user.get('username');
+            var fullname=user.get('fullname');
+            var userImgUrl=user.get('picture').url();
+
+            if(verified) {
+                counter++;
+                //we only need 4 members to show
+                if(counter <5)
+                {
+                    var person = {
+                        id: user.id,
+                        username:username,
+                        fullname: fullname,
+                        userImgUrl: userImgUrl,
+                    };
+                    people.push(person);
+                }
+            }
+        }).then(function(){
+            res.json({total:counter,people:people});
+        }, function(err) {
+           res.json({err:err});
+        });
+    });
+
+    app.get("/organization/:id/partialNetwork",function(req,res,next){
+
+    });
+
+
+    /*
+     *     HELPER METHODS
+     */
     function notifyadmins(orgId,user)
     {
         var innerQuery = new Parse.Query("Organization");

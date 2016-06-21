@@ -332,13 +332,42 @@ var OrganizationMenu = React.createClass ({
 
 var Home = React.createClass({
     getInitialState: function() {
-        return {showModal:false,discussions:[]}
+        return {showModal:false,discussions:[],partialMembers:{total:0,people:[]}}
     },
     componentWillMount : function() {
         var discussionsUrl= "/organization/"+objectId+"/discussions";
         $.ajax({
             type: 'GET',
             url: discussionsUrl,
+            success: function(data) {
+                this.setState({ discussions: data.discussions });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+        this.loadPartialMembers();
+        this.loadPartialNetwork();
+
+    },
+    loadPartialMembers:function()
+    {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/partialMembers",
+            success: function(data) {
+                this.setState({ partialMembers: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+    },
+    loadPartialNetwork:function()
+    {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/partialNetwork",
             success: function(data) {
                 this.setState({ discussions: data.discussions });
             }.bind(this),
@@ -353,7 +382,6 @@ var Home = React.createClass({
     closeModal:function(){
         this.setState({showModal:false});
     },inviteTrigger: function(e) {
-    console.log(e);
     e.stopPropagation();
     var source = {
         id: objectId,
@@ -365,7 +393,7 @@ var Home = React.createClass({
 },
     render:function(){
         var discussions;
-            if(this.state.discussions.length>0)
+        if(this.state.discussions.length>0)
             {
                 discussions = this.state.discussions.map(function (disc) {
                     return (
@@ -377,9 +405,22 @@ var Home = React.createClass({
                 });
             }
         else
-            {
-                discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
-            }
+            discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+        var members;
+        if(this.state.partialMembers.people.length>0)
+         {
+             members= this.state.partialMembers.people.map(function(member,index){
+                 return (
+                     <li key={index}>
+                         <a href={"/profile/"+member.username}><img title={member.fullname} src={member.userImgUrl} /></a>
+                     </li>
+
+                 );
+             });
+         }
+        else
+            members= <div className="no-discussion"><p>Start inviting members!</p></div>
+
         return (
             <div className="row">
                 <Modal show={this.state.showModal} onHide={this.closeModal}>
@@ -410,14 +451,11 @@ var Home = React.createClass({
 
                     <div className="row">
                         <div>
-                        <h4><span className="nfButton">Members <small>(<a onClick={this.props.viewPeople} href="#">124</a>)</small></span></h4>
+                        <h4><span className="nfButton">Members <small>(<a onClick={this.props.viewPeople} href="#">{this.state.partialMembers.total}</a>)</small></span></h4>
                         </div>
                         <div className="member-section">
                          <ul className="thumbnail-list">
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/f288f2f08b4f197c3d077fce068690d9_user_picture.jpg" /></li>
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/96c7110632da4e71812e74f8d2206bd7_user_picture.jpg" /></li>
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/8e73c4c765a8dc93ae945883e21ef82e_user_picture.jpg" /></li>
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/51bc3e7b22434d0036dc3f8821e0f0ce_user.png" /></li>
+                             {members}
                          </ul>
                         </div>
                         <div className = "createorg_panel">
