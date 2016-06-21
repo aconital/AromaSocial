@@ -236,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
@@ -279,25 +279,32 @@ var Organization = React.createClass ({
 });
 
 var OrganizationMenu = React.createClass ({
-    getInitialState: function() {
-        return { focused: 0 };
+    getInitialState: function () {
+        return {activeLabelIndex: 0, selectedTab: 0};
     },
-    clicked: function(index) {
-        this.setState({ focused: index });
+    clicked: function (index) {
+        this.setState({activeLabelIndex: index, selectedTab: index});
+    },
+    showPeople: function (index) {
+        this.setState({activeLabelIndex: -1, selectedTab: index});
+    },
+    showConnections: function (index)
+    {
+        this.setState({activeLabelIndex: -1, selectedTab: index});
     },
     render: function() {
         var self = this;
 
         var tabMap = {
-            0: <Home objectId={objectId} />,
+            0: <Home viewConnections={this.showConnections.bind(self,8)} viewPeople={this.showPeople.bind(self,7)} objectId={objectId} />,
             1: <About objectId={objectId} />,
-            2: <People isAdmin={this.props.isAdmin} />,
-            3: <Connections isAdmin={this.props.isAdmin}  />,
-            4: <Equipments objectId={objectId}/>,
-            5: <Projects objectId={objectId}/>,
-            6: <Publications objectId={objectId}/>,
-            7: <Data objectId={objectId}/>,
-            8: <Models objectId={objectId}/>
+            2: <Equipments objectId={objectId}/>,
+            3: <Projects objectId={objectId}/>,
+            4: <Publications objectId={objectId}/>,
+            5: <Data objectId={objectId}/>,
+            6: <Models objectId={objectId}/>,
+            7: <People isAdmin={this.props.isAdmin} />,
+            8: <Connections isAdmin={this.props.isAdmin}  />
 
         };
         return (
@@ -306,7 +313,7 @@ var OrganizationMenu = React.createClass ({
                     <ul id="content-nav">
                         {this.props.tabs.map(function(tab,index){
                             var style = "";
-                            if (self.state.focused == index) {
+                            if (self.state.activeLabelIndex == index) {
                                 style = "selected-tab";
                             }
                             return <li id={style}>
@@ -316,7 +323,7 @@ var OrganizationMenu = React.createClass ({
                     </ul>
                 </div>
                 <div id="content" className="content">
-                    {tabMap.hasOwnProperty(self.state.focused) ? tabMap[self.state.focused] : ""}
+                    {tabMap.hasOwnProperty(self.state.selectedTab) ? tabMap[self.state.selectedTab] : ""}
                 </div>
             </div>
         );
@@ -325,7 +332,7 @@ var OrganizationMenu = React.createClass ({
 
 var Home = React.createClass({
     getInitialState: function() {
-        return {showModal:false,discussions:[]}
+        return {showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
     },
     componentWillMount : function() {
         var discussionsUrl= "/organization/"+objectId+"/discussions";
@@ -339,16 +346,55 @@ var Home = React.createClass({
                 console.error("Couldn't Retrieve discussions!");
             }.bind(this)
         });
+        this.loadPartialMembers();
+        this.loadPartialNetwork();
+
+    },
+    loadPartialMembers:function()
+    {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/partialMembers",
+            success: function(data) {
+                this.setState({ partialMembers: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+    },
+    loadPartialNetwork:function()
+    {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/partialNetworks",
+            success: function(data) {
+                this.setState({ partialNetworks: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
     },
     openModal:function(){
         this.setState({showModal:true});
     },
     closeModal:function(){
         this.setState({showModal:false});
-    },
+    },inviteTrigger: function(e) {
+    e.stopPropagation();
+    var source = {
+        id: objectId,
+        name: name,
+        displayName: displayName,
+        imgUrl: picture
+    };
+    invite(e.nativeEvent, "org2people", source);
+},
     render:function(){
+        //discussions
         var discussions;
-            if(this.state.discussions.length>0)
+        if(this.state.discussions.length>0)
             {
                 discussions = this.state.discussions.map(function (disc) {
                     return (
@@ -360,9 +406,38 @@ var Home = React.createClass({
                 });
             }
         else
-            {
-                discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
-            }
+            discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+        //members
+        var members;
+        if(this.state.partialMembers.people.length>0)
+         {
+             members= this.state.partialMembers.people.map(function(member,index){
+                 return (
+                     <li key={index}>
+                         <a href={"/profile/"+member.username}><img title={member.fullname} src={member.userImgUrl} /></a>
+                     </li>
+
+                 );
+             });
+         }
+        else
+            members= <div className="no-discussion"><p>Start inviting members!</p></div>
+        //networks
+        var networks;
+        if(this.state.partialNetworks.orgs.length>0)
+        {
+            networks= this.state.partialNetworks.orgs.map(function(org,index){
+                return (
+                    <li key={index}>
+                        <a href={"/organization/"+org.name}><img title={org.displayName} src={org.orgImgUrl} /></a>
+                    </li>
+
+                );
+            });
+        }
+        else
+            networks= <div className="no-discussion"><p>Connect with other networks!</p></div>
+
         return (
             <div className="row">
                 <Modal show={this.state.showModal} onHide={this.closeModal}>
@@ -390,23 +465,74 @@ var Home = React.createClass({
                                 <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
                             </div>
                     </div>
-
                     <div className="row">
                         <div>
-                        <h4><span className="nfButton">Members <small>(<a href="#">124</a>)</small></span></h4>
+                            <h4>Resources</h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="resource-list">
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/figures.png"/>
+                                        <span className="resource-caption">Figures &amp; Data</span>
+                                    </div>
+
+                                </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/code.png"/>
+                                        <span className="resource-caption">Software &amp; Code</span>
+                                    </div>
+                                </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <span className="resource-caption">Publications</span>
+                                    </div>
+                                </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/equipment.png"/>
+                                        <span className="resource-caption">Equipments</span>
+                                    </div>
+                                </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/project.png"/>
+                                        <span className="resource-caption">Projects</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="row home-connections-box">
+                        <div>
+                        <h4><span className="nfButton">Members <small>(<a onClick={this.props.viewPeople} href="#">{this.state.partialMembers.total}</a>)</small></span></h4>
                         </div>
                         <div className="member-section">
                          <ul className="thumbnail-list">
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/f288f2f08b4f197c3d077fce068690d9_user_picture.jpg" /></li>
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/96c7110632da4e71812e74f8d2206bd7_user_picture.jpg" /></li>
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/8e73c4c765a8dc93ae945883e21ef82e_user_picture.jpg" /></li>
-                             <li><img src="http://159.203.60.67:1336/parse/files/development/51bc3e7b22434d0036dc3f8821e0f0ce_user.png" /></li>
+                             {members}
                          </ul>
                         </div>
                         <div className = "createorg_panel">
-                            <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
+                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
                         </div>
                     </div>
+                    <div className="row home-connections-box">
+                        <div>
+                            <h4><span className="nfButton">Networks <small>(<a onClick={this.props.viewConnections} href="#">{this.state.partialNetworks.total}</a>)</small></span></h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="thumbnail-list">
+                                {networks}
+                            </ul>
+                        </div>
+                        <div className = "createorg_panel">
+                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>
+                        </div>
+                    </div>
+
+
                 </div>
 
 

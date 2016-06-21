@@ -45,8 +45,6 @@ var Notification = React.createClass({
                 var notifications = this.state.notication_list.slice();
                 for (var i=0;i<data.length;i++)
                     notifications.push(data[i]);
-
-
                 this.setState({notication_list: notifications});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -131,6 +129,8 @@ var Notification = React.createClass({
         }
         else if(notification.type == "org2orgrequest")
         {
+            console.log(notification.extra.id)
+            console.log(notification.from.userId)
             $.ajax({
                 url: "/organization/" + notification.extra.id + "/pending_organization_action",
                 method: "POST",
