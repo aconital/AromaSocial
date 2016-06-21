@@ -296,15 +296,15 @@ var OrganizationMenu = React.createClass ({
         var self = this;
 
         var tabMap = {
-            0: <Home viewConnections={this.showConnections.bind(self,3)} viewPeople={this.showPeople.bind(self,2)} objectId={objectId} />,
+            0: <Home viewConnections={this.showConnections.bind(self,8)} viewPeople={this.showPeople.bind(self,7)} objectId={objectId} />,
             1: <About objectId={objectId} />,
-            2: <People isAdmin={this.props.isAdmin} />,
-            3: <Connections isAdmin={this.props.isAdmin}  />,
-            4: <Equipments objectId={objectId}/>,
-            5: <Projects objectId={objectId}/>,
-            6: <Publications objectId={objectId}/>,
-            7: <Data objectId={objectId}/>,
-            8: <Models objectId={objectId}/>
+            2: <Equipments objectId={objectId}/>,
+            3: <Projects objectId={objectId}/>,
+            4: <Publications objectId={objectId}/>,
+            5: <Data objectId={objectId}/>,
+            6: <Models objectId={objectId}/>,
+            7: <People isAdmin={this.props.isAdmin} />,
+            8: <Connections isAdmin={this.props.isAdmin}  />
 
         };
         return (
@@ -492,6 +492,18 @@ var Home = React.createClass({
                             <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>
                         </div>
                     </div>
+                    <div className="row home-connections-box">
+                        <div>
+                            <h4>Resources</h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="thumbnail-list">
+                                {networks}
+                            </ul>
+                        </div>
+                        
+                    </div>
+
                 </div>
 
 
