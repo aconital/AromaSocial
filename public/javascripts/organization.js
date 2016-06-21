@@ -332,7 +332,7 @@ var OrganizationMenu = React.createClass ({
 
 var Home = React.createClass({
     getInitialState: function() {
-        return {showModal:false,discussions:[],partialMembers:{total:0,people:[]}}
+        return {showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
     },
     componentWillMount : function() {
         var discussionsUrl= "/organization/"+objectId+"/discussions";
@@ -367,9 +367,9 @@ var Home = React.createClass({
     {
         $.ajax({
             type: 'GET',
-            url: "/organization/"+objectId+"/partialNetwork",
+            url: "/organization/"+objectId+"/partialNetworks",
             success: function(data) {
-                this.setState({ discussions: data.discussions });
+                this.setState({ partialNetworks: data });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve discussions!");
@@ -392,6 +392,7 @@ var Home = React.createClass({
     invite(e.nativeEvent, "org2people", source);
 },
     render:function(){
+        //discussions
         var discussions;
         if(this.state.discussions.length>0)
             {
@@ -406,6 +407,7 @@ var Home = React.createClass({
             }
         else
             discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+        //members
         var members;
         if(this.state.partialMembers.people.length>0)
          {
@@ -420,6 +422,21 @@ var Home = React.createClass({
          }
         else
             members= <div className="no-discussion"><p>Start inviting members!</p></div>
+        //networks
+        var networks;
+        if(this.state.partialNetworks.orgs.length>0)
+        {
+            networks= this.state.partialNetworks.orgs.map(function(org,index){
+                return (
+                    <li key={index}>
+                        <a href={"/organization/"+org.name}><img title={org.displayName} src={org.orgImgUrl} /></a>
+                    </li>
+
+                );
+            });
+        }
+        else
+            networks= <div className="no-discussion"><p>Connect with other networks!</p></div>
 
         return (
             <div className="row">
@@ -464,13 +481,11 @@ var Home = React.createClass({
                     </div>
                     <div className="row home-connections-box">
                         <div>
-                            <h4><span className="nfButton">Networks <small>(<a onClick={this.props.viewConnections} href="#">3</a>)</small></span></h4>
+                            <h4><span className="nfButton">Networks <small>(<a onClick={this.props.viewConnections} href="#">{this.state.partialNetworks.total}</a>)</small></span></h4>
                         </div>
                         <div className="member-section">
                             <ul className="thumbnail-list">
-                                <li><img src="http://159.203.60.67:1336/parse/files/development/9fdb1cf649b1814567ef53dbbed0a7de_org_picture.png" /></li>
-                                <li><img src="https://upload.wikimedia.org/wikipedia/en/0/03/Uwaterloo_seal.gif" /></li>
-                                <li><img src="https://meds.queensu.ca/templates/medicine/img/QueensLogo_colour.png" /></li>
+                                {networks}
                             </ul>
                         </div>
                         <div className = "createorg_panel">

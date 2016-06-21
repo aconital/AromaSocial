@@ -1320,8 +1320,62 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get("/organization/:id/partialNetwork",function(req,res,next){
-
+    app.get("/organization/:objectId/partialNetworks",function(req,res,next){
+        var orgId = req.params.objectId;
+        var orgs =[];
+        var counter=0;
+        var query = new Parse.Query("RelationshipOrg");
+        query.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId});
+        query.include('orgId1');
+        query.each(function(results) {
+            var verified = results.attributes.verified;
+            var connected_orgs = results.attributes.orgId1.attributes;
+            var orgId = results.attributes.orgId1.id;
+            var name = connected_orgs.name;
+            var displayName = connected_orgs.displayName;
+            var orgImgUrl = connected_orgs.picture.url()
+            //only orgs that are verified
+            if (verified) {
+                counter++;
+                if(counter<5) {
+                    var org = {
+                        orgId: orgId,
+                        name: name,
+                        displayName: displayName,
+                        orgImgUrl: orgImgUrl
+                    };
+                    orgs.push(org);
+                }
+            }
+        }).then(function(results){
+            var query1 = new Parse.Query("RelationshipOrg");
+            query1.equalTo('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId});
+            query1.include('orgId0');
+            query1.each(function(results) {
+                var verified = results.attributes.verified;
+                var connected_orgs = results.attributes.orgId0.attributes;
+                var orgId = results.attributes.orgId0.id;
+                var name = connected_orgs.name;
+                var displayName = connected_orgs.displayName;
+                var orgImgUrl = connected_orgs.picture.url();
+                //only orgs that are verified
+                if (verified) {
+                    counter++;
+                    if(counter<5)
+                    {
+                        var org = {
+                            orgId: orgId,
+                            name: name,
+                            displayName: displayName,
+                            orgImgUrl: orgImgUrl
+                        };
+                        orgs.push(org);
+                    }
+                }
+            }).then(function(results){
+                res.json({total:counter,orgs:orgs});
+            })
+        })
     });
 
 
