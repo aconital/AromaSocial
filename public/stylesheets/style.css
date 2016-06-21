@@ -6765,6 +6765,33 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
   display: block;
   background-position: center center;
   background-repeat: no-repeat;
+}
+.resource-list
+{
+  /* remove default list styles */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.resource-item
+{
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}
+.resource-caption {
+  display: block;
+}
+
+ .resource-img {
+  width: 70px;
+  height: 70px;
+  display: block;
+   margin-right: auto;
+   margin-left: auto;
+  background-position: center center;
+  background-repeat: no-repeat;
 
 }
 

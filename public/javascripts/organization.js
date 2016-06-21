@@ -465,8 +465,35 @@ var Home = React.createClass({
                                 <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
                             </div>
                     </div>
-
                     <div className="row">
+                        <div>
+                            <h4>Resources</h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="resource-list">
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/figures.png"/>
+                                        <span className="resource-caption">Figures &amp; Data</span>
+                                    </div>
+
+                                </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/code.png"/>
+                                        <span className="resource-caption">Software &amp; Code</span>
+                                    </div>
+                                </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <span className="resource-caption">Publications</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="row home-connections-box">
                         <div>
                         <h4><span className="nfButton">Members <small>(<a onClick={this.props.viewPeople} href="#">{this.state.partialMembers.total}</a>)</small></span></h4>
                         </div>
@@ -492,17 +519,7 @@ var Home = React.createClass({
                             <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>
                         </div>
                     </div>
-                    <div className="row home-connections-box">
-                        <div>
-                            <h4>Resources</h4>
-                        </div>
-                        <div className="member-section">
-                            <ul className="thumbnail-list">
-                                {networks}
-                            </ul>
-                        </div>
-                        
-                    </div>
+
 
                 </div>
 
