@@ -372,6 +372,27 @@ Parse.Cloud.afterSave("Data", function(request, response) {
 	});
 });
 
+Parse.Cloud.afterSave("Organization", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var orgId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.equalTo("orgId", orgId);
+	newsQuery.addDescending("updatedAt");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("type", "org_create");
+				feed.set("orgId", orgId);
+				feed.save();
+				response.success("Added Organization Newsfeed Entry");
+			}
+		},
+		error: function(error) {
+		}
+	});
+})
 //cascade through to other connected organizations
 Parse.Cloud.afterSave("Relationship", function(request) {
 	Parse.Cloud.useMasterKey();
@@ -379,6 +400,21 @@ Parse.Cloud.afterSave("Relationship", function(request) {
 	var orgId = request.object.get("orgId");
 	var verified = request.object.get("verified");
 	if (verified) {
+		var newsFeed=Parse.Object.extend("NewsFeed");
+		var newsQuery=new Parse.Query(newsFeed);
+		var feed = new newsFeed();
+		newsQuery.equalTo("orgId", orgId);
+		newsQuery.addDescending("updatedAt");
+		newsQuery.first({
+			success: function (result) {
+				if (result == undefined) {
+					feed.set("type", "org_create");
+					feed.set("orgId", orgId);
+					feed.save();
+					response.success("Added Organization Newsfeed Entry");
+				}
+			},
+		});
 		var query = new Parse.Query("RelationshipOrg");
 		query.equalTo("orgId1", orgId);
 		query.equalTo("type", 'contains');
