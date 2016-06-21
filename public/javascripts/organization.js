@@ -236,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
                         </div>
                     </div>
                 </div>
@@ -279,17 +279,24 @@ var Organization = React.createClass ({
 });
 
 var OrganizationMenu = React.createClass ({
-    getInitialState: function() {
-        return { focused: 0 };
+    getInitialState: function () {
+        return {activeLabelIndex: 0, selectedTab: 0};
     },
-    clicked: function(index) {
-        this.setState({ focused: index });
+    clicked: function (index) {
+        this.setState({activeLabelIndex: index, selectedTab: index});
+    },
+    showPeople: function (index) {
+        this.setState({activeLabelIndex: -1, selectedTab: index});
+    },
+    showConnections: function (index)
+    {
+        this.setState({activeLabelIndex: -1, selectedTab: index});
     },
     render: function() {
         var self = this;
 
         var tabMap = {
-            0: <Home objectId={objectId} />,
+            0: <Home viewConnections={this.showConnections.bind(self,3)} viewPeople={this.showPeople.bind(self,2)} objectId={objectId} />,
             1: <About objectId={objectId} />,
             2: <People isAdmin={this.props.isAdmin} />,
             3: <Connections isAdmin={this.props.isAdmin}  />,
@@ -306,7 +313,7 @@ var OrganizationMenu = React.createClass ({
                     <ul id="content-nav">
                         {this.props.tabs.map(function(tab,index){
                             var style = "";
-                            if (self.state.focused == index) {
+                            if (self.state.activeLabelIndex == index) {
                                 style = "selected-tab";
                             }
                             return <li id={style}>
@@ -316,7 +323,7 @@ var OrganizationMenu = React.createClass ({
                     </ul>
                 </div>
                 <div id="content" className="content">
-                    {tabMap.hasOwnProperty(self.state.focused) ? tabMap[self.state.focused] : ""}
+                    {tabMap.hasOwnProperty(self.state.selectedTab) ? tabMap[self.state.selectedTab] : ""}
                 </div>
             </div>
         );
@@ -403,7 +410,7 @@ var Home = React.createClass({
 
                     <div className="row">
                         <div>
-                        <h4><span className="nfButton">Members <small>(<a href="#">124</a>)</small></span></h4>
+                        <h4><span className="nfButton">Members <small>(<a onClick={this.props.viewPeople} href="#">124</a>)</small></span></h4>
                         </div>
                         <div className="member-section">
                          <ul className="thumbnail-list">
@@ -419,7 +426,7 @@ var Home = React.createClass({
                     </div>
                     <div className="row home-connections-box">
                         <div>
-                            <h4><span className="nfButton">Networks <small>(<a href="#">3</a>)</small></span></h4>
+                            <h4><span className="nfButton">Networks <small>(<a onClick={this.props.viewConnections} href="#">3</a>)</small></span></h4>
                         </div>
                         <div className="member-section">
                             <ul className="thumbnail-list">
