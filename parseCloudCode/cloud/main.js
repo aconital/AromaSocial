@@ -114,8 +114,6 @@ Parse.Cloud.afterSave("Project", function(request, response) {
 				feed.save();
 				response.success("Added Project Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -139,8 +137,6 @@ Parse.Cloud.afterSave("Pub_Book", function(request, response) {
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -164,8 +160,6 @@ Parse.Cloud.afterSave("Pub_Conference", function(request, response) {
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -189,8 +183,6 @@ Parse.Cloud.afterSave("Pub_Journal_Article", function(request, response) {
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -214,8 +206,6 @@ Parse.Cloud.afterSave("Pub_Patent", function(request, response) {
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -239,8 +229,6 @@ Parse.Cloud.afterSave("Pub_Report", function(request, response) {
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -264,8 +252,6 @@ Parse.Cloud.afterSave("Pub_Thesis", function(request, response) {
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -289,33 +275,32 @@ Parse.Cloud.afterSave("Pub_Unpublished", function(request, response) {
 				feed.save();
 				response.success("Added Publication Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
 Parse.Cloud.afterSave("Equipment", function(request, response) {
 	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("user");
+	var orgId=request.object.get("organization");
 	var equipId=request.object;
 	var newsFeed=Parse.Object.extend("NewsFeed");
 	var newsQuery=new Parse.Query(newsFeed);
 	var feed = new newsFeed();
 	newsQuery.select("updatedAt");
 	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("organization", orgId);
 	newsQuery.equalTo("equipId", equipId);
 	newsQuery.addDescending("updatedAt");
 	newsQuery.first({
 		success: function(result) {
 			if (result==undefined){
 				feed.set("from", userId);
+				feed.set("orgId", orgId);
 				feed.set("type", "equipment");
 				feed.set("equipmentId", equipId);
 				feed.save();
 				response.success("Added Equipment Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -340,8 +325,6 @@ Parse.Cloud.afterSave("Model", function(request, response) {
 				feed.save();
 				response.success("Added Model Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -366,8 +349,6 @@ Parse.Cloud.afterSave("Data", function(request, response) {
 				feed.save();
 				response.success("Added Data Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 });
@@ -379,6 +360,7 @@ Parse.Cloud.afterSave("Organization", function(request, response) {
 	var newsQuery=new Parse.Query(newsFeed);
 	var feed = new newsFeed();
 	newsQuery.equalTo("orgId", orgId);
+	newsQuery.equalTo("type", "org_create");
 	newsQuery.addDescending("updatedAt");
 	newsQuery.first({
 		success: function(result) {
@@ -388,11 +370,34 @@ Parse.Cloud.afterSave("Organization", function(request, response) {
 				feed.save();
 				response.success("Added Organization Newsfeed Entry");
 			}
-		},
-		error: function(error) {
 		}
 	});
 })
+
+Parse.Cloud.afterSave("Discussion", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId=request.object.get("madeBy");
+	var orgId=request.object.get("orgId");
+	var discId=request.object;
+	var newsFeed=Parse.Object.extend("NewsFeed");
+	var newsQuery=new Parse.Query(newsFeed);
+	var feed = new newsFeed();
+	newsQuery.equalTo("from", userId);
+	newsQuery.equalTo("discId", discId);
+	newsQuery.equalTo("type", "discussion");
+	newsQuery.first({
+		success: function(result) {
+			if (result==undefined){
+				feed.set("type", "discussion");
+				feed.set("orgId", orgId);
+				feed.set("from", userId);
+				feed.save();
+				response.success("Added Discussion Newsfeed Entry");
+			}
+		}
+	});
+})
+
 //cascade through to other connected organizations
 Parse.Cloud.afterSave("Relationship", function(request) {
 	Parse.Cloud.useMasterKey();
@@ -404,16 +409,18 @@ Parse.Cloud.afterSave("Relationship", function(request) {
 		var newsQuery=new Parse.Query(newsFeed);
 		var feed = new newsFeed();
 		newsQuery.equalTo("orgId", orgId);
+		newsQuery.equalTo("from", userId);
+		newsQuery.equalTo("type", "org_join");
 		newsQuery.addDescending("updatedAt");
 		newsQuery.first({
 			success: function (result) {
 				if (result == undefined) {
-					feed.set("type", "org_create");
+					feed.set("type", "org_join");
+					feed.set("from", userId);
 					feed.set("orgId", orgId);
 					feed.save();
-					response.success("Added Organization Newsfeed Entry");
 				}
-			},
+			}
 		});
 		var query = new Parse.Query("RelationshipOrg");
 		query.equalTo("orgId1", orgId);
