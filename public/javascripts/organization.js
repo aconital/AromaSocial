@@ -492,13 +492,13 @@ var Home = React.createClass({
                                 </li>
                                 <li className="resource-item">
                                     <div>
-                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <img className="resource-img" src="../images/equipment.png"/>
                                         <span className="resource-caption">Equipments</span>
                                     </div>
                                 </li>
                                 <li className="resource-item">
                                     <div>
-                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <img className="resource-img" src="../images/project.png"/>
                                         <span className="resource-caption">Projects</span>
                                     </div>
                                 </li>
