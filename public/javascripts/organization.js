@@ -490,6 +490,18 @@ var Home = React.createClass({
                                         <span className="resource-caption">Publications</span>
                                     </div>
                                 </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <span className="resource-caption">Equipments</span>
+                                    </div>
+                                </li>
+                                <li className="resource-item">
+                                    <div>
+                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <span className="resource-caption">Projects</span>
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>

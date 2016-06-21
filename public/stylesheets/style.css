@@ -6775,6 +6775,7 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
 }
 .resource-item
 {
+  width: 30%;
   margin-right: 5px;
   display: inline-block;
   vertical-align: top;
