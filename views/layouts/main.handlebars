@@ -173,9 +173,9 @@
                     </ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="navbar-hover"><a href="/profile/{{user.username}}"><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
+                    <li class="navbar-hover"><a href="/profile/{{user.username}}" rel="tooltip" title="Profile" ><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
                     <li class="dropdown connection-button">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a href="#" class="dropdown-toggle" rel="tooltip" title="Notifications" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <div class="notification-container">
                                 <span><i class="fa fa-user-plus"></i></span>
                                 <span class="notification-counter" style="display:none;">0</span>
@@ -186,7 +186,7 @@
                     </li>
                     {{!--<li class="dropdown logout-button"><a href="/setting" role="button"><span><i class="fa fa-cog" aria-hidden="true"></i></span></a>
                     </li>--}}
-                    <li class="dropdown logout-button"><a href="/signout" role="button"><span><i class="fa fa-sign-out" aria-hidden="true"></i></span></a>
+                    <li class="dropdown logout-button"><a href="/signout" rel="tooltip" title="Sign out" role="button"><span><i class="fa fa-sign-out" aria-hidden="true"></i></span></a>
                     </li>
 
                 {{else}}
