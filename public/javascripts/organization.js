@@ -476,6 +476,30 @@ var Home = React.createClass({
                         <div className="member-section">
                             <ul className="resource-list">
                                 <li className="resource-item">
+                                    <a onClick={this.props.showEquipment}>
+                                        <div>
+                                            <img className="resource-img" src="../images/equipment.png"/>
+                                            <span className="resource-caption">Equipments</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showProjects}>
+                                        <div>
+                                            <img className="resource-img" src="../images/project.png"/>
+                                            <span className="resource-caption">Projects</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showPublications}>
+                                        <div>
+                                            <img className="resource-img" src="../images/publication.png"/>
+                                            <span className="resource-caption">Publications</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
                                     <a onClick={this.props.showData}>
                                     <div>
                                         <img className="resource-img" src="../images/figures.png"/>
@@ -492,30 +516,7 @@ var Home = React.createClass({
                                     </div>
                                     </a>
                                 </li>
-                                <li className="resource-item">
-                                    <a onClick={this.props.showPublications}>
-                                    <div>
-                                        <img className="resource-img" src="../images/publication.png"/>
-                                        <span className="resource-caption">Publications</span>
-                                    </div>
-                                    </a>
-                                </li>
-                                <li className="resource-item">
-                                    <a onClick={this.props.showEquipment}>
-                                    <div>
-                                        <img className="resource-img" src="../images/equipment.png"/>
-                                        <span className="resource-caption">Equipments</span>
-                                    </div>
-                                    </a>
-                                </li>
-                                <li className="resource-item">
-                                    <a onClick={this.props.showProjects}>
-                                    <div>
-                                        <img className="resource-img" src="../images/project.png"/>
-                                        <span className="resource-caption">Projects</span>
-                                    </div>
-                                    </a>
-                                </li>
+
                             </ul>
                         </div>
                     </div>
