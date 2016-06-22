@@ -6777,17 +6777,24 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
 {
   width: 30%;
   margin-right: 5px;
+  margin-bottom: 15px;
   display: inline-block;
   vertical-align: top;
   text-align: center;
 }
+.resource-item a:hover
+{
+ text-decoration: none;
+}
 .resource-caption {
+  margin-top: 5px;
+  font-size: 13px;
   display: block;
 }
 
  .resource-img {
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
   display: block;
    margin-right: auto;
    margin-left: auto;
