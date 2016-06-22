@@ -15,7 +15,7 @@ var ConnectButton = React.createClass({
       $.ajax({
           url: connectURL,
           type: 'POST',
-          data: {userId: objectId},
+          data: {userId: this.props.objectId},
           success: function(status) {
               this.setState({status: status})
           }.bind(this),
@@ -208,7 +208,7 @@ var Container = React.createClass({
               //console.log(item);
               var type = item.type;
               var dlink = "/publication/" + type + "/" + item.objectId;
-              r.push({label: item.title, value: item.title, category: toTitleCase(item.type), imgsrc: "/images/paper.png", link: dlink, buttonText: 'See More'});
+              r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink, buttonText: 'See More'});
             });
           },
           error: function(xhr) {
@@ -250,8 +250,7 @@ var Container = React.createClass({
   },
   renderOption: function(option) {
     var button;
-    var thisOption = option;
-    switch (thisOption.category) {
+    switch (option.category) {
       case 'Users':
         button = <ConnectButton username={option.username} objectId={option.objectId}/>
         break;
@@ -267,23 +266,98 @@ var Container = React.createClass({
         <div className='item-box'>
           <div className='item-box-left'>
             <a style={{ cursor: 'pointer' }}>
-              <img className='search-img' src={thisOption.imgsrc}/>
+              <img className='search-img' src={option.imgsrc}/>
             </a>
           </div>
         </div>
 
         <div className='item-box-right'>
           <a name='itemName' style={{cursor:'pointer'}}>
-            {thisOption.label}
+            {option.label}
           </a>
           {button}
         </div>
       </div>
     )
   },
-  renderValue: function(option) {
-    window.location.href = option.link;
+  renderValue: function(option, e) {
+    console.log(option);
+    console.log("EVENT : ", e);
+    //window.location.href = option.link;
     //return <strong style={{ color: option.color }}>{option.label}</strong>;
+  },
+  renderMenu: function(menu) {
+    console.log("MENU RENDERER: ", menu);
+    var options = menu.options;
+    var users = options.filter(function(opt) {return opt.category === 'Users'});
+    var orgs = options.filter(function(opt) {return opt.category === 'Organizations'});
+    var pubs = options.filter(function(opt) {return opt.category === 'Publications'});
+    return (
+      <div>
+      {(users.length > 0) ? <h5>Users</h5>:null}
+      {users.map(function(usr) {
+        return (
+          <div>
+            <div className='item-box'>
+              <div className='item-box-left'>
+                <a style={{ cursor: 'pointer' }}>
+                  <img className='search-img' src={usr.imgsrc}/>
+                </a>
+              </div>
+            </div>
+
+            <div className='item-box-right'>
+              <a name='itemName' style={{cursor:'pointer'}}>
+                {usr.label}
+              </a>
+              <ConnectButton username={usr.username} objectId={usr.objectId}/>
+            </div>
+          </div>
+        )
+      })}
+      {(orgs.length > 0) ? <h5>Organizations</h5>:null}
+      {orgs.map(function(org) {
+        return (
+          <div>
+            <div className='item-box'>
+              <div className='item-box-left'>
+                <a style={{ cursor: 'pointer' }}>
+                  <img className='search-img' src={org.imgsrc}/>
+                </a>
+              </div>
+            </div>
+
+            <div className='item-box-right'>
+              <a name='itemName' style={{cursor:'pointer'}}>
+                {org.label}
+              </a>
+              <JoinButton objectId={org.objectId}/>
+            </div>
+          </div>
+        )
+      })}
+      {(pubs.length > 0) ? <h5>Publications</h5>:null}
+      {pubs.map(function(pub) {
+        return (
+          <div>
+            <div className='item-box'>
+              <div className='item-box-left'>
+                <a style={{ cursor: 'pointer' }}>
+                  <img className='search-img' src={pub.imgsrc}/>
+                </a>
+              </div>
+            </div>
+
+            <div className='item-box-right'>
+              <a name='itemName' style={{cursor:'pointer'}}>
+                {pub.label}
+              </a>
+            </div>
+          </div>
+        )
+      })}
+      </div>
+    )
   },
   render: function () {
     return (
@@ -296,6 +370,7 @@ var Container = React.createClass({
           value={this.state.value}
           valueRenderer={this.renderValue}
           onInputChange={this.inputChange}
+          menuRenderer={this.renderMenu}
         />
       </div>
     )
