@@ -248,38 +248,6 @@ var Container = React.createClass({
   renderLink: function() {
     return <a style={{ marginLeft: 5 }} href="/upgrade" target="_blank">Upgrade here!</a>;
   },
-  renderOption: function(option) {
-    var button;
-    switch (option.category) {
-      case 'Users':
-        button = <ConnectButton username={option.username} objectId={option.objectId}/>
-        break;
-      case 'Organizations':
-        button = <JoinButton objectId={option.objectId}/>
-        break;
-      default:
-        button = null;
-        break;
-    }
-    return (
-      <div>
-        <div className='item-box'>
-          <div className='item-box-left'>
-            <a style={{ cursor: 'pointer' }}>
-              <img className='search-img' src={option.imgsrc}/>
-            </a>
-          </div>
-        </div>
-
-        <div className='item-box-right'>
-          <a name='itemName' style={{cursor:'pointer'}}>
-            {option.label}
-          </a>
-          {button}
-        </div>
-      </div>
-    )
-  },
   renderValue: function(option, e) {
     console.log(option);
     console.log("EVENT : ", e);
@@ -294,7 +262,7 @@ var Container = React.createClass({
     var pubs = options.filter(function(opt) {return opt.category === 'Publications'});
     return (
       <div>
-      {(users.length > 0) ? <h5>Users</h5>:null}
+      {(users.length > 0) ? <span className="categoryHeader">Users</span>:null}
       {users.map(function(usr) {
         return (
           <div>
@@ -315,7 +283,7 @@ var Container = React.createClass({
           </div>
         )
       })}
-      {(orgs.length > 0) ? <h5>Organizations</h5>:null}
+      {(orgs.length > 0) ? <h5 className="categoryHeader">Organizations</h5>:null}
       {orgs.map(function(org) {
         return (
           <div>
@@ -336,7 +304,7 @@ var Container = React.createClass({
           </div>
         )
       })}
-      {(pubs.length > 0) ? <h5>Publications</h5>:null}
+      {(pubs.length > 0) ? <h5 className="categoryHeader">Publications</h5>:null}
       {pubs.map(function(pub) {
         return (
           <div>
@@ -365,7 +333,6 @@ var Container = React.createClass({
         <Select
           placeholder="Search..."
           options={this.state.data}
-          optionRenderer={this.renderOption}
           onChange={this.setValue}
           value={this.state.value}
           valueRenderer={this.renderValue}
