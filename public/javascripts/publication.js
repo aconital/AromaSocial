@@ -103,6 +103,7 @@ var Publication = React.createClass ({
         var dataForm = state; // only posts the updated field.
         dataForm['pub_class'] = this.state.pub_class;
 
+                console.log(this.state.updatePath);
         $.ajax({
             url: this.state.updatePath + "/update",
             dataType: 'json',
@@ -130,7 +131,7 @@ var Publication = React.createClass ({
             downloadIcon;
 
         if (filename || false) {
-            downloadIcon = <a href={filename} className="image-link" download><span className="glyphicon glyphicon-download space"></span></a>;
+            downloadIcon = <a href={filename} className="image-link" ><span className="glyphicon glyphicon-download space"></span></a>;
         }
 
         if (currentUserId == creatorId) {
@@ -150,7 +151,7 @@ var Publication = React.createClass ({
                     {(currentUserId == creatorId) ? <h2 className="no-margin h2-editable-wrap"><textarea rows="1" className="h2-editable h2-editable-spacing" type="text" name="title" style={{width:'88%'}} onChange={this.handleChange} onBlur={this.submitChange}>{this.state.title}</textarea></h2> : <h2 className="no-margin h2-non-editable-wrap">{title}</h2>}
                     <h2 className="corner">
                         {downloadIcon}
-                        {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry}/> : <span></span>}
+                        {(currentUserId == creatorId) ?  <SettingsModal delete={this.deleteEntry} update={this.submitChange} /> : <span></span>}
                     </h2>
                     <p className="p-noneditable"><strong>Abstract:</strong></p>
                     {(currentUserId == creatorId) ? <p className="no-margin p-editable-bottom-wrap"><textarea rows="5" className="p-editable p-editable-bottom-spacing" type="text" name="abstract" onChange={this.handleChange} onBlur={this.submitChange} value={this.state.abstract}>{this.state.abstract}</textarea></p> : <pre className="p-non-editable-bottom-wrap">{this.state.description}</pre>}

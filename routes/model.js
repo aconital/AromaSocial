@@ -127,6 +127,26 @@ module.exports=function(app,Parse,io) {
         });
     });
 
+    app.post('/model/:objectId/upload', function(req,res,next) {
+        var query = new Parse.Query("Model");
+        query.get(req.params.objectId).then(function(result) {
+            if (req.body.file != null && result != undefined) {
+                var name = req.params.objectId + "_project_file." + req.body.fileType;
+                var fileBuffer = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var newFile = new Parse.File(name, {base64: fileBuffer});
+                newFile.save().then(function() {
+                    result.set('file', newFile)
+                    result.save().then(function(){
+                        res.status(200).json({status: "File Uploaded Successfully!"});
+                    });
+                });
+            }
+            else{
+                res.status(500).json({status: "File Upload Failed!"});
+            }
+        });
+    });
+
     app.post('/profile/:username/model', is_auth, function(req,res,next) {
         var currentUser = req.user;
         var Model = Parse.Object.extend("Model");

@@ -821,5 +821,24 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-
+    app.post('/publication/:objectId/upload', function(req,res,next) {
+        var pubClass = pubTypeToClass(req.body.pub_class);
+        var query = new Parse.Query(pubClass);
+        query.get(req.params.objectId).then(function(result) {
+            if (req.body.file != null && result != undefined) {
+                var name = req.params.objectId + "_publication_file." + req.body.fileType;
+                var fileBuffer = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var newFile = new Parse.File(name, {base64: fileBuffer});
+                newFile.save().then(function() {
+                    result.set('file', newFile)
+                    result.save().then(function(){
+                        res.status(200).json({status: "File Uploaded Successfully!"});
+                    });
+                });
+            }
+            else{
+                res.status(500).json({status: "File Upload Failed!"});
+            }
+        });
+    });
 };

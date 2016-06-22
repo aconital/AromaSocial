@@ -7,7 +7,7 @@ var Tab = ReactBootstrap.Tab, Tabs = ReactBootstrap.Tabs;
 
 // used when the settings modal is accessed from a list of entries (eg. profile, organization)
 var settingsModalDeleteListEntry = function(path, callback) {
-    // TODO refresh parent somehow
+    // TODO refresh parent somehow; add functionality
 
     $.ajax({
         url: path,
@@ -44,12 +44,17 @@ var settingsModalDeleteEntry = function(callback) {
     });
 };
 
+// used to update uploaded file or picture
+var settingsModalUpdateEntry = function(callback) {
+
+};
+
 var SettingsModal = React.createClass({
     getInitialState() {
         return { 
             showModal: false,
             isDisabled: false,
-            activeKey: 3,
+            activeKey: 1,
             message: 'This action cannot be undone.' };
     },
     close() {
@@ -71,6 +76,10 @@ var SettingsModal = React.createClass({
         }
         console.log("end");
     },
+    update() {
+        // ...
+        this.props.update();
+    },
     handleSelect(eventKey) {
         event.preventDefault();
         console.log(`selected ${eventKey}`);
@@ -81,6 +90,7 @@ var SettingsModal = React.createClass({
         const tooltip_settings = (
             <Tooltip id="tooltip_settings"><strong>Settings</strong></Tooltip>
         );
+        var isPub = window.location.pathname.indexOf('publication') > 0;
 
         return (
             <span>
@@ -93,20 +103,20 @@ var SettingsModal = React.createClass({
                         <Modal.Title>Settings</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Tabs activeKey={this.state.activeKey} onSelect={this.handleSelect}>
-                            <Tab  eventKey={1} title="Update File">
-                                <UpdateTab type="File" msg={this.state.message} />
+                        <Tabs id="settings-menu" activeKey={this.state.activeKey} onSelect={this.handleSelect}>
+                            <Tab id="file" eventKey={1} title="Update File">
+                                <UpdateTab type="File" msg={this.state.message} isPub={isPub} />
                             </Tab>
-                            <Tab  eventKey={2} title="Update Picture">
+                            {/* <Tab id="picture" disabled={isPub} eventKey={2} title="Update Picture">
                                 <UpdateTab type="Picture" msg={this.state.message} />
-                            </Tab>
-                            <Tab eventKey={3} title="Delete">
+                            </Tab> */}
+                            <Tab id="delete" eventKey={3} title="Delete">
                                 <DeleteTab delete={this.delete} msg={this.state.message} />
                             </Tab>
                         </Tabs>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button onClick={this.close}>Cancel</Button><Button bsStyle="primary" className="del-btn" onClick={this.close} disabled={this.state.isDisabled}>Save</Button>
+                        <Button onClick={this.close}>Done</Button>
                     </Modal.Footer>
                 </Modal>
             </span>
@@ -118,7 +128,67 @@ var UpdateTab = React.createClass({
     getInitialState() {
         return {
             disabled: false,
+            buttonText: 'Update',
         };
+    },
+    openFileUpload() {
+        var input = $(this),
+            numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        input.trigger('fileselect', [numFiles, label]);
+
+        this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
+            console.log(numFiles);
+            console.log(label);
+            return input;
+        });
+    },
+    handleFile: function(e) {
+        var self = this;
+        var reader = new FileReader();
+        var file = e.target.files[0];
+        var extension = file.name.substr(file.name.lastIndexOf('.')+1) || '';
+
+        reader.onload = function(upload) {
+         self.setState({
+           file: upload.target.result,
+           fileType: extension,
+         });
+        }
+        reader.readAsDataURL(file);
+    },
+    handleButton: function(e) {
+        var dataForm = {file: this.state.file, fileType: this.state.fileType};
+        this.setState({ buttonText: "Uploading. Give us a sec...",
+                        disabled: true });
+        if (this.props.isPub) {
+            console.log(path);
+            dataForm['pub_class'] = path.match(/\/publication\/(.*)\//i)[1];
+            path = '/publication' + path.substr(path.lastIndexOf("/")); // get objectId
+            console.log(path, dataForm.pub_class);
+        }
+
+        $.ajax({
+            url: path + "/upload",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(status) {
+                console.log(status);
+                // this.setState({file: this.state.file});
+                this.setState({ buttonText: "Update",
+                                disabled: false });
+                this.clickClose();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/upload", status, err.toString());
+                this.setState({ buttonText: "Error. Please try again." });
+                this.setState({ disabled: false });
+            }.bind(this)
+        });
+        return;
     },
 
     render() {
@@ -127,6 +197,8 @@ var UpdateTab = React.createClass({
                 <h4>Update Uploaded {this.props.type}</h4>
                 <p>You can upload a new {this.props.type} to associate with this entry page.</p>
                 <input className="form-control" type="file" name="publication-upload" id="" required onChange={this.handleFile} />
+                <p></p>
+                <Button block bsStyle="success" disabled={this.state.disabled} onClick={this.handleButton}>{this.state.buttonText}</Button>
             </div>
         );
     }
