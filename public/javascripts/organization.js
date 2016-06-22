@@ -1371,27 +1371,33 @@ var Equipments = React.createClass({
         this.setState({ showModal: false });
     },
     render: function() {
-        var itemsList = $.map(this.state.data,function(item) {
-            return (
-                <div className="item-box" key={item.objectId}>
-                    <div>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/equipment/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
+        if(this.state.data.length>0) {
+            var itemsList = $.map(this.state.data, function (item) {
+                return (
+                    <div className="item-box" key={item.objectId}>
+                        <div>
+                            <div className="item-box-left">
+                                <div className="item-box-image-outside">
+                                    <a href={'/equipment/'+item.objectId}><img src={item.picture.url}
+                                                                               className="item-box-image"/></a>
+                                </div>
                             </div>
-                        </div>
-                        <div className="item-box-right">
-                            <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <div className="item-box-right">
+                                <a href={'/equipment/'+item.objectId} className="body-link"><h3
+                                    className="margin-top-bottom-5">{item.title}</h3></a>
                             <span className="font-15">
                             <table className="item-box-right-tags">
-                            {/* <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                                {/* <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                             </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            );
-        });
+                );
+            });
+        }
+        else
+            itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1635,29 +1641,44 @@ var Projects = React.createClass({
         });
     },
     render: function() {
-        var itemsList = $.map(this.state.data,function(item) {
-            item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
+        if(this.state.data.length>0){
+        var itemsList = $.map(this.state.data, function (item) {
+            item.start_date = (new Date(item.start_date)).toUTCString().slice(8, -12);
 
             return (
                 <div className="item-box">
                     <div key={item.objectId}>
                         <div className="item-box-left">
                             <div className="item-box-image-outside">
-                                <a href={'/project/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
+                                <a href={'/project/'+item.objectId}><img src={item.picture.url}
+                                                                         className="item-box-image"/></a>
                             </div>
                         </div>
                         <div className="item-box-right">
-                            <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+                            <a href={'/project/'+item.objectId} className="body-link"><h3
+                                className="margin-top-bottom-5">{item.title}</h3></a>
                             <table className="item-box-right-tags">
-                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;})}</td></tr>
-                                <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
-                            {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                                <tr>
+                                    <td><b>Collaborators: </b></td>
+                                    <td>{item.collaborators.map(function (collaborator) {
+                                        return <a href="#"
+                                                  className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;
+                                    })}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Start Date: </b></td>
+                                    <td>{item.start_date}</td>
+                                </tr>
+                                {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </div>
                     </div>
                 </div>
             );
         });
+    }
+        else
+        itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 <div className="item-search-div">
@@ -1673,13 +1694,13 @@ var Projects = React.createClass({
 
 var Publications = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {data: null};
     },
     componentDidMount : function(){
-        var peopleUrl= "/organization/"+objectId+"/publications";
+        var pubUrl= "/organization/"+objectId+"/publications";
 
         $.ajax({
-            url: peopleUrl,
+            url: pubUrl,
             success: function(publications) {
                 this.setState({data: publications});
             }.bind(this),
@@ -1689,37 +1710,55 @@ var Publications = React.createClass({
         });
     },
     render: function() {
-        var itemsList = $.map(this.state.data,function(items) {
-            var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_"," ")
-            var typeList = [];
-            for (var i in items) {
-                var item = items[i];
-                item.date = (new Date(item.date)).toUTCString().slice(8,-12);
-                typeList.push(item);
-            }
-            console.log(typeList);
-            return (
-                <div>
-                    <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
-                    {typeList.map(item =>
-                            <div className="about-item-hr">
-                                <div key={item.id}>
-                                    <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
+
+        if(this.state.data !=null) {
+            var itemsList = $.map(this.state.data, function (items) {
+                var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_", " ")
+                var typeList = [];
+                for (var i in items) {
+                    var item = items[i];
+                    item.date = (new Date(item.date)).toUTCString().slice(8, -12);
+                    typeList.push(item);
+                }
+
+                return (
+                    <div>
+                        <div><h2 className="margin-top-bottom-10"><span aria-hidden="true"
+                                                                        className="glyphicon glyphicon-list-alt"></span> {type}
+                        </h2></div>
+                        {typeList.map(item =>
+                                <div className="about-item-hr">
+                                    <div key={item.id}>
+                                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4
+                                            className="margin-top-bottom-5">{item.title}</h4></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Authors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
-                                <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
-                             { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                                <tr>
+                                    <td><b>Authors: </b></td>
+                                    <td>{item.contributors ? item.contributors.map(function (contributors) {
+                                        return <a href="#"
+                                                  className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;
+                                    }) : ''}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Publication Date: </b></td>
+                                    <td>{item.date.toString()}</td>
+                                </tr>
+                                { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
                         </span>
+                                    </div>
                                 </div>
-                            </div>
-                    )} <div className="clear"></div>
-                </div>
-            );
-        });
+                        )}
+                        <div className="clear"></div>
+                    </div>
+                );
+            });
+        }
+        else
+            itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 {itemsList}
@@ -1740,15 +1779,6 @@ var Publication = React.createClass({ //delete
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
                 </div>
-                {/*
-                 <div className="publication-box-right">
-                 <h5>Information</h5><br/>
-                 ## Syncholar Factor<br/>
-                 ## Times Cited<br/>
-                 ## Views<br/>
-                 ## Impact Factor
-                 </div>
-                 */}
             </div>
         )
     }
@@ -1774,7 +1804,19 @@ var Data = React.createClass({
         });
     },
     render: function() {
-        var rows = [];
+        var rows ;
+        if(this.state.data.length>0)
+        {
+            rows = this.state.data.map(function(item) {
+                return (<Datum objectId={item.objectId}
+                               collaborators={item.collaborators}
+                               title={item.title}
+                               image_URL={item.picture.url}
+                               start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)} />);
+            });
+        }
+        else
+            rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 <div className="item-search-div">
@@ -1782,19 +1824,12 @@ var Data = React.createClass({
                         <tbody>
                         <tr>
                             <td className="padding-right">
-                                {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                {this.state.data.map(function(item) {
-                    return (<Datum objectId={item.objectId}
-                                   collaborators={item.collaborators}
-                                   title={item.title}
-                                   image_URL={item.picture.url}
-                                   start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)} />);
-                })}
+                {rows}
             </div>
         );
     }
@@ -1822,18 +1857,6 @@ var Datum = React.createClass({
                         </table>
                     </span>
                 </div>
-                {/*
-                 <div className="model-box-right">
-                 <h5>Information</h5><br/>
-                 {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                 {this.props.number_cited} Times Cited<br/>
-                 {this.props.license}<br/>
-                 {this.props.access.map(function(item, i){
-                 if (i == 0) {return item;}
-                 else {return ", " + item;}
-                 })} <br/> Uses This
-                 </div>
-                 */}
             </div>
         )
     }
@@ -1856,7 +1879,25 @@ var Models = React.createClass({
         });
     },
     render: function() {
-        var rows = [];
+        var rows;
+        if(this.state.data.length>0)
+        {
+            rows = this.state.data.map(function(model) {
+                return (<Model objectId={model.objectId}
+                               collaborators={model.collaborators}
+                               title={model.title}
+                               image_URL={model.picture.url}
+                               keywords={model.keywords}
+                               number_cited={model.number_cited}
+                               number_syncholar_factor={model.number_syncholar_factor}
+                               license={model.license}
+                               access={model.access}
+                               abstract={model.abstract}
+                               start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)} />);
+            });
+        }
+        else
+        rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 <div className="item-search-div">
@@ -1864,25 +1905,11 @@ var Models = React.createClass({
                         <tbody>
                         <tr>
                             <td className="padding-right">
-                                {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                            </td>
+                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                {this.state.data.map(function(model) {
-                    return (<Model objectId={model.objectId}
-                                   collaborators={model.collaborators}
-                                   title={model.title}
-                                   image_URL={model.picture.url}
-                                   keywords={model.keywords}
-                                   number_cited={model.number_cited}
-                                   number_syncholar_factor={model.number_syncholar_factor}
-                                   license={model.license}
-                                   access={model.access}
-                                   abstract={model.abstract}
-                                   start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)} />);
-                })}
                 {rows}
             </div>
         );
