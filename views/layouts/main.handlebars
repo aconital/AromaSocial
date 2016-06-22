@@ -175,7 +175,7 @@
                     <ul class="nav navbar-nav navbar-nav-search">
                         <li class="nav navbar-search">
                             <form typerole="search" class="navbar-left search-bar-form" action="/search" method="get">
-                                <input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
+                                <span id='autosuggest'></span>
                                 <input type="submit" value="See All Results">
                             </form>
                         </li>
@@ -274,13 +274,24 @@
 
 </footer>
 
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <script src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js"> </script>
 <script src="/javascripts/moment.min.js"></script>
 <script src="https://www.parsecdn.com/js/parse-latest.js"></script>
 <script src="https://www.parsecdn.com/js/parse-react.js"></script>
 <script type="text/jsx" src="/javascripts/navbar.js"></script>
-<script src="/javascripts/autocomplete.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
+<script src="https://npmcdn.com/classnames/index.js"></script>
+<script src="https://npmcdn.com/react-input-autosize/dist/react-input-autosize.js"></script>
+<script src="https://npmcdn.com/react-select/dist/react-select.js"></script>
+
+<link rel="stylesheet" href="https://npmcdn.com/react-select/dist/react-select.css">
+
+<script type="text/jsx" src="/javascripts/autocomplete.js"></script>
 
 <script>
     $(document).ready(function(){
@@ -327,7 +338,6 @@
     ga('send', 'pageview');
 
 </script>
-<script src="/javascripts/autocomplete.js"></script>
 <script type="text/javascript" src="/javascripts/react-tag-input/example/vendor/ReactDND.min.js"></script>
 <script src="/javascripts/react-tag-input/dist/reactTags.min.js"></script>
 <script src="/javascripts/tag-it.js"></script>

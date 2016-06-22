@@ -294,17 +294,6 @@ var SearchFeed = React.createClass({
       this.loadSearchFeed();
     }
     this.setState({firstTime:false});
-    // var that = this;
-    // var p = new Promise(function(resolve, reject){
-    //   (that.state.showUsers) ? that.loadUserFeed(): this.setState({userData: []});
-    //   (that.state.showModels) ? that.loadModelFeed(): this.setState({modData: []});
-    //   (that.state.showData) ? that.loadDataFeed(): this.setState({dataData: []});
-    //   (that.state.showPublications) ? that.loadPubFeed(): this.setState({pubData: []});
-    //   (that.state.showOrganizations) ? that.loadOrgFeed(): this.setState({orgData: []});
-    // }).then(function() {
-    //   var newData = that.state.userData.concat(that.state.modData).concat(that.state.dataData).concat(that.state.pubData).concat(that.state.orgData);
-    //   that.setState({data: newData}); 
-    // }) 
   },
   setUserState: function() {
     this.setState({
