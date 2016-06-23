@@ -479,7 +479,7 @@ var Home = React.createClass({
                                     <a onClick={this.props.showEquipment}>
                                         <div>
                                             <img className="resource-img" src="../images/equipment.png"/>
-                                            <span className="resource-caption">Equipments</span>
+                                            <span className="resource-caption">Equipment</span>
                                         </div>
                                     </a>
                                 </li>
@@ -1345,7 +1345,7 @@ var Equipments = React.createClass({
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve Equipments!");
+                console.error("Couldn't Retrieve Equipment!");
             }.bind(this)
         });
     },
