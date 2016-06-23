@@ -1694,7 +1694,7 @@ var Projects = React.createClass({
 
 var Publications = React.createClass({
     getInitialState: function() {
-        return {data: null};
+        return {data: {}};
     },
     componentDidMount : function(){
         var pubUrl= "/organization/"+objectId+"/publications";
@@ -1711,7 +1711,7 @@ var Publications = React.createClass({
     },
     render: function() {
 
-        if(this.state.data !=null) {
+        if(Object.getOwnPropertyNames(this.state.data).length > 0 ) {
             var itemsList = $.map(this.state.data, function (items) {
                 var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_", " ")
                 var typeList = [];
