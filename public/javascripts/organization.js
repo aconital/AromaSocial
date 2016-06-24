@@ -236,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About']} />
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About']} />
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -293,22 +293,25 @@ var OrganizationMenu = React.createClass ({
         var self = this;
 
         var tabMap = {
-            0: <Home showEquipment={this.showTab.bind(self,2)}
-                     showProjects={this.showTab.bind(self,3)}
-                     showPublications={this.showTab.bind(self,4)}
-                     showData={this.showTab.bind(self,5)}
-                     showModels={this.showTab.bind(self,6)}
-                     viewPeople={this.showTab.bind(self,7)}
-                     viewConnections={this.showTab.bind(self,8)}
+            0: <Home
+                     viewPeople={this.showTab.bind(self,8)}
+                     viewConnections={this.showTab.bind(self,9)}
                      objectId={objectId} />,
             1: <About objectId={objectId} />,
-            2: <Equipments objectId={objectId}/>,
-            3: <Projects objectId={objectId}/>,
-            4: <Publications objectId={objectId}/>,
-            5: <Data objectId={objectId}/>,
-            6: <Models objectId={objectId}/>,
-            7: <People isAdmin={this.props.isAdmin} />,
-            8: <Connections isAdmin={this.props.isAdmin}  />
+            2: <Resources isAdmin ={this.props.isAdmin}
+                          showEquipment={this.showTab.bind(self,3)}
+                          showProjects={this.showTab.bind(self,4)}
+                          showPublications={this.showTab.bind(self,5)}
+                          showData={this.showTab.bind(self,6)}
+                          showModels={this.showTab.bind(self,7)}/>,
+            3: <Equipments objectId={objectId}/>,
+            4: <Projects objectId={objectId}/>,
+            5: <Publications objectId={objectId}/>,
+            6: <Data objectId={objectId}/>,
+            7: <Models objectId={objectId}/>,
+            8: <People isAdmin={this.props.isAdmin} />,
+            9: <Connections isAdmin={this.props.isAdmin}  />,
+
 
         };
         return (
@@ -468,57 +471,6 @@ var Home = React.createClass({
                                 <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
                                 <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
                             </div>
-                    </div>
-                    <div className="row">
-                        <div>
-                            <h4>Resources</h4>
-                        </div>
-                        <div className="member-section">
-                            <ul className="resource-list">
-                                <li className="resource-item">
-                                    <a onClick={this.props.showEquipment}>
-                                        <div>
-                                            <img className="resource-img" src="../images/equipment.png"/>
-                                            <span className="resource-caption">Equipment</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li className="resource-item">
-                                    <a onClick={this.props.showProjects}>
-                                        <div>
-                                            <img className="resource-img" src="../images/project.png"/>
-                                            <span className="resource-caption">Projects</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li className="resource-item">
-                                    <a onClick={this.props.showPublications}>
-                                        <div>
-                                            <img className="resource-img" src="../images/publication.png"/>
-                                            <span className="resource-caption">Publications</span>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li className="resource-item">
-                                    <a onClick={this.props.showData}>
-                                    <div>
-                                        <img className="resource-img" src="../images/figures.png"/>
-                                        <span className="resource-caption">Figures &amp; Data</span>
-                                    </div>
-                                    </a>
-
-                                </li>
-                                <li className="resource-item">
-                                    <a onClick={this.props.showModels}>
-                                    <div>
-                                        <img className="resource-img" src="../images/code.png"/>
-                                        <span className="resource-caption">Software &amp; Code</span>
-                                    </div>
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
                     </div>
                     <div className="row home-connections-box">
                         <div>
@@ -1012,7 +964,66 @@ var About = React.createClass({
     }
 
 })
+var Resources = React.createClass({
+    render:function()
+    {
+       return( <div className="row">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div className="row">
+                    <div>
+                        <h4>Resources</h4>
+                    </div>
+                    <div className="resource-section">
+                        <ul className="resource-list">
+                            <li className="resource-item">
+                                <a onClick={this.props.showEquipment}>
+                                    <div>
+                                        <img className="resource-img" src="../images/equipment.png"/>
+                                        <span className="resource-caption">Equipment</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showProjects}>
+                                    <div>
+                                        <img className="resource-img" src="../images/project.png"/>
+                                        <span className="resource-caption">Projects</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showPublications}>
+                                    <div>
+                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <span className="resource-caption">Publications</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showData}>
+                                    <div>
+                                        <img className="resource-img" src="../images/figures.png"/>
+                                        <span className="resource-caption">Figures &amp; Data</span>
+                                    </div>
+                                </a>
 
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showModels}>
+                                    <div>
+                                        <img className="resource-img" src="../images/code.png"/>
+                                        <span className="resource-caption">Software &amp; Code</span>
+                                    </div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>)
+    }
+});
 var Connections = React.createClass({
     getInitialState: function() {
         return {data: [], showModal: false };

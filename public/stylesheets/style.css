@@ -5864,6 +5864,7 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
      border-bottom: solid 4px #008cc9;
     }
     #tabs li a {
+
       border: none;
       font-weight: 600;
       color:#74777b;
@@ -6783,8 +6784,8 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
 }
 
  .resource-img {
-  width: 50px;
-  height: 50px;
+  width: 80px;
+  height: 80px;
   display: block;
    margin-right: auto;
    margin-left: auto;
