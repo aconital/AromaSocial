@@ -346,20 +346,30 @@ var Container = React.createClass({
     console.log(document.getElementById('searchString').value);
     // document.getElementById('searchString').value = this.state.value;
   },
+  formHandler: function(e) {
+    e.preventDefault();
+    var builtUrl = '/search?' + 'searchQuery=' + this.state.value;
+    window.location.href = builtUrl;
+  },
   render: function () {
     return (
       <div className="section">
-        <Select 
-          placeholder='Search...'
-          options={this.state.data}
-          onChange={this.setValue}
-          value={this.state.value}
-          valueRenderer={this.renderValue}
-          onInputChange={this.inputChange}
-          menuRenderer={this.renderMenu}
-          onBlurResetsInput={false}
-          onBlur={this.onBlurHandler} />
+        <div className="selectAc">
+          <Select 
+            placeholder='Search...'
+            options={this.state.data}
+            onChange={this.setValue}
+            value={this.state.value}
+            valueRenderer={this.renderValue}
+            onInputChange={this.inputChange}
+            menuRenderer={this.renderMenu}
+            onBlurResetsInput={false}
+            onBlur={this.onBlurHandler} />
+        </div>
+        <form onSubmit={this.formHandler}>
           <input id="searchString" type="hidden" value={this.state.value}></input>
+          <button id='submitAutosuggest' type="submit">Search</button>
+        </form>
 
       </div>
     )

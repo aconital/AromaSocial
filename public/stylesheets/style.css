@@ -6426,7 +6426,7 @@ textarea {
 
 #submitAutosuggest {
   width:20%;
-  height:110%;
+  height:40px;
   float:right;
   background-color: #008CBA;
   border-color: transparent;
@@ -6434,7 +6434,7 @@ textarea {
   color:white;
 }
 
-#autosuggest {
+.selectAc {
   width:80%;
   float:left;
 }
