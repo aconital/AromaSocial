@@ -294,6 +294,11 @@ var OrganizationMenu = React.createClass ({
 
         var tabMap = {
             0: <Home
+                showEquipment={this.showTab.bind(self,3)}
+                showProjects={this.showTab.bind(self,4)}
+                showPublications={this.showTab.bind(self,5)}
+                showData={this.showTab.bind(self,6)}
+                showModels={this.showTab.bind(self,7)}
                      viewPeople={this.showTab.bind(self,8)}
                      viewConnections={this.showTab.bind(self,9)}
                      objectId={objectId} />,
