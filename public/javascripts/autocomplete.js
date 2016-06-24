@@ -181,10 +181,11 @@ var Container = React.createClass({
       data: []
     };
   },
-  componentWillMount: function() {
-    // do i need this?
-  },  
   inputChange: function(inputValue) {
+      this.setState({value: inputValue});
+      // this.refs.searchString.innerText = this.state.value;
+      document.getElementById('searchString').value = this.state.value;
+      console.log(document.getElementById('searchString').value);
       var that = this;
       var str = inputValue;
       var r = [];
@@ -196,7 +197,6 @@ var Container = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("USER SUCCESS DATA: ", data);
             $.map(data, function(item){
               var dlink = "/profile/" + item.username;
               r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink, buttonText: 'Connect', username: item.username, objectId: item.objectId});
@@ -213,8 +213,6 @@ var Container = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("DATA RECEIVED FOR PUBS: ")
-            console.log(data);
             $.map(data, function(item){
               //console.log("PUB ITEM: ");
               //console.log(item);
@@ -234,8 +232,6 @@ var Container = React.createClass({
           data: {substr: str},
           cache: false,
           success: function(data) {
-            console.log("DATA RECEIVED FOR ORGS: ")
-            console.log(data);
             $.map(data, function(item){
               var dlink = "/organization/" + item.name;
               r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink, buttonText: 'Join', objectId: item.objectId});
@@ -254,7 +250,6 @@ var Container = React.createClass({
     console.log('Suggestion selected:', value.label);
   },
   updateValue: function (value) {
-    console.log("Updating value: ", value);
     this.setState({ value: value });
   },
   renderLink: function() {
@@ -344,18 +339,28 @@ var Container = React.createClass({
       </div>
     )
   },
+  onBlurHandler: function(event) {
+    console.log(event);
+    console.log("On Blur Running");
+    console.log(this.state.value);
+    console.log(document.getElementById('searchString').value);
+    // document.getElementById('searchString').value = this.state.value;
+  },
   render: function () {
     return (
       <div className="section">
-        <Select
-          placeholder="Search..."
+        <Select 
+          placeholder='Search...'
           options={this.state.data}
           onChange={this.setValue}
           value={this.state.value}
           valueRenderer={this.renderValue}
           onInputChange={this.inputChange}
           menuRenderer={this.renderMenu}
-        />
+          onBlurResetsInput={false}
+          onBlur={this.onBlurHandler} />
+          <input id="searchString" type="hidden" value={this.state.value}></input>
+
       </div>
     )
   }
