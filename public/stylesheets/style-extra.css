@@ -101,7 +101,7 @@
     padding:
     margin-top: -1px;
     padding: 0px;
-    width:100%;
+    width:120%;
     height: 34px;
     background-color: var(--foreground-color);
 } .search-bar-form:hover {

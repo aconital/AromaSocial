@@ -24,7 +24,13 @@ var ConnectButton = React.createClass({
           }.bind(this)
       });
   },
-  clickConnect: function() {
+  preventDefault: function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+  },
+  clickConnect: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
       var connectURL= "/profile/"+this.props.objectId+"/connect";
 
       $.ajax({
@@ -37,7 +43,9 @@ var ConnectButton = React.createClass({
         }.bind(this)
       });
     },
-    clickDisconnect: function() {
+    clickDisconnect: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
       var connectURL= "/profile/"+this.props.objectId+"/disconnect";
 
       $.ajax({
@@ -56,7 +64,7 @@ var ConnectButton = React.createClass({
            connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
       }
       else if (this.state.status == "pending") {
-           connectButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
+           connectButton = <button onClick={this.preventDefault} className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
       }
       else if (this.state.status == "not-connected") {
             connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
@@ -107,7 +115,9 @@ var JoinButton = React.createClass({
         }.bind(this)
     })
   },
-  clickJoin: function() {
+  clickJoin: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
         var connectURL= "/organization/"+this.props.objectId+"/join";
 
         $.ajax({
@@ -120,7 +130,9 @@ var JoinButton = React.createClass({
             }.bind(this)
         });
     },
-    clickLeave: function() {
+    clickLeave: function(e) {
+      e.preventDefault();
+      e.stopPropagation();
         var self = this;
         var connectURL= "/organization/"+this.props.objectId+"/leave";
         var adminURL = "/organization/"+this.props.objectId+"/admins";
@@ -152,7 +164,7 @@ var JoinButton = React.createClass({
       if (this.state.status == "joined") {
           joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
       } else if (this.state.status == "pending") {
-          joinButton = <button className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
+          joinButton = <button onClick={this.preventDefault} className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
       } else if (this.state.status == "not-joined") {
           joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
       }
@@ -248,11 +260,14 @@ var Container = React.createClass({
   renderLink: function() {
     return <a style={{ marginLeft: 5 }} href="/upgrade" target="_blank">Upgrade here!</a>;
   },
-  renderValue: function(option, e) {
+  renderValue: function(option) {
     console.log(option);
-    console.log("EVENT : ", e);
     //window.location.href = option.link;
     //return <strong style={{ color: option.color }}>{option.label}</strong>;
+  },
+  preventDefault: function(event) {
+    event.preventDefault();
+    event.stopPropagation();
   },
   renderMenu: function(menu) {
     console.log("MENU RENDERER: ", menu);
@@ -268,14 +283,14 @@ var Container = React.createClass({
           <div>
             <div className='item-box'>
               <div className='item-box-left'>
-                <a style={{ cursor: 'pointer' }}>
+                <a href={usr.link} onClick={this.preventDefault} style={{ cursor: 'pointer' }}>
                   <img className='search-img' src={usr.imgsrc}/>
                 </a>
               </div>
             </div>
 
             <div className='item-box-right'>
-              <a name='itemName' style={{cursor:'pointer'}}>
+              <a href={usr.link} onClick={this.preventDefault} name='itemName' style={{cursor:'pointer'}}>
                 {usr.label}
               </a>
               <ConnectButton username={usr.username} objectId={usr.objectId}/>
@@ -289,14 +304,14 @@ var Container = React.createClass({
           <div>
             <div className='item-box'>
               <div className='item-box-left'>
-                <a style={{ cursor: 'pointer' }}>
+                <a href={org.link} onClick={this.preventDefault} style={{ cursor: 'pointer' }}>
                   <img className='search-img' src={org.imgsrc}/>
                 </a>
               </div>
             </div>
 
             <div className='item-box-right'>
-              <a name='itemName' style={{cursor:'pointer'}}>
+              <a href={org.link} onClick={this.preventDefault} name='itemName' style={{cursor:'pointer'}}>
                 {org.label}
               </a>
               <JoinButton objectId={org.objectId}/>
@@ -310,14 +325,14 @@ var Container = React.createClass({
           <div>
             <div className='item-box'>
               <div className='item-box-left'>
-                <a style={{ cursor: 'pointer' }}>
+                <a href={pub.link} onClick={this.preventDefault} style={{ cursor: 'pointer' }}>
                   <img className='search-img' src={pub.imgsrc}/>
                 </a>
               </div>
             </div>
 
             <div className='item-box-right'>
-              <a name='itemName' style={{cursor:'pointer'}}>
+              <a href={pub.link} onClick={this.preventDefault} name='itemName' style={{cursor:'pointer'}}>
                 {pub.label}
               </a>
             </div>
