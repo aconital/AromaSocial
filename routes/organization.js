@@ -21,7 +21,7 @@ module.exports=function(app,Parse,io) {
         var str = req.body.substr;
         console.log("string to match in org: ", str);
         var query = new Parse.Query('Organization');
-        query.limit(1000);
+        query.limit(5);
         query.contains("displayName", str);
         query.find({
             success: function(items) {

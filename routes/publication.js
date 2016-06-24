@@ -37,7 +37,7 @@ module.exports=function(app,Parse,io) {
         var str = req.body.substr;
         console.log("string to match in pub: ", str);
         var query = new Parse.Query('Pub_Book');
-        query.limit(1000);
+        query.limit(5);
         query.contains("title", str);
         query.find({
             success: function(items) {

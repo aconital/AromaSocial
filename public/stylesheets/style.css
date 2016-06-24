@@ -6403,27 +6403,6 @@ textarea {
     width: 100%;
 }
 
-/*#autosuggest {
-  width: 100%;
-  float: left;
-}*/
-
-/*#autosuggest {
-    width: 200px;
-    height: 20px;
-    padding-right: 50px;
-}
-
-#submitAutosuggest {
-    margin-left: -50px;
-    height: 25px;
-    width: 50px;
-    background: blue;
-    color: white;
-    border: 0;
-    -webkit-appearance: none;
-}*/
-
 #submitAutosuggest {
   width:20%;
   height:40px;
@@ -6449,14 +6428,6 @@ textarea {
   float: left;
   margin: 3%;
 }
-
-/*.acText {
-  cursor: pointer;
-  width: 12em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}*/
 
 .ui-autocomplete {
     /*max-height: 0;*/

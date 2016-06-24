@@ -18,7 +18,7 @@ var is_auth = require('../utils/helpers').is_auth;
 module.exports=function(app,Parse,io) {
     app.get('/allusers', function(req, res, next) {
         var q = new Parse.Query("User");
-        q.limit(1000);
+        q.limit(5);
         q.find({
             success: function(items) {
                 console.log("ALL USERS: ")
