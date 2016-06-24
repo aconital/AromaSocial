@@ -7,7 +7,6 @@ var NewsFeed = React.createClass({
    },
   componentWillMount: function() {
       socket.on('commentReceived', this._reloadComments);
-
       $.ajax({
           url: '/newsfeeddata',
           dataType: 'json',
@@ -15,8 +14,8 @@ var NewsFeed = React.createClass({
           success: function(data) {
               this.setState({data: data});
           }.bind(this),
-          error: function(xhr, status, err) {
-              console.error(this.props.url, status, err.toString());
+          error: function(error) {
+              console.error(error.toString());
           }.bind(this)
       });
       $.ajax({
@@ -26,62 +25,52 @@ var NewsFeed = React.createClass({
           success: function(data) {
               this.setState({organizations: data});
           }.bind(this),
-          error: function(xhr, status, err) {
-              console.error(this.props.url, status, err.toString());
+          error: function(error) {
+              console.error(error.toString());
           }.bind(this)
       });
   },
+
   createOrg: function() {
     window.location = '/create/organization';
   },
-  _reloadComments: function(data)
-    {   var feedId= data.feedId;
-        var feedNumber=data.feedNumber;
-        var comment= data.comment;
-        var feedItems= this.state.data.slice();
 
-                //TODO UPDATE DOESNT WORK
+  _reloadComments: function(data) {
+      var feedId= data.feedId;
+      var feedNumber=data.feedNumber;
+      var comment= data.comment;
+      var feedItems= this.state.data.slice();
+               //TODO UPDATE DOESNT WORK
                 feedItems[feedNumber].comments.push(comment);
                 this.setState({data:  feedItems});
+  },
 
-
-
-    },
   render: function() {
-
       return (
           <div className="container-newsFeed">
               <div className="row">
                   <div className="col-xs-8">
                       {this.state.data.map(function(item, i) {
-                        return (
-                            <div>
-                            <NewsFeedList key={i}
-                                              feedId={item.feedId}
-                                              objId={item.objId}
-                                              userName={item.username}
-                                              fullname={item.fullname}
-                                              userImg={item.userImg}
-                                              image_URL={item.picture}
-                                              type={item.type}
-                                              date={item.date}
-                                              year={item.year}
-                                              filename={item.filename}
-                                              title={item.title}
-                                              comments={item.comments}
-                                              description={item.description}
-                                              upload={item.upload}
-                                              keywords={item.keywords} />
-
-                                <CommentBox key={"box"+item.feedId} feedId ={item.feedId} comments= {item.comments}/>
-                                <CommentForm key={"form"+item.feedId} feedNumber={i} feedId ={item.feedId} />
-
-                            </div>);
+                          return (
+                              <div>
+                                  <NewsFeedList key={i}
+                                        feedId={item.feedId}
+                                        objectTitle={item.objectTitle}
+                                        objectURL={item.objectURL}
+                                        objectPicture={item.objectPicture}
+                                        description={item.description}
+                                        adderName={item.adderName}
+                                        adderPicture={item.adderPicture}
+                                        adderURL={item.adderURL}
+                                        comments={item.comments}
+                                        message={item.message} />
+                                    <CommentBox key={"box"+item.feedId} feedId ={item.feedId} comments= {item.comments}/>
+                                    <CommentForm key={"form"+item.feedId} feedNumber={i} feedId ={item.feedId} />
+                                </div>);
                       })}
-                    </div>
-                    <div className="col-xs-4">
-
-                      <div className = "createorg_panel">
+                  </div>
+                      <div className="col-xs-4">
+                          <div className = "createorg_panel">
                         <button onClick={this.createOrg} className="btn btn-panel createorg_btn" value="Create Research Lab or Network"><span className="nfButton"><i className="fa fa-plus" aria-hidden="true"></i> Create Organizational Homepage</span></button>
                       </div>
                         <div className = "panel search-panel your-groups">
@@ -103,148 +92,37 @@ var NewsFeed = React.createClass({
 // <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>
 
 var NewsFeedList = React.createClass({
-  truncate: function(text) {
-    var maxLength = 140;
-    var truncated = text;
-    if (truncated.length > maxLength) {
-        truncated = truncated.substr(0,maxLength-3) + "...";
-    }
-    return truncated;
-  },
+    truncate: function(text) {
+        var maxLength = 140;
+        var truncated = text;
+        if (truncated.length > maxLength) {
+            truncated = truncated.substr(0,maxLength-3) + "...";
+        }
+        return truncated;
+    },
 
-  showMore: function() {
-    var itemType = this.props.type;
-    var author = this.props.author;
-    switch (itemType) {
-      case "pub":
-        window.location.href="/publication/" + this.props.objId['objectId'];
-        break;
-      case "mod":
-        window.location.href="/model/" + this.props.objId['objectId'];
-        break;
-      case "dat":
-        window.location.href="/data/" + this.props.objId['objectId'];
-        break;
-      case "project":
-        window.location.href="/project/" + this.props.objId;
-        break;
-      case "book":
-        window.location.href="/publication/book/" + this.props.objId;
-        break;
-      case "conference":
-        window.location.href="/publication/conference/" + this.props.objId;
-        break;
-      case "journal":
-        window.location.href="/publication/journal/" + this.props.objId;
-        break;
-      case "patent":
-        window.location.href="/publication/patent/" + this.props.objId;
-        break;
-      case "report":
-        window.location.href="/publication/report/" + this.props.objId;
-        break;
-      case "thesis":
-        window.location.href="/publication/thesis/" + this.props.objId;
-        break;
-      case "unpublished":
-        window.location.href="/publication/unpublished/" + this.props.objId;
-        break;
-      case "equipment":
-        window.location.href="/equipment/" + this.props.objId;
-        break;
-      default:
-        break;
-    }
-
-    return false;
-  },
-
-  render: function() {
-
-    var date = moment(this.props.date).format("MMMM D, YYYY");
-    switch (this.props.type) {
-      case "pub":
-        type="Publication"; 
-        typeLink="publication";
-        break;
-      case "mod":
-        type="Model"; 
-        typeLink="model";
-        break;
-      case "dat":
-        type="Data"; 
-        typeLink="data";
-        break;
-      case "project":
-        type="Project"; 
-        typeLink="project";
-        break;
-      case "book":
-        type="Book"; 
-        typeLink="publication";
-        break;
-      case "conference":
-        type="Conference";
-        typeLink="publication";
-        break;
-      case "journal":
-        type="Journal Article";
-        typeLink="publication"
-        break;
-      case "patent":
-        type="Patent";
-        typeLink="publication"
-        break;
-      case "report":
-        type="Report";
-        typeLink="publication"
-        break;
-      case "thesis":
-        type="Thesis";
-        typeLink="publication"
-        break;
-      case "unpublished":
-        type="Publication (Unpublished)";
-        typeLink="publication"
-        break;
-      case "equipment":
-        type="Equipment";
-        typeLink="equipment"
-        break;
-      default:
-        type="Default"; 
-        typeLink="default";
-        break;
-    }
-    // if (this.props.type=="pub"){ type="Publication"; typeLink="publication"; }
-    // else if (this.props.type=="mod"){ type="Model"; typeLink="model"; }
-    // else if (this.props.type=="dat"){ type="Data"; typeLink="data"; }
-    if (typeof this.props.title == "undefined" || this.props.title=="") { var title = "Untitled"; }
-    else { 
-      var title = this.props.title;
-      }
-	return (
-      <div className="item-panel-newsFeed contain-panel-newsFeed">
-        <div className="row">
-            <div className="col-xs-1 col-xs-1-5 no-padding">
-              <a href={"/profile/" + this.props.userName}><img src={this.props.userImg} alt="" className="img-circle newsfeed-profile-pic"/></a>
+    render: function() {
+        return (
+            <div className="item-panel-newsFeed contain-panel-newsFeed">
+                <div className="row">
+                    <div className="col-xs-1 col-xs-1-5 no-padding">
+                        <a href={this.props.adderURL}><img src={this.props.adderPicture} className="img-circle newsfeed-profile-pic"/></a>
+                    </div>
+                    <div className="col-xs-10 col-xs-10-5 no-padding-right">
+                        <a href={this.props.adderURL} className="nostyle"><h3 className="non-inline">{this.props.adderName}</h3></a>
+                        <h4 className="black non-inline">{this.props.message}</h4>
+                        <div className="item-box">
+                            <div className="item-box-left"><img src={this.props.objectPicture} className="contain-image-preview" /></div>
+                            <div className="item-box-right">
+                                <a href={this.props.objectURL} className="body-link"><h3 className="no-margin-top nfHeader">{this.props.objectTitle}</h3></a>
+                                <pre className="hide-if-empty"><span className="font-15">{this.truncate(this.props.description)}</span></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div className="col-xs-10 col-xs-10-5 no-padding-right">
-              <a href={"/profile/" + this.props.userName} className="nostyle"><h3 className="non-inline">{this.props.fullname}</h3></a>
-              <h4 className="black non-inline">Added a {type} on {date}</h4>
-              <div className="item-box">
-                  {(this.props.type=="book" || this.props.type=="conference" || this.props.type=="journal" || this.props.type=="patent" || this.props.type=="report" || this.props.type=="thesis" || this.props.type=="unpublished") ? <div className="item-box-left"><img src="/images/paper.png" className="contain-image-preview" /></div> : <div className="item-box-left"><img src={this.props.image_URL} className="contain-image-preview" /></div>}
-              <div className="item-box-right">
-                  <a href="#" onClick={this.showMore} className="body-link"><h3 className="no-margin-top nfHeader">{title}</h3></a>
-                  {(this.props.description=="undefined" || this.props.description=="") ? <div></div>:<pre className="hide-if-empty"><span className="font-15">{this.truncate(this.props.description)}</span></pre>}
-              </div>
-              </div>
-            </div>
-        </div>
-      </div>
-
-    );
-  }
+        );
+    }
 });
 
 var CommentBox = React.createClass({
