@@ -339,7 +339,7 @@ var Home = React.createClass({
         return {showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
     },
     componentWillMount : function() {
-        var discussionsUrl= "/organization/"+objectId+"/discussions";
+        var discussionsUrl= "/organization/"+name+"/discussions";
         $.ajax({
             type: 'GET',
             url: discussionsUrl,
@@ -631,7 +631,7 @@ var Discussion = React.createClass ({
         return { __html: rawMarkup };
     },
     deleteDiscussion:function(discId)
-    { console.log(discId);
+    {
     swal({   title: "Are you sure?",
             text: "You will not be able to recover this discussion and its posts!",
             type: "warning",
@@ -669,7 +669,7 @@ var Discussion = React.createClass ({
                     { currentUsername == this.props.madeBy.username? <a onClick={this.deleteDiscussion.bind(this,this.props.discId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
                 </div>
                 <div className="col-xs-12 col-lg-12">
-                    <p ><a href={"/organization/"+objectId+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
+                    <p ><a href={"/organization/"+name+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
                     <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                 </div>
             </div>

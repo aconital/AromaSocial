@@ -8,7 +8,7 @@ var Home = React.createClass({
     componentWillMount : function() {
         socket.on('DiscussionPostReceived', this._PostAdded);
         socket.on('DiscussionPostDeleted',this._PostDeleted);
-        var discussionsUrl= "/organization/"+orgId+"/discussions/"+discId+"/1";
+        var discussionsUrl= "/organization/"+orgName+"/discussions/"+discId+"/1";
 
         $.ajax({
             type: 'GET',
