@@ -70,16 +70,12 @@ module.exports=function(app,Parse,io) {
                 var date=result.createdAt;
                 var type=result.get("type");
                 if (type == "equipment") {
-                    console.log("-4");
-                    var message="added an equipment on " + date;
-                    console.log("-3");
+                    var message="added an equipment";
                     var adderName=result.get("orgId").get("name");
-                    console.log("-2");
                     var adderURL="/organization/" + adderName;
-                    console.log("-1");
                     var objectURL="/equipment/" + result.get("equipmentId").id;
-                    console.log("-0");
                     feed.push({
+                        date:date,
                         feedId:feedId,
                         adderPicture:result.get("orgId").get("picture").url(),
                         adderName:result.get("orgId").get("displayName"),
@@ -93,10 +89,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if (type == "project") {
-                    var message="added a project on " + date;
+                    var message="added a project";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/project/" + result.get("projectId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -110,10 +107,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type == "mod") {
-                    var message="added a model on " + date;
+                    var message="added a model on ";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/model/" + result.get("modId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -127,10 +125,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type == "dat"){
-                    var message="added a data on " + date;
+                    var message="added a data";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/data/" + result.get("datId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -144,10 +143,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_book" ) {
-                    var message="added a book on " + date;
+                    var message="added a book";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/publication/book/" + result.get("pubBookId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -161,10 +161,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type == "pub_conference" ){
-                    var message="added a book on " + date;
+                    var message="added a book";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/publication/conference/" + result.get("pubConferenceId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -178,10 +179,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_journal"){
-                    var message="added a book on " + date;
+                    var message="added a book";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/publication/journal/" + result.get("pubJournalId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -195,10 +197,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_patent"){
-                    var message="added a book on " + date;
+                    var message="added a book";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/publication/patent/" + result.get("pubPatentId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -212,11 +215,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_thesis"){
-                    var message="added a book on " + date;
+                    var message="added a book";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/publication/thesis/" + result.get("pubThesisId").id;
                     feed.push({
-                        feedId: feedId,
+                        date: date,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
                         adderURL:adderURL,
@@ -229,10 +232,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_unpublished"){
-                    var message="added a book on " + date;
+                    var message="added a book";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/publication/unpublished/" + result.get("pubUnpublishedId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -246,10 +250,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_report"){
-                    var message="added a book on " + date;
+                    var message="added a book";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/publication/report/" + result.get("pubReportId").id;
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -263,10 +268,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="org_create"){
-                    var message="create a network on " + date;
+                    var message="create a network";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),
@@ -280,10 +286,11 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="org_join"){
-                    var message="joined a network on " + date;
+                    var message="joined a network";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
+                        date:date,
                         feedId: feedId,
                         adderPicture:result.get("from").get("picture").url(),
                         adderName:result.get("from").get("fullname"),

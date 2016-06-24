@@ -440,7 +440,7 @@ var Home = React.createClass({
             });
         }
         else
-            networks= <div className="no-discussion"><p>Connect with other networks!</p></div>
+            networks= <div className="no-discussion"><p><small>Not connected with any network</small></p></div>
 
         return (
             <div className="row">

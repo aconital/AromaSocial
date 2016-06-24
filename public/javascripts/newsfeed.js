@@ -54,6 +54,7 @@ var NewsFeed = React.createClass({
                           return (
                               <div>
                                   <NewsFeedList key={i}
+                                        date={item.date}
                                         feedId={item.feedId}
                                         objectTitle={item.objectTitle}
                                         objectURL={item.objectURL}
@@ -92,6 +93,16 @@ var NewsFeed = React.createClass({
 // <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>
 
 var NewsFeedList = React.createClass({
+    getInitialState: function() {
+        return {createdAt:""};
+    },
+    componentWillMount: function() {
+        this.setState({createdAt:moment(this.props.date).fromNow()});
+        setInterval(this.refreshTime, 30000);
+    },
+    refreshTime: function () {
+        this.setState({createdAt:moment(this.props.date).fromNow()});
+    },
     truncate: function(text) {
         var maxLength = 140;
         var truncated = text;
@@ -110,6 +121,7 @@ var NewsFeedList = React.createClass({
                     </div>
                     <div className="col-xs-10 col-xs-10-5 no-padding-right">
                         <a href={this.props.adderURL} className="nostyle"><h3 className="non-inline">{this.props.adderName}</h3></a>
+                        <p className="commentDate">{this.state.createdAt}</p>
                         <h4 className="black non-inline">{this.props.message}</h4>
                         <div className="item-box">
                             <div className="item-box-left"><img src={this.props.objectPicture} className="contain-image-preview" /></div>
@@ -367,19 +379,6 @@ var Update = React.createClass({
       default:
         break;
     }
-
-    // if (itemType == "pub") {
-    //   window.location.href="/publication/" + this.props.objId['objectId'];
-    //   //showPublicationNewsFeed(this.props.itemId, this.props.datatype, this.props.title, this.props.year, this.props.postid, this.props.filename, this.props.tagString, this.props.date, this.props.description, this.props.author, this.props.username, this.props.img);
-    // }
-    // else if (itemType == "mod") {
-    //   window.location.href="/model/" + this.props.objId['objectId'];
-    //   //showModelNewsFeed();
-    // }
-
-    // else if (itemType == "data") {
-    //   window.location.href="/data/" + this.props.objId['objectId'];
-    // }
   },
   showPublication: function(){
     var author = this.props.author;
