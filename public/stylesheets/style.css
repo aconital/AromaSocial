@@ -6403,10 +6403,60 @@ textarea {
     width: 100%;
 }
 
-#autosuggest {
+/*#autosuggest {
   width: 100%;
   float: left;
+}*/
+
+/*#autosuggest {
+    width: 200px;
+    height: 20px;
+    padding-right: 50px;
 }
+
+#submitAutosuggest {
+    margin-left: -50px;
+    height: 25px;
+    width: 50px;
+    background: blue;
+    color: white;
+    border: 0;
+    -webkit-appearance: none;
+}*/
+
+#submitAutosuggest {
+  width:20%;
+  height:110%;
+  float:right;
+  background-color: #008CBA;
+  border-color: transparent;
+  border-radius: 4px;
+  color:white;
+}
+
+#autosuggest {
+  width:80%;
+  float:left;
+}
+
+.acButton {
+  width: 20%;
+  float: right;
+  margin: 2%;
+}
+
+.acImage {
+  float: left;
+  margin: 3%;
+}
+
+/*.acText {
+  cursor: pointer;
+  width: 12em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}*/
 
 .ui-autocomplete {
     /*max-height: 0;*/

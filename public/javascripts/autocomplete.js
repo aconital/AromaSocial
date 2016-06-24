@@ -71,7 +71,7 @@ var ConnectButton = React.createClass({
       }
       else { console.log("Nothing"); }
       return(
-        <div>{connectButton}</div>
+        <div className="acButton">{connectButton}</div>
       )
     }
 });
@@ -169,7 +169,7 @@ var JoinButton = React.createClass({
           joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
       }
       return(
-        <div>{joinButton}</div>
+        <div className="acButton">{joinButton}</div>
       )
     }
 });
@@ -269,8 +269,16 @@ var Container = React.createClass({
     event.preventDefault();
     event.stopPropagation();
   },
+  truncate: function(str) {
+    if (str.length >= 25) {
+      return str.substring(0, 25) + "...";
+    } else {
+      return str;
+    }
+  },
   renderMenu: function(menu) {
     console.log("MENU RENDERER: ", menu);
+    var that = this;
     var options = menu.options;
     var users = options.filter(function(opt) {return opt.category === 'Users'});
     var orgs = options.filter(function(opt) {return opt.category === 'Organizations'});
@@ -281,17 +289,15 @@ var Container = React.createClass({
       {users.map(function(usr) {
         return (
           <div>
-            <div className='item-box'>
-              <div className='item-box-left'>
-                <a href={usr.link} onClick={this.preventDefault} style={{ cursor: 'pointer' }}>
-                  <img className='search-img' src={usr.imgsrc}/>
-                </a>
-              </div>
+            <div className="acImage">
+              <a href={usr.link} onClick={that.preventDefault} style={{ cursor: 'pointer' }}>
+                <img className='search-img' src={usr.imgsrc}/>
+              </a>
             </div>
 
-            <div className='item-box-right'>
-              <a href={usr.link} onClick={this.preventDefault} name='itemName' style={{cursor:'pointer'}}>
-                {usr.label}
+            <div>
+              <a href={usr.link} onClick={that.preventDefault} className='acText'>
+                {that.truncate(usr.label)}
               </a>
               <ConnectButton username={usr.username} objectId={usr.objectId}/>
             </div>
@@ -302,17 +308,15 @@ var Container = React.createClass({
       {orgs.map(function(org) {
         return (
           <div>
-            <div className='item-box'>
-              <div className='item-box-left'>
-                <a href={org.link} onClick={this.preventDefault} style={{ cursor: 'pointer' }}>
-                  <img className='search-img' src={org.imgsrc}/>
-                </a>
-              </div>
+            <div className="acImage">
+              <a href={org.link} onClick={that.preventDefault} style={{ cursor: 'pointer' }}>
+                <img className='search-img' src={org.imgsrc}/>
+              </a>
             </div>
 
-            <div className='item-box-right'>
-              <a href={org.link} onClick={this.preventDefault} name='itemName' style={{cursor:'pointer'}}>
-                {org.label}
+            <div>
+              <a href={org.link} onClick={that.preventDefault} className='acText'>
+                {that.truncate(org.label)}
               </a>
               <JoinButton objectId={org.objectId}/>
             </div>
@@ -323,17 +327,15 @@ var Container = React.createClass({
       {pubs.map(function(pub) {
         return (
           <div>
-            <div className='item-box'>
-              <div className='item-box-left'>
-                <a href={pub.link} onClick={this.preventDefault} style={{ cursor: 'pointer' }}>
-                  <img className='search-img' src={pub.imgsrc}/>
-                </a>
-              </div>
+            <div className="acImage">
+              <a href={pub.link} onClick={that.preventDefault} style={{ cursor: 'pointer' }}>
+                <img className='search-img' src={pub.imgsrc}/>
+              </a>
             </div>
 
-            <div className='item-box-right'>
-              <a href={pub.link} onClick={this.preventDefault} name='itemName' style={{cursor:'pointer'}}>
-                {pub.label}
+            <div>
+              <a href={pub.link} onClick={that.preventDefault} className='acText'>
+                {that.truncate(pub.label)}
               </a>
             </div>
           </div>
