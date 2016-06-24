@@ -344,7 +344,7 @@ var OrganizationMenu = React.createClass ({
 
 var Home = React.createClass({
     getInitialState: function() {
-        return {showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
+        return {loading:true,showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
     },
     componentWillMount : function() {
         var discussionsUrl= "/organization/"+name+"/discussions";
@@ -352,7 +352,7 @@ var Home = React.createClass({
             type: 'GET',
             url: discussionsUrl,
             success: function(data) {
-                this.setState({ discussions: data.discussions });
+                this.setState({ discussions: data.discussions ,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve discussions!");
@@ -406,8 +406,11 @@ var Home = React.createClass({
     render:function(){
         //discussions
         var discussions;
-        if(this.state.discussions.length>0)
-            {
+        if(this.state.loading)
+        discussions = <div className="no-discussion"><p><i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i></p><p>Retrieving data...</p></div>
+
+        else {
+            if (this.state.discussions.length > 0) {
                 discussions = this.state.discussions.map(function (disc) {
                     return (
                         <Discussion discId={disc.id} topic={disc.topic} createdAt={disc.created} madeBy={disc.madeBy}
@@ -417,8 +420,10 @@ var Home = React.createClass({
                     );
                 });
             }
-        else
-            discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+            else
+                discussions =
+                    <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+        }
         //members
         var members;
         if(this.state.partialMembers.people.length>0)
@@ -1263,7 +1268,7 @@ var AddConnection = React.createClass({
 
 var People = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: []};
     },
     componentDidMount : function(){
         this.getPeople();
@@ -1273,7 +1278,7 @@ var People = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve People");
@@ -1376,7 +1381,6 @@ var People = React.createClass({
         )
     }
 });
-
 
 var NewsAndEvents = React.createClass({
     render: function() {
@@ -1865,8 +1869,6 @@ var Publication = React.createClass({ //delete
         )
     }
 });
-
-
 
 var Data = React.createClass({
     getInitialState: function() {
