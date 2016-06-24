@@ -55,7 +55,7 @@ module.exports=function(app,Parse,io) {
             }
         }).then(function() {
             var query = new Parse.Query('Pub_Conference');
-            query.limit(1000);
+            query.limit(5);
             query.contains("title", str);
             query.find({
                 success: function(items) {
@@ -73,7 +73,7 @@ module.exports=function(app,Parse,io) {
                 }
             }).then(function() {
                 var query = new Parse.Query('Pub_Journal_Article');
-                query.limit(1000);
+                query.limit(5);
                 query.contains("title", str);
                 query.find({
                     success: function(items) {
@@ -91,7 +91,7 @@ module.exports=function(app,Parse,io) {
                     }
                 }).then(function() {
                     var query = new Parse.Query('Pub_Patent');
-                    query.limit(1000);
+                    query.limit(5);
                     query.contains("title", str);
                     query.find({
                         success: function(items) {
@@ -109,7 +109,7 @@ module.exports=function(app,Parse,io) {
                         }
                     }).then(function() {
                         var query = new Parse.Query('Pub_Report');
-                        query.limit(1000);
+                        query.limit(5);
                         query.contains("title", str);
                         query.find({
                             success: function(items) {
@@ -127,7 +127,7 @@ module.exports=function(app,Parse,io) {
                             }
                         }).then(function(){             
                             var query = new Parse.Query('Pub_Thesis');
-                            query.limit(1000);
+                            query.limit(5);
                             query.contains("title", str);
                             query.find({
                                 success: function(items) {
@@ -145,7 +145,7 @@ module.exports=function(app,Parse,io) {
                                 }
                             }).then(function() {
                                 var query = new Parse.Query('Pub_Unpublished');
-                                query.limit(1000);
+                                query.limit(5);
                                 query.contains("title", str);
                                 query.find({
                                     success: function(items) {
