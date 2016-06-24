@@ -472,6 +472,57 @@ var Home = React.createClass({
                                 <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
                             </div>
                     </div>
+                    <div className="row">
+                        <div>
+                            <h4>Resources</h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="resource-list">
+                                <li className="resource-item">
+                                    <a onClick={this.props.showEquipment}>
+                                        <div>
+                                            <img className="resource-img" src="../images/equipment.png"/>
+                                            <span className="resource-caption">Equipment</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showProjects}>
+                                        <div>
+                                            <img className="resource-img" src="../images/project.png"/>
+                                            <span className="resource-caption">Projects</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showPublications}>
+                                        <div>
+                                            <img className="resource-img" src="../images/publication.png"/>
+                                            <span className="resource-caption">Publications</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showData}>
+                                    <div>
+                                        <img className="resource-img" src="../images/figures.png"/>
+                                        <span className="resource-caption">Figures &amp; Data</span>
+                                    </div>
+                                    </a>
+
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showModels}>
+                                    <div>
+                                        <img className="resource-img" src="../images/code.png"/>
+                                        <span className="resource-caption">Software &amp; Code</span>
+                                    </div>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
                     <div className="row home-connections-box">
                         <div>
                         <h4><span className="nfButton">Members <small>(<a onClick={this.props.viewPeople} href="#">{this.state.partialMembers.total}</a>)</small></span></h4>
