@@ -214,8 +214,6 @@ var Container = React.createClass({
           cache: false,
           success: function(data) {
             $.map(data, function(item){
-              //console.log("PUB ITEM: ");
-              //console.log(item);
               var type = item.type;
               var dlink = "/publication/" + type + "/" + item.objectId;
               r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink, buttonText: 'See More'});
@@ -368,7 +366,7 @@ var Container = React.createClass({
         </div>
         <form onSubmit={this.formHandler}>
           <input id="searchString" type="hidden" value={this.state.value}></input>
-          <button id='submitAutosuggest' type="submit">Search</button>
+          <input id="submitAutosuggest" type="image" src="../images/searchButton.png"></input>
         </form>
 
       </div>
