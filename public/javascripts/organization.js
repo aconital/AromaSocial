@@ -407,7 +407,7 @@ var Home = React.createClass({
         //discussions
         var discussions;
         if(this.state.loading)
-        discussions = <div className="no-discussion"><p><i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i></p><p>Retrieving data...</p></div>
+        discussions = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Almost there...</p></div>
 
         else {
             if (this.state.discussions.length > 0) {
@@ -1442,7 +1442,7 @@ var Equipments = React.createClass({
     render: function() {
         var itemsList;
         if(this.state.loading)
-            itemsList = <div className="no-discussion"><p><i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i></p><p>Retrieving data...</p></div>
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Cleaning the beaker...</p></div>
         else
         {
             if (this.state.data.length > 0) {
@@ -1719,7 +1719,7 @@ var Projects = React.createClass({
         var itemsList;
 
         if(this.state.loading)
-            itemsList = <div className="no-discussion"><p><i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i></p><p>Retrieving data...</p></div>
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Launching the rocket...</p></div>
         else {
             if (this.state.data.length > 0) {
                 itemsList = $.map(this.state.data, function (item) {
@@ -1794,7 +1794,7 @@ var Publications = React.createClass({
         var itemsList;
 
         if(this.state.loading)
-            itemsList = <div className="no-discussion"><p><i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i></p><p>Retrieving data...</p></div>
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Making sure everything works perfektly...</p></div>
         else {
             if (Object.getOwnPropertyNames(this.state.data).length > 0) {
                 var itemsList = $.map(this.state.data, function (items) {
@@ -1890,7 +1890,7 @@ var Data = React.createClass({
     render: function() {
         var rows ;
         if(this.state.loading)
-        rows = <div className="no-discussion"><p><i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i></p><p>Retrieving data...</p></div>
+        rows = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Shovelling coal into the server...</p></div>
         else {
             if (this.state.data.length > 0) {
                 rows = this.state.data.map(function (item) {
@@ -1968,7 +1968,7 @@ var Models = React.createClass({
     render: function() {
         var rows ;
         if(this.state.loading)
-            rows = <div className="no-discussion"><p><i className="fa fa-spinner fa-pulse fa-3x fa-fw"></i></p><p>Retrieving data...</p></div>
+            rows = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Searching for the answer to life...</p></div>
         else {
             if (this.state.data.length > 0) {
                 rows = this.state.data.map(function (model) {
