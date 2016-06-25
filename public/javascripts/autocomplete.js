@@ -366,7 +366,7 @@ var Container = React.createClass({
         </div>
         <form onSubmit={this.formHandler}>
           <input id="searchString" type="hidden" value={this.state.value}></input>
-          <input id="submitAutosuggest" type="image" src="../images/searchButton.png"></input>
+          <input id="submitAutosuggest" type="image" src="../images/Search.png"></input>
         </form>
 
       </div>
