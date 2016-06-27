@@ -236,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About']} />
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About']} />
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -293,22 +293,30 @@ var OrganizationMenu = React.createClass ({
         var self = this;
 
         var tabMap = {
-            0: <Home showEquipment={this.showTab.bind(self,2)}
-                     showProjects={this.showTab.bind(self,3)}
-                     showPublications={this.showTab.bind(self,4)}
-                     showData={this.showTab.bind(self,5)}
-                     showModels={this.showTab.bind(self,6)}
-                     viewPeople={this.showTab.bind(self,7)}
-                     viewConnections={this.showTab.bind(self,8)}
+            0: <Home
+                showEquipment={this.showTab.bind(self,3)}
+                showProjects={this.showTab.bind(self,4)}
+                showPublications={this.showTab.bind(self,5)}
+                showData={this.showTab.bind(self,6)}
+                showModels={this.showTab.bind(self,7)}
+                     viewPeople={this.showTab.bind(self,8)}
+                     viewConnections={this.showTab.bind(self,9)}
                      objectId={objectId} />,
             1: <About objectId={objectId} />,
-            2: <Equipments objectId={objectId}/>,
-            3: <Projects objectId={objectId}/>,
-            4: <Publications objectId={objectId}/>,
-            5: <Data objectId={objectId}/>,
-            6: <Models objectId={objectId}/>,
-            7: <People isAdmin={this.props.isAdmin} />,
-            8: <Connections isAdmin={this.props.isAdmin}  />
+            2: <Resources isAdmin ={this.props.isAdmin}
+                          showEquipment={this.showTab.bind(self,3)}
+                          showProjects={this.showTab.bind(self,4)}
+                          showPublications={this.showTab.bind(self,5)}
+                          showData={this.showTab.bind(self,6)}
+                          showModels={this.showTab.bind(self,7)}/>,
+            3: <Equipments objectId={objectId}/>,
+            4: <Projects objectId={objectId}/>,
+            5: <Publications objectId={objectId}/>,
+            6: <Data objectId={objectId}/>,
+            7: <Models objectId={objectId}/>,
+            8: <People isAdmin={this.props.isAdmin} />,
+            9: <Connections isAdmin={this.props.isAdmin}  />,
+
 
         };
         return (
@@ -336,15 +344,15 @@ var OrganizationMenu = React.createClass ({
 
 var Home = React.createClass({
     getInitialState: function() {
-        return {showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
+        return {loading:true,showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
     },
     componentWillMount : function() {
-        var discussionsUrl= "/organization/"+objectId+"/discussions";
+        var discussionsUrl= "/organization/"+name+"/discussions";
         $.ajax({
             type: 'GET',
             url: discussionsUrl,
             success: function(data) {
-                this.setState({ discussions: data.discussions });
+                this.setState({ discussions: data.discussions ,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve discussions!");
@@ -398,8 +406,11 @@ var Home = React.createClass({
     render:function(){
         //discussions
         var discussions;
-        if(this.state.discussions.length>0)
-            {
+        if(this.state.loading)
+        discussions = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Almost there...</p></div>
+
+        else {
+            if (this.state.discussions.length > 0) {
                 discussions = this.state.discussions.map(function (disc) {
                     return (
                         <Discussion discId={disc.id} topic={disc.topic} createdAt={disc.created} madeBy={disc.madeBy}
@@ -409,8 +420,10 @@ var Home = React.createClass({
                     );
                 });
             }
-        else
-            discussions= <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+            else
+                discussions =
+                    <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+        }
         //members
         var members;
         if(this.state.partialMembers.people.length>0)
@@ -631,7 +644,7 @@ var Discussion = React.createClass ({
         return { __html: rawMarkup };
     },
     deleteDiscussion:function(discId)
-    { console.log(discId);
+    {
     swal({   title: "Are you sure?",
             text: "You will not be able to recover this discussion and its posts!",
             type: "warning",
@@ -669,7 +682,7 @@ var Discussion = React.createClass ({
                     { currentUsername == this.props.madeBy.username? <a onClick={this.deleteDiscussion.bind(this,this.props.discId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
                 </div>
                 <div className="col-xs-12 col-lg-12">
-                    <p ><a href={"/organization/"+objectId+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
+                    <p ><a href={"/organization/"+name+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
                     <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
                 </div>
             </div>
@@ -1012,7 +1025,66 @@ var About = React.createClass({
     }
 
 })
+var Resources = React.createClass({
+    render:function()
+    {
+       return( <div className="row">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div className="row">
+                    <div>
+                        <h4>Resources</h4>
+                    </div>
+                    <div className="resource-section">
+                        <ul className="resource-list">
+                            <li className="resource-item">
+                                <a onClick={this.props.showEquipment}>
+                                    <div>
+                                        <img className="resource-img" src="../images/equipment.png"/>
+                                        <span className="resource-caption">Equipment</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showProjects}>
+                                    <div>
+                                        <img className="resource-img" src="../images/project.png"/>
+                                        <span className="resource-caption">Projects</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showPublications}>
+                                    <div>
+                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <span className="resource-caption">Publications</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showData}>
+                                    <div>
+                                        <img className="resource-img" src="../images/figures.png"/>
+                                        <span className="resource-caption">Figures &amp; Data</span>
+                                    </div>
+                                </a>
 
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showModels}>
+                                    <div>
+                                        <img className="resource-img" src="../images/code.png"/>
+                                        <span className="resource-caption">Software &amp; Code</span>
+                                    </div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>)
+    }
+});
 var Connections = React.createClass({
     getInitialState: function() {
         return {data: [], showModal: false };
@@ -1196,7 +1268,7 @@ var AddConnection = React.createClass({
 
 var People = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: []};
     },
     componentDidMount : function(){
         this.getPeople();
@@ -1206,7 +1278,7 @@ var People = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve People");
@@ -1310,7 +1382,6 @@ var People = React.createClass({
     }
 });
 
-
 var NewsAndEvents = React.createClass({
     render: function() {
         return (
@@ -1333,25 +1404,22 @@ var Knowledge = React.createClass({
 
 var Equipments = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false, isAdmin: false };
+        return { loading:true,data: [], showModal: false, isAdmin: false };
     },
     componentWillMount : function() {
         var equipmentsURL= "/organization/"+objectId+"/equipments_list";
-
         $.ajax({
             type: 'GET',
             url: equipmentsURL,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Equipment!");
             }.bind(this)
         });
-    },
-    componentDidMount : function() {
-        var isAdminURL= "/organization/"+objectId+"/isAdmin";
 
+        var isAdminURL= "/organization/"+objectId+"/isAdmin";
         $.ajax({
             type: 'GET',
             url: isAdminURL,
@@ -1364,6 +1432,7 @@ var Equipments = React.createClass({
             }.bind(this)
         });
     },
+
     clickOpen() {
         this.setState({ showModal: true });
     },
@@ -1371,33 +1440,39 @@ var Equipments = React.createClass({
         this.setState({ showModal: false });
     },
     render: function() {
-        if(this.state.data.length>0) {
-            var itemsList = $.map(this.state.data, function (item) {
-                return (
-                    <div className="item-box" key={item.objectId}>
-                        <div>
-                            <div className="item-box-left">
-                                <div className="item-box-image-outside">
-                                    <a href={'/equipment/'+item.objectId}><img src={item.picture.url}
-                                                                               className="item-box-image"/></a>
+        var itemsList;
+        if(this.state.loading)
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Cleaning the beaker...</p></div>
+        else
+        {
+            if (this.state.data.length > 0) {
+                 itemsList = $.map(this.state.data, function (item) {
+                    return (
+                        <div className="item-box" key={item.objectId}>
+                            <div>
+                                <div className="item-box-left">
+                                    <div className="item-box-image-outside">
+                                        <a href={'/equipment/'+item.objectId}><img src={item.picture.url}
+                                                                                   className="item-box-image"/></a>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="item-box-right">
-                                <a href={'/equipment/'+item.objectId} className="body-link"><h3
-                                    className="margin-top-bottom-5">{item.title}</h3></a>
+                                <div className="item-box-right">
+                                    <a href={'/equipment/'+item.objectId} className="body-link"><h3
+                                        className="margin-top-bottom-5">{item.title}</h3></a>
                             <span className="font-15">
                             <table className="item-box-right-tags">
                                 {/* <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                             </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                );
-            });
+                    );
+                });
+            }
+            else
+                itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
         }
-        else
-            itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1618,7 +1693,7 @@ var EquipmentAddForm = React.createClass({
 
 var Projects = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { loading:true,data: [], showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1633,7 +1708,7 @@ var Projects = React.createClass({
             type: 'GET',
             url: projectsURL,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Projects!");
@@ -1641,44 +1716,50 @@ var Projects = React.createClass({
         });
     },
     render: function() {
-        if(this.state.data.length>0){
-        var itemsList = $.map(this.state.data, function (item) {
-            item.start_date = (new Date(item.start_date)).toUTCString().slice(8, -12);
+        var itemsList;
 
-            return (
-                <div className="item-box">
-                    <div key={item.objectId}>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/project/'+item.objectId}><img src={item.picture.url}
-                                                                         className="item-box-image"/></a>
+        if(this.state.loading)
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Launching the rocket...</p></div>
+        else {
+            if (this.state.data.length > 0) {
+                itemsList = $.map(this.state.data, function (item) {
+                    item.start_date = (new Date(item.start_date)).toUTCString().slice(8, -12);
+
+                    return (
+                        <div className="item-box">
+                            <div key={item.objectId}>
+                                <div className="item-box-left">
+                                    <div className="item-box-image-outside">
+                                        <a href={'/project/'+item.objectId}><img src={item.picture.url}
+                                                                                 className="item-box-image"/></a>
+                                    </div>
+                                </div>
+                                <div className="item-box-right">
+                                    <a href={'/project/'+item.objectId} className="body-link"><h3
+                                        className="margin-top-bottom-5">{item.title}</h3></a>
+                                    <table className="item-box-right-tags">
+                                        <tr>
+                                            <td><b>Collaborators: </b></td>
+                                            <td>{item.collaborators.map(function (collaborator) {
+                                                return <a href="#"
+                                                          className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;
+                                            })}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Start Date: </b></td>
+                                            <td>{item.start_date}</td>
+                                        </tr>
+                                        {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div className="item-box-right">
-                            <a href={'/project/'+item.objectId} className="body-link"><h3
-                                className="margin-top-bottom-5">{item.title}</h3></a>
-                            <table className="item-box-right-tags">
-                                <tr>
-                                    <td><b>Collaborators: </b></td>
-                                    <td>{item.collaborators.map(function (collaborator) {
-                                        return <a href="#"
-                                                  className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;
-                                    })}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Start Date: </b></td>
-                                    <td>{item.start_date}</td>
-                                </tr>
-                                {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            );
-        });
-    }
-        else
-        itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
+                    );
+                });
+            }
+            else
+                itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
+        }
         return (
             <div>
                 <div className="item-search-div">
@@ -1694,7 +1775,7 @@ var Projects = React.createClass({
 
 var Publications = React.createClass({
     getInitialState: function() {
-        return {data: {}};
+        return {loading:true,data: {}};
     },
     componentDidMount : function(){
         var pubUrl= "/organization/"+objectId+"/publications";
@@ -1702,7 +1783,7 @@ var Publications = React.createClass({
         $.ajax({
             url: pubUrl,
             success: function(publications) {
-                this.setState({data: publications});
+                this.setState({loading:false,data: publications});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Publications!");
@@ -1710,27 +1791,31 @@ var Publications = React.createClass({
         });
     },
     render: function() {
+        var itemsList;
 
-        if(Object.getOwnPropertyNames(this.state.data).length > 0 ) {
-            var itemsList = $.map(this.state.data, function (items) {
-                var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_", " ")
-                var typeList = [];
-                for (var i in items) {
-                    var item = items[i];
-                    item.date = (new Date(item.date)).toUTCString().slice(8, -12);
-                    typeList.push(item);
-                }
+        if(this.state.loading)
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Making sure everything works perfektly...</p></div>
+        else {
+            if (Object.getOwnPropertyNames(this.state.data).length > 0) {
+                var itemsList = $.map(this.state.data, function (items) {
+                    var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_", " ")
+                    var typeList = [];
+                    for (var i in items) {
+                        var item = items[i];
+                        item.date = (new Date(item.date)).toUTCString().slice(8, -12);
+                        typeList.push(item);
+                    }
 
-                return (
-                    <div>
-                        <div><h2 className="margin-top-bottom-10"><span aria-hidden="true"
-                                                                        className="glyphicon glyphicon-list-alt"></span> {type}
-                        </h2></div>
-                        {typeList.map(item =>
-                                <div className="about-item-hr">
-                                    <div key={item.id}>
-                                        <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4
-                                            className="margin-top-bottom-5">{item.title}</h4></a>
+                    return (
+                        <div>
+                            <div><h2 className="margin-top-bottom-10"><span aria-hidden="true"
+                                                                            className="glyphicon glyphicon-list-alt"></span> {type}
+                            </h2></div>
+                            {typeList.map(item =>
+                                    <div className="about-item-hr">
+                                        <div key={item.id}>
+                                            <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4
+                                                className="margin-top-bottom-5">{item.title}</h4></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
@@ -1749,16 +1834,17 @@ var Publications = React.createClass({
                             </table>
                         </table>
                         </span>
+                                        </div>
                                     </div>
-                                </div>
-                        )}
-                        <div className="clear"></div>
-                    </div>
-                );
-            });
+                            )}
+                            <div className="clear"></div>
+                        </div>
+                    );
+                });
+            }
+            else
+                itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
         }
-        else
-            itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 {itemsList}
@@ -1784,11 +1870,9 @@ var Publication = React.createClass({ //delete
     }
 });
 
-
-
 var Data = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: []};
     },
     componentDidMount : function(){
         var peopleUrl= "/organization/"+objectId+"/datas";
@@ -1796,7 +1880,7 @@ var Data = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(datas) {
-                this.setState({data: datas});
+                this.setState({loading:false,data: datas});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Data!");
@@ -1805,18 +1889,21 @@ var Data = React.createClass({
     },
     render: function() {
         var rows ;
-        if(this.state.data.length>0)
-        {
-            rows = this.state.data.map(function(item) {
-                return (<Datum objectId={item.objectId}
-                               collaborators={item.collaborators}
-                               title={item.title}
-                               image_URL={item.picture.url}
-                               start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)} />);
-            });
+        if(this.state.loading)
+        rows = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Shovelling coal into the server...</p></div>
+        else {
+            if (this.state.data.length > 0) {
+                rows = this.state.data.map(function (item) {
+                    return (<Datum objectId={item.objectId}
+                                   collaborators={item.collaborators}
+                                   title={item.title}
+                                   image_URL={item.picture.url}
+                                   start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)}/>);
+                });
+            }
+            else
+                rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
         }
-        else
-            rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 <div className="item-search-div">
@@ -1864,14 +1951,14 @@ var Datum = React.createClass({
 
 var Models = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: []};
     },
     componentDidMount : function(){
         var peopleUrl= "/organization/"+objectId+"/models";
         $.ajax({
             url: peopleUrl,
             success: function(models) {
-                this.setState({data: models});
+                this.setState({loading:false,data: models});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Publications!");
@@ -1879,25 +1966,28 @@ var Models = React.createClass({
         });
     },
     render: function() {
-        var rows;
-        if(this.state.data.length>0)
-        {
-            rows = this.state.data.map(function(model) {
-                return (<Model objectId={model.objectId}
-                               collaborators={model.collaborators}
-                               title={model.title}
-                               image_URL={model.picture.url}
-                               keywords={model.keywords}
-                               number_cited={model.number_cited}
-                               number_syncholar_factor={model.number_syncholar_factor}
-                               license={model.license}
-                               access={model.access}
-                               abstract={model.abstract}
-                               start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)} />);
-            });
+        var rows ;
+        if(this.state.loading)
+            rows = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Searching for the answer to life...</p></div>
+        else {
+            if (this.state.data.length > 0) {
+                rows = this.state.data.map(function (model) {
+                    return (<Model objectId={model.objectId}
+                                   collaborators={model.collaborators}
+                                   title={model.title}
+                                   image_URL={model.picture.url}
+                                   keywords={model.keywords}
+                                   number_cited={model.number_cited}
+                                   number_syncholar_factor={model.number_syncholar_factor}
+                                   license={model.license}
+                                   access={model.access}
+                                   abstract={model.abstract}
+                                   start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)}/>);
+                });
+            }
+            else
+                rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
         }
-        else
-        rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
         return (
             <div>
                 <div className="item-search-div">

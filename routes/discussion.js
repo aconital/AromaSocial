@@ -12,11 +12,14 @@ var is_auth = require('../utils/helpers').is_auth;
 
 module.exports=function(app,Parse,io) {
 
-    app.get('/organization/:objectId/discussions',function(req,res,next){
+    app.get('/organization/:orgname/discussions',function(req,res,next){
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("name",req.params.orgname);
+
         var Discussion = Parse.Object.extend("Discussion");
         var query = new Parse.Query(Discussion);
-        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.include("madeBy");
+        query.matchesQuery("orgId",innerQuery);
         query.descending("createdAt");
         query.find({
             success: function (result) {
@@ -47,10 +50,12 @@ module.exports=function(app,Parse,io) {
             }
         });
     });
-    app.get('/organization/:objectId/discussions/:discId',is_auth,function(req,res,next){
+    app.get('/organization/:orgname/discussions/:discId',is_auth,function(req,res,next){
+
+
         var Organization = Parse.Object.extend("Organization");
         var query = new Parse.Query(Organization);
-        query.equalTo("objectId",req.params.objectId);
+        query.equalTo("name",req.params.orgname);
         query.first({
             success: function (r) {
                 if(r!=null){
@@ -66,11 +71,13 @@ module.exports=function(app,Parse,io) {
         });
 
     });
-    app.get('/organization/:objectId/discussions/:discId/:page',is_auth,function(req,res,next){
+    app.get('/organization/:orgname/discussions/:discId/:page',is_auth,function(req,res,next){
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("name",req.params.orgname);
 
         var Discussion = Parse.Object.extend("Discussion");
         var query = new Parse.Query(Discussion);
-        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        query.matchesQuery("orgId", innerQuery);
         query.equalTo("objectId",req.params.discId);
         query.include("madeBy");
         query.include("posts");
