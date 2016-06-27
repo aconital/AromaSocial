@@ -1,4 +1,7 @@
 Parse.Cloud.beforeSave(Parse.User, function(request, response) {
+	if (request.object.get("fullname")) {
+		request.object.set("search", request.object.get("fullname").toLowerCase());
+	}
 	if (!request.object.get("picture")) {
 	  	var query = new Parse.Query("Static_Resources");
 		query.get("EEgFIzn2ta", {
@@ -15,6 +18,9 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 });
 
 Parse.Cloud.beforeSave("Organization", function(request, response) {
+	if (request.object.get("displayName")) {
+		request.object.set("search", request.object.get("displayName").toLowerCase());
+	}
 	if (!request.object.get("picture")) {
 	  	var query = new Parse.Query("Static_Resources");
 		query.get("gXy3yIGZV1", {
@@ -31,6 +37,9 @@ Parse.Cloud.beforeSave("Organization", function(request, response) {
 });
 
 Parse.Cloud.beforeSave("Data", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
 	if (!request.object.get("picture")) {
 	  	var query = new Parse.Query("Static_Resources");
 		query.get("w6NYAKDKHb", {
@@ -47,6 +56,9 @@ Parse.Cloud.beforeSave("Data", function(request, response) {
 });
 
 Parse.Cloud.beforeSave("Model", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
 	if (!request.object.get("picture")) {
 	  	var query = new Parse.Query("Static_Resources");
 		query.get("o59Ph5ELBC", {
@@ -63,6 +75,9 @@ Parse.Cloud.beforeSave("Model", function(request, response) {
 });
 
 Parse.Cloud.beforeSave("Equipment", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
 	if (!request.object.get("picture")) {
 	  	var query = new Parse.Query("Static_Resources");
 		query.get("o59Ph5ELBC", {
@@ -79,6 +94,9 @@ Parse.Cloud.beforeSave("Equipment", function(request, response) {
 });
 
 Parse.Cloud.beforeSave("Project", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
 	if (!request.object.get("picture")) {
 	  	var query = new Parse.Query("Static_Resources");
 		query.get("w6NYAKDKHb", {
@@ -92,6 +110,55 @@ Parse.Cloud.beforeSave("Project", function(request, response) {
 			}
 		});
 	} else { response.success(); }
+});
+
+Parse.Cloud.beforeSave("Pub_Book", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
+	response.success();
+});
+
+Parse.Cloud.beforeSave("Pub_conference", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
+	response.success();
+});
+
+Parse.Cloud.beforeSave("Pub_Journal_Article", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
+	response.success();
+});
+
+Parse.Cloud.beforeSave("Pub_Patent", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
+	response.success();
+});
+
+Parse.Cloud.beforeSave("Pub_Report", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
+	response.success();
+});
+
+Parse.Cloud.beforeSave("Pub_Thesis", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
+	response.success();
+});
+
+Parse.Cloud.beforeSave("Pub_Unpublished", function(request, response) {
+	if (request.object.get("title")) {
+		request.object.set("search", request.object.get("title").toLowerCase());
+	}
+	response.success();
 });
 
 Parse.Cloud.afterSave("Project", function(request, response) {
@@ -353,27 +420,6 @@ Parse.Cloud.afterSave("Data", function(request, response) {
 	});
 });
 
-Parse.Cloud.afterSave("Organization", function(request, response) {
-	Parse.Cloud.useMasterKey();
-	var orgId=request.object;
-	var newsFeed=Parse.Object.extend("NewsFeed");
-	var newsQuery=new Parse.Query(newsFeed);
-	var feed = new newsFeed();
-	newsQuery.equalTo("orgId", orgId);
-	newsQuery.equalTo("type", "org_create");
-	newsQuery.addDescending("updatedAt");
-	newsQuery.first({
-		success: function(result) {
-			if (result==undefined){
-				feed.set("type", "org_create");
-				feed.set("orgId", orgId);
-				feed.save();
-				response.success("Added Organization Newsfeed Entry");
-			}
-		}
-	});
-})
-
 Parse.Cloud.afterSave("Discussion", function(request, response) {
 	Parse.Cloud.useMasterKey();
 	var userId=request.object.get("madeBy");
@@ -398,6 +444,31 @@ Parse.Cloud.afterSave("Discussion", function(request, response) {
 	});
 })
 
+Parse.Cloud.afterSave("RelationshipUser", function(request, response) {
+	Parse.Cloud.useMasterKey();
+	var userId0 = request.object.get("userId0");
+	var userId1 = request.object.get("userId1");
+	var verified = request.object.get("verified");
+	if (verified) {
+		var newsFeed = Parse.Object.extend("NewsFeed");
+		var newsQuery = new Parse.Query(newsFeed);
+		var feed = new newsFeed();
+		newsQuery.equalTo("userId0", userId0);
+		newsQuery.equalTo("userId1", userId1);
+		newsQuery.first({
+			success: function (newsResult) {
+				if (newsResult == undefined) {
+					feed.set("type", "friend_make");
+					feed.set("from", userId0);
+					feed.set("userId", userId1);
+					feed.save();
+					response.success("Added friend to Newsfeed Entry");
+				}
+			}
+		});
+	}
+});
+
 //cascade through to other connected organizations
 Parse.Cloud.afterSave("Relationship", function(request) {
 	Parse.Cloud.useMasterKey();
@@ -409,16 +480,29 @@ Parse.Cloud.afterSave("Relationship", function(request) {
 		var newsQuery=new Parse.Query(newsFeed);
 		var feed = new newsFeed();
 		newsQuery.equalTo("orgId", orgId);
-		newsQuery.equalTo("from", userId);
-		newsQuery.equalTo("type", "org_join");
-		newsQuery.addDescending("updatedAt");
 		newsQuery.first({
-			success: function (result) {
-				if (result == undefined) {
-					feed.set("type", "org_join");
+			success: function (newsResult) {
+				if (newsResult == undefined) {
+					feed.set("type", "org_create");
 					feed.set("from", userId);
 					feed.set("orgId", orgId);
 					feed.save();
+				}
+				else{
+					var newsQuery2=new Parse.Query(newsFeed);
+					newsQuery2.equalTo("orgId", orgId);
+					newsQuery2.equalTo("from", userId);
+					newsQuery2.equalTo("type", "org_join");
+					newsQuery2.first({
+						success: function(newsResult2) {
+							if (newsResult2 == undefined) {
+								feed.set("type", "org_join");
+								feed.set("from", userId);
+								feed.set("orgId", orgId);
+								feed.save();
+							}
+						}
+					});
 				}
 			}
 		});
