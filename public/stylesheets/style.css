@@ -6551,16 +6551,16 @@ hr.style15 {
     }
 }
 
-.notification-counter {
-    position: absolute;
-    top: 7px;
-    left: 14px;
-    
-    background-color: rgba(212, 19, 13, 1);
-    color: #fff;
-    border-radius: 3px;
-    padding: 1px 3px;
-    font: 8px Verdana;
+.request-notification-counter,.general-notification-counter {
+  position: absolute;
+  top: 7px;
+  left: 14px;
+
+  background-color: rgba(212, 19, 13, 1);
+  color: #fff;
+  border-radius: 3px;
+  padding: 1px 3px;
+  font: 8px Verdana;
 }
 
 .contain-image {
