@@ -430,7 +430,11 @@ var Connections = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data, noRecordsMessage: ''});
+                console.log(data);
+                if (data.length < 1 || Object.keys(data).length === 0) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve people");
@@ -479,6 +483,7 @@ var Connections = React.createClass({
                     </table>
                 </div>
                 {peopleList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -497,7 +502,11 @@ var Organizations = React.createClass({
             success: function(data) {
                 this.setState({orgs: data.orgs,
                                myOrgs:data.myOrgs,
-                               isMe:data.isMe});
+                               isMe:data.isMe,
+                               noRecordsMessage: ''});
+                if (data.orgs.length+data.myOrgs.length < 1) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve orgs");
@@ -561,6 +570,7 @@ var Organizations = React.createClass({
         return (
             <div>
                 {orgList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -950,7 +960,7 @@ var AboutTabObject = React.createClass({
 
                 </div>
             )
-        }else{ //if field is education, use education placeholders
+        } else{ //if field is education, use education placeholders
             return (
                 <div className={"about-item-hr relative " + this.state.display} >
                     {(currentUsername == username) ? <div className="div-minus">
@@ -1019,7 +1029,10 @@ var Projects = React.createClass({
             type: 'GET',
             url: projectsURL,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data, noRecordsMessage: ''});
+                if (data.length < 1) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Projects!");
@@ -1052,7 +1065,7 @@ var Projects = React.createClass({
                 </div>
             );
         });
-        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
+        var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1070,7 +1083,7 @@ var Projects = React.createClass({
                     </table>
                 </div>
                 {itemsList}
-                {noRecordsMessage}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -1080,7 +1093,7 @@ var Projects = React.createClass({
 
 var Publications = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: '', showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1097,6 +1110,9 @@ var Publications = React.createClass({
             success: function(data) {
                 console.log(data);
                 this.setState({data: data});
+                if (data.length < 1) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Publications!");
@@ -1139,7 +1155,7 @@ var Publications = React.createClass({
             </div>
             );
         });
-        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
+        var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
         return (
             <div>
                 <ResourceForm publication={true} />
@@ -1180,7 +1196,7 @@ var Publication = React.createClass({
 
 var Models = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: '', showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1196,7 +1212,10 @@ var Models = React.createClass({
             url: modelsURL,
             success: function(data) {
                 console.log(data);
-                this.setState({data: data});
+                this.setState({data: data, noRecordsMessage: ''});
+                if (data.length < 1) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Models!");
@@ -1242,12 +1261,12 @@ var Models = React.createClass({
             );
         });
 
-        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
+        var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
         return (
             <div>
                 <ResourceForm fromModelTab={true} />
                 {itemsList}
-                {noRecordsMessage}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -1270,7 +1289,10 @@ var Data = React.createClass({
             type: 'GET',
             url: dataURL,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data, noRecordsMessage: ''});
+                if (data.length < 1) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Data!");
@@ -1289,7 +1311,6 @@ var Data = React.createClass({
             for (var i in items) {
                 var item = items[i];
                 dataPath = '/data/' + item.objectId;
-                console.log(item);
                 item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
@@ -1328,12 +1349,13 @@ var Data = React.createClass({
             </div>
             );
         });
-        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
+        console.log(itemsList);
+        var noRecordsMessage = itemsList > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
         return (
             <div>
                 <ResourceForm fromModelTab={false} />
                 {itemsList}
-                {noRecordsMessage}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
