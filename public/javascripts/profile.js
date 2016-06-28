@@ -430,7 +430,6 @@ var Connections = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
@@ -443,26 +442,14 @@ var Connections = React.createClass({
         invite(e.nativeEvent);
     },
     render: function() {
-        return (
-            <div className="item-search-div">
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
-                    </tr>
-                </table>
-            </div>
-        )
         var peopleList = $.map(this.state.data,function(objects) {
             var role= objects[0].title;
             var plist=[];
             for(var i in objects)
             {
                 var person = objects[i];
-
                 plist.push(person);
             }
-            console.log(currentUsername);
-            console.log(username);
 
             return (                
                 <div id="item-list">
@@ -484,6 +471,13 @@ var Connections = React.createClass({
         });
         return (
             <div>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
+                        </tr>
+                    </table>
+                </div>
                 {peopleList}
             </div>
         )
@@ -1199,6 +1193,9 @@ var Models = React.createClass({
             success: function(data) {
                 console.log(data);
                 this.setState({data: data});
+                if (data.length < 1) {
+                    console.log('nothing');
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Models!");
