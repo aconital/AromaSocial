@@ -1378,6 +1378,61 @@ module.exports=function(app,Parse,io) {
         })
     });
 
+    app.post('/organization/:objectId/events',is_auth,function(req,res,next){
+        var Event = Parse.Object.extend("Event");
+        var event = new Event();
+        console.log(req.params.objectId);
+        console.log(req.body);
+
+        event.set("title", req.body.title);
+        event.set("date", new Date(req.body.date));
+        event.set("time", req.body.time);
+        event.set("description", req.body.description);
+        event.set("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+
+        event.save(null, {
+            success: function (obj) {
+                console.log('event success!');
+                res.status(200).json({status:"OK", query: obj});
+            },
+            error: function (error) {
+                console.log('Failed to create new object, with error: ' + error);
+                res.status(500).json({error: error});
+            }
+        });
+    });
+
+    app.get("/organization/:objectId/upcomingEvents",function(req,res,next){
+        var events = [],
+            currentDay = moment().sod(); // start of current day
+
+        var query = new Parse.Query("Event");
+        query.equalTo("orgId", req.params.objectId);
+        query.greaterThanOrEqualTo('date', currentDay); // only want to get upcoming events
+
+        query.find().then(function(results) {
+            console.log("retrieved events:", results.length);
+            // Do something with the returned Parse.Object values
+            for (var i = 0; i < results.length; i++) {
+                var object = results[i];
+                events.push({
+                    title: object.attributes.title,
+                    date: object.attributes.date,
+                    time: object.attributes.time,
+                    description: object.attributes.description,
+                });
+            }
+            return events;
+        }).then(function(events) {
+            console.log('sending shit over');
+            res.json(events);
+        }, function(error) {
+            console.log('Failed to retrieve events, with error: ' + error.message);
+            res.status(500).json({status: "Event retrieval failed. " + error});
+        });
+    });
+
+
 
     /*
      *     HELPER METHODS

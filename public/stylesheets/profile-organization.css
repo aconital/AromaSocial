@@ -353,3 +353,13 @@
 {   margin-top: 15px;
     padding: 15px 10px 15px 10px;
 }
+
+.datetime-row {
+}
+
+.datetime-row > div {
+    padding-bottom: 10px;
+    display: inline;
+    float:left;
+    width: 50%;
+}

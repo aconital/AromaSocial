@@ -342,9 +342,105 @@ var OrganizationMenu = React.createClass ({
     }
 });
 
+var NewsAndEvents = React.createClass({
+    getInitialState: function() {
+        return { showModal: false };
+    },
+    close: function() {
+        this.setState({ showModal: false });
+    },
+    open: function() {
+        this.setState({ showModal: true });
+    },
+    render: function() {
+        return (
+            <div>
+                <div className = "createorg_panel">
+                    <button className="btn btn-panel createorg_btn" onClick={this.open}><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
+                </div>
+                <div className = "panel search-panel your-groups">
+                    <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
+                        <div className="list-group">
+                            <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
+                            <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
+                        </div>
+                </div>
+
+                <Modal show={this.state.showModal} onHide={this.close}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create New Event</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <h4>Text in a modal</h4>
+                        <CreateEvent />
+                    </Modal.Body>
+                </Modal>
+            </div>
+        )
+    }
+});
+
+var CreateEvent = React.createClass({
+    getInitialState: function() {
+        return { disabled: false, error: '' };
+    },
+    handleChange: function(e) {
+        this.setState({topic: e.target.value});
+    },
+    handleSubmit: function(e) {
+        e.preventDefault();
+        var newEvent = {title: this.state.title,
+                        date: this.state.date,
+                        time: this.state.time,
+                        description: this.state.description};
+        this.setState({disabled: true, error: ''});
+
+        $.ajax({
+            url: '/organization/'+objectId+'/events/',
+            method:'post',
+            data: newEvent,
+            success: function(data) {
+                console.log('done', data);
+                location.reload();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/events/', status, err.toString());
+                this.setState({disabled: false, error: 'Error: ' + err.toString()});
+            }.bind(this)
+        });
+
+    },
+    render: function(){
+        return (
+            <div className="row">
+                <div className="col-xs-12">
+                    <form className="form" onSubmit={this.handleSubmit}>
+                        <Input type="text" label="Event Title" name="title" required onChange={this.handleChange} value={this.state.title} />
+
+                            <div className="datetime-row">
+                                <Input type="date" label="Date" name="date" required onChange={this.handleChange} value={this.state.date} />
+                                <Input type="time" label="Time" name="time" onChange={this.handleChange} value={this.state.time} />
+                            </div>
+                        <Input type="textarea" label="Description" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
+
+                        <Modal.Footer>
+                            <Input className="btn btn-default pull-right submit" type="submit" disabled={this.state.disabled} value="Submit" />
+                            <div className="form-feedback">{this.state.error}</div>
+                        </Modal.Footer>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+});
+
 var Home = React.createClass({
     getInitialState: function() {
-        return {loading:true,showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
+        return {loading:true,showModal:false,
+            discussions:[],
+            partialMembers:{total:0,people:[]},
+            partialNetworks:{total:0,orgs:[]},
+            upcomingEvents:[]};
     },
     componentWillMount : function() {
         var discussionsUrl= "/organization/"+name+"/discussions";
@@ -360,7 +456,7 @@ var Home = React.createClass({
         });
         this.loadPartialMembers();
         this.loadPartialNetwork();
-
+        this.loadUpcomingEvents();
     },
     loadPartialMembers:function()
     {
@@ -388,12 +484,26 @@ var Home = React.createClass({
             }.bind(this)
         });
     },
+    loadUpcomingEvents: function() {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/upcomingEvents",
+            success: function(data) {
+                this.setState({ upcomingEvents: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve events!", status, err);
+                console.log(xhr);
+            }.bind(this)
+        });
+    },
     openModal:function(){
         this.setState({showModal:true});
     },
     closeModal:function(){
         this.setState({showModal:false});
-    },inviteTrigger: function(e) {
+    },
+    inviteTrigger: function(e) {
     e.stopPropagation();
     var source = {
         id: objectId,
@@ -472,16 +582,7 @@ var Home = React.createClass({
                   </div>
                 </div>
                 <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <div className = "createorg_panel">
-                        <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
-                    </div>
-                    <div className = "panel search-panel your-groups">
-                        <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
-                            <div className="list-group">
-                                <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
-                                <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
-                            </div>
-                    </div>
+                    <NewsAndEvents upcomingEvents={this.state.upcomingEvents} />
                     <div className="row">
                         <div>
                             <h4>Resources</h4>
@@ -1377,16 +1478,6 @@ var People = React.createClass({
         return (
             <div>
                 {peopleList}
-            </div>
-        )
-    }
-});
-
-var NewsAndEvents = React.createClass({
-    render: function() {
-        return (
-            <div>
-                News And Events
             </div>
         )
     }
