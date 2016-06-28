@@ -6388,15 +6388,13 @@ textarea {
 .grow:hover {
     /* height: 100%; /* This is the height on hover */
 }
-
-
 .categoryHeader {
-    font-weight: bold;
-    display: inline-block;
-    text-align: center;
-    background-color: #333333;
-    color: white;
-    width: 100%;
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+  background-color: #333333;
+  color: white;
+  width: 100%;
 }
 
 #submitAutosuggest {
@@ -6410,7 +6408,7 @@ textarea {
   border-radius: 4px;
   color:white;
   height: 40px;
-  margin-right: 40px; 
+  margin-right: 40px;
   /*width: 40px;*/
 }
 
@@ -6430,7 +6428,6 @@ textarea {
   float: left;
   margin: 3%;
 }
-
 .ui-autocomplete {
     /*max-height: 0;*/
     /*transition: max-height 0.5s ease-out;*/
@@ -6593,16 +6590,16 @@ hr.style15 {
     }
 }
 
-.notification-counter {   
-    position: absolute;
-    top: 7px;
-    left: 14px;
-    
-    background-color: rgba(212, 19, 13, 1);
-    color: #fff;
-    border-radius: 3px;
-    padding: 1px 3px;
-    font: 8px Verdana;
+.request-notification-counter,.general-notification-counter {
+  position: absolute;
+  top: 7px;
+  left: 14px;
+
+  background-color: rgba(212, 19, 13, 1);
+  color: #fff;
+  border-radius: 3px;
+  padding: 1px 3px;
+  font: 8px Verdana;
 }
 
 .contain-image {

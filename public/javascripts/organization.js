@@ -346,7 +346,7 @@ var Home = React.createClass({
     getInitialState: function() {
         return {loading:true,showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
     },
-    componentWillMount : function() {
+    componentDidMount : function() {
         var discussionsUrl= "/organization/"+name+"/discussions";
         $.ajax({
             type: 'GET',
@@ -368,6 +368,7 @@ var Home = React.createClass({
             type: 'GET',
             url: "/organization/"+objectId+"/partialMembers",
             success: function(data) {
+              if(!data.err)
                 this.setState({ partialMembers: data });
             }.bind(this),
             error: function(xhr, status, err) {
@@ -381,6 +382,7 @@ var Home = React.createClass({
             type: 'GET',
             url: "/organization/"+objectId+"/partialNetworks",
             success: function(data) {
+                if(!data.err)
                 this.setState({ partialNetworks: data });
             }.bind(this),
             error: function(xhr, status, err) {
@@ -426,7 +428,7 @@ var Home = React.createClass({
         }
         //members
         var members;
-        if(this.state.partialMembers.people.length>0)
+        if( this.state.partialMembers.people.length>0)
          {
              members= this.state.partialMembers.people.map(function(member,index){
                  return (
