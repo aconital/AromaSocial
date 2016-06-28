@@ -122,7 +122,9 @@ module.exports=function(app,Parse,io) {
                       msg: "has invited you to join their organization"
                     };
                     console.log("emitting io request");
+
                     io.to(userId).emit('org2peoplerequest',{data:notification});
+
                     console.log("emitted request");
 
                     res.send({reply: "User already exists with this email - sending notification..."});
