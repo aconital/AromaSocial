@@ -3,11 +3,11 @@ Parse.Cloud.beforeSave(Parse.User, function(request, response) {
 		request.object.set("search", request.object.get("fullname").toLowerCase());
 	}
 	if (!request.object.get("picture")) {
-	  	var query = new Parse.Query("Static_Resources");
+		var query = new Parse.Query("Static_Resources");
 		query.get("EEgFIzn2ta", {
 			success: function(res) {
-	    		request.object.set("picture", res.get("file"));
-	  			response.success();
+				request.object.set("picture", res.get("file"));
+				response.success();
 			},
 			error: function(error) {
 				console.error("Got an error " + error.code + " : " + error.message);
@@ -22,11 +22,11 @@ Parse.Cloud.beforeSave("Organization", function(request, response) {
 		request.object.set("search", request.object.get("displayName").toLowerCase());
 	}
 	if (!request.object.get("picture")) {
-	  	var query = new Parse.Query("Static_Resources");
+		var query = new Parse.Query("Static_Resources");
 		query.get("gXy3yIGZV1", {
 			success: function(res) {
-	    		request.object.set("picture", res.get("file"));
-	  			response.success();
+				request.object.set("picture", res.get("file"));
+				response.success();
 			},
 			error: function(error) {
 				console.error("Got an error " + error.code + " : " + error.message);
@@ -41,11 +41,11 @@ Parse.Cloud.beforeSave("Data", function(request, response) {
 		request.object.set("search", request.object.get("title").toLowerCase());
 	}
 	if (!request.object.get("picture")) {
-	  	var query = new Parse.Query("Static_Resources");
+		var query = new Parse.Query("Static_Resources");
 		query.get("w6NYAKDKHb", {
 			success: function(res) {
-	    		request.object.set("picture", res.get("file"));
-	  			response.success();
+				request.object.set("picture", res.get("file"));
+				response.success();
 			},
 			error: function(error) {
 				console.error("Got an error " + error.code + " : " + error.message);
@@ -60,11 +60,11 @@ Parse.Cloud.beforeSave("Model", function(request, response) {
 		request.object.set("search", request.object.get("title").toLowerCase());
 	}
 	if (!request.object.get("picture")) {
-	  	var query = new Parse.Query("Static_Resources");
+		var query = new Parse.Query("Static_Resources");
 		query.get("o59Ph5ELBC", {
 			success: function(res) {
-	    		request.object.set("picture", res.get("file"));
-	  			response.success();
+				request.object.set("picture", res.get("file"));
+				response.success();
 			},
 			error: function(error) {
 				console.error("Got an error " + error.code + " : " + error.message);
@@ -79,11 +79,11 @@ Parse.Cloud.beforeSave("Equipment", function(request, response) {
 		request.object.set("search", request.object.get("title").toLowerCase());
 	}
 	if (!request.object.get("picture")) {
-	  	var query = new Parse.Query("Static_Resources");
+		var query = new Parse.Query("Static_Resources");
 		query.get("o59Ph5ELBC", {
 			success: function(res) {
-	    		request.object.set("picture", res.get("file"));
-	  			response.success();
+				request.object.set("picture", res.get("file"));
+				response.success();
 			},
 			error: function(error) {
 				console.error("Got an error " + error.code + " : " + error.message);
@@ -98,11 +98,11 @@ Parse.Cloud.beforeSave("Project", function(request, response) {
 		request.object.set("search", request.object.get("title").toLowerCase());
 	}
 	if (!request.object.get("picture")) {
-	  	var query = new Parse.Query("Static_Resources");
+		var query = new Parse.Query("Static_Resources");
 		query.get("w6NYAKDKHb", {
 			success: function(res) {
-	    		request.object.set("picture", res.get("file"));
-	  			response.success();
+				request.object.set("picture", res.get("file"));
+				response.success();
 			},
 			error: function(error) {
 				console.error("Got an error " + error.code + " : " + error.message);
@@ -436,6 +436,7 @@ Parse.Cloud.afterSave("Discussion", function(request, response) {
 			if (result==undefined){
 				feed.set("type", "discussion");
 				feed.set("orgId", orgId);
+				feed.set("discId", discId);
 				feed.set("from", userId);
 				feed.save();
 				response.success("Added Discussion Newsfeed Entry");

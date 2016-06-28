@@ -436,6 +436,7 @@ Parse.Cloud.afterSave("Discussion", function(request, response) {
 			if (result==undefined){
 				feed.set("type", "discussion");
 				feed.set("orgId", orgId);
+				feed.set("discId", discId);
 				feed.set("from", userId);
 				feed.save();
 				response.success("Added Discussion Newsfeed Entry");

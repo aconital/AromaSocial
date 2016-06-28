@@ -36,6 +36,7 @@ module.exports=function(app,Parse,io) {
         query.include("orgId");
         query.include("modId");
         query.include("datId");
+        query.include("userId");
         query.include("comments");
         query.include("comments.from");
         query.include('from');
@@ -90,7 +91,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if (type == "project") {
                     var message="added a project";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/project/" + result.get("projectId").id;
                     feed.push({
                         date:date,
@@ -108,7 +109,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type == "mod") {
                     var message="added a model on ";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/model/" + result.get("modId").id;
                     feed.push({
                         date:date,
@@ -126,7 +127,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type == "dat"){
                     var message="added a data";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/data/" + result.get("datId").id;
                     feed.push({
                         date:date,
@@ -144,7 +145,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type =="pub_book" ) {
                     var message="added a book";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/book/" + result.get("pubBookId").id;
                     feed.push({
                         date:date,
@@ -162,7 +163,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type == "pub_conference" ){
                     var message="added a book";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/conference/" + result.get("pubConferenceId").id;
                     feed.push({
                         date:date,
@@ -180,7 +181,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type =="pub_journal"){
                     var message="added a book";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/journal/" + result.get("pubJournalId").id;
                     feed.push({
                         date:date,
@@ -198,7 +199,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type =="pub_patent"){
                     var message="added a book";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/patent/" + result.get("pubPatentId").id;
                     feed.push({
                         date:date,
@@ -216,7 +217,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type =="pub_thesis"){
                     var message="added a book";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/thesis/" + result.get("pubThesisId").id;
                     feed.push({
                         date: date,
@@ -233,7 +234,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type =="pub_unpublished"){
                     var message="added a book";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/unpublished/" + result.get("pubUnpublishedId").id;
                     feed.push({
                         date:date,
@@ -251,7 +252,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type =="pub_report"){
                     var message="added a book";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/report/" + result.get("pubReportId").id;
                     feed.push({
                         date:date,
@@ -268,8 +269,8 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="org_create"){
-                    var message="create a network";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var message="created a network";
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
                         date:date,
@@ -287,7 +288,7 @@ module.exports=function(app,Parse,io) {
                 }
                 else if(type =="org_join"){
                     var message="joined a network";
-                    var adderURL="/user/" + result.get("from").get("username");
+                    var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
                         date:date,
@@ -303,8 +304,26 @@ module.exports=function(app,Parse,io) {
                         comments:comments
                     });
                 }
+                else if(type =="friend_make"){
+                    var message="connected with";
+                    var adderURL="/profile/" + result.get("from").get("username");
+                    var objectURL="/profile/" + result.get("userId").get("username");
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("userId").get("picture").url(),
+                        objectTitle:result.get("userId").get("fullname"),
+                        objectURL:objectURL,
+                        description:result.get("userId").get("about")!=null ? result.get("userId").get("about"):"",
+                        comments:comments
+                    });
+                }
             }
-            console.log(feed);
+            console.log("it works");
             res.json(feed);
         }, function(error) {
             console.log("Error: " + error.toString());
