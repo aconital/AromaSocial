@@ -22,9 +22,8 @@ module.exports=function(app,Parse,io) {
      *
      ********************************************/
     app.get('/newsfeeddata', is_auth,function (req, res, next) {
-        var NewsFeed = Parse.Object.extend("NewsFeed");
-        // pub query
-        var query = new Parse.Query(NewsFeed);
+        console.log("-5");
+        var query = new Parse.Query('NewsFeed');
         query.include("pubBookId");
         query.include("pubReportId");
         query.include("pubConferenceId");
@@ -34,516 +33,281 @@ module.exports=function(app,Parse,io) {
         query.include("pubPatentId");
         query.include("equipmentId");
         query.include("projectId");
+        query.include("orgId");
         query.include("modId");
         query.include("datId");
-        query.include("comments")
-        query.include("comments.from")
+        query.include("comments");
+        query.include("comments.from");
         query.include('from');
         query.descending("createdAt");
-        //query.limit(20);
-        query.find({
-            success: function(results) {
-                console.log("Successfully retrieved " + results.length + " feed.");
+        query.limit(20);
+        var feed=[];
+        query.find(function(results) {
+            for (var i = 0; i < results.length; i++) {
+                var result=results[i];
+                console.log(result.toString());
                 // Do something with the returned Parse.Object values
-                var feeds=[];
-                for (var i = 0; i < results.length; i++) {
-                    var object = results[i];
-                    var comments = [];
-                    if(object.get("comments") != undefined)
-                    {
-                        var commentsList =object.get("comments");
-                        var commentId=0;
-                        for(var c in commentsList){
-
-                            var comment = {
-                                id: commentId,
-                                from :  {
-                                    name: commentsList[c].get("from").get("fullname"),
-                                    img : commentsList[c].get("from").get("picture").url(),
-                                    username: commentsList[c].get("from").get("username")
-                                },
-                                content: commentsList[c].get("content")
-                            };
-                            comments.push(comment);
-                            commentId++;
-                        }
-                    }
-                    var username = "N/A";
-                    var fullname ="";
-                    var userImg = "";
-                    var feedId= object.id;
-                    if(object.attributes.from!=null) {
-                        username = object.attributes.from.attributes.username;
-                        fullname = object.attributes.from.attributes.fullname;
-                        userImg = object.attributes.from.attributes.picture.url();
-                    }
-                    var  type=object.attributes.type;
-                    var  date=object.createdAt;
-                    if (type == "equipment") {
-                        if(object.attributes.equipmentId!=null && object.attributes.equipmentId.attributes !=null) {
-                            var equip = object.get("equipmentId");
-                            var objectId = equip.id;
-                            var title = equip.get("title");
-                            // var imgUrl = equip.get("image_URL");
-                            var picture = equip.get("picture").url();
-                            //var file = equip.get("file").url();
-                            var type = "equipment";
-                            var filePath = equip.get("file_path");
-                            var creationDate = equip.get("createdAt");
-                            var updateDate = equip.get("updatedAt");
-                            var description = equip.get("description");
-                            var keywords = equip.get("keywords");
-                            var instructions = equip.get("instructions");
-                            feeds.push({
-                                feedId:feedId,
-                                objId: objectId,
-                                fullname: fullname,
-                                username: username,
-                                userImg: userImg,
-                                date: creationDate,
-                                description: description,
-                                type:type,
-                                keywords:keywords,
-                                title: title,
-                                picture: picture,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if (type == "project") {
-                        if(object.attributes.projectId!=null && object.attributes.projectId.attributes !=null) {
-                            var proj = object.get("projectId");
-                            var objectId = proj.id;
-                            var title = proj.get("title");
-                            //var imgUrl = proj.get("image_URL");
-                            var picture = proj.get("picture").url();
-                            //var file = proj.get("file").url();
-                            var type = "project";
-                            var filePath = proj.get("file_path");
-                            var creationDate = proj.get("createdAt");
-                            var startDate = proj.get("start_date");
-                            var endDate = proj.get("end_date");
-                            var updateDate = proj.get("updatedAt");
-                            var description = proj.get("description");
-                            var url = proj.get("URL");
-                            var keywords = proj.get("keywords");
-                            feeds.push({
-                                feedId:feedId,
-                                objId: objectId,
-                                fullname: fullname,
-                                username: username,
-                                userImg: userImg,
-                                date: creationDate,
-                                description: description,
-                                url: url,
-                                type:type,
-                                keywords:keywords,
-                                title: title,
-                                picture: picture,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if(type =="pub_book")
-                    { if(object.attributes.pubBookId!=null && object.attributes.pubBookId.attributes !=null)
-                    {
-                        var objectId = object.get("pubBookId").id;
-                        var publication_date = object.get("pubBookId").get("publication_date") != null? object.get("pubBookId").get("publication_date"):"";
-                        var abstract = object.get("pubBookId").get("abstract") != null? object.get("pubBookId").get("abstract"):"";
-                        var author = object.get("pubBookId").get("author") != null? object.get("pubBookId").get("author"):"";
-                        var keywords = object.get("pubBookId").get("keywords") != null? object.get("pubBookId").get("keywords"):[];
-                        var filename = object.get("pubBookId").get("filename") != null? object.get("pubBookId").get("filename"):"";
-                        var chapter = object.get("pubBookId").get("chapter") != null? object.get("pubBookId").get("chapter"):"";
-                        var url = object.get("pubBookId").get("url") != null? object.get("pubBookId").get("url"):"#";
-                        var page = object.get("pubBookId").get("page") != null? object.get("pubBookId").get("page"):"";
-                        var isbn = object.get("pubBookId").get("isbn") != null? object.get("pubBookId").get("isbn"):"";
-                        var title = object.get("pubBookId").get("title") != null? object.get("pubBookId").get("title"):"";
-                        var contributors = object.get("pubBookId").get("contributors") != null? object.get("pubBookId").get("contributors"):[];
-                        var publisher = object.get("pubBookId").get("publisher") != null? object.get("pubBookId").get("publisher"):"";
-                        var doi = object.get("pubBookId").get("doi") != null? object.get("pubBookId").get("doi"):"";
-                        var edition = object.get("pubBookId").get("edition") != null? object.get("pubBookId").get("edition"):"";
-                        var type = "book";
-                        feeds.push({
-                            feedId:feedId,
-                            objId: objectId,
-                            fullname: fullname,
-                            username: username,
-                            userImg: userImg,
-                            publication_date:publication_date,
-                            description:abstract,
-                            author: author,
-                            chapter: chapter,
-                            filename:filename,
-                            url: url,
-                            type:type,
-                            page: page,
-                            keywords:keywords,
-                            isbn: isbn,
-                            doi:doi,
-                            title: title,
-                            edition: edition,
-                            comments:comments
-                        });
-                    }
-                    }
-                    else if(type == "pub_conference")
-                    {   if(object.attributes.pubConferenceId!=null && object.attributes.pubConferenceId.attributes !=null)
-                    {   var objectId = object.get("pubConferenceId").id;
-                        var publication_date = object.get("pubConferenceId").get("publication_date") != null? object.get("pubConferenceId").get("publication_date"):"";
-                        var abstract = object.get("pubConferenceId").get("abstract") != null? object.get("pubConferenceId").get("abstract"):"";
-                        var filename = object.get("pubConferenceId").get("filename") != null? object.get("pubConferenceId").get("filename"):"";
-                        var keywords = object.get("pubConferenceId").get("keywords") != null? object.get("pubConferenceId").get("keywords"):[];
-                        var collaborators = object.get("pubConferenceId").get("collaborators") != null? object.get("pubConferenceId").get("collaborators"):[];
-                        var url = object.get("pubConferenceId").get("url") != null? object.get("pubConferenceId").get("url"):"#";
-                        var conference_date = object.get("pubConferenceId").get("conference_date") != null? object.get("pubConferenceId").get("conference_date"):"";
-                        var location = object.get("pubConferenceId").get("location") != null? object.get("pubConferenceId").get("location"):"";
-                        var title = object.get("pubConferenceId").get("title") != null? object.get("pubConferenceId").get("title"):"";
-                        var contributors = object.get("pubConferenceId").get("contributors") != null? object.get("pubConferenceId").get("contributors"):[];
-                        var conference_location = object.get("pubConferenceId").get("conference_location") != null? object.get("pubConferenceId").get("conference_location"):"";
-                        var volume = object.get("pubConferenceId").get("volume") != null? object.get("pubConferenceId").get("volume"):"";
-                        var type = "conference";
-                        var conference = object.get("pubConferenceId").get("conference") != null? object.get("pubConferenceId").get("conference"):"";
-                        var conference_volume = object.get("pubConferenceId").get("conference_volume") != null? object.get("pubConferenceId").get("conference_volume"):"";
-                        var doi = object.get("pubConferenceId").get("doi") != null? object.get("pubConferenceId").get("doi"):"";
-
-                        feeds.push({
-                            feedId:feedId,
-                            objId: objectId,
-                            fullname: fullname,
-                            username: username,
-                            userImg: userImg,
-                            publication_date:publication_date,
-                            conference_date:conference_date,
-                            location:location,
-                            collaborators:collaborators,
-                            filename:filename,
-                            description:abstract,
-                            author: author,
-                            contributors: contributors,
-                            volume:volume,
-                            url: url,
-                            type:type,
-                            conference_location: conference_location,
-                            keywords:keywords,
-                            conference: conference,
-                            doi:doi,
-                            title: title,
-                            conference_volume: conference_volume,
-                            comments:comments
-
-                        });
-                    }
-                    }
-                    else if (type =="pub_journal")
-                    {
-                        if(object.attributes.pubJournalId!=null && object.attributes.pubJournalId.attributes !=null)
-                        {
-                            var objectId = object.get("pubJournalId").id;
-                            var publication_date = object.get("pubJournalId").get("publication_date") != null? object.get("pubJournalId").get("publication_date"):"";
-                            var abstract = object.get("pubJournalId").get("abstract") != null? object.get("pubJournalId").get("abstract"):"";
-                            var journal_volume = object.get("pubJournalId").get("journal_volume") != null? object.get("pubJournalId").get("journal_volume"):"";
-                            var filename = object.get("pubJournalId").get("filename") != null? object.get("pubJournalId").get("filename"):"";
-                            var keywords = object.get("pubJournalId").get("keywords") != null? object.get("pubJournalId").get("keywords"):[];
-                            var page = object.get("pubJournalId").get("page") != null? object.get("pubJournalId").get("page"):"";
-                            var url = object.get("pubJournalId").get("url") != null? object.get("pubJournalId").get("url"):"#";
-                            var journal_issue = object.get("pubJournalId").get("journal_issue") != null? object.get("pubJournalId").get("journal_issue"):"";
-                            var journal_page = object.get("pubJournalId").get("journal_page") != null? object.get("pubJournalId").get("journal_page"):"";
-                            var journal = object.get("pubJournalId").get("journal") != null? object.get("pubJournalId").get("journal"):"";
-                            var title = object.get("pubJournalId").get("title") != null? object.get("pubJournalId").get("title"):"";
-                            var contributors = object.get("pubJournalId").get("contributors") != null? object.get("pubJournalId").get("contributors"):[];
-                            var issue = object.get("pubJournalId").get("issue") != null? object.get("pubJournalId").get("issue"):"";
-                            var volume = object.get("pubJournalId").get("volume") != null? object.get("pubJournalId").get("volume"):"";
-                            var type = "journal";
-                            var doi = object.get("pubJournalId").get("doi") != null? object.get("pubJournalId").get("doi"):"";
-
-                            feeds.push({
-                                feedId:feedId,
-                                objId: objectId,
-                                fullname: fullname,
-                                username: username,
-                                userImg: userImg,
-                                publication_date:publication_date,
-                                description:abstract,
-                                journal_volume:journal_volume,
-                                filename:filename,
-                                keywords:keywords,
-                                page:page,
-                                url:url,
-                                journal_issue:journal_issue,
-                                journal_page:journal_page,
-                                journal:journal,
-                                title:title,
-                                contributors:contributors,
-                                issue:issue,
-                                volume:volume,
-                                type:type,
-                                doi:doi,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if (type =="pub_patent")
-                    {
-                        if(object.attributes.pubPatentId!=null && object.attributes.pubPatentId.attributes !=null)
-                        {
-                            var objectId = object.get("pubPatentId").id;
-                            var publication_date = object.get("pubPatentId").get("publication_date") != null? object.get("pubPatentId").get("publication_date"):"";
-                            var abstract = object.get("pubPatentId").get("abstract") != null? object.get("pubPatentId").get("abstracts"):"";
-                            var patent_date = object.get("pubPatentId").get("patent_date") != null? object.get("pubPatentId").get("patent_date"):"";
-                            var filename = object.get("pubPatentId").get("filename") != null? object.get("pubPatentId").get("filename"):"";
-                            var keywords = object.get("pubPatentId").get("keywords") != null? object.get("pubPatentId").get("keywords"):[];
-                            var patent_location = object.get("pubPatentId").get("patent_location") != null? object.get("pubPatentId").get("patent_location"):[];
-                            var collaborators = object.get("pubPatentId").get("collaborators") != null? object.get("pubPatentId").get("collaborators"):[];
-                            var url = object.get("pubPatentId").get("url") != null? object.get("pubPatentId").get("url"):"#";
-                            var location = object.get("pubPatentId").get("location") != null? object.get("pubPatentId").get("location"):"";
-                            var title = object.get("pubPatentId").get("title") != null? object.get("pubPatentId").get("title"):"";
-                            var location = object.get("pubPatentId").get("location") != null? object.get("pubPatentId").get("location"):"";
-                            var contributors = object.get("pubPatentId").get("contributors") != null? object.get("pubPatentId").get("contributors"):[];
-                            var type = "patent";
-                            var reference_number = object.get("pubPatentId").get("reference_number") != null? object.get("pubPatentId").get("reference_number"):"";
-                            var doi = object.get("pubPatentId").get("doi") != null? object.get("pubPatentId").get("doi"):"";
-                            feeds.push({
-                                feedId:feedId,
-                                objId: objectId,
-                                fullname: fullname,
-                                username: username,
-                                userImg: userImg,
-                                publication_date:publication_date,
-                                description:abstract,
-                                filename:filename,
-                                keywords:keywords,
-                                url:url,
-                                title:title,
-                                contributors:contributors,
-                                collaborators:collaborators,
-                                location:location,
-                                reference_number:reference_number,
-                                patent_location:patent_location,
-                                patent_date:patent_date,
-                                type:type,
-                                doi:doi,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if(type =="pub_thesis")
-                    {
-                        if(object.attributes.pubThesisId!=null && object.attributes.pubThesisId.attributes !=null)
-                        {
-                            var objectId = object.get("pubThesisId").id;
-                            var publication_date = object.get("pubThesisId").get("publication_date") != null? object.get("pubThesisId").get("publication_date"):"";
-                            var abstract = object.get("pubThesisId").get("abstract") != null? object.get("pubThesisId").get("abstracts"):"";
-                            var filename = object.get("pubThesisId").get("filename") != null? object.get("pubThesisId").get("filename"):"";
-                            var keywords = object.get("pubThesisId").get("keywords") != null? object.get("pubThesisId").get("keywords"):[];
-                            var supervisors = object.get("pubThesisId").get("supervisors") != null? object.get("pubThesisId").get("supervisors"):[];
-                            var degree = object.get("pubThesisId").get("degree") != null? object.get("pubThesisId").get("degree"):"";
-                            var collaborators = object.get("pubThesisId").get("collaborators") != null? object.get("pubThesisId").get("collaborators"):[];
-                            var url = object.get("pubThesisId").get("url") != null? object.get("pubThesisId").get("url"):"#";
-                            var page = object.get("pubThesisId").get("page") != null? object.get("pubThesisId").get("page"):"";
-                            var department = object.get("pubThesisId").get("department") != null? object.get("pubThesisId").get("department"):"";
-                            var title = object.get("pubThesisId").get("title") != null? object.get("pubThesisId").get("title"):"";
-                            var page = object.get("pubThesisId").get("page") != null? object.get("pubThesisId").get("page"):"";
-                            var contributors = object.get("pubThesisId").get("contributors") != null? object.get("pubThesisId").get("contributors"):[];
-                            var type = "thesis";
-                            var doi = object.get("pubThesisId").get("doi") != null? object.get("pubThesisId").get("doi"):"";
-                            feeds.push({
-                                feedId:feedId,
-                                objId: objectId,
-                                fullname: fullname,
-                                username: username,
-                                userImg: userImg,
-                                publication_date:publication_date,
-                                description:abstract,
-                                filename:filename,
-                                keywords:keywords,
-                                url:url,
-                                title:title,
-                                contributors:contributors,
-                                collaborators:collaborators,
-                                department:department,
-                                page:page,
-                                degree:degree,
-                                supervisors:supervisors,
-                                type:type,
-                                doi:doi,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if(type =="pub_unpublished")
-                    {
-                        if(object.attributes.pubUnpublishedId!=null && object.attributes.pubUnpublishedId.attributes !=null)
-                        {
-                            var objectId = object.get("pubUnpublishedId").id;
-                            var publication_date = object.get("pubUnpublishedId").get("publication_date") != null? object.get("pubUnpublishedId").get("publication_date"):"";
-                            var abstract = object.get("pubUnpublishedId").get("abstract") != null? object.get("pubUnpublishedId").get("abstracts"):"";
-                            var filename = object.get("pubUnpublishedId").get("filename") != null? object.get("pubUnpublishedId").get("filename"):"";
-                            var keywords = object.get("pubUnpublishedId").get("keywords") != null? object.get("pubUnpublishedId").get("keywords"):[];
-                            var url = object.get("pubUnpublishedId").get("url") != null? object.get("pubUnpublishedId").get("url"):"#";
-                            var title = object.get("pubUnpublishedId").get("title") != null? object.get("pubUnpublishedId").get("title"):"";
-                            var contributors = object.get("pubUnpublishedId").get("contributors") != null? object.get("pubUnpublishedId").get("contributors"):[];
-                            var type = "unpublished";
-                            var location = object.get("pubUnpublishedId").get("location") != null? object.get("pubUnpublishedId").get("location"):"";
-                            var doi = object.get("pubUnpublishedId").get("doi") != null? object.get("pubUnpublishedId").get("doi"):"";
-                            feeds.push({
-                                feedId:feedId,
-                                objId: objectId,
-                                fullname: fullname,
-                                username: username,
-                                userImg: userImg,
-                                publication_date:publication_date,
-                                description:abstract,
-                                filename:filename,
-                                keywords:keywords,
-                                url:url,
-                                title:title,
-                                contributors:contributors,
-                                location:location,
-                                type:type,
-                                doi:doi,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if(type =="pub_report")
-                    {
-                        if(object.attributes.pubReportId!=null && object.attributes.pubReportId.attributes !=null)
-                        {
-                            var objectId = object.get("pubReportId").id;
-                            var publication_date = object.get("pubReportId").get("publication_date") != null? object.get("pubReportId").get("publication_date"):"";
-                            var report_location = object.get("pubReportId").get("report_location") != null? object.get("pubReportId").get("report_location"):"";
-                            var abstract = object.get("pubReportId").get("abstract") != null? object.get("pubReportId").get("abstracts"):"";
-                            var filename = object.get("pubReportId").get("filename") != null? object.get("pubReportId").get("filename"):"";
-                            var keywords = object.get("pubReportId").get("keywords") != null? object.get("pubReportId").get("keywords"):[];
-                            var url = object.get("pubReportId").get("url") != null? object.get("pubReportId").get("url"):"#";
-                            var title = object.get("pubReportId").get("title") != null? object.get("pubReportId").get("title"):"";
-                            var contributors = object.get("pubReportId").get("contributors") != null? object.get("pubReportId").get("contributors"):[];
-                            var collaborators = object.get("pubReportId").get("collaborators") != null? object.get("pubReportId").get("collaborators"):[];
-                            var report_number = object.get("pubReportId").get("report_number") != null? object.get("pubReportId").get("type"):"";
-                            var location = object.get("pubReportId").get("location") != null? object.get("pubReportId").get("location"):"";
-                            var publisher = object.get("pubReportId").get("publisher") != null? object.get("pubReportId").get("publisher"):"";
-                            var type = "report";
-                            var doi = object.get("pubReportId").get("doi") != null? object.get("pubReportId").get("doi"):"";
-                            feeds.push({
-                                feedId:feedId,
-                                objId: objectId,
-                                fullname: fullname,
-                                username: username,
-                                userImg: userImg,
-                                publication_date:publication_date,
-                                description:abstract,
-                                filename:filename,
-                                keywords:keywords,
-                                url:url,
-                                title:title,
-                                contributors:contributors,
-                                location:location,
-                                type:type,
-                                report_number:report_number,
-                                doi:doi,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if(type == "mod") {
-                        if (object.attributes.modId != null && object.attributes.modId.attributes != null) {
-                            var modItem = object.attributes.modId.attributes;
-                            var filename ="";
-                            var title ="";
-                            var hashtags ="";
-                            var year ="";
-                            var author ="";
-                            var description ="";
-                            var objectId = object.attributes.modId;
-                            var picture = modItem.picture.url();
-                            if (modItem.filename != null) {
-                                filename = modItem.filename;
-                            }
-                            if (modItem.title != null) {
-                                title = modItem.title;
-                            }
-                            if (modItem.hashtags != null) {
-                                hashtags = modItem.hashtags;
-                            }
-                            if (modItem.year != null) {
-                                year = modItem.year;
-                            }
-                            if (modItem.author != null) {
-                                author = modItem.author;
-                            }
-                            if (modItem.abstract != null) {
-                                description = modItem.abstract;
-                            }
-                            feeds.push({
-                                feedId:feedId,
-                                username: username,
-                                userImg: userImg,
-                                fullname: fullname,
-                                type:type,
-                                date:date,
-                                filename: filename,
-                                description: description,
-                                author: author,
-                                year: year,
-                                hashtags: hashtags,
-                                title: title,
-                                objId: objectId,
-                                picture: picture,
-                                comments:comments
-                            });
-                        }
-                    }
-                    else if (type == "dat") {
-                        if (object.attributes.datId != null && object.attributes.datId.attributes != null) {
-                            var datItem = object.attributes.datId.attributes;
-                            var filename = datItem.filename;
-                            var title ="";
-                            var hashtags ="";
-                            var year ="";
-                            var author ="";
-                            var description ="";
-                            var objectId = object.attributes.datId;
-                            var picture = datItem.picture.url();
-                            if (datItem.title != null) {
-                                title = datItem.title;
-                            }
-                            if (datItem.hashtags != null) {
-                                hashtags = datItem.hashtags;
-                            }
-                            if (datItem.year != null) {
-                                year = datItem.year;
-                            }
-                            if (datItem.author != null) {
-                                author = datItem.author;
-                            }
-                            if (datItem.description != null) {
-                                description = datItem.description;
-                            }
-                            feeds.push({
-                                feedId:feedId,
-                                username: username,
-                                userImg: userImg,
-                                fullname: fullname,
-                                type:type,
-                                date:date,
-                                filename: filename,
-                                description: description,
-                                author: author,
-                                year: year,
-                                hashtags: hashtags,
-                                title: title,
-                                objId: objectId,
-                                picture: picture,
-                                comments:comments
-                            });
-                        }
+                var comments = [];
+                if(result.get("comments") != undefined){
+                    var commentsList =result.get("comments");
+                    var commentId=0;
+                    for(var c in commentsList){
+                        var comment = {
+                            id: commentId,
+                            from :  {
+                                name: commentsList[c].get("from").get("fullname"),
+                                img : commentsList[c].get("from").get("picture").url(),
+                                username: commentsList[c].get("from").get("username")
+                            },
+                            content: commentsList[c].get("content"),
+                            createdAt: commentsList[c].get("createdAt")
+                        };
+                        comments.push(comment);
+                        commentId++;
                     }
                 }
-                res.send(feeds);
-            },
-            error: function(error) {
-                console.log("Error: " + error.code + " " + error.message);
+                var feedId= result.id;
+                var date=result.createdAt;
+                var type=result.get("type");
+                if (type == "equipment") {
+                    var message="added an equipment";
+                    var adderName=result.get("orgId").get("name");
+                    var adderURL="/organization/" + adderName;
+                    var objectURL="/equipment/" + result.get("equipmentId").id;
+                    feed.push({
+                        date:date,
+                        feedId:feedId,
+                        adderPicture:result.get("orgId").get("picture").url(),
+                        adderName:result.get("orgId").get("displayName"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("equipmentId").get("picture").url(),
+                        objectTitle:result.get("equipmentId").get("title")!=null ? result.get("equipmentId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("orgId").get("description")!=null ? result.get("orgId").get("description"):"",
+                        comments:comments
+                    });
+                }
+                else if (type == "project") {
+                    var message="added a project";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/project/" + result.get("projectId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("projectId").get("picture").url(),
+                        objectTitle:result.get("projectId").get("title")!=null ? result.get("projectId").get("title"):"" ,
+                        objectURL:objectURL,
+                        description:result.get("projectId").get("description")!=null ? result.get("projectId").get("description"):"",
+                        comments:comments
+                    });
+                }
+                else if(type == "mod") {
+                    var message="added a model on ";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/model/" + result.get("modId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("modId").get("picture").url(),
+                        objectTitle:result.get("modId").get("title")!=null ? result.get("modId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("modId").get("description")!=null ? result.get("modId").get("description"):"",
+                        comments:comments
+                    });
+                }
+                else if(type == "dat"){
+                    var message="added a data";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/data/" + result.get("datId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("datId").get("picture").url(),
+                        objectTitle:result.get("datId").get("title")!=null ? result.get("datId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("datId").get("description")!=null ? result.get("datId").get("description"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="pub_book" ) {
+                    var message="added a book";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/publication/book/" + result.get("pubBookId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:"/images/paper.png",
+                        objectTitle:result.get("pubBookId").get("title")!=null ? result.get("pubBookId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("pubBookId").get("abstract")!=null ? result.get("pubBookId").get("abstract"):"",
+                        comments:comments
+                    });
+                }
+                else if(type == "pub_conference" ){
+                    var message="added a book";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/publication/conference/" + result.get("pubConferenceId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:"/images/paper.png",
+                        objectTitle:result.get("pubConferenceId").get("title")!=null ? result.get("pubConferenceId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("pubConferenceId").get("abstract")!=null ? result.get("pubConferenceId").get("abstract"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="pub_journal"){
+                    var message="added a book";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/publication/journal/" + result.get("pubJournalId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:"/images/paper.png",
+                        objectTitle:result.get("pubJournalId").get("title")!=null ? result.get("pubJournalId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("pubJournalId").get("abstract")!=null ? result.get("pubJournalId").get("abstract"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="pub_patent"){
+                    var message="added a book";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/publication/patent/" + result.get("pubPatentId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:"/images/paper.png",
+                        objectTitle:result.get("pubPatentId").get("title")!=null ? result.get("pubPatentId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("pubPatentId").get("abstract")!=null ? result.get("pubPatentId").get("abstract"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="pub_thesis"){
+                    var message="added a book";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/publication/thesis/" + result.get("pubThesisId").id;
+                    feed.push({
+                        date: date,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:"/images/paper.png",
+                        objectTitle:result.get("pubThesisId").get("title")!=null ? result.get("pubThesisId").get("title")!=null:"",
+                        objectURL:objectURL,
+                        description:result.get("pubThesisId").get("abstract")!=null ? result.get("pubThesisId"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="pub_unpublished"){
+                    var message="added a book";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/publication/unpublished/" + result.get("pubUnpublishedId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:"/images/paper.png",
+                        objectTitle:result.get("pubUnpublishedId").get("title")!=null ? result.get("pubUnpublishedId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("pubUnpublishedId").get("abstract")!=null ? result.get("pubUnpublishedId").get("abstract"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="pub_report"){
+                    var message="added a book";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/publication/report/" + result.get("pubReportId").id;
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:"/images/paper.png",
+                        objectTitle:result.get("pubReportId").get("title")!=null ? result.get("pubReportId").get("title"):"",
+                        objectURL:objectURL,
+                        description:result.get("pubReportId").get("abstract")!=null ? result.get("pubReportId").get("abstract"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="org_create"){
+                    var message="create a network";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/organization/" + result.get("orgId").get("name");
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("orgId").get("picture").url(),
+                        objectTitle:result.get("orgId").get("displayName"),
+                        objectURL:objectURL,
+                        description:result.get("orgId").get("description")!=null ? result.get("orgId").get("description"):"",
+                        comments:comments
+                    });
+                }
+                else if(type =="org_join"){
+                    var message="joined a network";
+                    var adderURL="/user/" + result.get("from").get("username");
+                    var objectURL="/organization/" + result.get("orgId").get("name");
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("orgId").get("picture").url(),
+                        objectTitle:result.get("orgId").get("displayName"),
+                        objectURL:objectURL,
+                        description:result.get("orgId").get("description")!=null ? result.get("orgId").get("description"):"",
+                        comments:comments
+                    });
+                }
             }
+            console.log(feed);
+            res.json(feed);
+        }, function(error) {
+            console.log("Error: " + error.toString());
         });
     });
 
@@ -595,100 +359,97 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-app.get('/comments/:feedId',function(req,res,next){
-    var feedId= req.params.feedId;
-    var query= new Parse.Query('NewsFeed');
-    query.equalTo("objectId", feedId);
-    query.include("comments");
-    query.include("comments.from");
-    query.first({
-        success: function (result) {
-            if (result)
-            {
-                var comments =[];
-                if(result.get("comments") != undefined)
+    app.get('/comments/:feedId',function(req,res,next){
+        var feedId= req.params.feedId;
+        var query= new Parse.Query('NewsFeed');
+        query.equalTo("objectId", feedId);
+        query.include("comments");
+        query.include("comments.from");
+        query.first({
+            success: function (result) {
+                if (result)
                 {
-                    var commentsList =result.get("comments");
+                    var comments =[];
+                    if(result.get("comments") != undefined)
+                    {
+                        var commentsList =result.get("comments");
 
-                    var commentId=0;
-                    for(var c in commentsList){
+                        var commentId=0;
+                        for(var c in commentsList){
 
-                        var comment = {
-                            id: commentId,
-                            from :  {
-                                name: commentsList[c].get("from").get("fullname"),
-                                img : commentsList[c].get("from").get("picture").url(),
-                                username: commentsList[c].get("from").get("username")
-                            },
-                            content: commentsList[c].get("content")
-                        };
-                        comments.push(comment);
-                        commentId++;
-                    }
-                }
-                res.json(comments);
-            }
-        },
-        error: function ( error) {
-            console.log("Couldnt save cookie token")
-        }
-    });
-
-});
-app.post('/comment',is_auth,function(req,res,next){
-    var feedId= req.body.feedId;
-    var feedNumber= req.body.feedNumber;
-    var content = req.body.content;
-    var Comment = Parse.Object.extend("Comment");
-    var comment = new Comment();
-    comment.set('from', {__type: "Pointer", className: "_User", objectId: req.user.id});
-    comment.set('content', {msg: content});
-    comment.set('feedId',{__type: "Pointer", className: "NewsFeed", objectId: feedId})
-    comment.save(null, {
-        success: function (comment) {
-            var query= new Parse.Query('NewsFeed');
-            query.equalTo("objectId", feedId);
-            query.first({
-                success: function (result) {
-                    if (result) {
-                        var comments=result.get("comments");
-                        if(comments != undefined) {
-                            comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
-                            result.set("comments",comments);
+                            var comment = {
+                                id: commentId,
+                                from :  {
+                                    name: commentsList[c].get("from").get("fullname"),
+                                    img : commentsList[c].get("from").get("picture").url(),
+                                    username: commentsList[c].get("from").get("username")
+                                },
+                                content: commentsList[c].get("content")
+                            };
+                            comments.push(comment);
+                            commentId++;
                         }
-                        else
-                            result.set("comments",[{__type: "Pointer", className: "Comment", objectId: comment.id}]);
-                        
-                        result.save();
-
-                        var finalComment= {
-                            id: comment.id,
-                            from :  {
-                                name: req.user.fullname,
-                                img : req.user.imgUrl,
-                                username: req.user.username
-                            },
-                            content: {msg:content}
-                        };
-
-                        io.to(req.user.id).emit('commentReceived',{feedId:feedId,feedNumber:feedNumber,comment:finalComment});
-                        res.json({msg:"success"});
                     }
-                },
-                error: function ( error) {
-                    console.log("Couldnt save cookie token")
+                    res.json(comments);
                 }
-            });
-        },
-        error: function (comment, error) {
-            // Execute any logic that should take place if the save fails.
-            // error is a Parse.Error with an error code and message.
-            alert('Failed to create new object, with error code: ' + error.message);
-            res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
-        }
+            },
+            error: function ( error) {
+                console.log("Couldnt save cookie token")
+            }
+        });
+
     });
+    app.post('/comment',is_auth,function(req,res,next){
+        var feedId= req.body.feedId;
+        var feedNumber= req.body.feedNumber;
+        var content = req.body.content;
+        var Comment = Parse.Object.extend("Comment");
+        var comment = new Comment();
+        comment.set('from', {__type: "Pointer", className: "_User", objectId: req.user.id});
+        comment.set('content', {msg: content});
+        comment.set('feedId',{__type: "Pointer", className: "NewsFeed", objectId: feedId})
+        comment.save(null, {
+            success: function (comment) {
+                var query= new Parse.Query('NewsFeed');
+                query.equalTo("objectId", feedId);
+                query.first({
+                    success: function (result) {
+                        if (result) {
+                            var comments=result.get("comments");
+                            if(comments != undefined) {
+                                comments.push({__type: "Pointer", className: "Comment", objectId: comment.id});
+                                result.set("comments",comments);
+                            }
+                            else
+                                result.set("comments",[{__type: "Pointer", className: "Comment", objectId: comment.id}]);
 
+                            result.save();
 
+                            var finalComment= {
+                                id: comment.id,
+                                from :  {
+                                    name: req.user.fullname,
+                                    img : req.user.imgUrl,
+                                    username: req.user.username
+                                },
+                                content: {msg:content}
+                            };
 
-});
+                            io.to(req.user.id).emit('commentReceived',{feedId:feedId,feedNumber:feedNumber,comment:finalComment});
+                            res.json({msg:"success"});
+                        }
+                    },
+                    error: function ( error) {
+                        console.log("Couldnt save cookie token")
+                    }
+                });
+            },
+            error: function (comment, error) {
+                // Execute any logic that should take place if the save fails.
+                // error is a Parse.Error with an error code and message.
+                alert('Failed to create new object, with error code: ' + error.message);
+                res.render('newsfeed', {title: 'NewsFeed', msg: 'Posting content failed!'});
+            }
+        });
+    });
 };

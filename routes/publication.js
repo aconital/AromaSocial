@@ -192,8 +192,8 @@ module.exports=function(app,Parse,io) {
                 var pubObject = JSON.parse(JSON.stringify(result[0]));
                 var userEnv = { updatePath: req.path,
                                 publication_date: pubObject.publication_date.iso.slice(0,10),
-                                user: {username: pubObject.user.username,
-                                imgUrl: pubObject.user.picture.url}}; // NOTE: currently just the uploader of file
+                                user: { username: pubObject.user.username,
+                                        imgUrl: pubObject.user.picture.url}}; // NOTE: just the uploader of file
                 // merge the Parse object and fields for current user
                 var rendered = _.extend(pubObject, userEnv);
                 res.status(200).json({status:"OK", query: rendered});
@@ -483,13 +483,13 @@ module.exports=function(app,Parse,io) {
             }).then(function() {
                 var pubConference = Parse.Object.extend("Pub_Conference");
 
-                var uploadedC = new Parse.Query(pubConference); // get publications others have uploaded
-                uploadedC.equalTo('other_users', user);
-                uploadedC.descending("createdAt");
-
-                var otherC = new Parse.Query(pubConference); // get uploaded publications
-                otherC.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                var otherC = new Parse.Query(pubConference); // get your publications that others have uploaded
+                otherC.equalTo('other_users', user);
                 otherC.descending("createdAt");
+
+                var uploadedC = new Parse.Query(pubConference); // get uploaded publications
+                uploadedC.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                uploadedC.descending("createdAt");
 
                 var query1 = new Parse.Query.or(uploadedC, otherC);
                 query1.find().then(function (conferences) {
@@ -511,13 +511,13 @@ module.exports=function(app,Parse,io) {
                 }).then(function () {
                     var pubJournal = Parse.Object.extend("Pub_Journal_Article");
 
-                    var uploadedJ = new Parse.Query(pubJournal); // get publications others have uploaded
-                    uploadedJ.equalTo('other_users', user);
-                    uploadedJ.descending("createdAt");
-
-                    var otherJ = new Parse.Query(pubJournal); // get uploaded publications
-                    otherJ.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                    var otherJ = new Parse.Query(pubJournal); // get your publications that others have uploaded
+                    otherJ.equalTo('other_users', user);
                     otherJ.descending("createdAt");
+
+                    var uploadedJ = new Parse.Query(pubJournal); // get uploaded publications
+                    uploadedJ.equalTo('user', {__type: "Pointer", className: "_User", objectId: profile});
+                    uploadedJ.descending("createdAt");
 
                     var query2 = new Parse.Query.or(uploadedJ, otherJ);
                     query2.find().then(function (journals) {
@@ -821,5 +821,24 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-
+    app.post('/publication/:objectId/upload', function(req,res,next) {
+        var pubClass = pubTypeToClass(req.body.pub_class);
+        var query = new Parse.Query(pubClass);
+        query.get(req.params.objectId).then(function(result) {
+            if (req.body.file != null && result != undefined) {
+                var name = req.params.objectId + "_publication_file." + req.body.fileType;
+                var fileBuffer = new Buffer(req.body.file.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var newFile = new Parse.File(name, {base64: fileBuffer});
+                newFile.save().then(function() {
+                    result.set('file', newFile)
+                    result.save().then(function(){
+                        res.status(200).json({status: "File Uploaded Successfully!"});
+                    });
+                });
+            }
+            else{
+                res.status(500).json({status: "File Upload Failed!"});
+            }
+        });
+    });
 };

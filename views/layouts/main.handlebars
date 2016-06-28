@@ -173,9 +173,9 @@
                     </ul>
 
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="navbar-hover"><a href="/profile/{{user.username}}"><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
+                    <li class="navbar-hover"><a href="/profile/{{user.username}}" rel="tooltip" title="Profile" ><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
                     <li class="dropdown connection-button">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a href="#" class="dropdown-toggle" rel="tooltip" title="Notifications" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <div class="notification-container">
                                 <span><i class="fa fa-user-plus"></i></span>
                                 <span class="notification-counter" style="display:none;">0</span>
@@ -186,7 +186,7 @@
                     </li>
                     {{!--<li class="dropdown logout-button"><a href="/setting" role="button"><span><i class="fa fa-cog" aria-hidden="true"></i></span></a>
                     </li>--}}
-                    <li class="dropdown logout-button"><a href="/signout" role="button"><span><i class="fa fa-sign-out" aria-hidden="true"></i></span></a>
+                    <li class="dropdown logout-button"><a href="/signout" rel="tooltip" title="Sign out" role="button"><span><i class="fa fa-sign-out" aria-hidden="true"></i></span></a>
                     </li>
 
                 {{else}}
@@ -202,7 +202,7 @@
 
     {{{body}}}
     {{#if user}}
-    <a href="/report" rel="tooltip" title="Report a problem or share an opinion" class="report-button"><i class="fa fa-bug" aria-hidden="true"></i></a>
+   {{!-- <a href="/report" rel="tooltip" title="Report a problem or share an opinion" class="report-button"><i class="fa fa-bug" aria-hidden="true"></i></a> !--}}
     {{/if}}
 </div>
 
@@ -267,7 +267,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <script src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js"> </script>
-<script src="/javascripts/moment/moment.js"></script>
 <script src="https://www.parsecdn.com/js/parse-latest.js"></script>
 <script src="https://www.parsecdn.com/js/parse-react.js"></script>
 <script type="text/jsx" src="/javascripts/navbar.js"></script>
@@ -323,16 +322,5 @@
 <script src="/javascripts/react-tag-input/dist/reactTags.min.js"></script>
 <script src="/javascripts/tag-it.js"></script>
 
-<script type="text/javascript">
-    (function(d,n){var s,a,p;s=document.createElement("script");s.type="text/javascript";s.async=true;s.src=(document.location.protocol==="https:"?"https:":"http:")+"//cdn.nudgespot.com"+"/nudgespot.js";a=document.getElementsByTagName("script");p=a[a.length-1];p.parentNode.insertBefore(s,p.nextSibling);window.nudgespot=n;n.init=function(t){function f(n,m){var a=m.split('.');2==a.length&&(n=n[a[0]],m=a[1]);n[m]=function(){n.push([m].concat(Array.prototype.slice.call(arguments,0)))}}n._version=0.1;n._globals=[t];n.people=n.people||[];n.params=n.params||[];m="track register unregister identify set_config people.delete people.create people.update people.create_property people.tag people.remove_Tag".split(" ");for(var i=0;i<m.length;i++)f(n,m[i])}})(document,window.nudgespot||[]);nudgespot.init("3cdda5064291cfa34f09a1cf0f59939c");
-</script>
-{{#if user}}
-    <script type="text/javascript">
-        var email = '{{user.email}}';
-        var first_name = '{{user.firstname}}';
-        var last_name = '{{user.lastname}}';
-        nudgespot.identify(email, {first_name: first_name, last_name: last_name});
-    </script>
-{{/if}}
 </body>
 </html>

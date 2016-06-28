@@ -230,7 +230,7 @@ findDuplicatePubs: function(publications, currentUser) {
             query.equalTo("doi", extendedObj['DOI']);
 
             return query.first().then(function(result) { // the code will wait (run async) before looping again knowing that this query (all parse queries) returns a promise.
-                if (result) { // A publication with this DOI already exists
+                if (result) { // A publication with this DOI already exists+
                     var relation = result.relation("other_users"); // we want to associate the existing publications with the new contributor
                     relation.add(currentUser);
 
@@ -256,5 +256,19 @@ findDuplicatePubs: function(publications, currentUser) {
         console.error("findDuplicatePubs failed with error.code: " + error.code + " error.message: " + error.message);
         return {new: [], duplicates: []};
     });
+},
+
+// contributor names should be formatted as usernames
+namesToUsernames:function(names, user) {
+    var usernames = _.map(names, function(name) {
+        console.log(name);
+        if (name == user.fullname) {
+            return user.username;
+        } else {
+            return name.replace(/ /g, "_");
+        }
+    });
+    return usernames;
 }
+
 };

@@ -11,7 +11,6 @@ var _= require('underscore');
 var aws = require('aws-sdk');
 var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
-var isauth = require('../utils/helpers').isauth;
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 var is_auth = require('../utils/helpers').is_auth;
 

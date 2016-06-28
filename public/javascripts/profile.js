@@ -27,8 +27,6 @@ var CustomTags = React.createClass({
                     dataType: 'JSON',
                     cache: false,
                     success: function(data) {
-                        console.log("SUCCESS!!!!!!!");
-                        console.log(data);
                         // var arr = $.grep(data, function(item){
                         //     return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                         // });
@@ -39,10 +37,9 @@ var CustomTags = React.createClass({
                                 used: false
                             };
                         })
-                        console.log(resultArr)
                     },
                     error: function(xhr) {
-                        console.log(xhr.status);
+                        console.error(xhr.status);
                     }
             });
 
@@ -85,6 +82,11 @@ var CustomTags = React.createClass({
                 return;
             }
         }
+        tags.push({
+            id: tags.length + 1,
+            text: tag
+        });
+        this.setState({tags: tags});
         ids.push(tag);
         this.setState({ids: ids});
         console.log("user not in system. Just adding tag");
@@ -184,8 +186,6 @@ var Profile = React.createClass ({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -279,9 +279,7 @@ var Profile = React.createClass ({
     },
 
     submitChange: function() {
-        var dataForm = { about: this.state.about
-        };
-        console.log(JSON.stringify(dataForm));
+        var dataForm = { about: this.state.about };
         $.ajax({
             url: path + "/updateAbout",
             dataType: 'json',
@@ -417,7 +415,7 @@ var ProfileMenu = React.createClass ({
 
 var Connections = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return { data: [], noRecordsMessage: <LoadingGif /> };
     },
     componentDidMount : function(){
         var peopleUrl= "/profile/"+objectId+"/connections";
@@ -425,8 +423,10 @@ var Connections = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-
-                this.setState({data: data});
+                this.setState({data: data, noRecordsMessage: ''});
+                if (data.length < 1 || Object.keys(data).length === 0) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve people");
@@ -438,26 +438,14 @@ var Connections = React.createClass({
         invite(e.nativeEvent);
     },
     render: function() {
-        return (
-            <div className="item-search-div">
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
-                    </tr>
-                </table>
-            </div>
-        )
         var peopleList = $.map(this.state.data,function(objects) {
             var role= objects[0].title;
             var plist=[];
             for(var i in objects)
             {
                 var person = objects[i];
-
                 plist.push(person);
             }
-            console.log(currentUsername);
-            console.log(username);
 
             return (                
                 <div id="item-list">
@@ -479,7 +467,15 @@ var Connections = React.createClass({
         });
         return (
             <div>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
+                        </tr>
+                    </table>
+                </div>
                 {peopleList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -487,7 +483,7 @@ var Connections = React.createClass({
 
 var Organizations = React.createClass({
     getInitialState: function() {
-        return {orgs: [],myOrgs:[],isMe:false};
+        return {orgs: [],myOrgs:[],isMe:false, noRecordsMessage: <LoadingGif /> };
     },
     componentDidMount : function(){
 
@@ -498,7 +494,11 @@ var Organizations = React.createClass({
             success: function(data) {
                 this.setState({orgs: data.orgs,
                                myOrgs:data.myOrgs,
-                               isMe:data.isMe});
+                               isMe:data.isMe,
+                               noRecordsMessage: ''});
+                if (data.orgs.length < 1) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve orgs");
@@ -562,6 +562,7 @@ var Organizations = React.createClass({
         return (
             <div>
                 {orgList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -590,7 +591,6 @@ var About = React.createClass({
         };
     },
     submitSummary: function() {
-        console.log(this.state.educations);
         var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
         $.ajax({
             url: path + "/updateSummary",
@@ -699,7 +699,6 @@ var About = React.createClass({
     },
     handleArrayChange: function(index) {
         var interestsChange = document.getElementById("interests-" + index).value;
-        console.log(interestsChange);
         var interestsTemp = JSON.parse(this.state.interests);
         interestsTemp[index] = interestsChange;
         var interestsTemp = JSON.stringify(interestsTemp).replace(/\\\"/g,"'")
@@ -730,7 +729,6 @@ var About = React.createClass({
             arrayWE.push(newWE);
         }
         this.setState({workExperience:JSON.stringify(arrayWE), hideWorkExperiences: "show"}, function(){ this.submitExperience() }.bind(this));
-        console.log(workExperience);
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
@@ -738,7 +736,6 @@ var About = React.createClass({
         else { var newWE = {company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
-        console.log(educations);
     },
     tabChange: function(index) {
         this.props.tab(index);
@@ -752,10 +749,8 @@ var About = React.createClass({
             processData: false,
             success: function(data) {
                 var parseData = JSON.parse(data);
-                console.log(data);
                 educationData = parseData[0];
                 workExperienceData = parseData[1];
-                console.log(educationData);
                 this.setState({educations: JSON.stringify(educationData)});
                 this.setState({workExperience: JSON.stringify(workExperienceData)});
                 if (educationData.length == 0) {this.setState({hideEducations: "hide"});}
@@ -951,7 +946,7 @@ var AboutTabObject = React.createClass({
 
                 </div>
             )
-        }else{ //if field is education, use education placeholders
+        } else{ //if field is education, use education placeholders
             return (
                 <div className={"about-item-hr relative " + this.state.display} >
                     {(currentUsername == username) ? <div className="div-minus">
@@ -1003,7 +998,7 @@ var More = React.createClass({
 
 var Projects = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1020,7 +1015,12 @@ var Projects = React.createClass({
             type: 'GET',
             url: projectsURL,
             success: function(data) {
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Projects!");
@@ -1053,6 +1053,7 @@ var Projects = React.createClass({
                 </div>
             );
         });
+
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1070,16 +1071,16 @@ var Projects = React.createClass({
                     </table>
                 </div>
                 {itemsList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
 });
 
 
-
 var Publications = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1094,8 +1095,12 @@ var Publications = React.createClass({
             type: 'GET',
             url: publicationsURL,
             success: function(data) {
-                console.log(data);
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Publications!");
@@ -1126,7 +1131,7 @@ var Publications = React.createClass({
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
                                 <tr><td>Authors: </td><td>{item.contributors.map(function(contributor) { 
-                                    return <a href={contributor} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;})}</td></tr>
+                                    return <a href={contributor.replace(/ /g, "_")} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;})}</td></tr>
                                 {(item.type == "journal")? <tr><td>Publication Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date}</td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
@@ -1138,10 +1143,12 @@ var Publications = React.createClass({
             </div>
             );
         });
+
         return (
             <div>
                 <ResourceForm publication={true} />
                 {itemsList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -1177,7 +1184,7 @@ var Publication = React.createClass({
 
 var Models = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1192,8 +1199,12 @@ var Models = React.createClass({
             type: 'GET',
             url: modelsURL,
             success: function(data) {
-                console.log(data);
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Models!");
@@ -1238,10 +1249,12 @@ var Models = React.createClass({
             </div>
             );
         });
+
         return (
             <div>
                 <ResourceForm fromModelTab={true} />
                 {itemsList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -1249,7 +1262,7 @@ var Models = React.createClass({
 
 var Data = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], showModal: false, noRecordsMessage: <LoadingGif /> };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1264,7 +1277,12 @@ var Data = React.createClass({
             type: 'GET',
             url: dataURL,
             success: function(data) {
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Data!");
@@ -1283,7 +1301,6 @@ var Data = React.createClass({
             for (var i in items) {
                 var item = items[i];
                 dataPath = '/data/' + item.objectId;
-                console.log(item);
                 item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
@@ -1322,10 +1339,18 @@ var Data = React.createClass({
             </div>
             );
         });
+
+        if (this.state.noRecordsMessage == null) {
+            var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
+        } else {
+            var noRecordsMessage = this.state.noRecordsMessage;
+        }
+
         return (
             <div>
                 <ResourceForm fromModelTab={false} />
                 {itemsList}
+                {noRecordsMessage}
             </div>
         )
     }
@@ -1393,6 +1418,7 @@ var PublicationAddForm = React.createClass({
         fromModelTab: false,
         buttonStyles: {maxWidth: 400, margin: '0 auto 10px'},
         formFeedback: '',
+        alertVisible: false,
         fileFeedback: {},
         autoFillStatus: '',
         submitButtonText: 'Continue',
@@ -1538,9 +1564,13 @@ var PublicationAddForm = React.createClass({
 			}
         };
 
+        if (this.state.alertVisible) {
+            var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
+        } else {var alert = "";}
 
 		return (
 		<div>
+            {alert}
 			<form className="form" onSubmit={this.handleSubmitData}>
 			    <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
@@ -1568,8 +1598,8 @@ var PublicationAddForm = React.createClass({
                 {/*<ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />*/}
                 <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
 				{showTypeFields(this.state.type)}
-                <Input type="textarea" placeholder="Abstract:" name="description" onChange={this.handleChange} value={this.state.description} />
-                <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <Input type="textarea" placeholder="Abstract:" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
+                <ReactTagsInput type="text" placeholder="Keywords (use tab key to separate):" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL" name="url" onChange={this.handleChange} value={this.state.url} />
 				<Input type="text" placeholder="DOI (Digital Object Identifier)" name="doi" onChange={this.handleChange} value={this.state.doi} buttonAfter={autoFillBtn} />
 				<div className="form-feedback auto-fill-status">{this.state.autoFillStatus}</div>
@@ -1610,7 +1640,6 @@ var PublicationAddForm = React.createClass({
 			url: 'http://api.crossref.org/works/' + this.state.doi,
 			type: 'GET',
 			success: function(data) {
-				console.log(data);
 				var entry = data.message;
 				this.setState({
 					title: entry.title[0],
@@ -1755,8 +1784,9 @@ var PublicationAddForm = React.createClass({
 
 	handleSubmitData: function(e) {
         e.preventDefault();
-        this.setState({submitButtonText: "Please wait. We're uploading..."});
-        this.setState({submitButtonDisabled: true});
+        this.setState({submitButtonText: "Please wait. We're uploading...",
+                        submitButtonDisabled: true,
+                        alertVisible: false});
         var pubForm = {file: this.state.file, fileType: this.state.fileType,
         				collaborators: JSON.stringify(this.state.collaborators), creationDate: this.state.creationDate,
         				description: this.state.description, doi: this.state.doi, url: this.state.url,
@@ -1772,11 +1802,12 @@ var PublicationAddForm = React.createClass({
 			processData: false,
 			success: function(data) {
 				console.log("Publication upload done");
-				console.log(data);
 				this.close();
 			}.bind(this),
 			error: function(xhr, status, err) {
 				console.error(path + "/publication", status, err.toString());
+                this.setState({formFeedback: err.toString(), alertVisible: true,
+                            submitButtonText: "Continue",submitButtonDisabled: false});
 			}.bind(this)
 		});
 
@@ -1790,8 +1821,6 @@ var PublicationAddForm = React.createClass({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.file.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -1918,7 +1947,7 @@ var ResourceAddForm = React.createClass({
                     <div className="well" style={this.buttonStyles}>
                         <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
                             style={{background: this.state.pictureFeedback}}>
-                            Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                            Add Picture (gif/jpg/png) <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                         </Button>
                         <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
                             Select Files... <input type="file" onChange={this.handleFile} />
@@ -1933,8 +1962,8 @@ var ResourceAddForm = React.createClass({
                     
                     {/*<ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />*/}
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
-                    <ReactTagsInput type="text" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
-                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                    <ReactTagsInput type="text" placeholder="Keywords (use tab key to separate):" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                    <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
                     <Input type="text" placeholder="License:" name="license" onChange={this.handleChange} value={this.state.license} />
                     <Input type="text" placeholder="URL (Link to model)" name="url" onChange={this.handleChange} value={this.state.url} />
                     
@@ -1982,10 +2011,10 @@ var ResourceAddForm = React.createClass({
         this.setState(changedState);
     },
 	handleSubmitData: function(e) {
-        console.log(e);
         e.preventDefault();
-        this.setState({submitButtonText: "Please Wait. We're uploading"});
-        this.setState({submitButtonDisabled: true});
+        this.setState({submitButtonText: "Please Wait. We're uploading",
+                        submitButtonDisabled: true,
+                        alertVisible: false});
         var endpoint = this.props.fromModelTab ? "/model" : "/data";
         var dataForm = {picture: this.state.picture,
                         pictureType: this.state.pictureType,
@@ -2011,11 +2040,12 @@ var ResourceAddForm = React.createClass({
 				success: function(data) {
 					this.setState({data: data});
 					console.log("Data upload done");
-					console.log(data);
 					this.close();
 				}.bind(this),
 				error: function(xhr, status, err) {
 					console.error(path + endpoint, status, err.toString());
+                    this.setState({formFeedback: err.toString(), alertVisible: true,
+                            submitButtonText: "Continue",submitButtonDisabled: false});
 				}.bind(this)
 			});
 		}
@@ -2027,7 +2057,8 @@ var ResourceAddForm = React.createClass({
             if (isValidForm.indexOf('KEYWORDS') > -1) {
 				message += ' Please specify at least one keyword.';
 			}
-            this.setState({formFeedback: message, alertVisible: true});
+            this.setState({formFeedback: message, alertVisible: true,
+                            submitButtonText: "Continue",submitButtonDisabled: false});
 		}
         return;
     },
@@ -2046,8 +2077,6 @@ var ResourceAddForm = React.createClass({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.file.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -2202,7 +2231,7 @@ var ProjectAddForm = React.createClass({
 			    <div className="well" style={this.buttonStyles}>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block
                     	style={{background: this.state.pictureFeedback}}>
-                        Add Picture <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
+                        Add Picture (gif/jpg/png) <input type="file" accept="image/gif, image/jpeg, image/png" onChange={this.handlePicture} />
                     </Button>
                     <Button bsSize="large" className="btn-file" onClick={this.openFileUpload} block style={this.state.fileFeedback}>
                         Select Files... <input type="file" onChange={this.handleFile} />
@@ -2215,9 +2244,9 @@ var ProjectAddForm = React.createClass({
                     {/* <Input type="text" placeholder="Collaborators:" name="collaborators" className="auto" onChange={this.handleChange} value={this.state.collaborators} />*/}
                 <Input type="date" placeholder="Start Date:" name="startDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.startDate} />
                 <Input type="date" placeholder="End Date:" name="endDate" onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.endDate} />
-                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} />
+                <Input type="textarea" placeholder="Description:" name="description" onChange={this.handleChange} value={this.state.description} rows="5" />
                 <Input type="text" placeholder="Client:" name="client" onChange={this.handleChange} value={this.state.client} />
-                <ReactTagsInput type="textarea" placeholder="Keywords:" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
+                <ReactTagsInput type="textarea" placeholder="Keywords (use tab key to separate):" name="keywords" onChange={this.handleKeyChange} value={this.state.keywords} />
                 <Input type="text" placeholder="URL:" name="url" onChange={this.handleChange} value={this.state.url} />
                     {/*<Input type="text" className="auto" placeholder="Users you'd like to share this with (type in comma separated names): " name="groupies" onChange={this.handleChange} value={this.state.groupies} />*/}
                 </Modal.Body>
@@ -2258,7 +2287,6 @@ var ProjectAddForm = React.createClass({
         				collaborators: JSON.stringify(this.state.collaborators), startDate: this.state.startDate, endDate: this.state.endDate,
         				description: this.state.description, client: this.state.client, link_to_resources: this.state.link_to_resources,
         				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title};
-		console.log(dataForm);
 
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
@@ -2277,7 +2305,7 @@ var ProjectAddForm = React.createClass({
 				data: JSON.stringify(dataForm),
 				processData: false,
 				success: function(data) {
-				    console.log(data);
+				    console.log("Submitted");
 				    this.close();
 				}.bind(this),
 				error: function(xhr, status, err) {
@@ -2352,6 +2380,18 @@ var ProjectAddForm = React.createClass({
 		}
 		return issues;
 	},
+});
+
+var LoadingGif = React.createClass({
+    render: function() {
+        return (
+            <div>
+                <p style={{textAlign: 'center'}}><img className="loading-bar" src="../images/loadingbar.gif"/>
+                Fetching...
+                </p>
+            </div>
+        )
+    }
 });
 
 var Required = React.createClass({

@@ -838,7 +838,6 @@ module.exports=function(app,Parse,io) {
         var currentUser = req.user;
         var dName = req.body.name;
         var orgName = req.body.name.toLowerCase().replace(/'/g, "_").replace(/ /g, "_");
-
         // check if name already exists in db
         var Organization = Parse.Object.extend("Organization");
         var maxIndexSoFar = -1;
@@ -869,97 +868,72 @@ module.exports=function(app,Parse,io) {
                 var newIndex = maxIndexSoFar + 1;
                 orgName = req.body.name.toLowerCase() + "." + newIndex;
             }
-        }, function(error) {
-            console.log("ERROR THROWN: ");
-            console.log(error);
         }).then(function() {
-            var objectId;
-            if (currentUser) {
-                //var Organization = Parse.Object.extend("Organization");
-                var org = new Organization();
-                org.set('cover_imgURL', '/images/banner.png'); // default. replace later
-                org.set('profile_imgURL', '/images/organization.png');
-                org.set('name', orgName);
-                org.set('displayName', dName);
-               // org.set('location', req.body.location ? req.body.location : '');
-                org.set('about', req.body.description ? req.body.description : 'About Organization');
-                org.set('country', req.body.country ? req.body.country : '');
-                org.set('prov', req.body.prov ? req.body.prov : '');
-                org.set('city', req.body.city ? req.body.city : '');
-                org.set('street', req.body.street ? req.body.street : '');
-                org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
-                org.set('website', req.body.website ? req.body.website : '');
-
-                org.set('carousel_1_img','/images/carousel.png');
-                org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');
-                org.set('carousel_1_body',req.body.carousel_1_body ? req.body.carousel_1_body : '');
-                org.set('carousel_2_img','/images/carousel.png');
-                org.set('carousel_2_head',req.body.carousel_2_head ? req.body.carousel_2_head : '');
-                org.set('carousel_2_body',req.body.carousel_2_body ? req.body.carousel_2_body : '');
-                org.set('carousel_3_img','/images/carousel.png');
-                org.set('carousel_3_head',req.body.carousel_3_head ? req.body.carousel_3_head : '');
-                org.set('carousel_3_body',req.body.carousel_3_body ? req.body.carousel_3_body : '');
-
-                var location= '';
-                if (req.body.city ) {
-                    location = req.body.city;
-                } if (req.body.prov) {
-                    if(location!='')
-                        location = location +', ' +req.body.prov;
-                    else
-                        location = req.body.prov;
-                } if (req.body.country) {
-                    if(location!='')
-                        location = location +', ' +req.body.country;
-                    else
-                        location = req.body.country;
-                }
-                org.set('location', location);
-
-                org.save(null).then(function(response) {
+            //var Organization = Parse.Object.extend("Organization");
+            var org = new Organization();
+            org.set('name', orgName);
+            org.set('displayName', dName);
+            org.set('about', req.body.description ? req.body.description : 'About Organization');
+            org.set('country', req.body.country ? req.body.country : '');
+            org.set('prov', req.body.prov ? req.body.prov : '');
+            org.set('city', req.body.city ? req.body.city : '');
+            org.set('street', req.body.street ? req.body.street : '');
+            org.set('postalcode', req.body.postalcode ? req.body.postalcode : '');
+            org.set('website', req.body.website ? req.body.website : '');
+            org.set('carousel_1_img','/images/carousel.png');
+            org.set('carousel_1_head',req.body.carousel_1_head ? req.body.carousel_1_head : '');
+            org.set('carousel_1_body',req.body.carousel_1_body ? req.body.carousel_1_body : '');
+            org.set('carousel_2_img','/images/carousel.png');
+            org.set('carousel_2_head',req.body.carousel_2_head ? req.body.carousel_2_head : '');
+            org.set('carousel_2_body',req.body.carousel_2_body ? req.body.carousel_2_body : '');
+            org.set('carousel_3_img','/images/carousel.png');
+            org.set('carousel_3_head',req.body.carousel_3_head ? req.body.carousel_3_head : '');
+            org.set('carousel_3_body',req.body.carousel_3_body ? req.body.carousel_3_body : '');
+            var location= '';
+            if (req.body.city ) {
+                location = req.body.city;
+            } if (req.body.prov) {
+                if(location!='')
+                    location = location +', ' +req.body.prov;
+                else
+                    location = req.body.prov;
+            } if (req.body.country) {
+                if(location!='')
+                    location = location +', ' +req.body.country;
+                else
+                    location = req.body.country;
+            }
+            org.set('location', location);
+            var promises = [];
+            if (req.body.picture != null) {
+                var pictureName = "org_picture." + req.body.pictureType;
+                var pictureBuff = new Buffer(req.body.picture.replace(/^data:\w*\/{0,1}.*;base64,/, ""), 'base64')
+                var pictureFile = new Parse.File(pictureName, {base64: pictureBuff});
+                promises.push(pictureFile.save().then(function () {
+                    org.set('picture', pictureFile)
+                }));
+            }
+            return Parse.Promise.when(promises).then(function () {
+                org.save(null).then(function (response) {
                     objectId = response.id;
                     // create new Relationship object between organization and admin
                     console.log('Object ID retrieved/path name updated successfully');
                     var Relationship = Parse.Object.extend("Relationship");
                     var relation = new Relationship();
-                    relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id});
-                    relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: objectId });
+                    relation.set('userId', {__type: "Pointer", className: "_User", objectId: currentUser.id});
+                    relation.set('orgId', {__type: "Pointer", className: "Organization", objectId: objectId});
                     relation.set('isAdmin', true);
                     relation.set('verified', true);
                     relation.set('title', 'Members');
                     relation.save(null);
-                }).then(function(response) {
-                    // Organization object created; pass the object id to the rest of the promise chain. Upload profile image
-                    // if provided. FOR LATER: also support cover image.
-                    if (req.body.picture) {
-                        // encode file
-                        var params = awsUtils.encodeFile(req.body.name, objectId, req.body.picture, req.body.pictureType, "_org_");
-                        // upload files to S3
-                        var bucket = new aws.S3({ params: { Bucket: 'syncholar'} });
-                        bucket.putObject(params, function (err, response) {
-                            if (err) {
-                                console.log("S3 Upload Error:", err); }
-                            else {
-                                // update file path in parse object
-                                org.set('profile_imgURL', awsLink + params.Key);
-                                org.save(null).then(function(){
-                                    res.status(200).json({status:"OK", location: orgName});
-                                })
-                            };
-                        });
-                    }
-                    else {
-                        res.status(200).json({status:"OK", location: orgName});
-                    }
-                }, function(error) {
-                    console.log('Failed to create new organization, with error code: ' + error.message);
-                    res.status(500).json({status: "Creating organization failed. " + error.message});
+                }).then(function (response) {
+                    res.status(200).json({status: "OK", org_url: orgName});
                 });
-
-            } else {
-                res.status(403).json({status:"Please login!"});
-            }
-        })
+            });
+        }, function (error) {
+            console.log('Failed to create new organization, with error code: ' + error.message);
+            return res.status(500).json({status: "Creating organization failed. " + error.message});
+        });
     });
 
     app.get('/manage/organization', is_auth, function (req, res, next) {
@@ -1254,7 +1228,7 @@ module.exports=function(app,Parse,io) {
                         id: "org_" + r.get("orgId1").id + "_" + r.get("orgId0").id + "_inv",
                         type: "org2orgrequest",
                         from: {
-                            userId: r.get("orgId1").id,
+                            userId: r.get("orgId1").get("name"),
                             username: r.get("orgId1").get("name"),
                             name: r.get("orgId1").get("displayName"),
                             userImgUrl: r.get("orgId1").get("picture").url(),
@@ -1309,6 +1283,105 @@ module.exports=function(app,Parse,io) {
         })
     });
 
+
+    app.get("/organization/:objectId/partialMembers",function(req,res,next){
+        var people =[];
+        var counter=0;
+        var query = new Parse.Query('Relationship');
+        query.equalTo("orgId", {__type: "Pointer", className: "Organization", objectId: req.params.objectId})
+        query.include('userId');
+        query.each(function(result) {
+
+
+            var verified= result.get('verified');
+            var user= result.get('userId');
+            var username= user.get('username');
+            var fullname=user.get('fullname');
+            var userImgUrl=user.get('picture').url();
+
+            if(verified) {
+                counter++;
+                //we only need 4 members to show
+                if(counter <5)
+                {
+                    var person = {
+                        id: user.id,
+                        username:username,
+                        fullname: fullname,
+                        userImgUrl: userImgUrl,
+                    };
+                    people.push(person);
+                }
+            }
+        }).then(function(){
+            res.json({total:counter,people:people});
+        }, function(err) {
+           res.json({err:err});
+        });
+    });
+
+    app.get("/organization/:objectId/partialNetworks",function(req,res,next){
+        var orgId = req.params.objectId;
+        var orgs =[];
+        var counter=0;
+        var query = new Parse.Query("RelationshipOrg");
+        query.equalTo('orgId0', { __type: "Pointer", className: "Organization", objectId: orgId});
+        query.include('orgId1');
+        query.each(function(results) {
+            var verified = results.attributes.verified;
+            var connected_orgs = results.attributes.orgId1.attributes;
+            var orgId = results.attributes.orgId1.id;
+            var name = connected_orgs.name;
+            var displayName = connected_orgs.displayName;
+            var orgImgUrl = connected_orgs.picture.url()
+            //only orgs that are verified
+            if (verified) {
+                counter++;
+                if(counter<5) {
+                    var org = {
+                        orgId: orgId,
+                        name: name,
+                        displayName: displayName,
+                        orgImgUrl: orgImgUrl
+                    };
+                    orgs.push(org);
+                }
+            }
+        }).then(function(results){
+            var query1 = new Parse.Query("RelationshipOrg");
+            query1.equalTo('orgId1', { __type: "Pointer", className: "Organization", objectId: orgId});
+            query1.include('orgId0');
+            query1.each(function(results) {
+                var verified = results.attributes.verified;
+                var connected_orgs = results.attributes.orgId0.attributes;
+                var orgId = results.attributes.orgId0.id;
+                var name = connected_orgs.name;
+                var displayName = connected_orgs.displayName;
+                var orgImgUrl = connected_orgs.picture.url();
+                //only orgs that are verified
+                if (verified) {
+                    counter++;
+                    if(counter<5)
+                    {
+                        var org = {
+                            orgId: orgId,
+                            name: name,
+                            displayName: displayName,
+                            orgImgUrl: orgImgUrl
+                        };
+                        orgs.push(org);
+                    }
+                }
+            }).then(function(results){
+                res.json({total:counter,orgs:orgs});
+            })
+        })
+    });
+
+
+    /*
+     *     HELPER METHODS
+     */
     function notifyadmins(orgId,user)
     {
         var innerQuery = new Parse.Query("Organization");

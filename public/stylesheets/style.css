@@ -14,7 +14,7 @@
     --white-color: #fff;
     --link-color: #0066cc;
     --text-color: red;
-    --blue-color: #1e88e5;
+    --blue-color: #008cc9;
 }
 
 html {
@@ -5148,7 +5148,12 @@ p.title {
   width: 15px; }
 
 .commentAuthor {
+  margin-bottom: 0px;
   font-weight: bold; }
+.commentDate {
+  color: #90949c;
+  font-size: 11px;
+   }
 
 .authorDiv {
   padding-left: 0; }
@@ -5670,9 +5675,9 @@ a.newsfeed-link:hover {
   background-color: var(--foreground-color);
   border-color: none !important;
   padding: 5px 15px;
-  margin-top: 25px;
+  margin-top: 0px;
   margin-right: 0.04em;
-  border-radius: 3px;}
+  border-radius: 0px;}
 
 .white {
   color: white;
@@ -5838,49 +5843,40 @@ a.nostyle:hover, a.nostyle:focus, a.nostyle:active {
     margin-top:10%;
     }
 
-    #tabs ul {
-      border-bottom: none ;
-
-      margin: 0 4em 4em 0
-    list-style: none;
+#tabs ul {
+  border-bottom: none ;
+  margin: 0 4em 4em 0
+  list-style: none;
     padding:0;
     margin:0;
     }
+
     #tabs li {
-    color: var(--contrast-free-color);
-    background-color: var(--foreground-color);
+    color: #008cc9;
     display: inline;
-    border-bottom: none;
-    border-color: var(--foreground-color);
-    padding: 4.5px 12px;
+    padding: 20px 35px 5px 35px;
     margin: 0 0 0 0;
     font-size: 16px;
-    border-top-right-radius:0px;
-    border-top-left-radius:0px;
+
     }
     #tabs li:hover {
-    background-color: var(--foreground-hover-color);
-    border-color: var(--foreground-hover-color);
-      border-top-left-radius: 1em;
-      border-top-right-radius: 1em;
+    color: #008cc9;
+     border-bottom: solid 4px #008cc9;
     }
     #tabs li a {
-    color: var(--contrast-free-color);
-    text-decoration: none;
+
+      border: none;
+      font-weight: 600;
+      color:#74777b;
+      text-decoration: none;
     }
     #tabs li a:hover {
-        color: var(--white-color);
         text-decoration: none;
-
-        }
+    }
     #tabs #selected-tab {
-      border-bottom: none ;
-        background-color: var(--white-color);
-        border-color: var(--foreground-color);
-        color: var(--foreground-color);
-      border-top-left-radius: 0.75em;
-      border-top-right-radius: 0.75em;
-
+      background-color: white;
+      font-weight: 600;
+      color:#008cc9;
     }
 
     #bottom-tabs {
@@ -6233,7 +6229,7 @@ table.summary tr td {
     padding: 1.5px 5px !important;
 } .react-tagsinput-input {
     padding-top:1.5px !important;
-    width:100px !important;
+    width:100% !important;
 }
 
 div.react-tagsinput {
@@ -6731,4 +6727,100 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
 
 .about-middiv{
   background-color: #F2F2F2;
+}
+
+.thumbnail-list{
+  /* remove default list styles */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* remove spaces between li tags*/
+  font-size: 0;
+}
+.thumbnail-list li {
+  display: inline-block;
+  vertical-align: top;
+  width: 25%;
+  padding: 2%;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.thumbnail-list img {
+  width: 100px;
+  height: 100px;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  border-radius: 50px;
+  display: block;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.resource-list
+{
+  /* remove default list styles */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.resource-item
+{
+  width: 30%;
+  margin-right: 5px;
+  margin-bottom: 15px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}
+.resource-item a:hover
+{
+ text-decoration: none;
+}
+.resource-caption {
+  margin-top: 5px;
+  font-size: 13px;
+  display: block;
+}
+
+ .resource-img {
+  width: 70px;
+  height: 70px;
+  display: block;
+   margin-right: auto;
+   margin-left: auto;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+}
+
+.loading-bar {
+  width: 100px;
+  height: 150px;
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+}
+
+.front-banner{
+
+  color: white;
+  font-weight: 600;
+  font-size: 4rem;
+  text-align: center;
+  width: 100%;
+  height: 400px;
+  background: url(../images/background4.jpg);
+}
+.signup-button{
+  border: none;
+  color: white;
+  background-color: #65638e;
+}
+.front-banner-text
+{
+  margin-top: 20px;
 }

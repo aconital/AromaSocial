@@ -1,0 +1,122 @@
+.discussion-list{
+    margin-top: 25px;
+}
+.no-discussion
+{
+    font-size: 16px ;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    padding-left: 10px;
+    background-color: #fffbec;
+    text-align: center;
+}
+.discussion-row
+{   padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    padding-left: 10px;
+    background-color: #fffbec;
+    margin-bottom: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: #c2c3c8;
+}
+
+.discussion-user-img{
+    padding-right: 0;
+    text-align: center;
+}
+.discussion-user-info{
+    padding-left: 0;
+}
+.discussion-userImg{
+    width: 70px;
+    height: 70px;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
+    display: block;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+}
+.discussion-about {
+    margin-bottom: 5px;
+}
+.discussion-Date {
+    color: #90949c;
+    font-size: 11px;
+}
+.discussion-topic{
+    text-overflow:ellipsis;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+}
+.discussion-content{
+    text-overflow:ellipsis;
+
+}
+
+.post-row
+{   padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 5px;
+    padding-left: 10px;
+    background-color: #fff;
+    margin-bottom: 15px;
+    border: solid;
+    border-width: 1px;
+    border-color: #c2c3c8;}
+
+.submit-discussion
+{
+    float: right;
+    font-size: 18px;
+}
+.submit-discussion:hover
+{
+text-decoration: none
+}
+.discussion-form-headline
+{   border-top: none ;
+    border-left: none;
+    border-right: none;
+    border-bottom: solid;
+    padding-bottom: 10px;
+    border-width: 1px;
+    border-color: #c2c3c8;
+}
+.discussion-input{
+    padding-left: 5px;
+    width: 100%;
+}
+.discussionForm{
+    background-color:#e9ebee ;
+    padding: 10px;
+    border: solid;
+    border-width: 1px;
+    border-color: #c2c3c8;
+    border-top: none;
+}
+
+
+.create-discussion-list
+{float:right}
+.create-discussion-list:hover
+{text-decoration: none}
+
+.creatediscussion-topic{
+    padding-left: 10px;
+    width: 100%;
+}
+.creatediscussion-input
+{   width: 100%;
+    margin-top: 25px;
+}
+.discussion-remove
+{
+    color: #c2c3c8;
+}
+.discussion-remove:hover{text-decoration: none}

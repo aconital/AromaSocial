@@ -12,7 +12,7 @@ You'll need to have the following items installed before continuing.
 
 ```bash
 git clone https://github.com/aconital/AromaSocial.git
-npm intall
+npm install
 npm start
 ```
 Then just navigate your browser to http://localhost:3000 and you're set!

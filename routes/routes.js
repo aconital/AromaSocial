@@ -26,6 +26,7 @@ var processLinkedinImage=require('../utils/helpers').processLinkedinImage;
 var formatParams=require('../utils/helpers').formatParams;
 var pubAlreadyExists=require('../utils/helpers').pubAlreadyExists;
 var findDuplicatePubs=require('../utils/helpers').findDuplicatePubs;
+var namesToUsernames=require('../utils/helpers').namesToUsernames;
 
 module.exports=function(app,Parse,io) {
 
@@ -121,7 +122,7 @@ module.exports=function(app,Parse,io) {
                       msg: "has invited you to join their organization"
                     };
                     console.log("emitting io request");
-                    io.to(userId).emit('org2peoplerequest',{data:{notification}});
+                    io.to(userId).emit('org2peoplerequest',{data:notification});
                     console.log("emitted request");
 
                     res.send({reply: "User already exists with this email - sending notification..."});
@@ -795,7 +796,7 @@ app.get("/fetchworks", function(req, res, next) {
     var options = {
       url: url,
       headers: {
-        "Ocp-Apim-Subscription-Key": configs.msftCogServAPIKey
+        "Ocp-Apim-Subscription-Key": "f77cb8e7af0c4868875a7917b8bbaade"
       }
     };
 
@@ -805,7 +806,7 @@ app.get("/fetchworks", function(req, res, next) {
 
         // currently only supports importing journals/conferences. Will need to add another API if support for others needed
         var publications = data.entities
-              .filter( (entity) => ((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) );
+              .filter( function(entity) {((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) });
 
         var user = new Parse.Query(Parse.User);
         user.get(req.user.id).then(function(result) { 
@@ -819,7 +820,7 @@ app.get("/fetchworks", function(req, res, next) {
           // TODO add fail case
         });
       } else {
-        res.status(response.statusCode).json({status: "Searching for works has failed." + error});
+        res.status(response.statusCode).json({status: "Searching for works has failed. " + error});
       }
     }
 
@@ -834,14 +835,15 @@ app.post("/import", function(req, res, next) {
       var work = req.body[i];
 
       if (work.hasOwnProperty('journal')) {
-        var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO refactor into helper functions; future support for others
+        var PubType = Parse.Object.extend("Pub_Journal_Article"); // TODO refactor into helper function(?)
         var pub = new PubType();
 
         pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-        pub.set('contributors', work.contributors);
+        pub.set('contributors', namesToUsernames(work.contributors, req.user)); // transform names to usernames
         pub.set('abstract', work.abstract);
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
+        pub.set('other_urls', work.other_urls);
         pub.set('title', work.title);
         pub.set('doi', work.doi.replace(/^(doi:)/i, '')); // entries starting with 'doi:' must be stripped for proper duplicate detection
         pub.set('publication_date', new Date(work.publication_date));
@@ -858,12 +860,13 @@ app.post("/import", function(req, res, next) {
         var pub = new PubType();
 
         pub.set('user', {__type: "Pointer", className: "_User", objectId: req.user.id});
-        pub.set('contributors', work.contributors);
+        pub.set('contributors', namesToUsernames(work.contributors, req.user));
         pub.set('abstract', work.abstract);
         pub.set('keywords', work.keywords);
         pub.set('url', work.url);
+        pub.set('other_urls', work.other_urls);
         pub.set('title', work.title);
-        pub.set('doi', work.doi);
+        pub.set('doi', work.doi.replace(/^(doi:)/i, ''));
         pub.set('publication_date', new Date(work.publication_date));
 
         // conference fields

@@ -25,6 +25,7 @@ var ImportContent = React.createClass({
 		$.ajax({
 			url: '/fetchworks?name=' + nameQuery,
 			type: "GET",
+			timeout: 60000, // 1 minute timeout
 		})
 		.done(function(data) {
 			// var entities = data.data['entities'];
@@ -34,7 +35,8 @@ var ImportContent = React.createClass({
 							status: 'showTable' });
 		})
 		.fail(function(xhr, status, err) {
-			console.error('http://.projectoxford.ai/academic/', status, err, xhr);
+			// console.error('http://.projectoxford.ai/academic/', status, err, xhr);
+			self.setState({ status: 'An error has occured. Please try again later. If you keep running into this error, please file a bug report with the following information: Status Code ' + xhr.status + ', ' + xhr.statusText});
 		});
 	},
 	redirect(e) {
@@ -155,7 +157,6 @@ var WorksList = React.createClass({
 
 	// send request for highlighted works to be imported
 	importWorks() {
-		console.log(this.state.resultsToSend.length, 'now whjat');
 		if (this.state.resultsToSend.length > 0) {
 			var self = this;
 			var works = [];
@@ -215,10 +216,12 @@ var WorksList = React.createClass({
 			publication['volume'] = extended.hasOwnProperty('V') ? extended.V.toString() : '';
 			publication['issue'] = extended.hasOwnProperty('I') ? extended.I.toString() : '';
 			publication['page'] = (extended.hasOwnProperty('FP') && extended.hasOwnProperty('LP')) ? extended.FP+'-'+extended.LP : '';
+			publication['other_urls'] = extended.hasOwnProperty('S') ? extended.S.slice(1).map( (src) => src.U ) : [];
 			if (extended.hasOwnProperty('VFN')) { // if VFN exists, update current name of publisher
 				publication[publication.type] = extended.VFN;
 			}
 		}
+		console.log(publication);
 		return publication;
 	},
 

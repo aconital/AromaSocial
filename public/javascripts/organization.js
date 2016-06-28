@@ -37,7 +37,6 @@ var Organization = React.createClass ({
     },
     componentWillMount: function() {
         var connectURL= "/organization/"+objectId+"/join-status";
-        var orgURL= "/organization/"+objectId;
 
         $.ajax({
             url: connectURL,
@@ -237,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -270,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['About', 'People', 'Connections', 'Equipment', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -280,24 +279,44 @@ var Organization = React.createClass ({
 });
 
 var OrganizationMenu = React.createClass ({
-    getInitialState: function() {
-        return { focused: 0 };
+    getInitialState: function () {
+        return {activeLabelIndex: 0, selectedTab: 0};
     },
-    clicked: function(index) {
-        this.setState({ focused: index });
+    clicked: function (index) {
+        this.setState({activeLabelIndex: index, selectedTab: index});
+    },
+    showTab:function(index)
+    {
+        this.setState({activeLabelIndex: -1, selectedTab: index});
     },
     render: function() {
         var self = this;
 
-        var tabMap = {0: <About objectId={objectId} />,
-            1: <People isAdmin={this.props.isAdmin} />,
-            2: <Connections isAdmin={this.props.isAdmin}  />,
+        var tabMap = {
+            0: <Home
+                showEquipment={this.showTab.bind(self,3)}
+                showProjects={this.showTab.bind(self,4)}
+                showPublications={this.showTab.bind(self,5)}
+                showData={this.showTab.bind(self,6)}
+                showModels={this.showTab.bind(self,7)}
+                     viewPeople={this.showTab.bind(self,8)}
+                     viewConnections={this.showTab.bind(self,9)}
+                     objectId={objectId} />,
+            1: <About objectId={objectId} />,
+            2: <Resources isAdmin ={this.props.isAdmin}
+                          showEquipment={this.showTab.bind(self,3)}
+                          showProjects={this.showTab.bind(self,4)}
+                          showPublications={this.showTab.bind(self,5)}
+                          showData={this.showTab.bind(self,6)}
+                          showModels={this.showTab.bind(self,7)}/>,
             3: <Equipments objectId={objectId}/>,
             4: <Projects objectId={objectId}/>,
-            // 4: <Knowledge/>,
             5: <Publications objectId={objectId}/>,
             6: <Data objectId={objectId}/>,
-            7: <Models objectId={objectId}/>
+            7: <Models objectId={objectId}/>,
+            8: <People isAdmin={this.props.isAdmin} />,
+            9: <Connections isAdmin={this.props.isAdmin}  />,
+
 
         };
         return (
@@ -306,7 +325,7 @@ var OrganizationMenu = React.createClass ({
                     <ul id="content-nav">
                         {this.props.tabs.map(function(tab,index){
                             var style = "";
-                            if (self.state.focused == index) {
+                            if (self.state.activeLabelIndex == index) {
                                 style = "selected-tab";
                             }
                             return <li id={style}>
@@ -316,13 +335,362 @@ var OrganizationMenu = React.createClass ({
                     </ul>
                 </div>
                 <div id="content" className="content">
-                    {tabMap.hasOwnProperty(self.state.focused) ? tabMap[self.state.focused] : ""}
+                    {tabMap.hasOwnProperty(self.state.selectedTab) ? tabMap[self.state.selectedTab] : ""}
                 </div>
             </div>
         );
     }
 });
 
+var Home = React.createClass({
+    getInitialState: function() {
+        return {loading:true,showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
+    },
+    componentWillMount : function() {
+        var discussionsUrl= "/organization/"+name+"/discussions";
+        $.ajax({
+            type: 'GET',
+            url: discussionsUrl,
+            success: function(data) {
+                this.setState({ discussions: data.discussions ,loading:false});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+        this.loadPartialMembers();
+        this.loadPartialNetwork();
+
+    },
+    loadPartialMembers:function()
+    {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/partialMembers",
+            success: function(data) {
+                this.setState({ partialMembers: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+    },
+    loadPartialNetwork:function()
+    {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/partialNetworks",
+            success: function(data) {
+                this.setState({ partialNetworks: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+    },
+    openModal:function(){
+        this.setState({showModal:true});
+    },
+    closeModal:function(){
+        this.setState({showModal:false});
+    },inviteTrigger: function(e) {
+    e.stopPropagation();
+    var source = {
+        id: objectId,
+        name: name,
+        displayName: displayName,
+        imgUrl: picture
+    };
+    invite(e.nativeEvent, "org2people", source);
+},
+    render:function(){
+        //discussions
+        var discussions;
+        if(this.state.loading)
+        discussions = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Almost there...</p></div>
+
+        else {
+            if (this.state.discussions.length > 0) {
+                discussions = this.state.discussions.map(function (disc) {
+                    return (
+                        <Discussion discId={disc.id} topic={disc.topic} createdAt={disc.created} madeBy={disc.madeBy}
+                                    key={disc.id}>
+                            {disc.content.msg}
+                        </Discussion>
+                    );
+                });
+            }
+            else
+                discussions =
+                    <div className="no-discussion"><p>This network does not have any open discussion yet!</p></div>
+        }
+        //members
+        var members;
+        if(this.state.partialMembers.people.length>0)
+         {
+             members= this.state.partialMembers.people.map(function(member,index){
+                 return (
+                     <li key={index}>
+                         <a href={"/profile/"+member.username}><img title={member.fullname} src={member.userImgUrl} /></a>
+                     </li>
+
+                 );
+             });
+         }
+        else
+            members= <div className="no-discussion"><p>Start inviting members!</p></div>
+        //networks
+        var networks;
+        if(this.state.partialNetworks.orgs.length>0)
+        {
+            networks= this.state.partialNetworks.orgs.map(function(org,index){
+                return (
+                    <li key={index}>
+                        <a href={"/organization/"+org.name}><img title={org.displayName} src={org.orgImgUrl} /></a>
+                    </li>
+
+                );
+            });
+        }
+        else
+            networks= <div className="no-discussion"><p><small>Not connected with any network</small></p></div>
+
+        return (
+            <div className="row">
+                <Modal show={this.state.showModal} onHide={this.closeModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create New Discussion</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                           <CreateDiscussion/>
+                    </Modal.Body>
+                </Modal>
+                <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                    <h4 className="discussion-form-headline">Recent discussions <a onClick={this.openModal}className="create-discussion-list">Create New</a></h4>
+                  <div className="items-list">
+                      {discussions}
+                  </div>
+                </div>
+                <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                    <div className = "createorg_panel">
+                        <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
+                    </div>
+                    <div className = "panel search-panel your-groups">
+                        <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
+                            <div className="list-group">
+                                <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
+                                <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
+                            </div>
+                    </div>
+                    <div className="row">
+                        <div>
+                            <h4>Resources</h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="resource-list">
+                                <li className="resource-item">
+                                    <a onClick={this.props.showEquipment}>
+                                        <div>
+                                            <img className="resource-img" src="../images/equipment.png"/>
+                                            <span className="resource-caption">Equipment</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showProjects}>
+                                        <div>
+                                            <img className="resource-img" src="../images/project.png"/>
+                                            <span className="resource-caption">Projects</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showPublications}>
+                                        <div>
+                                            <img className="resource-img" src="../images/publication.png"/>
+                                            <span className="resource-caption">Publications</span>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showData}>
+                                    <div>
+                                        <img className="resource-img" src="../images/figures.png"/>
+                                        <span className="resource-caption">Figures &amp; Data</span>
+                                    </div>
+                                    </a>
+
+                                </li>
+                                <li className="resource-item">
+                                    <a onClick={this.props.showModels}>
+                                    <div>
+                                        <img className="resource-img" src="../images/code.png"/>
+                                        <span className="resource-caption">Software &amp; Code</span>
+                                    </div>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="row home-connections-box">
+                        <div>
+                        <h4><span className="nfButton">Members <small>(<a onClick={this.props.viewPeople} href="#">{this.state.partialMembers.total}</a>)</small></span></h4>
+                        </div>
+                        <div className="member-section">
+                         <ul className="thumbnail-list">
+                             {members}
+                         </ul>
+                        </div>
+                        <div className = "createorg_panel">
+                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
+                        </div>
+                    </div>
+                    <div className="row home-connections-box">
+                        <div>
+                            <h4><span className="nfButton">Networks <small>(<a onClick={this.props.viewConnections} href="#">{this.state.partialNetworks.total}</a>)</small></span></h4>
+                        </div>
+                        <div className="member-section">
+                            <ul className="thumbnail-list">
+                                {networks}
+                            </ul>
+                        </div>
+                        <div className = "createorg_panel">
+                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        );
+    }
+});
+var CreateDiscussion = React.createClass({
+    getInitialState: function() {
+        return {content: '', topic: ''};
+    },
+    handleTopicChange: function(e) {
+        this.setState({topic: e.target.value});
+    },
+    handleContentChange: function(e) {
+        this.setState({content: e.target.value});
+    },
+    handleSubmit: function(e) {
+        e.preventDefault();
+        var topic = this.state.topic;
+        var content = this.state.content;
+        if (!topic || topic.trim()== "" || !content || content.trim()=="") {
+            return;
+        }
+        $.ajax({
+            url: '/organization/'+objectId+'/discussions/',
+            method:'post',
+            data: {topic: topic,content:content},
+            success: function(data) {
+                this.setState({topic: '',content:''});
+                location.reload();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+
+    },
+    render:function(){
+        return (
+            <div className="row">
+                <div className="col-xs-12">
+                    <form>
+                        <label>Title</label>
+                        <input
+                            placeholder="Choose a title for your discussion"
+                            className="creatediscussion-topic"
+                            type="text"
+                            value={this.state.topic}
+                            onChange={this.handleTopicChange}
+                            />
+                        <textarea
+                         rows="8" cols="50"
+                         className="creatediscussion-input"
+                         placeholder=""
+                         value = {this.state.content}
+                         onChange={this.handleContentChange}>
+                        </textarea>
+                    </form>
+                    <div>
+                        <a onClick={this.handleSubmit} className="submit-discussion">Submit</a>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
+var Discussion = React.createClass ({
+    getInitialState: function() {
+        return {createdAt:""};
+    },
+    componentDidMount: function() {
+        this.setState({createdAt:moment(this.props.createdAt).fromNow()});
+        setInterval(this.refreshTime, 30000);
+    },
+    refreshTime: function () {
+        this.setState({createdAt:moment(this.props.createdAt).fromNow()});
+    },
+    rawMarkup: function() {
+        var rawMarkup = marked(this.props.children, {sanitize: true});
+        return { __html: rawMarkup };
+    },
+    deleteDiscussion:function(discId)
+    {
+    swal({   title: "Are you sure?",
+            text: "You will not be able to recover this discussion and its posts!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            loseOnConfirm: false },
+        function(){
+            $.ajax({
+                type: 'DELETE',
+                url: "/organization/"+objectId+"/discussions/",
+                data:{discId:discId,orgName:name},
+                success: function(data) {
+                    swal("Deleted!", "Your Discussion has been deleted.", "success");
+                    location.reload();
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error("Couldn't Retrieve discussions!");
+                }.bind(this)
+            });
+        });
+},
+    render:function(){
+        return (
+            <div  className="row discussion-row" id="item-list">
+                <div className="col-xs-3 col-lg-2 discussion-user-img">
+                        <a href={"/profile/"+this.props.madeBy.username}><img src={this.props.madeBy.imgUrl} className="discussion-userImg" /></a>
+                </div>
+                <div className="col-xs-8 col-lg-9 discussion-user-info">
+                    <a href={"/profile/"+this.props.madeBy.username} className="body-link"><h4 className="margin-top-bottom-5">{this.props.madeBy.fullname}</h4></a>
+                    <p className="discussion-about">{this.props.madeBy.about}</p>
+                    <p className="discussion-Date">{this.state.createdAt}</p>
+                </div>
+                <div className="col-xs-1 col-lg-1">
+                    { currentUsername == this.props.madeBy.username? <a onClick={this.deleteDiscussion.bind(this,this.props.discId)} className="discussion-remove"><i className="fa fa-times" aria-hidden="true"></i></a>:""}
+                </div>
+                <div className="col-xs-12 col-lg-12">
+                    <p ><a href={"/organization/"+name+"/discussions/"+this.props.discId} className="discussion-topic">{this.props.topic}</a></p>
+                    <p className="discussion-content" dangerouslySetInnerHTML={this.rawMarkup()} />
+                </div>
+            </div>
+        );
+    }
+
+
+});
 var About = React.createClass({
     getInitialState: function(){
         return {about: about,
@@ -657,7 +1025,66 @@ var About = React.createClass({
     }
 
 })
+var Resources = React.createClass({
+    render:function()
+    {
+       return( <div className="row">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div className="row">
+                    <div>
+                        <h4>Resources</h4>
+                    </div>
+                    <div className="resource-section">
+                        <ul className="resource-list">
+                            <li className="resource-item">
+                                <a onClick={this.props.showEquipment}>
+                                    <div>
+                                        <img className="resource-img" src="../images/equipment.png"/>
+                                        <span className="resource-caption">Equipment</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showProjects}>
+                                    <div>
+                                        <img className="resource-img" src="../images/project.png"/>
+                                        <span className="resource-caption">Projects</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showPublications}>
+                                    <div>
+                                        <img className="resource-img" src="../images/publication.png"/>
+                                        <span className="resource-caption">Publications</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showData}>
+                                    <div>
+                                        <img className="resource-img" src="../images/figures.png"/>
+                                        <span className="resource-caption">Figures &amp; Data</span>
+                                    </div>
+                                </a>
 
+                            </li>
+                            <li className="resource-item">
+                                <a onClick={this.props.showModels}>
+                                    <div>
+                                        <img className="resource-img" src="../images/code.png"/>
+                                        <span className="resource-caption">Software &amp; Code</span>
+                                    </div>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>)
+    }
+});
 var Connections = React.createClass({
     getInitialState: function() {
         return {data: [], showModal: false };
@@ -841,7 +1268,7 @@ var AddConnection = React.createClass({
 
 var People = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: []};
     },
     componentDidMount : function(){
         this.getPeople();
@@ -851,7 +1278,7 @@ var People = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve People");
@@ -955,7 +1382,6 @@ var People = React.createClass({
     }
 });
 
-
 var NewsAndEvents = React.createClass({
     render: function() {
         return (
@@ -978,25 +1404,22 @@ var Knowledge = React.createClass({
 
 var Equipments = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false, isAdmin: false };
+        return { loading:true,data: [], showModal: false, isAdmin: false };
     },
     componentWillMount : function() {
         var equipmentsURL= "/organization/"+objectId+"/equipments_list";
-
         $.ajax({
             type: 'GET',
             url: equipmentsURL,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error("Couldn't Retrieve Equipments!");
+                console.error("Couldn't Retrieve Equipment!");
             }.bind(this)
         });
-    },
-    componentDidMount : function() {
-        var isAdminURL= "/organization/"+objectId+"/isAdmin";
 
+        var isAdminURL= "/organization/"+objectId+"/isAdmin";
         $.ajax({
             type: 'GET',
             url: isAdminURL,
@@ -1009,6 +1432,7 @@ var Equipments = React.createClass({
             }.bind(this)
         });
     },
+
     clickOpen() {
         this.setState({ showModal: true });
     },
@@ -1016,27 +1440,39 @@ var Equipments = React.createClass({
         this.setState({ showModal: false });
     },
     render: function() {
-        var itemsList = $.map(this.state.data,function(item) {
-            return (
-                <div className="item-box" key={item.objectId}>
-                    <div>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/equipment/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
-                            </div>
-                        </div>
-                        <div className="item-box-right">
-                            <a href={'/equipment/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
+        var itemsList;
+        if(this.state.loading)
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Cleaning the beaker...</p></div>
+        else
+        {
+            if (this.state.data.length > 0) {
+                 itemsList = $.map(this.state.data, function (item) {
+                    return (
+                        <div className="item-box" key={item.objectId}>
+                            <div>
+                                <div className="item-box-left">
+                                    <div className="item-box-image-outside">
+                                        <a href={'/equipment/'+item.objectId}><img src={item.picture.url}
+                                                                                   className="item-box-image"/></a>
+                                    </div>
+                                </div>
+                                <div className="item-box-right">
+                                    <a href={'/equipment/'+item.objectId} className="body-link"><h3
+                                        className="margin-top-bottom-5">{item.title}</h3></a>
                             <span className="font-15">
                             <table className="item-box-right-tags">
-                            {/* <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                                {/* <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                             </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            );
-        });
+                    );
+                });
+            }
+            else
+                itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
+        }
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1257,7 +1693,7 @@ var EquipmentAddForm = React.createClass({
 
 var Projects = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { loading:true,data: [], showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1272,7 +1708,7 @@ var Projects = React.createClass({
             type: 'GET',
             url: projectsURL,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({data: data,loading:false});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Projects!");
@@ -1280,29 +1716,50 @@ var Projects = React.createClass({
         });
     },
     render: function() {
-        var itemsList = $.map(this.state.data,function(item) {
-            item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
+        var itemsList;
 
-            return (
-                <div className="item-box">
-                    <div key={item.objectId}>
-                        <div className="item-box-left">
-                            <div className="item-box-image-outside">
-                                <a href={'/project/'+item.objectId}><img src={item.picture.url} className="item-box-image"/></a>
+        if(this.state.loading)
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Launching the rocket...</p></div>
+        else {
+            if (this.state.data.length > 0) {
+                itemsList = $.map(this.state.data, function (item) {
+                    item.start_date = (new Date(item.start_date)).toUTCString().slice(8, -12);
+
+                    return (
+                        <div className="item-box">
+                            <div key={item.objectId}>
+                                <div className="item-box-left">
+                                    <div className="item-box-image-outside">
+                                        <a href={'/project/'+item.objectId}><img src={item.picture.url}
+                                                                                 className="item-box-image"/></a>
+                                    </div>
+                                </div>
+                                <div className="item-box-right">
+                                    <a href={'/project/'+item.objectId} className="body-link"><h3
+                                        className="margin-top-bottom-5">{item.title}</h3></a>
+                                    <table className="item-box-right-tags">
+                                        <tr>
+                                            <td><b>Collaborators: </b></td>
+                                            <td>{item.collaborators.map(function (collaborator) {
+                                                return <a href="#"
+                                                          className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;
+                                            })}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Start Date: </b></td>
+                                            <td>{item.start_date}</td>
+                                        </tr>
+                                        {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div className="item-box-right">
-                            <a href={'/project/'+item.objectId} className="body-link"><h3 className="margin-top-bottom-5">{item.title}</h3></a>
-                            <table className="item-box-right-tags">
-                                <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;})}</td></tr>
-                                <tr><td><b>Start Date: </b></td><td>{item.start_date}</td></tr>
-                            {/*   <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            );
-        });
+                    );
+                });
+            }
+            else
+                itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
+        }
         return (
             <div>
                 <div className="item-search-div">
@@ -1318,15 +1775,15 @@ var Projects = React.createClass({
 
 var Publications = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: {}};
     },
     componentDidMount : function(){
-        var peopleUrl= "/organization/"+objectId+"/publications";
+        var pubUrl= "/organization/"+objectId+"/publications";
 
         $.ajax({
-            url: peopleUrl,
+            url: pubUrl,
             success: function(publications) {
-                this.setState({data: publications});
+                this.setState({loading:false,data: publications});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Publications!");
@@ -1334,37 +1791,60 @@ var Publications = React.createClass({
         });
     },
     render: function() {
-        var itemsList = $.map(this.state.data,function(items) {
-            var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_"," ")
-            var typeList = [];
-            for (var i in items) {
-                var item = items[i];
-                item.date = (new Date(item.date)).toUTCString().slice(8,-12);
-                typeList.push(item);
-            }
-            console.log(typeList);
-            return (
-                <div>
-                    <div><h2 className="margin-top-bottom-10"><span aria-hidden="true" className="glyphicon glyphicon-list-alt"></span> {type}</h2></div>
-                    {typeList.map(item =>
-                            <div className="about-item-hr">
-                                <div key={item.id}>
-                                    <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4 className="margin-top-bottom-5">{item.title}</h4></a>
+        var itemsList;
+
+        if(this.state.loading)
+            itemsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Making sure everything works perfektly...</p></div>
+        else {
+            if (Object.getOwnPropertyNames(this.state.data).length > 0) {
+                var itemsList = $.map(this.state.data, function (items) {
+                    var type = (items[0].type.charAt(0).toUpperCase() + items[0].type.slice(1)).replace("_", " ")
+                    var typeList = [];
+                    for (var i in items) {
+                        var item = items[i];
+                        item.date = (new Date(item.date)).toUTCString().slice(8, -12);
+                        typeList.push(item);
+                    }
+
+                    return (
+                        <div>
+                            <div><h2 className="margin-top-bottom-10"><span aria-hidden="true"
+                                                                            className="glyphicon glyphicon-list-alt"></span> {type}
+                            </h2></div>
+                            {typeList.map(item =>
+                                    <div className="about-item-hr">
+                                        <div key={item.id}>
+                                            <a href={'/publication/'+item.type+'/'+item.id} className="body-link"><h4
+                                                className="margin-top-bottom-5">{item.title}</h4></a>
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td><b>Authors: </b></td><td>{item.contributors ? item.contributors.map(function(contributors) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;}) : ''}</td></tr>
-                                <tr><td><b>Publication Date: </b></td><td>{item.date.toString()}</td></tr>
-                             { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
+                                <tr>
+                                    <td><b>Authors: </b></td>
+                                    <td>{item.contributors ? item.contributors.map(function (contributors) {
+                                        return <a href="#"
+                                                  className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;
+                                    }) : ''}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Publication Date: </b></td>
+                                    <td>{item.date.toString()}</td>
+                                </tr>
+                                { /*  <tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
                         </table>
                         </span>
-                                </div>
-                            </div>
-                    )} <div className="clear"></div>
-                </div>
-            );
-        });
+                                        </div>
+                                    </div>
+                            )}
+                            <div className="clear"></div>
+                        </div>
+                    );
+                });
+            }
+            else
+                itemsList = <div className="no-discussion"><p>There is no data available yet!</p></div>
+        }
         return (
             <div>
                 {itemsList}
@@ -1385,25 +1865,14 @@ var Publication = React.createClass({ //delete
                     Abstract: {this.props.description.substr(0,120)}... <a href={"/publication/" + this.props.objectId} className="body-link">Show Full Abstract</a><br/>
                     {this.props.publication_code}
                 </div>
-                {/*
-                 <div className="publication-box-right">
-                 <h5>Information</h5><br/>
-                 ## Syncholar Factor<br/>
-                 ## Times Cited<br/>
-                 ## Views<br/>
-                 ## Impact Factor
-                 </div>
-                 */}
             </div>
         )
     }
 });
 
-
-
 var Data = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: []};
     },
     componentDidMount : function(){
         var peopleUrl= "/organization/"+objectId+"/datas";
@@ -1411,7 +1880,7 @@ var Data = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(datas) {
-                this.setState({data: datas});
+                this.setState({loading:false,data: datas});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Data!");
@@ -1419,7 +1888,22 @@ var Data = React.createClass({
         });
     },
     render: function() {
-        var rows = [];
+        var rows ;
+        if(this.state.loading)
+        rows = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Shovelling coal into the server...</p></div>
+        else {
+            if (this.state.data.length > 0) {
+                rows = this.state.data.map(function (item) {
+                    return (<Datum objectId={item.objectId}
+                                   collaborators={item.collaborators}
+                                   title={item.title}
+                                   image_URL={item.picture.url}
+                                   start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)}/>);
+                });
+            }
+            else
+                rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
+        }
         return (
             <div>
                 <div className="item-search-div">
@@ -1427,19 +1911,12 @@ var Data = React.createClass({
                         <tbody>
                         <tr>
                             <td className="padding-right">
-                                {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                {this.state.data.map(function(item) {
-                    return (<Datum objectId={item.objectId}
-                                   collaborators={item.collaborators}
-                                   title={item.title}
-                                   image_URL={item.picture.url}
-                                   start_date={(new Date(item.createdAt)).toUTCString().slice(8,-12)} />);
-                })}
+                {rows}
             </div>
         );
     }
@@ -1467,18 +1944,6 @@ var Datum = React.createClass({
                         </table>
                     </span>
                 </div>
-                {/*
-                 <div className="model-box-right">
-                 <h5>Information</h5><br/>
-                 {this.props.number_syncholar_factor} Syncholar Factor<br/>
-                 {this.props.number_cited} Times Cited<br/>
-                 {this.props.license}<br/>
-                 {this.props.access.map(function(item, i){
-                 if (i == 0) {return item;}
-                 else {return ", " + item;}
-                 })} <br/> Uses This
-                 </div>
-                 */}
             </div>
         )
     }
@@ -1486,14 +1951,14 @@ var Datum = React.createClass({
 
 var Models = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return {loading:true,data: []};
     },
     componentDidMount : function(){
         var peopleUrl= "/organization/"+objectId+"/models";
         $.ajax({
             url: peopleUrl,
             success: function(models) {
-                this.setState({data: models});
+                this.setState({loading:false,data: models});
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Publications!");
@@ -1501,21 +1966,12 @@ var Models = React.createClass({
         });
     },
     render: function() {
-        var rows = [];
-        return (
-            <div>
-                <div className="item-search-div">
-                    <table className="item-search-field" width="100%">
-                        <tbody>
-                        <tr>
-                            <td className="padding-right">
-                                {/*<td><input type="text" id="search" placeholder="Search..." className="form-control"/></td>*/}
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                {this.state.data.map(function(model) {
+        var rows ;
+        if(this.state.loading)
+            rows = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Searching for the answer to life...</p></div>
+        else {
+            if (this.state.data.length > 0) {
+                rows = this.state.data.map(function (model) {
                     return (<Model objectId={model.objectId}
                                    collaborators={model.collaborators}
                                    title={model.title}
@@ -1526,8 +1982,24 @@ var Models = React.createClass({
                                    license={model.license}
                                    access={model.access}
                                    abstract={model.abstract}
-                                   start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)} />);
-                })}
+                                   start_date={(new Date(model.createdAt)).toUTCString().slice(8,-12)}/>);
+                });
+            }
+            else
+                rows = <div className="no-discussion"><p>There is no data available yet!</p></div>
+        }
+        return (
+            <div>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tbody>
+                        <tr>
+                            <td className="padding-right">
+                             </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 {rows}
             </div>
         );

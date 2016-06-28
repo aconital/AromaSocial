@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/stylesheets/discussion.css">
 <div id="content"></div>
 <script type="text/javascript">
     var title = '{{title}}',
@@ -33,9 +34,11 @@
         carousel_3_body = decodeEntities('{{carousel_3_body}}'),
         isCreate = '{{isCreate}}';
 </script>
+
 {{#if isCreate}}
     <script type="text/jsx" src="/javascripts/createOrganization.js"></script>
 {{else}}
+    <script type="text/jsx" src="/javascripts/moment.min.js"></script>
     <script type="text/jsx" src="/javascripts/autocomplete.js"></script>
     <script type="text/jsx" src="/javascripts/organization.js"></script>
 {{/if}}
