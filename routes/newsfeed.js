@@ -268,7 +268,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="org_create"){
-                    var message="create a network";
+                    var message="created";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
@@ -286,7 +286,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="org_join"){
-                    var message="joined a network";
+                    var message="joined";
                     var adderURL="/user/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
