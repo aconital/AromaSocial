@@ -387,7 +387,7 @@ var SearchFeed = React.createClass({
                      <ul> 
                       <li> Double check your spelling. </li>
                       <li> Try making your search broader. You can always narrow it down later.</li>
-                      <li> Search single words. Search what you're relatively sure of. For example: if you are sure of a person's last name, just give that a go. We'll get the first name for you. </li>
+                      <li> Search single words. Search what you are relatively sure of. For example: if you are sure of a person's last name, just give that a go. We'll get the first name for you. </li>
                      </ul>
                   </div>;
 
@@ -411,7 +411,7 @@ var SearchFeed = React.createClass({
                                 <a className="rig-cell" href={user.link}>
                                   <figure>
                                     <img className="rig-img" style={{width:"100%", height:"100%"}} src={user.img}/>
-                                    <figcaption style={{color:"#F8F8FF"}}>{user.fullname}</figcaption>
+                                    <figcaption style={{color:"black"}}>{user.fullname}</figcaption>
                                   </figure>
                                   <span className="rig-overlay"></span>
                                   <span className="rig-text">{user.about}</span>
@@ -437,7 +437,7 @@ var SearchFeed = React.createClass({
                                       <a className="rig-cell" href={model.link}>
                                         <figure>
                                           <img className="rig-img" style={{width:"100%", height:"100%"}} src={model.img}/>
-                                          <figcaption style={{color:"#F8F8FF"}}>{model.title}</figcaption>
+                                          <figcaption style={{color:"black"}}>{model.title}</figcaption>
                                         </figure>
                                         <span className="rig-overlay"></span>
                                         <span className="rig-text">{model.about}</span>
@@ -463,7 +463,7 @@ var SearchFeed = React.createClass({
                                       <a className="rig-cell" href={datum.link}>
                                         <figure>
                                           <img className="rig-img" style={{width:"100%", height:"100%"}} src={datum.img}/>
-                                          <figcaption style={{color:"#F8F8FF"}}>{datum.title}</figcaption>
+                                          <figcaption style={{color:"black"}}>{datum.title}</figcaption>
                                         </figure>
                                         <span className="rig-overlay"></span>
                                         <span className="rig-text">{datum.about}</span>
@@ -489,7 +489,7 @@ var SearchFeed = React.createClass({
                                     <a className="rig-cell" href={pub.link}>
                                       <figure>
                                         <img className="rig-img" style={{width:"100%", height:"100%"}} src={pub.img}/>
-                                        <figcaption style={{color:"#F8F8FF"}}>{pub.title}</figcaption>
+                                        <figcaption style={{color:"black"}}>{pub.title}</figcaption>
                                       </figure>
                                       <span className="rig-overlay"></span>
                                       <span className="rig-text">Go to Publication</span>
@@ -515,7 +515,7 @@ var SearchFeed = React.createClass({
                                   <a className="rig-cell" href={org.link}>
                                     <figure>
                                       <img className="rig-img" style={{width:"100%", height:"100%"}} src={org.img}/>
-                                      <figcaption style={{color:"#F8F8FF"}}>{org.title}</figcaption>
+                                      <figcaption style={{color:"black"}}>{org.title}</figcaption>
                                     </figure>
                                     <span className="rig-overlay"></span>
                                     <span className="rig-text">Go to Organization</span>
