@@ -6388,7 +6388,46 @@ textarea {
 .grow:hover {
     /* height: 100%; /* This is the height on hover */
 }
+.categoryHeader {
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+  background-color: #333333;
+  color: white;
+  width: 100%;
+}
 
+#submitAutosuggest {
+  /*width:20%;
+  height:40px;*/
+  float:right;
+  background: transparent;
+  /*background: url("../images/searchButton.png")*/
+  /*background-color: #008CBA;*/
+  border-color: transparent;
+  border-radius: 4px;
+  color:white;
+  height: 40px;
+  margin-right: 40px;
+  /*width: 40px;*/
+}
+
+.selectAc {
+  width:80%;
+  float:left;
+}
+
+.acButton {
+  width: 25%;
+  float: right;
+  margin: 2%;/*
+  margin-right: 5%;*/
+}
+
+.acImage {
+  float: left;
+  margin: 3%;
+}
 .ui-autocomplete {
     /*max-height: 0;*/
     /*transition: max-height 0.5s ease-out;*/
