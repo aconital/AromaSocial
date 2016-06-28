@@ -1,8 +1,26 @@
-.filter {
-    /*float: left;*/
-    /*display: inline;*/
-    /*background: transparent;*/
+
+.noResults {
+    background: palegoldenrod;
+    width: 80%;
+    margin: 0 auto;
+    /*text-align: center;*/
 }
+
+.noResults h3 {
+    text-align: center;
+    padding: 10px;
+}
+
+.noResults div {
+    /* sequence: top right bottom left*/
+    margin: 0 auto auto 10%;
+    padding: 10px;
+}
+
+.noResults i {
+    color: red;
+}
+
 .filter ul {
   -webkit-font-smoothing:antialiased;
   text-shadow:0 1px 0 #FFF;

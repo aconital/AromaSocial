@@ -379,120 +379,154 @@ var SearchFeed = React.createClass({
           break;
       }
     });
-    var userDiv = <div>
-                    <div className="headerDiv"><h3> Users </h3></div>
-                      <ul id="rig">
-                        {users.map(function (user) {
-                          return (
-                              <span>
-                                <a href={user.link}></a>
-                                <li>
-                                  <a className="rig-cell" href={user.link}>
-                                    <figure>
-                                      <img className="rig-img" style={{width:"100%", height:"100%"}} src={user.img}/>
-                                      <figcaption style={{color:"#F8F8FF"}}>{user.fullname}</figcaption>
-                                    </figure>
-                                    <span className="rig-overlay"></span>
-                                    <span className="rig-text">{user.about}</span>
-                                  </a>
-                                </li>
-                              </span>
-                          )
-                        })}
-                      </ul>
+
+    var noResults = <div>
+                    <a href="http://www.clker.com/cliparts/2/P/z/V/R/S/monkey-face-th.png"><img src='http://www.clker.com/cliparts/2/P/z/V/R/S/monkey-face-th.png'/></a>
+                     <b> Your search <i>'{searchString}'</i> did not return any results </b>
+                     <p> Here are a few tips to help you get going: </p>
+                     <ul> 
+                      <li> Double check your spelling. </li>
+                      <li> Try making your search broader. You can always narrow it down later.</li>
+                      <li> Search single words. Search what you're relatively sure of. For example: if you are sure of a person's last name, just give that a go. We'll get the first name for you. </li>
+                     </ul>
                   </div>;
 
-    var modelDiv = <div>
-                    <div className="headerDiv"><h3> Models </h3></div>
-                      <ul id="rig">
-                        {models.map(function (model) {
-                          return (
-                              <span >
-                                  <a href={model.link}></a>
-                                  <li>
-                                    <a className="rig-cell" href={model.link}>
-                                      <figure>
-                                        <img className="rig-img" style={{width:"100%", height:"100%"}} src={model.img}/>
-                                        <figcaption style={{color:"#F8F8FF"}}>{model.title}</figcaption>
-                                      </figure>
-                                      <span className="rig-overlay"></span>
-                                      <span className="rig-text">{model.about}</span>
-                                    </a>
-                                  </li>
-                              </span>
-                          )
-                        })}
-                      </ul>
-                    </div>;
+    var userDiv;
+    var modelDiv;
+    var dataDiv;
+    var pubDiv;
+    var orgDiv;
 
-    var dataDiv =  <div>
-                    <div className="headerDiv"><h3> Data </h3></div>
-                      <ul id="rig">
-                        {data.map(function (datum) {
-                          return (
-                              <span >
-                                  <a href={datum.link}>{datum.title}</a>
-                                  <li>
-                                    <a className="rig-cell" href={datum.link}>
-                                      <figure>
-                                        <img className="rig-img" style={{width:"100%", height:"100%"}} src={datum.img}/>
-                                        <figcaption style={{color:"#F8F8FF"}}>{datum.title}</figcaption>
-                                      </figure>
-                                      <span className="rig-overlay"></span>
-                                      <span className="rig-text">{datum.about}</span>
-                                    </a>
-                                  </li>
-                                </span>
-                          )
-                        })}
-                      </ul>
-                    </div>;
-
-    var pubDiv = <div>
-                  <div className="headerDiv"><h3> Publications </h3></div>
+    if (users.length <= 0) {
+      userDiv = <div className='noResults'><h3>Users</h3><br></br> {noResults}</div>;
+    } else {
+      userDiv = <div>
+                  <div className="headerDiv"><h3> Users </h3></div>
                     <ul id="rig">
-                      {publications.map(function (pub) {
+                      {users.map(function (user) {
                         return (
                             <span>
-                                <a href={pub.link}></a>
-                                <li>
-                                  <a className="rig-cell" href={pub.link}>
-                                    <figure>
-                                      <img className="rig-img" style={{width:"100%", height:"100%"}} src={pub.img}/>
-                                      <figcaption style={{color:"#F8F8FF"}}>{pub.title}</figcaption>
-                                    </figure>
-                                    <span className="rig-overlay"></span>
-                                    <span className="rig-text">Go to Publication</span>
-                                  </a>
-                                </li>
+                              <a href={user.link}></a>
+                              <li>
+                                <a className="rig-cell" href={user.link}>
+                                  <figure>
+                                    <img className="rig-img" style={{width:"100%", height:"100%"}} src={user.img}/>
+                                    <figcaption style={{color:"#F8F8FF"}}>{user.fullname}</figcaption>
+                                  </figure>
+                                  <span className="rig-overlay"></span>
+                                  <span className="rig-text">{user.about}</span>
+                                </a>
+                              </li>
                             </span>
                         )
                       })}
                     </ul>
-                  </div>;
-
-    var orgDiv =  <div>
-                    <div className="headerDiv"><h3> Organizations </h3></div>
+                </div>;
+    }
+    if (models.length <= 0) {
+      modelDiv = <div className='noResults'><h3>Models</h3><br></br> {noResults}</div>;
+    } else {
+      modelDiv = <div>
+                      <div className="headerDiv"><h3> Models </h3></div>
+                        <ul id="rig">
+                          {models.map(function (model) {
+                            return (
+                                <span >
+                                    <a href={model.link}></a>
+                                    <li>
+                                      <a className="rig-cell" href={model.link}>
+                                        <figure>
+                                          <img className="rig-img" style={{width:"100%", height:"100%"}} src={model.img}/>
+                                          <figcaption style={{color:"#F8F8FF"}}>{model.title}</figcaption>
+                                        </figure>
+                                        <span className="rig-overlay"></span>
+                                        <span className="rig-text">{model.about}</span>
+                                      </a>
+                                    </li>
+                                </span>
+                            )
+                          })}
+                        </ul>
+                      </div>;
+    }
+    if (data.length <= 0) {
+      dataDiv = <div className='noResults'><h3>Data</h3><br></br> {noResults}</div>;
+    } else {
+      dataDiv =  <div>
+                      <div className="headerDiv"><h3> Data </h3></div>
+                        <ul id="rig">
+                          {data.map(function (datum) {
+                            return (
+                                <span >
+                                    <a href={datum.link}>{datum.title}</a>
+                                    <li>
+                                      <a className="rig-cell" href={datum.link}>
+                                        <figure>
+                                          <img className="rig-img" style={{width:"100%", height:"100%"}} src={datum.img}/>
+                                          <figcaption style={{color:"#F8F8FF"}}>{datum.title}</figcaption>
+                                        </figure>
+                                        <span className="rig-overlay"></span>
+                                        <span className="rig-text">{datum.about}</span>
+                                      </a>
+                                    </li>
+                                  </span>
+                            )
+                          })}
+                        </ul>
+                      </div>;
+    }
+    if (publications.length <= 0) {
+      pubDiv = <div className='noResults'><h3>Publications</h3><br></br> {noResults}</div>;
+    } else {
+      pubDiv = <div>
+                    <div className="headerDiv"><h3> Publications </h3></div>
                       <ul id="rig">
-                        {organizations.map(function (org) {
+                        {publications.map(function (pub) {
                           return (
-                              <span >
-                                  <a href={org.link}></a>
+                              <span>
+                                  <a href={pub.link}></a>
                                   <li>
-                                    <a className="rig-cell" href={org.link}>
+                                    <a className="rig-cell" href={pub.link}>
                                       <figure>
-                                        <img className="rig-img" style={{width:"100%", height:"100%"}} src={org.img}/>
-                                        <figcaption style={{color:"#F8F8FF"}}>{org.title}</figcaption>
+                                        <img className="rig-img" style={{width:"100%", height:"100%"}} src={pub.img}/>
+                                        <figcaption style={{color:"#F8F8FF"}}>{pub.title}</figcaption>
                                       </figure>
                                       <span className="rig-overlay"></span>
-                                      <span className="rig-text">Go to Organization</span>
+                                      <span className="rig-text">Go to Publication</span>
                                     </a>
                                   </li>
-                                </span>
+                              </span>
                           )
                         })}
                       </ul>
-                  </div>;
+                    </div>;
+    }
+    if (organizations.length <= 0) {
+      orgDiv = <div className='noResults'><h3>Organizations</h3><br></br> {noResults}</div>;
+    } else {
+      orgDiv =  <div>
+                  <div className="headerDiv"><h3> Organizations </h3></div>
+                    <ul id="rig">
+                      {organizations.map(function (org) {
+                        return (
+                            <span >
+                                <a href={org.link}></a>
+                                <li>
+                                  <a className="rig-cell" href={org.link}>
+                                    <figure>
+                                      <img className="rig-img" style={{width:"100%", height:"100%"}} src={org.img}/>
+                                      <figcaption style={{color:"#F8F8FF"}}>{org.title}</figcaption>
+                                    </figure>
+                                    <span className="rig-overlay"></span>
+                                    <span className="rig-text">Go to Organization</span>
+                                  </a>
+                                </li>
+                              </span>
+                        )
+                      })}
+                    </ul>
+                </div>;
+    }
 
     return (
         <div className="mainSearchDiv">
