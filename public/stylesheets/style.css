@@ -6551,7 +6551,7 @@ hr.style15 {
     }
 }
 
-.notification-counter {   
+.request-notification-counter,.general-notification-counter {
     position: absolute;
     top: 7px;
     left: 14px;

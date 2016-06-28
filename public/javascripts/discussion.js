@@ -252,7 +252,7 @@ var CommentForm = React.createClass({
             return;
         }
         $.ajax({
-            url: '/organization/'+orgId+'/discussions/'+discId,
+            url: '/organization/'+orgName+'/discussions/'+discId,
             method:'post',
             data: {content: text},
             success: function(data) {
