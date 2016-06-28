@@ -261,7 +261,7 @@ var Container = React.createClass({
   preventDefault: function(link, event) {
     event.preventDefault();
     event.stopPropagation();
-    window.location.href = link;
+    // window.location.href = link;
   },
   truncate: function(str) {
     if (str.length >= 25) {
@@ -284,13 +284,13 @@ var Container = React.createClass({
         return (
           <div>
             <div className="acImage">
-              <a href={usr.link} onClick={that.preventDefault.bind(usr.link)} style={{ cursor: 'pointer' }}>
+              <a href={usr.link} onClick={that.preventDefault} style={{ cursor: 'pointer' }}>
                 <img className='search-img' src={usr.imgsrc}/>
               </a>
             </div>
 
             <div>
-              <a href={usr.link} onClick={that.preventDefault.bind(usr.link)} className='acText'>
+              <a href={usr.link} onClick={that.preventDefault} className='acText'>
                 {that.truncate(usr.label)}
               </a>
               <ConnectButton username={usr.username} objectId={usr.objectId}/>
