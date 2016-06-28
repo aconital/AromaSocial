@@ -1052,6 +1052,7 @@ var Projects = React.createClass({
                 </div>
             );
         });
+        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1069,6 +1070,7 @@ var Projects = React.createClass({
                     </table>
                 </div>
                 {itemsList}
+                {noRecordsMessage}
             </div>
         )
     }
@@ -1137,10 +1139,12 @@ var Publications = React.createClass({
             </div>
             );
         });
+        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
         return (
             <div>
                 <ResourceForm publication={true} />
                 {itemsList}
+                {this.state.message}
             </div>
         )
     }
@@ -1193,9 +1197,6 @@ var Models = React.createClass({
             success: function(data) {
                 console.log(data);
                 this.setState({data: data});
-                if (data.length < 1) {
-                    console.log('nothing');
-                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Models!");
@@ -1240,10 +1241,13 @@ var Models = React.createClass({
             </div>
             );
         });
+
+        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
         return (
             <div>
                 <ResourceForm fromModelTab={true} />
                 {itemsList}
+                {noRecordsMessage}
             </div>
         )
     }
@@ -1324,10 +1328,12 @@ var Data = React.createClass({
             </div>
             );
         });
+        var noRecordsMessage = this.state.data.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet! Add some?</div>);
         return (
             <div>
                 <ResourceForm fromModelTab={false} />
                 {itemsList}
+                {noRecordsMessage}
             </div>
         )
     }
