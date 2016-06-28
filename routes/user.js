@@ -38,11 +38,18 @@ module.exports=function(app,Parse,io) {
     });
     app.post('/allusers', function(req, res, next) {
         var str = req.body.substr;
+        var lcStr = str.toLowerCase();
 
-        var q = new Parse.Query("User");
-        q.limit(1000);
-        q.contains("fullname", str);
-        q.find({
+        var q0 = new Parse.Query("User");
+        q0.limit(1000);
+        q0.contains("fullname", str);
+
+        var q1 = new Parse.Query("User");
+        q1.limit(1000);
+        q1.contains("search", lcStr);
+
+        var mainq = Parse.Query.or(q0, q1);
+        mainq.find({
             success: function(items) {
                 console.log("ALL USERS: ")
                 console.log(items)

@@ -15,7 +15,7 @@ var include_user= require('../utils/helpers').include_user;
 module.exports = function(app, Parse, io) {
 	app.get('/search', include_user, function(req, res, next) {
 		console.log(req.query.searchQuery);
-		if (req.isAuthenticated()) {
+		if (req.isAuthenticated() || true) {
 			var searchString = req.query.searchQuery;
 			res.render('search', {searchString: searchString});
 		} else {

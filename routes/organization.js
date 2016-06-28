@@ -19,10 +19,18 @@ module.exports=function(app,Parse,io) {
     app.post('/allorganizations', function(req, res, next) {
         var currentUser = req.user;
         var str = req.body.substr;
-        console.log("string to match in org: ", str);
-        var query = new Parse.Query('Organization');
-        query.limit(5);
-        query.contains("displayName", str);
+        var lcStr = str.toLowerCase();
+
+        var query0 = new Parse.Query('Organization');
+        query0.limit(5);
+        query0.contains("displayName", str);
+
+        var query1 = new Parse.Query('Organization');
+        query1.limit(5);
+        query1.contains("search", lcStr);
+
+        var query = Parse.Query.or(query0, query1);
+
         query.find({
             success: function(items) {
                 var results = [];

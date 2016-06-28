@@ -258,9 +258,10 @@ var Container = React.createClass({
     //window.location.href = option.link;
     //return <strong style={{ color: option.color }}>{option.label}</strong>;
   },
-  preventDefault: function(event) {
+  preventDefault: function(link, event) {
     event.preventDefault();
     event.stopPropagation();
+    window.location.href = link;
   },
   truncate: function(str) {
     if (str.length >= 25) {
@@ -283,13 +284,13 @@ var Container = React.createClass({
         return (
           <div>
             <div className="acImage">
-              <a href={usr.link} onClick={that.preventDefault} style={{ cursor: 'pointer' }}>
+              <a href={usr.link} onClick={that.preventDefault.bind(usr.link)} style={{ cursor: 'pointer' }}>
                 <img className='search-img' src={usr.imgsrc}/>
               </a>
             </div>
 
             <div>
-              <a href={usr.link} onClick={that.preventDefault} className='acText'>
+              <a href={usr.link} onClick={that.preventDefault.bind(usr.link)} className='acText'>
                 {that.truncate(usr.label)}
               </a>
               <ConnectButton username={usr.username} objectId={usr.objectId}/>

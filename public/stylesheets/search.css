@@ -1,4 +1,8 @@
-
+.filter {
+    /*float: left;*/
+    /*display: inline;*/
+    /*background: transparent;*/
+}
 .filter ul {
   -webkit-font-smoothing:antialiased;
   text-shadow:0 1px 0 #FFF;
@@ -16,9 +20,10 @@
     min-width: 20%;
 }
 .filter a {
-    background: black;
-    color: white;
+    background: transparent;
+    color: black;
     display: block;
+    float: left;
     /*border-radius: 3px;*/
     font: bold 16px/50px sans-serif;
     padding: 0 25px;
@@ -37,8 +42,8 @@
   content:'\25bc'
 }
 .filter li:hover a {
-    background: white;
-    color: black;
+    background: black;
+    color: white;
 }
 .filter li ul {
     float: left;
@@ -64,7 +69,8 @@
     width: 100%;
 }
 .filter li ul a:hover {
-    background: #bbb;
+    background: white;
+    color: black;
 }
 
 /* Clearfix */
@@ -104,6 +110,7 @@
   border-right: 2px solid black;
   border-top: 2px solid black;
   border-bottom: 5px solid black;
+  clear: left;
 }
 
 #rig {
