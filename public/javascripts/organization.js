@@ -342,98 +342,6 @@ var OrganizationMenu = React.createClass ({
     }
 });
 
-var NewsAndEvents = React.createClass({
-    getInitialState: function() {
-        return { showModal: false };
-    },
-    close: function() {
-        this.setState({ showModal: false });
-    },
-    open: function() {
-        this.setState({ showModal: true });
-    },
-    render: function() {
-        return (
-            <div>
-                <div className = "createorg_panel">
-                    <button className="btn btn-panel createorg_btn" onClick={this.open}><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
-                </div>
-                <div className = "panel search-panel your-groups">
-                    <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
-                        <div className="list-group">
-                            <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
-                            <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
-                        </div>
-                </div>
-
-                <Modal show={this.state.showModal} onHide={this.close}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Create New Event</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <h4>Text in a modal</h4>
-                        <CreateEvent />
-                    </Modal.Body>
-                </Modal>
-            </div>
-        )
-    }
-});
-
-var CreateEvent = React.createClass({
-    getInitialState: function() {
-        return { disabled: false, error: '' };
-    },
-    handleChange: function(e) {
-        this.setState({topic: e.target.value});
-    },
-    handleSubmit: function(e) {
-        e.preventDefault();
-        var newEvent = {title: this.state.title,
-                        date: this.state.date,
-                        time: this.state.time,
-                        description: this.state.description};
-        this.setState({disabled: true, error: ''});
-
-        $.ajax({
-            url: '/organization/'+objectId+'/events/',
-            method:'post',
-            data: newEvent,
-            success: function(data) {
-                console.log('done', data);
-                location.reload();
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error('/events/', status, err.toString());
-                this.setState({disabled: false, error: 'Error: ' + err.toString()});
-            }.bind(this)
-        });
-
-    },
-    render: function(){
-        return (
-            <div className="row">
-                <div className="col-xs-12">
-                    <form className="form" onSubmit={this.handleSubmit}>
-                        <Input type="text" label="Event Title" name="title" required onChange={this.handleChange} value={this.state.title} />
-
-                            <div className="datetime-row">
-                                <Input type="date" label="Date" name="date" required onChange={this.handleChange} value={this.state.date} />
-                                <Input type="time" label="Time" name="time" onChange={this.handleChange} value={this.state.time} />
-                            </div>
-                        <Input type="textarea" label="Description" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
-
-                        <Modal.Footer>
-                            <Input className="btn btn-default pull-right submit" type="submit" disabled={this.state.disabled} value="Submit" />
-                            <div className="form-feedback">{this.state.error}</div>
-                        </Modal.Footer>
-                    </form>
-                </div>
-            </div>
-        );
-    }
-});
-
 var Home = React.createClass({
     getInitialState: function() {
         return {loading:true,showModal:false,
@@ -491,7 +399,8 @@ var Home = React.createClass({
             type: 'GET',
             url: "/organization/"+objectId+"/upcomingEvents",
             success: function(data) {
-                this.setState({ upcomingEvents: data });
+                if(!data.err)
+                    this.setState({ upcomingEvents: data });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve events!", status, err);
@@ -791,9 +700,145 @@ var Discussion = React.createClass ({
             </div>
         );
     }
-
-
 });
+
+
+var NewsAndEvents = React.createClass({
+    getInitialState: function() {
+        return { showModal: false };
+    },
+    close: function() {
+        this.setState({ showModal: false });
+    },
+    open: function() {
+        this.setState({ showModal: true });
+    },
+    render: function() {
+        if (this.props.upcomingEvents.length > 0) {
+            var events = this.props.upcomingEvents.map(function(ev, i) {
+                return ( <EventInfo event={ev} key={i} /> );
+            });
+        } else {
+            var events = (<div className="events-panel"><p>This network has no upcoming events.</p></div>);
+        }
+
+        return (
+            <div>
+                <div className = "createorg_panel">
+                    <button className="btn btn-panel createorg_btn" onClick={this.open}><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
+                </div>
+                <div className = "panel search-panel your-groups">
+                    <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
+                        <div className="list-group">
+                            {/*<li className="list-group-item groups-list">&#x25cf; BBQ</li>
+                            <li className="list-group-item groups-list">&#x25cf; All you can eat sushi</li>*/}
+                            {events}
+                        </div>
+                </div>
+
+                <Modal show={this.state.showModal} onHide={this.close}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create New Event</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <h4>Text in a modal</h4>
+                        <CreateEvent />
+                    </Modal.Body>
+                </Modal>
+            </div>
+        )
+    }
+});
+
+var EventInfo = React.createClass({
+    getInitialState: function() {
+        return { showModal: false };
+    },
+    close: function() {
+        this.setState({ showModal: false });
+    },
+    open: function() {
+        this.setState({ showModal: true });
+    },
+    render: function() {
+        return (
+            <li  className="list-group-item groups-list events-panel">
+                <span onClick={this.open}>&#x25cf; {this.props.event.title}</span>
+
+                <Modal show={this.state.showModal} onHide={this.close}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Event Details: <strong>{this.props.event.title}</strong></Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p><strong>Date:</strong> {this.props.event.date.toString().slice(0, 10)}
+                            {(this.props.event.time) ? (' at ' + this.props.event.time) : ''}
+                        </p>
+                        <p><strong>Location:</strong> {this.props.event.location}</p>
+                        <p>{this.props.event.description}</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this.close}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
+            </li>
+        )
+    }
+});
+
+var CreateEvent = React.createClass({
+    getInitialState: function() {
+        return { disabled: false, error: '' };
+    },
+    handleChange: function(e) {
+        this.setState({[e.target.name]:e.target.value});
+    },
+    handleSubmit: function(e) {
+        e.preventDefault();
+        var newEvent = {title: this.state.title, description: this.state.description,
+                        date: this.state.date, time: this.state.time,
+                        location: this.state.location};
+        this.setState({disabled: true, error: ''});
+
+        $.ajax({
+            url: '/organization/'+objectId+'/events/',
+            method:'post',
+            data: newEvent,
+            success: function(data) {
+                location.reload();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/events/', status, err.toString());
+                this.setState({disabled: false, error: 'Error: ' + err.toString() + 'Please submit a bug report.'});
+            }.bind(this)
+        });
+
+    },
+    render: function(){
+        return (
+            <div className="row">
+                <div className="col-xs-12">
+                    <form className="form" onSubmit={this.handleSubmit}>
+                        <Input type="text" label="Event Title" name="title" required onChange={this.handleChange} value={this.state.title} />
+
+                            <div className="datetime-row">
+                                <Input type="date" label="Date" name="date" required onChange={this.handleChange} value={this.state.date} />
+                                <Input type="time" label="Time" name="time" onChange={this.handleChange} value={this.state.time} />
+                            </div>
+                        <Input type="text" label="Location" name="location" required onChange={this.handleChange} value={this.state.location} />
+                        <Input type="textarea" label="Description" name="description" required onChange={this.handleChange} value={this.state.description} rows="5"/>
+
+                        <Modal.Footer>
+                            <Input className="btn btn-default pull-right submit" type="submit" disabled={this.state.disabled} value="Submit" />
+                            <div className="form-feedback">{this.state.error}</div>
+                        </Modal.Footer>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+});
+
+
 var About = React.createClass({
     getInitialState: function(){
         return {about: about,

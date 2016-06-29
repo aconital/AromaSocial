@@ -354,7 +354,8 @@
     padding: 15px 10px 15px 10px;
 }
 
-.datetime-row {
+.events-panel {
+    color: #ffffff;
 }
 
 .datetime-row > div {

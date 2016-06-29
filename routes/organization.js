@@ -1395,6 +1395,7 @@ module.exports=function(app,Parse,io) {
         event.set("title", req.body.title);
         event.set("date", new Date(req.body.date));
         event.set("time", req.body.time);
+        event.set("location", req.body.location);
         event.set("description", req.body.description);
         event.set("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
 
@@ -1404,29 +1405,30 @@ module.exports=function(app,Parse,io) {
                 res.status(200).json({status:"OK", query: obj});
             },
             error: function (error) {
-                console.log('Failed to create new object, with error: ' + error);
+                console.log('Failed to create new object, with error: ' + JSON.stringify(error));
                 res.status(500).json({error: error});
             }
         });
     });
 
     app.get("/organization/:objectId/upcomingEvents",function(req,res,next){
+        console.log(req.params);
         var events = [],
-            currentDay = moment().sod(); // start of current day
-
+            currentDay = moment().startOf('day').toDate(); // start of current day
+        console.log(events, currentDay);
         var query = new Parse.Query("Event");
-        query.equalTo("orgId", req.params.objectId);
+        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
         query.greaterThanOrEqualTo('date', currentDay); // only want to get upcoming events
 
         query.find().then(function(results) {
             console.log("retrieved events:", results.length);
-            // Do something with the returned Parse.Object values
             for (var i = 0; i < results.length; i++) {
                 var object = results[i];
                 events.push({
                     title: object.attributes.title,
                     date: object.attributes.date,
                     time: object.attributes.time,
+                    location: object.attributes.location,
                     description: object.attributes.description,
                 });
             }
@@ -1435,8 +1437,8 @@ module.exports=function(app,Parse,io) {
             console.log('sending shit over');
             res.json(events);
         }, function(error) {
-            console.log('Failed to retrieve events, with error: ' + error.message);
-            res.status(500).json({status: "Event retrieval failed. " + error});
+            console.log('Failed to retrieve events, with error: ' + error);
+            res.status(500).json({status: "Event retrieval failed. " + error.message});
         });
     });
 
