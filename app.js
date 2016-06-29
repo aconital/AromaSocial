@@ -74,9 +74,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
-
 require('./routes/routes')(app,Parse,io);
 require('./routes/organization')(app,Parse,io);
 require('./routes/user')(app,Parse,io);
@@ -86,7 +83,7 @@ require('./routes/publication')(app,Parse,io);
 require('./routes/data')(app,Parse,io);
 require('./routes/model')(app,Parse,io);
 require('./routes/newsfeed')(app,Parse,io);
-// require('./routes/search')(app,Parse,io);
+require('./routes/search')(app,Parse,io);
 require('./routes/group')(app,Parse,io);
 require('./routes/report')(app,Parse,io);
 require('./routes/discussion')(app,Parse,io);

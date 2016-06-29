@@ -2,7 +2,7 @@
  * Created by hroshandel on 2016-01-19.
  */
 
-var Notification = React.createClass({
+var RequestNotification = React.createClass({
     getInitialState: function() {
         return { notication_list: []};
     },
@@ -57,7 +57,6 @@ var Notification = React.createClass({
         $.ajax({
             url: "/org2orgrequest",
             success: function(data) {
-                console.log(data);
                 var notifications = this.state.notication_list.slice();
                 for (var i=0;i<data.length;i++)
                     notifications.push(data[i]);
@@ -73,26 +72,14 @@ var Notification = React.createClass({
         this.loadFriendRequests();
         this.loadOrgRequests();
         this.loadOrg2OrgRequests();
-        socket.on('friendrequest', this._friendrequest);
-        socket.on('orgrequest', this._orgrequest);
-        socket.on('org2orgrequest', this._org2orgrequest);
+        socket.on('friendrequest', this._updateNotificationList);
+        socket.on('orgrequest', this._updateNotificationList);
+        socket.on('org2orgrequest', this._updateNotificationList);
     },
-    _orgrequest(data){
+    _updateNotificationList(data){
         var notifications = this.state.notication_list.slice();
         notifications.push(data.data);
         this.setState({notication_list:notifications});
-
-    },
-    _friendrequest(data){
-        var notifications = this.state.notication_list.slice();
-        notifications.push(data.data);
-        this.setState({notication_list:notifications});
-    },
-    _org2orgrequest(data){
-        var notifications = this.state.notication_list.slice();
-        notifications.push(data.data);
-        this.setState({notication_list:notifications});
-
     },
     pending_action:function(notification,action)
     {
@@ -149,14 +136,14 @@ var Notification = React.createClass({
     },
     render: function() {
         if(this.state.notication_list.length <=0) {
-            $('.notification-counter').hide();
+            $('.request-notification-counter').hide();
             return(
                 <li><a href="#" className="align-center">You have no connection requests at this moment. &nbsp;&nbsp;</a></li>
             );
         }
         else {
-            $('.notification-counter').show();
-            $(".notification-counter").text(this.state.notication_list.length);
+            $('.request-notification-counter').show();
+            $(".request-notification-counter").text(this.state.notication_list.length);
             return (
                 <li>
                     {this.state.notication_list.map(notification =>
@@ -193,4 +180,4 @@ var Notification = React.createClass({
 });
 
 
-ReactDOM.render(<Notification />, document.getElementById('notification'));
+ReactDOM.render(<RequestNotification />, document.getElementById('request-notification'));

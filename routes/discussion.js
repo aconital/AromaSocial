@@ -192,8 +192,10 @@ module.exports=function(app,Parse,io) {
                                 createdAt:discPost.get("createdAt"),
                                 content: {msg:content}
                             };
-
+                            //update the view
                             io.to(req.user.id).emit('DiscussionPostReceived',{discId:discId,post:finalPost});
+                            //notify everyone
+                            notifyParticipants(discId,req.user,content);
                             res.json({msg:"success"});
                         }
                     },
@@ -301,4 +303,61 @@ module.exports=function(app,Parse,io) {
 
     });
 
+
+    function notifyParticipants(discId,myself,post)
+    {
+        var Discussion = Parse.Object.extend("Discussion");
+        var query = new Parse.Query(Discussion);
+        query.equalTo("objectId",discId);
+        query.include("posts");
+        query.include("orgId");
+        query.include("posts.from");
+        query.first({
+            success: function (result) {
+
+                if(result!=null){
+                    var participants=[];
+                    var jsonPosts= result.get("posts");
+                    for(var p in jsonPosts)
+                    {
+                        var participantId= jsonPosts[p].get("from").id;
+
+
+                        if(myself.id != participantId &&  !_.contains(participantId, participantId))
+                        {
+                            participants.push(participantId);
+                            var notification = {
+                                id: "disc_"+discId+"_to_"+participantId,
+                                type:"discussion",
+                                from: {
+                                    userId:myself.id,
+                                    username: myself.username,
+                                    name:myself.fullname,
+                                    userImgUrl: myself.imgUrl,
+                                },
+                                msg: 'replied "'+post.substring(0,30)+'"',
+                                extra: {
+                                    id: discId,
+                                    title:result.get("topic"),
+                                    content: null,
+                                    imgUrl: null,
+                                    url: "/organization/"+result.get("orgId").get("name")+"/discussions/"+discId
+                                }
+                            };
+
+                            io.to(participantId).emit('discussionPost',{data:notification});
+                        }
+
+                    }
+
+
+
+                }
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
 }

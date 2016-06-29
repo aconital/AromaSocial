@@ -1,42 +1,346 @@
-
-//var isNode = typeof module !== 'undefined' && module.exports
-//var React = isNode ? require('react'): React //: window.React
-//  , ReactDOM = isNode ? require('react') : window.ReactDOM
-//var React = require('react');
-//var Router = require('react-router').Router
-//var Route = require('react-router').Route
-//var Link = require('react-router').Link
-var isNode = typeof require !== 'undefined'
-var React = typeof require === 'undefined'
-             ? window.React
-             : require('react')
-
 var SearchFeed = React.createClass({
   getInitialState: function() {
     return {
-      data: []
+      firstTime: true,
+      data: [],
+      userData: [],
+      modData: [],
+      pubData: [],
+      orgData: [],
+      dataData: [],
+      showUsers: true,
+      showModels: false,
+      showData: false,
+      showPublications: false,
+      showOrganizations: false
     };
   },
+  loadUserFeed: function() {
+    var that = this;
+    var str = searchString;
+    var r = [];
+    $.when(
+      $.ajax({
+          url: '/allusers',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("USER SUCCESS");
+            $.map(data, function(item){
+              var dlink = "/profile/" + item.username;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/user.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "user", fullname: item.fullname, img: pic, link: dlink, about: item.about});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        })
+      ).then(
+      this.setState({userData:r})
+    );
+  },
+  loadModelFeed: function() {
+    var that = this;
+    var str = searchString;
+    var r = [];
+    $.when(
+      $.ajax({
+        url: '/allmodels',
+        dataType: 'json',
+        type: 'POST',
+        data: {substr: str},
+        cache: false,
+        success: function(data) {
+          console.log("MODEL SUCCESS");
+          $.map(data, function(item){
+            var dlink = "/model/" + item.objectId;
+            var pic;
+            if (item.picture == undefined) {
+              pic = "/images/model.png";
+            } else {
+              pic = item.picture.url;
+            }
+            r.push({type: "model", fullname: item.fullname, img: pic, link: dlink, about: item.abstract});
+          });
+        },
+        error: function(xhr) {
+          console.log(xhr.status);
+        }
+      })
+      ).then(   
+      this.setState({modData:r})
+    );
+  },
+  loadDataFeed: function() {
+    var that = this;
+    var str = searchString;
+    var r = [];
+    $.when(
+      $.ajax({
+          url: '/alldata',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("DATA SUCCESS DATA");
+            $.map(data, function(item){
+              var dlink = "/data/" + item.objectId;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/data.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "data", fullname: item.fullname, img: pic, link: dlink, about: item.description});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        })
+      ).then( 
+      this.setState({dataData:r})
+    );
+  },
+  loadPubFeed: function() {
+    var that = this;
+    var str = searchString;
+    var r = [];
+    $.when(
+      $.ajax({
+        url: '/allpublications',
+        dataType: 'json',
+        type: 'POST',
+        data: {substr: str},
+        cache: false,
+        success: function(data) {
+          console.log("PUBS SUCCESS");
+          $.map(data, function(item){
+            var type = item.type;
+            var dlink = "/publication/" + type + "/" + item.objectId;
+            r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink, about: item.abstract});
+          });
+        },
+        error: function(xhr) {
+          console.log(xhr.status);
+        }
+      })
+      ).then(
+      this.setState({pubData: r})
+    );
+  },
+  loadOrgFeed: function() {
+    var that = this;
+    var str = searchString;
+    var r = [];
+    $.when(
+      $.ajax({
+        url: '/allorganizations',
+        dataType: 'json',
+        type: 'POST',
+        data: {substr: str},
+        cache: false,
+        success: function(data) {
+          console.log("ORGS SUCCESS");
+          $.map(data, function(item){
+            var dlink = "/organization/" + item.name;
+            var pic;
+            if (item.picture == undefined) {
+              pic = "/images/user.png";
+            } else {
+              pic = item.picture.url;
+            }
+            r.push({type: "organization", title: item.displayName, img: pic, link: dlink, about: item.about});
+          });
+        },
+        error: function(xhr) {
+          console.log(xhr.status);
+        }
+      })
+    ).then(this.setState({orgData: r}));
+  },
   loadSearchFeed: function() {
-    $.ajax({
-      url: '/searchfeeddata',
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        console.log(data);
-        this.setState({data: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
+    var that = this;
+    var str = searchString;
+    console.log("Search string: ", str);
+    var r = [];
+    $.when(
+        $.ajax({
+          url: '/allusers',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("USER SUCCESS");
+            $.map(data, function(item){
+              var dlink = "/profile/" + item.username;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/user.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "user", fullname: item.fullname, img: pic, link: dlink, about: item.about});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
+          url: '/allmodels',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("MODEL SUCCESS");
+            $.map(data, function(item){
+              var dlink = "/model/" + item.objectId;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/model.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "model", fullname: item.fullname, img: pic, link: dlink, about: item.abstract});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
+          url: '/alldata',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("DATA SUCCESS");
+            $.map(data, function(item){
+              var dlink = "/data/" + item.objectId;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/data.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "data", fullname: item.fullname, img: pic, link: dlink, about: item.description});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
+          url: '/allpublications',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("PUB SUCCESS");
+            $.map(data, function(item){
+              var type = item.type;
+              var dlink = "/publication/" + type + "/" + item.objectId;
+              r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink, about: item.abstract});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
+          url: '/allorganizations',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            console.log("ORG SUCCESS")
+            $.map(data, function(item){
+              var dlink = "/organization/" + item.name;
+              var pic;
+              if (item.picture == undefined) {
+                pic = "/images/user.png";
+              } else {
+                pic = item.picture.url;
+              }
+              r.push({type: "organization", title: item.displayName, img: pic, link: dlink, about: item.about});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        })
+    ).then(function() {
+          that.setState({data: r});
     });
   },
   componentDidMount: function() {
-    console.log("Browser rendering working!");
-    this.loadSearchFeed();
+    console.log("TIME STATUS =========> ", this.state.firstTime);
+    if (this.state.firstTime === true) {
+      this.loadSearchFeed();
+    }
+    this.setState({firstTime:false});
+  },
+  setUserState: function() {
+    this.setState({
+      showUsers: true,
+      showModels: false,
+      showData: false,
+      showPublications: false,
+      showOrganizations: false
+    });
+  },
+  setModelState: function() {
+    this.setState({
+      showUsers: false,
+      showModels: true,
+      showData: false,
+      showPublications: false,
+      showOrganizations: false
+    });
+  },
+  setDataState: function() {
+    this.setState({
+      showUsers: false,
+      showModels: false,
+      showData: true,
+      showPublications: false,
+      showOrganizations: false
+    });
+  },
+  setPubState: function() {
+    this.setState({
+      showUsers: false,
+      showModels: false,
+      showData: false,
+      showPublications: true,
+      showOrganizations: false
+    });
+  },
+  setOrgState: function() {
+    this.setState({
+      showUsers: false,
+      showModels: false,
+      showData: false,
+      showPublications: false,
+      showOrganizations: true
+    });
   },
   render: function() {
-    console.log("IN RENDERING")
     var users = [];
     var models = [];
     var data = [];
@@ -50,318 +354,209 @@ var SearchFeed = React.createClass({
     var orgsFound = false;
 
     this.state.data.map(function(item){
-      console.log(item);
-      for (var key in item) {
-          var link = "/";
-          var obj = item[key];
-          console.log("OBJ IS ====>>>");
-          console.log(obj["about"]);
-          switch (obj["type"]) {
-          case "user":
-            usersFound = true;
-            link = "/profile/" + key;
-            users.push({
-              "obj": obj,
-              "link": link,
-              "key" : key
-            });
-            break;
-          case "model":
-            modelsFound = true;
-            link = "/model/"  + obj["id"];
-            models.push({
-              "obj": obj,
-              "link": link,
-              "key" : key
-            });
-            break;
-          case "data":
-            dataFound = true;
-            link = "/data/" + obj["id"];
-            data.push({
-              "obj": obj,
-              "link": link,
-              "key": key
-            });
-            break;
-          case "publication":
-            pubsFound = true;
-            link = "/publication/" + obj["id"];
-            publications.push({
-              "obj": obj,
-              "link": link,
-              "key": key
-            });
-            break;
-          case "organization":
-            orgsFound = true;
-            link = "/organization/" + obj["id"];
-            organizations.push({
-              "obj": obj,
-              "link": link,
-              "key": key
-            });
-            break;
-          case "default":
-            link = "/";
-            break;
-        };
-    }});
+      switch(item.type) {
+        case "user":
+          usersFound = true;
+          users.push(item);
+          break;
+        case "model":
+          modelsFound = true;
+          models.push(item);
+          break;
+        case "data":
+          dataFound = true;
+          data.push(item);
+          break;
+        case "publication":
+          pubsFound = true;
+          publications.push(item);
+          break;
+        case "organization":
+          orgsFound = true;
+          organizations.push(item);
+          break;
+        case "default":
+          break;
+      }
+    });
+
+    var noResults = <div>
+                    <a href="http://www.clker.com/cliparts/2/P/z/V/R/S/monkey-face-th.png"><img src='http://www.clker.com/cliparts/2/P/z/V/R/S/monkey-face-th.png'/></a>
+                     <b> Your search <i>'{searchString}'</i> did not return any results </b>
+                     <p> Here are a few tips to help you get going: </p>
+                     <ul> 
+                      <li> Double check your spelling. </li>
+                      <li> Try making your search broader. You can always narrow it down later.</li>
+                      <li> Search single words. Search what you are relatively sure of. For example: if you are sure of a person's last name, just give that a go. We'll get the first name for you. </li>
+                     </ul>
+                  </div>;
+
+    var userDiv;
+    var modelDiv;
+    var dataDiv;
+    var pubDiv;
+    var orgDiv;
+
+    if (users.length <= 0) {
+      userDiv = <div className='noResults'><h3>Users</h3><br></br> {noResults}</div>;
+    } else {
+      userDiv = <div>
+                  <div className="headerDiv"><h3> Users </h3></div>
+                    <ul id="rig">
+                      {users.map(function (user) {
+                        return (
+                            <span>
+                              <a href={user.link}></a>
+                              <li>
+                                <a className="rig-cell" href={user.link}>
+                                  <figure>
+                                    <img className="rig-img" style={{width:"100%", height:"100%"}} src={user.img}/>
+                                    <figcaption style={{color:"black"}}>{user.fullname}</figcaption>
+                                  </figure>
+                                  <span className="rig-overlay"></span>
+                                  <span className="rig-text">{user.about}</span>
+                                </a>
+                              </li>
+                            </span>
+                        )
+                      })}
+                    </ul>
+                </div>;
+    }
+    if (models.length <= 0) {
+      modelDiv = <div className='noResults'><h3>Models</h3><br></br> {noResults}</div>;
+    } else {
+      modelDiv = <div>
+                      <div className="headerDiv"><h3> Models </h3></div>
+                        <ul id="rig">
+                          {models.map(function (model) {
+                            return (
+                                <span >
+                                    <a href={model.link}></a>
+                                    <li>
+                                      <a className="rig-cell" href={model.link}>
+                                        <figure>
+                                          <img className="rig-img" style={{width:"100%", height:"100%"}} src={model.img}/>
+                                          <figcaption style={{color:"black"}}>{model.title}</figcaption>
+                                        </figure>
+                                        <span className="rig-overlay"></span>
+                                        <span className="rig-text">{model.about}</span>
+                                      </a>
+                                    </li>
+                                </span>
+                            )
+                          })}
+                        </ul>
+                      </div>;
+    }
+    if (data.length <= 0) {
+      dataDiv = <div className='noResults'><h3>Data</h3><br></br> {noResults}</div>;
+    } else {
+      dataDiv =  <div>
+                      <div className="headerDiv"><h3> Data </h3></div>
+                        <ul id="rig">
+                          {data.map(function (datum) {
+                            return (
+                                <span >
+                                    <a href={datum.link}>{datum.title}</a>
+                                    <li>
+                                      <a className="rig-cell" href={datum.link}>
+                                        <figure>
+                                          <img className="rig-img" style={{width:"100%", height:"100%"}} src={datum.img}/>
+                                          <figcaption style={{color:"black"}}>{datum.title}</figcaption>
+                                        </figure>
+                                        <span className="rig-overlay"></span>
+                                        <span className="rig-text">{datum.about}</span>
+                                      </a>
+                                    </li>
+                                  </span>
+                            )
+                          })}
+                        </ul>
+                      </div>;
+    }
+    if (publications.length <= 0) {
+      pubDiv = <div className='noResults'><h3>Publications</h3><br></br> {noResults}</div>;
+    } else {
+      pubDiv = <div>
+                    <div className="headerDiv"><h3> Publications </h3></div>
+                      <ul id="rig">
+                        {publications.map(function (pub) {
+                          return (
+                              <span>
+                                  <a href={pub.link}></a>
+                                  <li>
+                                    <a className="rig-cell" href={pub.link}>
+                                      <figure>
+                                        <img className="rig-img" style={{width:"100%", height:"100%"}} src={pub.img}/>
+                                        <figcaption style={{color:"black"}}>{pub.title}</figcaption>
+                                      </figure>
+                                      <span className="rig-overlay"></span>
+                                      <span className="rig-text">Go to Publication</span>
+                                    </a>
+                                  </li>
+                              </span>
+                          )
+                        })}
+                      </ul>
+                    </div>;
+    }
+    if (organizations.length <= 0) {
+      orgDiv = <div className='noResults'><h3>Organizations</h3><br></br> {noResults}</div>;
+    } else {
+      orgDiv =  <div>
+                  <div className="headerDiv"><h3> Organizations </h3></div>
+                    <ul id="rig">
+                      {organizations.map(function (org) {
+                        return (
+                            <span >
+                                <a href={org.link}></a>
+                                <li>
+                                  <a className="rig-cell" href={org.link}>
+                                    <figure>
+                                      <img className="rig-img" style={{width:"100%", height:"100%"}} src={org.img}/>
+                                      <figcaption style={{color:"black"}}>{org.title}</figcaption>
+                                    </figure>
+                                    <span className="rig-overlay"></span>
+                                    <span className="rig-text">Go to Organization</span>
+                                  </a>
+                                </li>
+                              </span>
+                        )
+                      })}
+                    </ul>
+                </div>;
+    }
 
     return (
-        React.createElement("div", {},
-
-          React.createElement(
-    "nav",
-    { className: "navbar navbar-default" },
-    React.createElement(
-        "div",
-        { className: "container-fluid", style: {"max-width":"1180px"}, style: {"padding-left":"30px"}, style: {margin:"auto"} },
-        React.createElement(
-            "div",
-            { className: "navbar-header" },
-            React.createElement(
-                "button",
-                { type: "button", "data-toggle": "collapse", "data-target": "#bs-example-navbar-collapse-1", "aria-expanded": "false", className: "navbar-toggle collapsed" },
-                React.createElement(
-                    "span",
-                    { className: "sr-only" },
-                    "Toggle Navigation"
-                ),
-                React.createElement("span", { className: "icon-bar" }),
-                React.createElement("span", { className: "icon-bar" }),
-                React.createElement("span", { className: "icon-bar" })
-            ),
-            React.createElement(
-                "a",
-                { href: "/newsfeed", className: "navbar-brand" },
-                React.createElement("img", { alt: "RT", src: "/images/beaker-invert.png", width: "30" })
-            )
-        ),
-        React.createElement(
-            "div",
-            { id: "bs-example-navbar-collapse-1", className: "collapse navbar-collapse" },
-            React.createElement(
-                "ul",
-                { className: "nav navbar-nav" },
-                React.createElement(
-                    "li",
-                    { className: "dropdown" },
-                    React.createElement(
-                        "a",
-                        { href: "#", className: "dropdown-toggle", "data-toggle": "dropdown", role: "button", "aria-haspopup": "true", "aria-expanded": "false" },
-                        React.createElement("span", { className: "glyphicon glyphicon-menu-hamburger", "aria-hidden": "true" }),
-                        " Menu ",
-                        React.createElement("span", { className: "caret" })
-                    ),
-                    React.createElement(
-                        "ul",
-                        { className: "dropdown-menu" },
-                        React.createElement(
-                            "li",
-                            null,
-                            React.createElement(
-                                "a",
-                                { href: "/create/organization" },
-                                "Create Organization"
-                            )
-                        ),
-                        React.createElement(
-                            "li",
-                            null,
-                            React.createElement(
-                                "a",
-                                { href: "/report" },
-                                "Report Problem"
-                            )
-                        )
-                    )
-                )
-            ),
-            React.createElement(
-                "ul",
-                { className: "nav navbar-nav navbar-right" },
-                React.createElement(
-                    "li",
-                    { className: "dropdown" },
-                    React.createElement(
-                        "a",
-                        { href: "#", className: "dropdown-toggle", "data-toggle": "dropdown", role: "button", "aria-haspopup": "true", "aria-expanded": "false" },
-                        React.createElement(
-                            "span",
-                            { className: "logout-button" },
-                            React.createElement("i", { className: "fa fa-user-plus" })
-                        ),
-                        React.createElement("span", { id: "notification-request" })
-                    ),
-                    React.createElement("ul", { id: "friendrequest", className: "dropdown-menu", "aria-labelledby": "dropdownMenuDivider" })
-                ),
-                React.createElement(
-                    "li",
-                    { className: "dropdown" },
-                    React.createElement(
-                        "a",
-                        { href: "/signout", role: "button", className: "logout-button" },
-                        React.createElement("span", { className: "glyphicon glyphicon-log-out body-link" })
-                    )
-                )
-            ),
-            React.createElement(
-                "form",
-                { role: "search", method: "post", action: "/searchpage", className: "navbar-form navbar-right" },
-                React.createElement(
-                    "div",
-                    { className: "form-group form-inline", style: {width:"100%"} },
-                    React.createElement(
-                        "div",
-                        { className: "input-group purple", style: {width:"100%"} },
-                        React.createElement("input", { id: "message", type: "text", name: "searchQuery", placeholder: "Search...", className: "form-control search-bar auto" }),
-                        React.createElement(
-                            "button",
-                            { type: "submit", className: "btn btn-primary btn-search searchButton", disabled: "disabled" },
-                            React.createElement("span", { "aria-hidden": "true", className: "glyphicon glyphicon-search" })
-                        )
-                    )
-                )
-            )
-        )
+        <div className="mainSearchDiv">
+            <div className="filter">
+              <ul className="cf">
+              <li><a className="dropdown" href="#">Filter Results</a>
+              <div><b>You searched <i>'{searchString}'</i></b></div>
+                <ul>
+                    <li><a href="#" onClick={this.setUserState}>Show Users</a></li>
+                    <li><a href="#" onClick={this.setModelState}>Show Models</a></li>
+                    <li><a href="#" onClick={this.setDataState}>Show Data</a></li>
+                    <li><a href="#" onClick={this.setPubState}>Show Publications</a></li>
+                    <li><a href="#" onClick={this.setOrgState}>Show Organizations</a></li>
+                </ul>
+              </li>
+              </ul>
+            </div>
+            {(this.state.showUsers) ? userDiv:null}
+            {(this.state.showModels) ? modelDiv:null}
+            {(this.state.showData) ? dataDiv:null}
+            {(this.state.showPublications) ? pubDiv:null}
+            {(this.state.showOrganizations) ? orgDiv:null}
+        </div>
     )
-),
-
-          React.createElement("h2", {className: "text-center"}, "Search Results"),
-          React.createElement("h3", {className: "leftClass text-center", style: {display: usersFound?"":"none"}}, "Users"),
-          React.createElement("div", {className: "", style: {display: usersFound?"inline":"none"}},
-            React.createElement("div", {className: "row"},
-              React.createElement("ul", {}, 
-                React.createElement("div", {className: "list-group"}, users.map(function(i){
-                  obj = i["obj"]
-                  link = i["link"]
-                  key = i["key"]
-                  return(
-                    //React.createElement("li", {},
-                      React.createElement("a", {href: link, className: "list-group-item"},
-                        React.createElement("div", {className: "clearfix"},
-                          React.createElement("img", {src: obj["img"], height: "120px", width: "120px", style: {}, className: "pull-left gap-all img-circle"}),
-                          React.createElement("h4", {className: "list-group-item-heading", style: {color: "black"}}, key)
-                        ),
-                        React.createElement("p", {className: "list-group-item-text", style: {color: "black"}}, obj["about"])
-                      )
-                      // key)
-                    //)
-                  )
-                  })
-                )
-              )
-            )
-          ),
-          React.createElement("h3", {className: "leftClass text-center", style: {display: dataFound?"":"none"}}, "Data"),
-          React.createElement("div", {className: "", style: {display: dataFound?"inline":"none"}},
-            React.createElement("div", {className: "row"},
-              React.createElement("ul", {}, 
-                React.createElement("div", {className: "list-group"}, data.map(function(i){
-                  obj = i["obj"]
-                  link = i["link"]
-                  key = i["key"]
-                  return(
-                    //React.createElement("li", {},
-                      React.createElement("a", {href: link, className: "list-group-item"},
-                        React.createElement("div", {className: "clearfix"},
-                          React.createElement("img", {src: obj["img"], height: "120px", width: "120px", style: {}, className: "pull-left gap-all img-circle"}),
-                          React.createElement("h4", {className: "list-group-item-heading", style: {color: "black"}}, key)
-                        ),
-                        React.createElement("p", {className: "list-group-item-text", style: {color: "black"}}, obj["about"])
-                      )
-                    //)
-                  )
-                  })
-                )
-              )
-            )
-          ),
-          React.createElement("h3", {className: "leftClass text-center", style: {display: pubsFound?"":"none"}}, "Publications"),
-          React.createElement("div", {className: "", style: {display: pubsFound?"inline":"none"}},
-            React.createElement("div", {className: "row"},
-              React.createElement("ul", {}, 
-                React.createElement("div", {className: "list-group"}, publications.map(function(i){
-                  obj = i["obj"]
-                  link = i["link"]
-                  key = i["key"]
-                  return(
-                    //React.createElement("li", {},
-                      React.createElement("a", {href: link, className: "list-group-item"},
-                        React.createElement("div", {className: "clearfix"},
-                          React.createElement("img", {src: obj["img"], height: "120px", width: "120px", style: {}, className: "pull-left gap-all img-circle"}),
-                          React.createElement("h4", {className: "list-group-item-heading", style: {color: "black"}}, key)
-                        ),
-                        React.createElement("p", {className: "list-group-item-text", style: {color: "black"}}, obj["about"])
-                      )
-                    //)
-                  )
-                  })
-                )
-              )
-            )
-          ),
-          React.createElement("h3", {className: "leftClass text-center", style: {display: orgsFound?"":"none"}}, "Organizations"),
-          React.createElement("div", {className: "", style: {display: orgsFound?"inline":"none"}},
-            React.createElement("div", {className: "row"},
-              React.createElement("ul", {}, 
-                React.createElement("div", {className: "list-group"}, organizations.map(function(i){
-                  obj = i["obj"]
-                  link = i["link"]
-                  key = i["key"]
-                  return(
-                    //React.createElement("li", {},
-                      React.createElement("a", {href: link, className: "list-group-item"},
-                        React.createElement("div", {className: "clearfix"},
-                          React.createElement("img", {src: obj["img"], height: "120px", width: "120px", style: {}, className: "pull-left gap-all img-circle"}),
-                          React.createElement("h4", {className: "list-group-item-heading", style: {color: "black"}}, key)
-                        ),
-                        React.createElement("p", {className: "list-group-item-text", style: {color: "black"}}, obj["about"])
-                      )
-                    //)
-                  )
-                  })
-                )
-              )
-            )
-          ),
-          React.createElement("h3", {className: "leftClass text-center", style: {display: modelsFound?"":"none"}}, "Model"),
-          React.createElement("div", {className: "", style: {display: modelsFound?"inline":"none"}},
-            React.createElement("div", {className: "row"},
-              React.createElement("ul", {}, 
-                React.createElement("div", {className: "list-group"}, models.map(function(i){
-                  obj = i["obj"]
-                  link = i["link"]
-                  key = i["key"]
-                  return(
-                    //React.createElement("li", {},
-                      React.createElement("a", {href: link, className: "list-group-item"},
-                        React.createElement("div", {className: "clearfix"},
-                          React.createElement("img", {src: obj["img"], height: "120px", width: "120px", style: {}, className: "pull-left gap-all img-circle"}),
-                          React.createElement("h4", {className: "list-group-item-heading", style: {color: "black"}}, key)
-                        ),
-                        React.createElement("p", {className: "list-group-item-text", style: {color: "black"}}, obj["about"])
-                      )
-                    //)
-                  )
-                  })
-                )
-              )
-            )
-          )
-        )
-      )
-    }
+  }
 });
 
- if (isNode) {
-   exports.SearchFeed = SearchFeed;
- } else {
-  $( document ).ready(function() {
-    ReactDOM.render(React.createElement(SearchFeed, {}), document.getElementById('reactSearchContainer'));
-  });
- }
+$( document ).ready(function() {
+  ReactDOM.render(React.createElement(SearchFeed, {}), document.getElementById('content'));
+});
 
 
 

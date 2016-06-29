@@ -27,8 +27,6 @@ var CustomTags = React.createClass({
                     dataType: 'JSON',
                     cache: false,
                     success: function(data) {
-                        console.log("SUCCESS!!!!!!!");
-                        console.log(data);
                         // var arr = $.grep(data, function(item){
                         //     return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
                         // });
@@ -39,10 +37,9 @@ var CustomTags = React.createClass({
                                 used: false
                             };
                         })
-                        console.log(resultArr)
                     },
                     error: function(xhr) {
-                        console.log(xhr.status);
+                        console.error(xhr.status);
                     }
             });
 
@@ -90,6 +87,7 @@ var CustomTags = React.createClass({
             text: tag
         });
         this.setState({tags: tags});
+
         ids.push(tag);
         this.setState({ids: ids});
         console.log("user not in system. Just adding tag");
@@ -189,8 +187,6 @@ var Profile = React.createClass ({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -284,9 +280,7 @@ var Profile = React.createClass ({
     },
 
     submitChange: function() {
-        var dataForm = { about: this.state.about
-        };
-        console.log(JSON.stringify(dataForm));
+        var dataForm = { about: this.state.about };
         $.ajax({
             url: path + "/updateAbout",
             dataType: 'json',
@@ -422,7 +416,7 @@ var ProfileMenu = React.createClass ({
 
 var Connections = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return { data: [], noRecordsMessage: <LoadingGif /> };
     },
     componentDidMount : function(){
         var peopleUrl= "/profile/"+objectId+"/connections";
@@ -431,7 +425,6 @@ var Connections = React.createClass({
             url: peopleUrl,
             success: function(data) {
                 this.setState({data: data, noRecordsMessage: ''});
-                console.log(data);
                 if (data.length < 1 || Object.keys(data).length === 0) {
                     this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
                 }
@@ -491,7 +484,7 @@ var Connections = React.createClass({
 
 var Organizations = React.createClass({
     getInitialState: function() {
-        return {orgs: [],myOrgs:[],isMe:false};
+        return {orgs: [],myOrgs:[],isMe:false, noRecordsMessage: <LoadingGif /> };
     },
     componentDidMount : function(){
 
@@ -504,7 +497,7 @@ var Organizations = React.createClass({
                                myOrgs:data.myOrgs,
                                isMe:data.isMe,
                                noRecordsMessage: ''});
-                if (data.orgs.length+data.myOrgs.length < 1) {
+                if (data.orgs.length < 1) {
                     this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
                 }
             }.bind(this),
@@ -599,7 +592,6 @@ var About = React.createClass({
         };
     },
     submitSummary: function() {
-        console.log(this.state.educations);
         var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
         $.ajax({
             url: path + "/updateSummary",
@@ -708,7 +700,6 @@ var About = React.createClass({
     },
     handleArrayChange: function(index) {
         var interestsChange = document.getElementById("interests-" + index).value;
-        console.log(interestsChange);
         var interestsTemp = JSON.parse(this.state.interests);
         interestsTemp[index] = interestsChange;
         var interestsTemp = JSON.stringify(interestsTemp).replace(/\\\"/g,"'")
@@ -739,7 +730,6 @@ var About = React.createClass({
             arrayWE.push(newWE);
         }
         this.setState({workExperience:JSON.stringify(arrayWE), hideWorkExperiences: "show"}, function(){ this.submitExperience() }.bind(this));
-        console.log(workExperience);
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
@@ -747,7 +737,6 @@ var About = React.createClass({
         else { var newWE = {company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
-        console.log(educations);
     },
     tabChange: function(index) {
         this.props.tab(index);
@@ -761,10 +750,8 @@ var About = React.createClass({
             processData: false,
             success: function(data) {
                 var parseData = JSON.parse(data);
-                console.log(data);
                 educationData = parseData[0];
                 workExperienceData = parseData[1];
-                console.log(educationData);
                 this.setState({educations: JSON.stringify(educationData)});
                 this.setState({workExperience: JSON.stringify(workExperienceData)});
                 if (educationData.length == 0) {this.setState({hideEducations: "hide"});}
@@ -1012,7 +999,7 @@ var More = React.createClass({
 
 var Projects = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1029,9 +1016,11 @@ var Projects = React.createClass({
             type: 'GET',
             url: projectsURL,
             success: function(data) {
-                this.setState({data: data, noRecordsMessage: ''});
-                if (data.length < 1) {
-                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
                 }
             }.bind(this),
             error: function(xhr, status, err) {
@@ -1065,7 +1054,7 @@ var Projects = React.createClass({
                 </div>
             );
         });
-        var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
+
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1090,10 +1079,9 @@ var Projects = React.createClass({
 });
 
 
-
 var Publications = React.createClass({
     getInitialState: function() {
-        return { data: [], noRecordsMessage: '', showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1108,10 +1096,11 @@ var Publications = React.createClass({
             type: 'GET',
             url: publicationsURL,
             success: function(data) {
-                console.log(data);
-                this.setState({data: data});
-                if (data.length < 1) {
-                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
                 }
             }.bind(this),
             error: function(xhr, status, err) {
@@ -1155,12 +1144,12 @@ var Publications = React.createClass({
             </div>
             );
         });
-        var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
+
         return (
             <div>
                 <ResourceForm publication={true} />
                 {itemsList}
-                {this.state.message}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -1196,7 +1185,7 @@ var Publication = React.createClass({
 
 var Models = React.createClass({
     getInitialState: function() {
-        return { data: [], noRecordsMessage: '', showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1211,10 +1200,11 @@ var Models = React.createClass({
             type: 'GET',
             url: modelsURL,
             success: function(data) {
-                console.log(data);
-                this.setState({data: data, noRecordsMessage: ''});
-                if (data.length < 1) {
-                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
                 }
             }.bind(this),
             error: function(xhr, status, err) {
@@ -1261,7 +1251,6 @@ var Models = React.createClass({
             );
         });
 
-        var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
         return (
             <div>
                 <ResourceForm fromModelTab={true} />
@@ -1274,7 +1263,7 @@ var Models = React.createClass({
 
 var Data = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], showModal: false, noRecordsMessage: <LoadingGif /> };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1289,9 +1278,11 @@ var Data = React.createClass({
             type: 'GET',
             url: dataURL,
             success: function(data) {
-                this.setState({data: data, noRecordsMessage: ''});
-                if (data.length < 1) {
-                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
                 }
             }.bind(this),
             error: function(xhr, status, err) {
@@ -1349,13 +1340,18 @@ var Data = React.createClass({
             </div>
             );
         });
-        console.log(itemsList);
-        var noRecordsMessage = itemsList > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
+
+        if (this.state.noRecordsMessage == null) {
+            var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
+        } else {
+            var noRecordsMessage = this.state.noRecordsMessage;
+        }
+
         return (
             <div>
                 <ResourceForm fromModelTab={false} />
                 {itemsList}
-                {this.state.noRecordsMessage}
+                {noRecordsMessage}
             </div>
         )
     }
@@ -1645,7 +1641,6 @@ var PublicationAddForm = React.createClass({
 			url: 'http://api.crossref.org/works/' + this.state.doi,
 			type: 'GET',
 			success: function(data) {
-				console.log(data);
 				var entry = data.message;
 				this.setState({
 					title: entry.title[0],
@@ -1808,7 +1803,6 @@ var PublicationAddForm = React.createClass({
 			processData: false,
 			success: function(data) {
 				console.log("Publication upload done");
-				console.log(data);
 				this.close();
 			}.bind(this),
 			error: function(xhr, status, err) {
@@ -1828,8 +1822,6 @@ var PublicationAddForm = React.createClass({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.file.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -2020,7 +2012,6 @@ var ResourceAddForm = React.createClass({
         this.setState(changedState);
     },
 	handleSubmitData: function(e) {
-        console.log(e);
         e.preventDefault();
         this.setState({submitButtonText: "Please Wait. We're uploading",
                         submitButtonDisabled: true,
@@ -2050,7 +2041,6 @@ var ResourceAddForm = React.createClass({
 				success: function(data) {
 					this.setState({data: data});
 					console.log("Data upload done");
-					console.log(data);
 					this.close();
 				}.bind(this),
 				error: function(xhr, status, err) {
@@ -2088,8 +2078,6 @@ var ResourceAddForm = React.createClass({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.file.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -2300,7 +2288,6 @@ var ProjectAddForm = React.createClass({
         				collaborators: JSON.stringify(this.state.collaborators), startDate: this.state.startDate, endDate: this.state.endDate,
         				description: this.state.description, client: this.state.client, link_to_resources: this.state.link_to_resources,
         				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title};
-		console.log(dataForm);
 
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
@@ -2319,7 +2306,7 @@ var ProjectAddForm = React.createClass({
 				data: JSON.stringify(dataForm),
 				processData: false,
 				success: function(data) {
-				    console.log(data);
+				    console.log("Submitted");
 				    this.close();
 				}.bind(this),
 				error: function(xhr, status, err) {
@@ -2394,6 +2381,18 @@ var ProjectAddForm = React.createClass({
 		}
 		return issues;
 	},
+});
+
+var LoadingGif = React.createClass({
+    render: function() {
+        return (
+            <div>
+                <p style={{textAlign: 'center'}}><img className="loading-bar" src="../images/loadingbar.gif"/>
+                Fetching...
+                </p>
+            </div>
+        )
+    }
 });
 
 var Required = React.createClass({

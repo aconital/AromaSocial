@@ -164,24 +164,33 @@
                     </li>
                 </ul>
 
-                    <ul class="nav navbar-nav navbar-nav-search">
-                        <li class="nav navbar-search">
-                            <form typerole="search" class="navbar-left search-bar-form" onsubmit="return false">
-                                <input id="message" type="text" name="searchQuery" placeholder="Search..." class="form-control search-bar auto"/>
-                            </form>
-                        </li>
-                    </ul>
+                <ul class="nav navbar-nav navbar-nav-search">
+                    <li class="nav navbar-search">
+                        <div id="autosuggest" class="navbar-left search-bar-form"></div>
+                    </li>
+                </ul>
 
                 <ul class="nav navbar-nav navbar-right">
+                     <li class="dropdown connection-button">
+                        <a href="#" class="dropdown-toggle" rel="tooltip" title="Notifications" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <div class="notification-container">
+                                <span><i class="fa fa-globe"></i></span>
+                                <span class="general-notification-counter" style="display:none;">0</span>
+                            </div>
+                        </a>
+                        <ul id="general-notification" class="dropdown-menu friend-request-dropdown" aria-labelledby="dropdownMenuDivider">
+                        </ul>
+                    </li>
                     <li class="navbar-hover"><a href="/profile/{{user.username}}" rel="tooltip" title="Profile" ><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
+
                     <li class="dropdown connection-button">
                         <a href="#" class="dropdown-toggle" rel="tooltip" title="Notifications" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <div class="notification-container">
                                 <span><i class="fa fa-user-plus"></i></span>
-                                <span class="notification-counter" style="display:none;">0</span>
+                                <span class="request-notification-counter" style="display:none;">0</span>
                             </div>
                         </a>
-                        <ul id="notification" class="dropdown-menu friend-request-dropdown" aria-labelledby="dropdownMenuDivider">
+                        <ul id="request-notification" class="dropdown-menu friend-request-dropdown" aria-labelledby="dropdownMenuDivider">
                         </ul>
                     </li>
                     {{!--<li class="dropdown logout-button"><a href="/setting" role="button"><span><i class="fa fa-cog" aria-hidden="true"></i></span></a>
@@ -265,12 +274,23 @@
 
 </footer>
 
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
 <script src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js"> </script>
+
 <script src="https://www.parsecdn.com/js/parse-latest.js"></script>
 <script src="https://www.parsecdn.com/js/parse-react.js"></script>
-<script type="text/jsx" src="/javascripts/navbar.js"></script>
-<script src="/javascripts/autocomplete.js"></script>
+
+<script type="text/jsx" src="/javascripts/notification-general.js"></script>
+<script type="text/jsx" src="/javascripts/notification-request.js"></script>
+
+<script src="https://npmcdn.com/classnames/index.js"></script>
+<script src="https://npmcdn.com/react-input-autosize/dist/react-input-autosize.js"></script>
+<script src="https://npmcdn.com/react-select/dist/react-select.js"></script>
+
+<link rel="stylesheet" href="https://npmcdn.com/react-select/dist/react-select.css">
+
 
 <script>
     $(document).ready(function(){
@@ -317,10 +337,10 @@
     ga('send', 'pageview');
 
 </script>
-<script src="/javascripts/autocomplete.js"></script>
 <script type="text/javascript" src="/javascripts/react-tag-input/example/vendor/ReactDND.min.js"></script>
 <script src="/javascripts/react-tag-input/dist/reactTags.min.js"></script>
 <script src="/javascripts/tag-it.js"></script>
+<script type="text/jsx" src="/javascripts/autocomplete.js"></script>
 
 </body>
 </html>
