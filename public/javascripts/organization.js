@@ -236,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
+                                    <OrganizationMenu joinStatus= {this.state.status} isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
+                            <OrganizationMenu joinStatus= {this.state.status} isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -294,6 +294,7 @@ var OrganizationMenu = React.createClass ({
 
         var tabMap = {
             0: <Home
+                joinStatus= {this.props.joinStatus}
                 showEquipment={this.showTab.bind(self,3)}
                 showProjects={this.showTab.bind(self,4)}
                 showPublications={this.showTab.bind(self,5)}
@@ -487,13 +488,13 @@ var Home = React.createClass({
                     </Modal.Body>
                 </Modal>
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-                    <h4 className="discussion-form-headline">Recent discussions <a onClick={this.openModal}className="create-discussion-list">Create New</a></h4>
+                    <h4 className="discussion-form-headline">Recent discussions {this.props.joinStatus ==="joined"?<a onClick={this.openModal}className="create-discussion-list">Create New</a>:"" }</h4>
                   <div className="items-list">
                       {discussions}
                   </div>
                 </div>
                 <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <NewsAndEvents upcomingEvents={this.state.upcomingEvents} />
+                    <NewsAndEvents joinStatus = {this.props.joinStatus} upcomingEvents={this.state.upcomingEvents} />
                     <div className="row">
                         <div>
                             <h4>Resources</h4>
@@ -555,7 +556,7 @@ var Home = React.createClass({
                          </ul>
                         </div>
                         <div className = "createorg_panel">
-                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
+                            {this.props.joinStatus==="joined"? <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button> : ""}
                         </div>
                     </div>
                     <div className="row home-connections-box">
@@ -568,8 +569,8 @@ var Home = React.createClass({
                             </ul>
                         </div>
                         <div className = "createorg_panel">
-                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>
-                        </div>
+                            {this.props.joinStatus === "joined"?  <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>:""}
+                           </div>
                     </div>
 
 
@@ -725,7 +726,7 @@ var NewsAndEvents = React.createClass({
         return (
             <div>
                 <div className = "createorg_panel">
-                    <button className="btn btn-panel createorg_btn" onClick={this.open}><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
+                    {this.props.joinStatus==="joined" ? <button className="btn btn-panel createorg_btn" onClick={this.open}><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>:""}
                 </div>
                 <div className = "panel search-panel your-groups">
                     <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
