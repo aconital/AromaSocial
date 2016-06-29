@@ -741,7 +741,6 @@ var NewsAndEvents = React.createClass({
                         <Modal.Title>Create New Event</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <h4>Text in a modal</h4>
                         <CreateEvent />
                     </Modal.Body>
                 </Modal>
