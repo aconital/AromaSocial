@@ -300,9 +300,10 @@ var OrganizationMenu = React.createClass ({
                 showPublications={this.showTab.bind(self,5)}
                 showData={this.showTab.bind(self,6)}
                 showModels={this.showTab.bind(self,7)}
-                     viewPeople={this.showTab.bind(self,8)}
-                     viewConnections={this.showTab.bind(self,9)}
-                     objectId={objectId} />,
+                viewPeople={this.showTab.bind(self,8)}
+                viewConnections={this.showTab.bind(self,9)}
+                viewEvents={this.showTab.bind(self,10)}
+                objectId={objectId} />,
             1: <About objectId={objectId} />,
             2: <Resources isAdmin ={this.props.isAdmin}
                           showEquipment={this.showTab.bind(self,3)}
@@ -317,7 +318,7 @@ var OrganizationMenu = React.createClass ({
             7: <Models objectId={objectId}/>,
             8: <People isAdmin={this.props.isAdmin} />,
             9: <Connections isAdmin={this.props.isAdmin}  />,
-
+           10: <Events isAdmin={this.props.isAdmin} />,
 
         };
         return (
@@ -398,7 +399,7 @@ var Home = React.createClass({
     loadUpcomingEvents: function() {
         $.ajax({
             type: 'GET',
-            url: "/organization/"+objectId+"/upcomingEvents",
+            url: "/organization/"+objectId+"/events?upcoming=true",
             success: function(data) {
                 if(!data.err)
                     this.setState({ upcomingEvents: data });
@@ -494,7 +495,7 @@ var Home = React.createClass({
                   </div>
                 </div>
                 <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <NewsAndEvents joinStatus = {this.props.joinStatus} upcomingEvents={this.state.upcomingEvents} />
+                    <NewsAndEvents joinStatus={this.props.joinStatus} upcomingEvents={this.state.upcomingEvents} allEvents={this.props.viewEvents} />
                     <div className="row">
                         <div>
                             <h4>Resources</h4>
@@ -729,10 +730,8 @@ var NewsAndEvents = React.createClass({
                     {this.props.joinStatus==="joined" ? <button className="btn btn-panel createorg_btn" onClick={this.open}><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>:""}
                 </div>
                 <div className = "panel search-panel your-groups">
-                    <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
+                    <h4 className="white"><span className="nfButton">Upcoming Events <small>(<a onClick={this.props.allEvents} href="#">all</a>)</small></span></h4>
                         <div className="list-group">
-                            {/*<li className="list-group-item groups-list">&#x25cf; BBQ</li>
-                            <li className="list-group-item groups-list">&#x25cf; All you can eat sushi</li>*/}
                             {events}
                         </div>
                 </div>
@@ -761,19 +760,20 @@ var EventInfo = React.createClass({
         this.setState({ showModal: true });
     },
     render: function() {
+        var date = this.props.event.date.toString().slice(0, 10);
         return (
-            <li  className="list-group-item groups-list events-panel">
-                <span onClick={this.open}>&#x25cf; {this.props.event.title}</span>
+            <li onClick={this.open} className="list-group-item groups-list events-panel">
+                <span>&#x25cf; {this.props.event.title} <span className="pull-right">{date}</span></span>
 
                 <Modal show={this.state.showModal} onHide={this.close}>
                     <Modal.Header closeButton>
                         <Modal.Title>Event Details: <strong>{this.props.event.title}</strong></Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <p><strong>Date:</strong> {this.props.event.date.toString().slice(0, 10)}
+                        <p><strong>Date:</strong> {date}
                             {(this.props.event.time) ? (' at ' + this.props.event.time) : ''}
                         </p>
-                        <p><strong>Location:</strong> {this.props.event.location}</p>
+                        {(this.props.event.location) ? (<p><strong>Location:</strong> {this.props.event.location}</p>) : ''}
                         <p>{this.props.event.description}</p>
                     </Modal.Body>
                     <Modal.Footer>
@@ -824,8 +824,8 @@ var CreateEvent = React.createClass({
                                 <Input type="date" label="Date" name="date" required onChange={this.handleChange} value={this.state.date} />
                                 <Input type="time" label="Time" name="time" onChange={this.handleChange} value={this.state.time} />
                             </div>
-                        <Input type="text" label="Location" name="location" required onChange={this.handleChange} value={this.state.location} />
-                        <Input type="textarea" label="Description" name="description" required onChange={this.handleChange} value={this.state.description} rows="5"/>
+                        <Input type="text" label="Location" name="location" onChange={this.handleChange} value={this.state.location} />
+                        <Input type="textarea" label="Description" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
 
                         <Modal.Footer>
                             <Input className="btn btn-default pull-right submit" type="submit" disabled={this.state.disabled} value="Submit" />
@@ -835,6 +835,60 @@ var CreateEvent = React.createClass({
                 </div>
             </div>
         );
+    }
+});
+
+var Events = React.createClass({
+    getInitialState: function() {
+        return {events: [], showModal: false };
+    },
+    componentDidMount : function(){
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/events",
+            success: function(data) {
+                if(!data.err)
+                    this.setState({ events: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve events!", status, err);
+                console.log(xhr);
+            }.bind(this)
+        });
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    render: function() {
+        var eventsList = $.map(this.state.events,function(event) {
+            var date = event.date.toString().slice(0, 10);
+            return (
+                <div className="item-box">
+                    <div className="item-box-right">
+                        <h3 className="margin-top-bottom-5">{event.title}</h3>
+                        <p><strong>Date:</strong> {date}
+                            {(event.time) ? (' at ' + event.time) : ''}
+                        </p>
+                        {(event.location) ? (<p><strong>Location:</strong> {event.location}</p>) : ''}
+                        <p>{event.description}</p>
+                    </div>
+                </div>
+            );
+        });
+        return (
+            <div className="row">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div className="row">
+                    <div>
+                        <h4>Event History</h4>
+                    </div>
+                    <div>{eventsList}</div>
+                </div>
+            </div>
+        </div>)
     }
 });
 
