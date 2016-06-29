@@ -29,6 +29,7 @@ var GeneralNotification = React.createClass({
         socket.on('discussionPost', this._updateNotificationList);
     },
     _updateNotificationList(data){
+        console.log(data);
         var notifications = this.state.notication_list.slice();
         notifications.push(data.data);
         this.setState({notication_list:notifications});
