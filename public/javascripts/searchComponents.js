@@ -533,6 +533,7 @@ var SearchFeed = React.createClass({
             <div className="filter">
               <ul className="cf">
               <li><a className="dropdown" href="#">Filter Results</a>
+              <div><b>You searched <i>'{searchString}'</i></b></div>
                 <ul>
                     <li><a href="#" onClick={this.setUserState}>Show Users</a></li>
                     <li><a href="#" onClick={this.setModelState}>Show Models</a></li>

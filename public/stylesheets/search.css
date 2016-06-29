@@ -21,6 +21,12 @@
     color: red;
 }
 
+.filter div {
+    clear: both;
+    margin-left: 20px;
+    color: blue;
+}
+
 .filter ul {
   -webkit-font-smoothing:antialiased;
   text-shadow:0 1px 0 #FFF;
