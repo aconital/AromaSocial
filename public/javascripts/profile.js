@@ -22,20 +22,20 @@ var CustomTags = React.createClass({
     getInitialState: function() {
         var resultArr = [];
         var nameToIds = {};
+        var users = [];
                 $.ajax({
                     url: '/allusers',
                     dataType: 'JSON',
                     cache: false,
                     success: function(data) {
-                        // var arr = $.grep(data, function(item){
-                        //     return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                        // });
                         $.map(data, function(item){
                             resultArr.push(item.fullname)
                             nameToIds[item.username] = {
                                 fullname: item.fullname,
                                 used: false
                             };
+                            var val = item.fullname + " (" + item.username + ")";
+                            users.push(val);
                         })
                     },
                     error: function(xhr) {
@@ -46,7 +46,7 @@ var CustomTags = React.createClass({
         return {
             tags: [],
             ids: [],
-            suggestions: resultArr,
+            suggestions: users,
             placeholder: "Add new collaborator...",
             idMap: nameToIds
         }
@@ -1132,7 +1132,9 @@ var Publications = React.createClass({
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
                                 <tr><td>Authors: </td><td>{item.contributors.map(function(contributor) { 
-                                    return <a href={contributor.replace(/ /g, "_")} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;})}</td></tr>
+                                        return <a href={getLinkFromCollaborator(contributor)} className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(contributor)}</a>;
+                                    // return <a href={contributor.replace(/ /g, "_")} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;
+                                })}</td></tr>
                                 {(item.type == "journal")? <tr><td>Publication Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date}</td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
@@ -1324,9 +1326,7 @@ var Data = React.createClass({
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) {
-                                    // var ret = (this.isUserId(collaborator) ? <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a> : <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>);
-                                    var dLink = "/profile/" + collaborator.replace(/ /g, "_");
-                                    return <a href={dLink} className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;
+                                    return <a href={getLinkFromCollaborator(collaborator)} className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(collaborator)}</a>;
                                 })}
                                 </td></tr>
                                 <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
@@ -1882,60 +1882,6 @@ var ResourceAddForm = React.createClass({
             url: '',
         };
     },
-    // componentDidMount: function() {
-    //     var eCode = <script>
-    //                     $(function() {
-    //                         $('.auto').bind("keydown", function(event) {
-    //                             if ( event.keyCode === $.ui.keyCode.TAB &&
-    //                                 $( this ).autocomplete( "instance" ).menu.active ) {
-    //                               event.preventDefault();
-    //                             }
-    //                         })
-    //                         .autocomplete({
-    //                                 source: function(req, res) {
-    //                                     $.ajax({
-    //                                       url: '/allusers',
-    //                                       dataType: 'JSON',
-    //                                       cache: false,
-    //                                       success: function(data) {
-    //                                         console.log("SUCCESS!!!!!!!");
-    //                                         console.log(data);
-    //                                         var arr = $.grep(data, function(item){
-    //                                           return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-    //                                         });
-    //                                         res($.ui.autocomplete.filter($.map(data, function(item){
-    //                                           return {
-    //                                             label: item.fullname,
-    //                                             value: item.username
-    //                                           };
-    //                                         }), extractLast(req.term)));
-    //                                       },
-    //                                       error: function(xhr) {
-    //                                         console.log(xhr.status);
-    //                                       }
-    //                                     });
-    //                                 },
-    //                                 focus: function() {
-    //                                     return false;
-    //                                 },
-    //                                 messages: {
-    //                                   noResults: '',
-    //                                   results: function() {}
-    //                                 },
-    //                                 select: function(event, ui) {
-    //                                     var terms = split(this.value);
-    //                                     terms.pop();
-    //                                     terms.push(ui.item.value);
-    //                                     terms.push("");
-    //                                     this.value = terms.join(" ");
-    //                                     return false;
-    //                                 }
-    //                         })
-    //                     });
-    //                 </script>
-    //     // var eCode = <script type="text/jsx" src="/javascripts/multac.jsx"></script>
-    //     $("#scriptContainer").append(eCode);
-    // },
 	render: function() {
         if (this.state.alertVisible) {
             var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
@@ -1985,16 +1931,6 @@ var ResourceAddForm = React.createClass({
         var changedState = {};
         changedState[type] = ids;
         this.setState(changedState);
-        // var newState = [];
-        // for (var i = 0; i < tags.length; i++) {
-        //     var t = tags[i];
-        //     console.log(t.id);
-        //     console.log(t.text);
-        //     newState.push(t.text);
-        // }
-        // var changedState = {};
-        // changedState[type] = newState;
-        // this.setState(changedState);
     },
 	handleChange: function(e) {
 	    var changedState = {};
@@ -2403,6 +2339,22 @@ var Required = React.createClass({
 		);
 	},
 });
+
+// helpers
+function getLinkFromCollaborator (collab) {
+    var uName = collab.split("(")[1];
+    if (uName === undefined) {
+        return '#';
+    }
+    uName = uName.substring(0, uName.length-1);
+    var dLink = "/profile/" + uName;
+    return dLink;
+}
+
+function getNameFromCollaborator (collab) {
+    var name = collab.split("(")[0];
+    return name.replace(/_/g, " ").replace(/(\.\d*)/g, "")
+}
 
 $( document ).ready(function() {
     ReactDOM.render(<Profile />, document.getElementById('content'));

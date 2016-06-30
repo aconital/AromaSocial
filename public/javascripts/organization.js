@@ -1959,9 +1959,9 @@ var Publications = React.createClass({
                             <table className="item-box-table-info">
                                 <tr>
                                     <td><b>Authors: </b></td>
-                                    <td>{item.contributors ? item.contributors.map(function (contributors) {
-                                        return <a href="#"
-                                                  className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;
+                                    <td>{item.contributors ? item.contributors.map(function (contributor) {
+                                        return <a href={getLinkFromCollaborator(contributor)}
+                                                  className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(contributor)}</a>;
                                     }) : ''}</td>
                                 </tr>
                                 <tr>
@@ -2169,6 +2169,22 @@ var Model = React.createClass({
         )
     }
 });
+
+// helpers
+function getLinkFromCollaborator (collab) {
+    var uName = collab.split("(")[1];
+    if (uName === undefined) {
+        return '#';
+    }
+    uName = uName.substring(0, uName.length-1);
+    var dLink = "/profile/" + uName;
+    return dLink;
+}
+
+function getNameFromCollaborator (collab) {
+    var name = collab.split("(")[0];
+    return name.replace(/_/g, " ").replace(/(\.\d*)/g, "")
+}
 
 $( document ).ready(function() {
     ReactDOM.render(<Organization />, document.getElementById('content'));
