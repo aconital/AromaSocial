@@ -323,7 +323,7 @@ module.exports=function(app,Parse,io) {
                         var participantId= jsonPosts[p].get("from").id;
 
 
-                        if(myself.id != participantId &&  !_.contains(participantId, participantId))
+                        if(myself.id != participantId &&  !_.contains(participants, participantId))
                         {
                             participants.push(participantId);
                             var notification = {
@@ -344,7 +344,7 @@ module.exports=function(app,Parse,io) {
                                     url: "/organization/"+result.get("orgId").get("name")+"/discussions/"+discId
                                 }
                             };
-
+                               console.log(participantId);
                             io.to(participantId).emit('discussionPost',{data:notification});
                         }
 

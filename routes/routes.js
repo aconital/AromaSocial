@@ -807,8 +807,9 @@ app.get("/fetchworks", function(req, res, next) {
         var data = JSON.parse(body);
 
         // currently only supports importing journals/conferences. Will need to add another API if support for others needed
-        var publications = data.entities
-              .filter( function(entity) {((entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E')) });
+        var publications = data.entities.filter( function(entity) {
+          return (entity.hasOwnProperty('J') || entity.hasOwnProperty('C')) && entity.hasOwnProperty('E');
+        });
 
         var user = new Parse.Query(Parse.User);
         user.get(req.user.id).then(function(result) { 
