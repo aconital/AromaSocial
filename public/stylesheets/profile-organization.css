@@ -358,6 +358,10 @@
     color: #ffffff;
 }
 
+.events-faded {
+    color: #c2c3c8;
+}
+
 .datetime-row > div {
     padding-bottom: 10px;
     display: inline;

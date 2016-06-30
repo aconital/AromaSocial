@@ -1411,23 +1411,34 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get("/organization/:objectId/upcomingEvents",function(req,res,next){
-        console.log(req.params);
+    app.get("/organization/:objectId/events",function(req,res,next){
         var events = [],
-            currentDay = moment().startOf('day').toDate(); // start of current day
-        console.log(events, currentDay);
+            yesterday = moment().startOf('day').subtract(1, 'days').toDate(); // start of current day
+
         var query = new Parse.Query("Event");
         query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
-        query.greaterThanOrEqualTo('date', currentDay); // only want to get upcoming events
+        query.ascending('date');
+
+        if (req.query.upcoming === 'true') { // restricted query for homepage sidebar contents
+            query.greaterThanOrEqualTo('date', yesterday); // only want to get upcoming events
+            query.limit(4);
+        }
 
         query.find().then(function(results) {
             console.log("retrieved events:", results.length);
             for (var i = 0; i < results.length; i++) {
                 var object = results[i];
+                var time = object.attributes.time;
+                if (time != null) { // format time to 12 hour format
+                    var timeFragments = time.split(':');
+                    var formattedTime = moment().hour(timeFragments[0]).minute(timeFragments[1]).format("h:mm A");
+                    time = formattedTime;
+                }
+
                 events.push({
                     title: object.attributes.title,
                     date: object.attributes.date,
-                    time: object.attributes.time,
+                    time: time,
                     location: object.attributes.location,
                     description: object.attributes.description,
                 });
