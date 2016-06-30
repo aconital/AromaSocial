@@ -495,7 +495,7 @@ var Home = React.createClass({
                   </div>
                 </div>
                 <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <NewsAndEvents joinStatus={this.props.joinStatus} upcomingEvents={this.state.upcomingEvents} allEvents={this.props.viewEvents} />
+                    <EventsPanel joinStatus={this.props.joinStatus} upcomingEvents={this.state.upcomingEvents} allEvents={this.props.viewEvents} />
                     <div className="row">
                         <div>
                             <h4>Resources</h4>
@@ -705,7 +705,7 @@ var Discussion = React.createClass ({
 });
 
 
-var NewsAndEvents = React.createClass({
+var EventsPanel = React.createClass({
     getInitialState: function() {
         return { showModal: false };
     },
@@ -763,7 +763,7 @@ var EventInfo = React.createClass({
         var date = this.props.event.date.toString().slice(0, 10);
         return (
             <li onClick={this.open} className="list-group-item groups-list events-panel">
-                <span>&#x25cf; {this.props.event.title} <span className="pull-right">{date}</span></span>
+                <span><i className="fa fa-caret-right" aria-hidden="true"></i> {this.props.event.title} <span className="pull-right">{date}</span></span>
 
                 <Modal show={this.state.showModal} onHide={this.close}>
                     <Modal.Header closeButton>
@@ -840,7 +840,7 @@ var CreateEvent = React.createClass({
 
 var Events = React.createClass({
     getInitialState: function() {
-        return {events: [], showModal: false };
+        return {loading: true, events: [], showModal: false };
     },
     componentDidMount : function(){
         $.ajax({
@@ -848,7 +848,7 @@ var Events = React.createClass({
             url: "/organization/"+objectId+"/events",
             success: function(data) {
                 if(!data.err)
-                    this.setState({ events: data });
+                    this.setState({ events: data, loading: false });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve events!", status, err);
@@ -863,21 +863,39 @@ var Events = React.createClass({
         this.setState({ showModal: false });
     },
     render: function() {
-        var eventsList = $.map(this.state.events,function(event) {
-            var date = event.date.toString().slice(0, 10);
-            return (
-                <div className="item-box">
-                    <div className="item-box-right">
-                        <h3 className="margin-top-bottom-5">{event.title}</h3>
-                        <p><strong>Date:</strong> {date}
-                            {(event.time) ? (' at ' + event.time) : ''}
-                        </p>
-                        {(event.location) ? (<p><strong>Location:</strong> {event.location}</p>) : ''}
-                        <p>{event.description}</p>
+        var current = new Date();
+        var eventsList;
+
+        if(this.state.loading)
+            eventsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Dreaming of catered lunches...</p></div>
+        else
+        {
+            eventsList = $.map(this.state.events,function(event) {
+                var date = event.date.toString().slice(0, 10);
+                var eventClasses = "item-box-right";
+                if (new Date(event.date) < current) {
+                    console.log(new Date(event.date), current);
+                    eventClasses = "item-box-right events-faded"
+                }
+
+                return (
+                    <div className="item-box">
+                        <div className={eventClasses}>
+                            <h3>{event.title}</h3>
+                            <p><strong>Date:</strong> {date}
+                                {(event.time) ? (' at ' + event.time) : ''}
+                            </p>
+                            {(event.location) ? (<p><strong>Location:</strong> {event.location}</p>) : ''}
+                            <p>{event.description}</p>
+                        </div>
                     </div>
-                </div>
-            );
-        });
+                );
+            });
+            console.log(eventsList.length);
+            if (eventsList.length == 0) {
+                eventsList = <div className="no-discussion"><h2><i className="fa fa-calendar-times-o" aria-hidden="true"></i></h2><p>This network has been too hard at work to host any events yet!</p></div>;
+            }
+        }
         return (
             <div className="row">
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
