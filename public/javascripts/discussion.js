@@ -3,11 +3,12 @@
  */
 var Home = React.createClass({
     getInitialState: function() {
-        return {discussion:null}
+        return {others:[],discussion:null}
     },
     componentWillMount : function() {
         socket.on('DiscussionPostReceived', this._PostAdded);
         socket.on('DiscussionPostDeleted',this._PostDeleted);
+        this.loadOtherDiscussions();
         var discussionsUrl= "/organization/"+orgName+"/discussions/"+discId+"/1";
 
         $.ajax({
@@ -37,6 +38,22 @@ var Home = React.createClass({
         this.setState({discussion:  disc});
 
     },
+    loadOtherDiscussions:function()
+    {
+        var otherDiscussionsUrl= "/organization/"+orgName+"/discussions";
+        $.ajax({
+            type: 'GET',
+            url: otherDiscussionsUrl,
+            success: function(data) {
+                console.log(data);
+                this.setState({ others: data.discussions });
+
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+    },
     render:function(){
         var discussion= "";
        if(this.state.discussion != null) {
@@ -45,7 +62,16 @@ var Home = React.createClass({
                                     createdAt={this.state.discussion.created} madeBy={this.state.discussion.madeBy}
                                     posts ={this.state.discussion.posts} key={this.state.discussion.id}>{this.state.discussion.content.msg}</Discussion>;
        }
-        return (
+        var others ="";
+        if(this.state.others != undefined) {
+            others=this.state.others.map(function (other,i) {
+                if(discId != other.id && i<6)
+                 return(
+                    <a href={"/organization/"+orgName+"/discussions/"+other.id} className="list-group-item groups-list">{other.topic}</a>
+                );
+            });
+        }
+            return (
             <div className="row">
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
                     <div className="items-list discussion-list">
@@ -62,32 +88,17 @@ var Home = React.createClass({
                 </div>
                 <div className="col-xs-12 col-sm-3 col-md-3 col-lg-3">
                     <div className = "createorg_panel">
-                        <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
+                        <a href={"/organization/"+orgName} className="btn btn-panel action_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-arrow-left" aria-hidden="true"></i> Back To Organization</span></a>
+                    </div>
+                    <div className = "createorg_panel">
+                        <span className="btn btn-panel createorg_btn"><span className="nfButton"><i className="fa fa-comments-o" aria-hidden="true"></i> Recent Discussions</span></span>
                     </div>
                     <div className = "panel search-panel your-groups">
-                        <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
                         <div className="list-group">
-                            <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
-                            <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
+                            {others}
                         </div>
                     </div>
 
-                    <div className="row">
-                        <div>
-                            <h4><span className="nfButton">Members <small>(<a href="#">124</a>)</small></span></h4>
-                        </div>
-                        <div className="member-section">
-                            <ul className="thumbnail-list">
-                                <li><img src="http://159.203.60.67:1336/parse/files/development/f288f2f08b4f197c3d077fce068690d9_user_picture.jpg" /></li>
-                                <li><img src="http://159.203.60.67:1336/parse/files/development/96c7110632da4e71812e74f8d2206bd7_user_picture.jpg" /></li>
-                                <li><img src="http://159.203.60.67:1336/parse/files/development/8e73c4c765a8dc93ae945883e21ef82e_user_picture.jpg" /></li>
-                                <li><img src="http://159.203.60.67:1336/parse/files/development/51bc3e7b22434d0036dc3f8821e0f0ce_user.png" /></li>
-                            </ul>
-                        </div>
-                        <div className = "createorg_panel">
-                            <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
-                        </div>
-                    </div>
                 </div>
 
 
