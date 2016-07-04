@@ -12,161 +12,9 @@ var SearchFeed = React.createClass({
       showModels: false,
       showData: false,
       showPublications: false,
-      showOrganizations: false
+      showOrganizations: false,
+      isLoading: true
     };
-  },
-  loadUserFeed: function() {
-    var that = this;
-    var str = searchString;
-    var r = [];
-    $.when(
-      $.ajax({
-          url: '/allusers',
-          dataType: 'json',
-          type: 'POST',
-          data: {substr: str},
-          cache: false,
-          success: function(data) {
-            console.log("USER SUCCESS");
-            $.map(data, function(item){
-              var dlink = "/profile/" + item.username;
-              var pic;
-              if (item.picture == undefined) {
-                pic = "/images/user.png";
-              } else {
-                pic = item.picture.url;
-              }
-              r.push({type: "user", fullname: item.fullname, img: pic, link: dlink, about: item.about});
-            });
-          },
-          error: function(xhr) {
-            console.log(xhr.status);
-          }
-        })
-      ).then(
-      this.setState({userData:r})
-    );
-  },
-  loadModelFeed: function() {
-    var that = this;
-    var str = searchString;
-    var r = [];
-    $.when(
-      $.ajax({
-        url: '/allmodels',
-        dataType: 'json',
-        type: 'POST',
-        data: {substr: str},
-        cache: false,
-        success: function(data) {
-          console.log("MODEL SUCCESS");
-          $.map(data, function(item){
-            var dlink = "/model/" + item.objectId;
-            var pic;
-            if (item.picture == undefined) {
-              pic = "/images/model.png";
-            } else {
-              pic = item.picture.url;
-            }
-            r.push({type: "model", fullname: item.fullname, img: pic, link: dlink, about: item.abstract});
-          });
-        },
-        error: function(xhr) {
-          console.log(xhr.status);
-        }
-      })
-      ).then(   
-      this.setState({modData:r})
-    );
-  },
-  loadDataFeed: function() {
-    var that = this;
-    var str = searchString;
-    var r = [];
-    $.when(
-      $.ajax({
-          url: '/alldata',
-          dataType: 'json',
-          type: 'POST',
-          data: {substr: str},
-          cache: false,
-          success: function(data) {
-            console.log("DATA SUCCESS DATA");
-            $.map(data, function(item){
-              var dlink = "/data/" + item.objectId;
-              var pic;
-              if (item.picture == undefined) {
-                pic = "/images/data.png";
-              } else {
-                pic = item.picture.url;
-              }
-              r.push({type: "data", fullname: item.fullname, img: pic, link: dlink, about: item.description});
-            });
-          },
-          error: function(xhr) {
-            console.log(xhr.status);
-          }
-        })
-      ).then( 
-      this.setState({dataData:r})
-    );
-  },
-  loadPubFeed: function() {
-    var that = this;
-    var str = searchString;
-    var r = [];
-    $.when(
-      $.ajax({
-        url: '/allpublications',
-        dataType: 'json',
-        type: 'POST',
-        data: {substr: str},
-        cache: false,
-        success: function(data) {
-          console.log("PUBS SUCCESS");
-          $.map(data, function(item){
-            var type = item.type;
-            var dlink = "/publication/" + type + "/" + item.objectId;
-            r.push({type: "publication", title: item.title, img: "/images/paper.png", link: dlink, about: item.abstract});
-          });
-        },
-        error: function(xhr) {
-          console.log(xhr.status);
-        }
-      })
-      ).then(
-      this.setState({pubData: r})
-    );
-  },
-  loadOrgFeed: function() {
-    var that = this;
-    var str = searchString;
-    var r = [];
-    $.when(
-      $.ajax({
-        url: '/allorganizations',
-        dataType: 'json',
-        type: 'POST',
-        data: {substr: str},
-        cache: false,
-        success: function(data) {
-          console.log("ORGS SUCCESS");
-          $.map(data, function(item){
-            var dlink = "/organization/" + item.name;
-            var pic;
-            if (item.picture == undefined) {
-              pic = "/images/user.png";
-            } else {
-              pic = item.picture.url;
-            }
-            r.push({type: "organization", title: item.displayName, img: pic, link: dlink, about: item.about});
-          });
-        },
-        error: function(xhr) {
-          console.log(xhr.status);
-        }
-      })
-    ).then(this.setState({orgData: r}));
   },
   loadSearchFeed: function() {
     var that = this;
@@ -285,11 +133,12 @@ var SearchFeed = React.createClass({
           }
         })
     ).then(function() {
-          that.setState({data: r});
+          that.setState({ data: r,
+                          isLoading: false
+          });
     });
   },
   componentDidMount: function() {
-    console.log("TIME STATUS =========> ", this.state.firstTime);
     if (this.state.firstTime === true) {
       this.loadSearchFeed();
     }
@@ -341,6 +190,9 @@ var SearchFeed = React.createClass({
     });
   },
   render: function() {
+    if (this.state.isLoading) {
+      return <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/></p></div>;
+    }
     var users = [];
     var models = [];
     var data = [];

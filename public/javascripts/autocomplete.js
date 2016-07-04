@@ -350,6 +350,69 @@ var Container = React.createClass({
     var builtUrl = '/search?' + 'searchQuery=' + this.state.value;
     window.location.href = builtUrl;
   },
+  getOptions: function(input, callback) {
+      var that = this;
+      var str = input;
+      var r = [];
+      $.when(
+        $.ajax({
+          url: '/allusers',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            $.map(data, function(item){
+              var dlink = "/profile/" + item.username;
+              r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink, buttonText: 'Connect', username: item.username, objectId: item.objectId});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
+          url: '/allpublications',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            $.map(data, function(item){
+              var type = item.type;
+              var dlink = "/publication/" + type + "/" + item.objectId;
+              r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink, buttonText: 'See More'});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        }),
+        $.ajax({
+          url: '/allorganizations',
+          dataType: 'json',
+          type: 'POST',
+          data: {substr: str},
+          cache: false,
+          success: function(data) {
+            $.map(data, function(item){
+              var dlink = "/organization/" + item.name;
+              r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink, buttonText: 'Join', objectId: item.objectId});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+        })
+     ).then(function() {
+      callback(
+        null, {
+          options: r
+        }
+      );   
+      that.setState({data: r});
+    });
+  },
   render: function () {
     return (
       <div className="section">
@@ -364,6 +427,16 @@ var Container = React.createClass({
             menuRenderer={this.renderMenu}
             onBlurResetsInput={false}
             onBlur={this.onBlurHandler} />
+          {/*<Select.Async 
+            placeholder='Search...'
+            loadOptions={this.getOptions}
+            onChange={this.setValue}
+            value={this.state.value}
+            menuRenderer={this.renderMenu}
+            onBlurResetsInput={false}
+            autoload={false}
+            onBlur={this.onBlurHandler} />*/}
+
         </div>
         <form onSubmit={this.formHandler}>
           <input id="searchString" type="hidden" value={this.state.value}></input>
