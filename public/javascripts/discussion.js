@@ -64,13 +64,20 @@ var Home = React.createClass({
        }
         var others ="";
         if(this.state.others != undefined) {
-            others=this.state.others.map(function (other,i) {
-                if(discId != other.id && i<6)
-                 return(
-                    <a href={"/organization/"+orgName+"/discussions/"+other.id} className="list-group-item groups-list">{other.topic}</a>
-                );
-            });
+            if(this.state.others.length>1) {
+                others = this.state.others.map(function (other, i) {
+                    if (discId != other.id && i < 6)
+                        return (
+                            <a href={"/organization/"+orgName+"/discussions/"+other.id}
+                               className="list-group-item groups-list">{other.topic}</a>
+                        );
+                });
+            }
+            else
+                others = <a className="list-group-item groups-list">No other discussion available!</a>
+
         }
+
             return (
             <div className="row">
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
