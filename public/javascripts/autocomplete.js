@@ -357,7 +357,6 @@ var Container = React.createClass({
     // document.getElementById('searchString').value = this.state.value;
   },
   formHandler: function(e) {
-    e.preventDefault();
     var builtUrl = '/search?' + 'searchQuery=' + this.state.value;
     window.location.href = builtUrl;
   },
@@ -438,21 +437,10 @@ var Container = React.createClass({
             menuRenderer={this.renderMenu}
             onBlurResetsInput={false}
             onBlur={this.onBlurHandler} />
-          {/*<Select.Async 
-            placeholder='Search...'
-            loadOptions={this.getOptions}
-            onChange={this.setValue}
-            value={this.state.value}
-            menuRenderer={this.renderMenu}
-            onBlurResetsInput={false}
-            autoload={false}
-            onBlur={this.onBlurHandler} />*/}
-
         </div>
-        <form onSubmit={this.formHandler}>
-          <input id="searchString" type="hidden" value={this.state.value}></input>
-          <input id="submitAutosuggest" type="image" src="../images/Search.png"></input>
-        </form>
+      <div className="search-button">
+          <i onClick={this.formHandler.bind(this,this.state.value)} className="fa fa-search search-button" aria-hidden="true"></i>
+      </div>
 
       </div>
     )

@@ -12,6 +12,7 @@ var NewsFeed = React.createClass({
           dataType: 'json',
           cache: false,
           success: function(data) {
+              console.log(data);
               this.setState({data: data});
           }.bind(this),
           error: function(error) {
@@ -23,6 +24,7 @@ var NewsFeed = React.createClass({
           dataType: 'json',
           cache: false,
           success: function(data) {
+
               this.setState({organizations: data});
           }.bind(this),
           error: function(error) {

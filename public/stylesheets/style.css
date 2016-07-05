@@ -6411,7 +6411,15 @@ textarea {
   margin-right: 40px;
   /*width: 40px;*/
 }
-
+.search-button
+{
+  cursor: pointer;
+  padding-top: 3px;
+  padding-left: 15px;
+  background-color: transparent;
+  color: white;
+  font-size: 22px;
+}
 .selectAc {
   width:80%;
   float:left;
