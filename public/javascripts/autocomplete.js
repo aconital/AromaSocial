@@ -194,9 +194,7 @@ var Container = React.createClass({
       this.state.data = [];
       if (inputValue.length <= 0) return;
       this.setState({value: inputValue});
-      // this.refs.searchString.innerText = this.state.value;
-      document.getElementById('searchString').value = this.state.value;
-      console.log(document.getElementById('searchString').value);
+
       var that = this;
       var str = inputValue;
       var r = [];
@@ -350,13 +348,9 @@ var Container = React.createClass({
     )
   },
   onBlurHandler: function(event) {
-    console.log(event);
-    console.log("On Blur Running");
-    console.log(this.state.value);
-    console.log(document.getElementById('searchString').value);
-    // document.getElementById('searchString').value = this.state.value;
   },
   formHandler: function(e) {
+    e.preventDefault();
     var builtUrl = '/search?' + 'searchQuery=' + this.state.value;
     window.location.href = builtUrl;
   },
