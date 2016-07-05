@@ -37,20 +37,26 @@ module.exports=function(app,Parse,io) {
     app.post('/allusers', function(req, res, next) {
         var str = req.body.substr;
         var lcStr = str.toLowerCase();
+        console.log("LIMITTTTTTTTTT =>", req.body.limit);
+        var qLimit;
+        if (req.body.limit != undefined) {
+            qLimit = parseInt(req.body.limit);
+        } else {
+            qLimit = 1000;
+        }
 
         var q0 = new Parse.Query("User");
-        q0.limit(1000);
         q0.contains("fullname", str);
 
         var q1 = new Parse.Query("User");
-        q1.limit(1000);
         q1.contains("search", lcStr);
 
         var mainq = Parse.Query.or(q0, q1);
+        mainq.limit(qLimit);
         mainq.find({
             success: function(items) {
-                console.log("ALL USERS: ")
-                console.log(items)
+                // console.log("ALL USERS: ")
+                // console.log(items)
                 var results = [];
                 for (var i = 0; i < items.length; i++) {
                     var obj = items[i];

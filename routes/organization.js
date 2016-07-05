@@ -20,16 +20,21 @@ module.exports=function(app,Parse,io) {
         var currentUser = req.user;
         var str = req.body.substr;
         var lcStr = str.toLowerCase();
+        var qLimit;
+        if (req.body.limit != undefined) {
+            qLimit = parseInt(req.body.limit);
+        } else {
+            qLimit = 1000;
+        }
 
         var query0 = new Parse.Query('Organization');
-        query0.limit(5);
         query0.contains("displayName", str);
 
         var query1 = new Parse.Query('Organization');
-        query1.limit(5);
         query1.contains("search", lcStr);
 
         var query = Parse.Query.or(query0, query1);
+        query.limit(qLimit);
 
         query.find({
             success: function(items) {
@@ -38,8 +43,8 @@ module.exports=function(app,Parse,io) {
                     var obj = items[i];
                     results.push(obj);
                 }
-                console.log("RESULTS ARE: ");
-                console.log(results);
+                // console.log("RESULTS ARE: ");
+                // console.log(results);
                 res.send(results);
             },
             error: function(error) {

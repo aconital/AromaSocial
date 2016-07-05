@@ -36,16 +36,22 @@ module.exports=function(app,Parse,io) {
         var results = [];
         var str = req.body.substr;
         var lcStr = str.toLowerCase();
+        var qLimit;
+        if (req.body.limit != undefined) {
+            qLimit = parseInt(req.body.limit);
+        } else {
+            qLimit = 1000;
+        }
+        console.log("LIMIT =====>", qLimit);
 
         var query0 = new Parse.Query('Pub_Book');
-        query0.limit(5);
         query0.contains("title", str);
 
         var query1 = new Parse.Query('Pub_Book');
-        query1.limit(5);
         query1.contains("search", lcStr);
 
         var query = Parse.Query.or(query0, query1);
+        query.limit(qLimit);
 
         query.find({
             success: function(items) {
@@ -54,8 +60,8 @@ module.exports=function(app,Parse,io) {
                     var obj = items[i];
                     results.push(obj);
                 }
-                console.log("RESULTS ARE: ");
-                console.log(results);
+                // console.log("RESULTS ARE: ");
+                // console.log(results);
                 //res.send(results);
             },
             error: function(error) {
@@ -63,14 +69,13 @@ module.exports=function(app,Parse,io) {
             }
         }).then(function() {
             var query0 = new Parse.Query('Pub_Conference');
-            query0.limit(5);
             query0.contains("title", str);
 
             var query1 = new Parse.Query('Pub_Conference');
-            query1.limit(5);
             query1.contains("search", lcStr);
 
             var query = Parse.Query.or(query0, query1);
+            query.limit(qLimit);
 
             query.find({
                 success: function(items) {
@@ -79,8 +84,8 @@ module.exports=function(app,Parse,io) {
                         var obj = items[i];
                         results.push(obj);
                     }
-                    console.log("RESULTS ARE: ");
-                    console.log(results);
+                    // console.log("RESULTS ARE: ");
+                    // console.log(results);
                     //res.send(results);
                 },
                 error: function(error) {
@@ -88,14 +93,13 @@ module.exports=function(app,Parse,io) {
                 }
             }).then(function() {
                 var query0 = new Parse.Query('Pub_Journal_Article');
-                query0.limit(5);
                 query0.contains("title", str);
 
                 var query1 = new Parse.Query('Pub_Journal_Article');
-                query1.limit(5);
                 query1.contains("search", lcStr);
 
                 var query = Parse.Query.or(query0, query1);
+                query.limit(qLimit);
 
                 query.find({
                     success: function(items) {
@@ -104,8 +108,8 @@ module.exports=function(app,Parse,io) {
                             var obj = items[i];
                             results.push(obj);
                         }
-                        console.log("RESULTS ARE: ");
-                        console.log(results);
+                        // console.log("RESULTS ARE: ");
+                        // console.log(results);
                         //res.send(results);
                     },
                     error: function(error) {
@@ -113,14 +117,13 @@ module.exports=function(app,Parse,io) {
                     }
                 }).then(function() {
                     var query0 = new Parse.Query('Pub_Patent');
-                    query0.limit(5);
                     query0.contains("title", str);
 
                     var query1 = new Parse.Query('Pub_Patent');
-                    query1.limit(5);
                     query1.contains("search", lcStr);
 
                     var query = Parse.Query.or(query0, query1);
+                    query.limit(qLimit);
                     query.find({
                         success: function(items) {
                             //var results = [];
@@ -128,8 +131,8 @@ module.exports=function(app,Parse,io) {
                                 var obj = items[i];
                                 results.push(obj);
                             }
-                            console.log("RESULTS ARE: ");
-                            console.log(results);
+                            // console.log("RESULTS ARE: ");
+                            // console.log(results);
                             //res.send(results);
                         },
                         error: function(error) {
@@ -137,14 +140,13 @@ module.exports=function(app,Parse,io) {
                         }
                     }).then(function() {
                         var query0 = new Parse.Query('Pub_Report');
-                        query0.limit(5);
                         query0.contains("title", str);
 
                         var query1 = new Parse.Query('Pub_Report');
-                        query1.limit(5);
                         query1.contains("search", lcStr);
 
                         var query = Parse.Query.or(query0, query1);
+                        query.limit(qLimit);
                         query.find({
                             success: function(items) {
                                 //var results = [];
@@ -152,8 +154,8 @@ module.exports=function(app,Parse,io) {
                                     var obj = items[i];
                                     results.push(obj);
                                 }
-                                console.log("RESULTS ARE: ");
-                                console.log(results);
+                                // console.log("RESULTS ARE: ");
+                                // console.log(results);
                                 //res.send(results);
                             },
                             error: function(error) {
@@ -161,14 +163,13 @@ module.exports=function(app,Parse,io) {
                             }
                         }).then(function(){             
                             var query0 = new Parse.Query('Pub_Thesis');
-                            query0.limit(5);
                             query0.contains("title", str);
 
                             var query1 = new Parse.Query('Pub_Thesis');
-                            query1.limit(5);
                             query1.contains("search", lcStr);
 
                             var query = Parse.Query.or(query0, query1);
+                            query.limit(qLimit);
                             query.find({
                                 success: function(items) {
                                     //var results = [];
@@ -176,8 +177,8 @@ module.exports=function(app,Parse,io) {
                                         var obj = items[i];
                                         results.push(obj);
                                     }
-                                    console.log("RESULTS ARE: ");
-                                    console.log(results);
+                                    // console.log("RESULTS ARE: ");
+                                    // console.log(results);
                                     //res.send(results);
                                 },
                                 error: function(error) {
@@ -185,14 +186,13 @@ module.exports=function(app,Parse,io) {
                                 }
                             }).then(function() {
                                 var query0 = new Parse.Query('Pub_Unpublished');
-                                query0.limit(5);
                                 query0.contains("title", str);
 
                                 var query1 = new Parse.Query('Pub_Unpublished');
-                                query1.limit(5);
                                 query1.contains("search", lcStr);
 
                                 var query = Parse.Query.or(query0, query1);
+                                query.limit(qLimit);
                                 query.find({
                                     success: function(items) {
                                         //var results = [];
@@ -200,8 +200,8 @@ module.exports=function(app,Parse,io) {
                                             var obj = items[i];
                                             results.push(obj);
                                         }
-                                        console.log("RESULTS ARE: ");
-                                        console.log(results);
+                                        // console.log("RESULTS ARE: ");
+                                        // console.log(results);
                                         res.send(results);
                                     },
                                     error: function(error) {

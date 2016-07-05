@@ -178,10 +178,21 @@ var Container = React.createClass({
   getInitialState: function() {
     return { 
       value: '',
-      data: []
+      data: [],
+      ajaxTimer: null
     };
   },
+  componentWillMount: function() {
+    this.state.ajaxTimer = setTimeout(this.inputChange, 60000);
+    clearTimeout(this.state.ajaxTimer);
+  },
+  inputChangeWrapper: function(inputValue) {
+    clearTimeout(this.state.ajaxTimer);
+    this.state.ajaxTimer = setTimeout(this.inputChange.bind(null, inputValue), 200);
+  },
   inputChange: function(inputValue) {
+      this.state.data = [];
+      if (inputValue.length <= 0) return;
       this.setState({value: inputValue});
       // this.refs.searchString.innerText = this.state.value;
       document.getElementById('searchString').value = this.state.value;
@@ -194,7 +205,7 @@ var Container = React.createClass({
           url: '/allusers',
           dataType: 'json',
           type: 'POST',
-          data: {substr: str},
+          data: {substr: str, limit: 5},
           cache: false,
           success: function(data) {
             $.map(data, function(item){
@@ -210,7 +221,7 @@ var Container = React.createClass({
           url: '/allpublications',
           dataType: 'json',
           type: 'POST',
-          data: {substr: str},
+          data: {substr: str, limit: 5},
           cache: false,
           success: function(data) {
             $.map(data, function(item){
@@ -227,7 +238,7 @@ var Container = React.createClass({
           url: '/allorganizations',
           dataType: 'json',
           type: 'POST',
-          data: {substr: str},
+          data: {substr: str, limit: 5},
           cache: false,
           success: function(data) {
             $.map(data, function(item){
@@ -423,7 +434,7 @@ var Container = React.createClass({
             onChange={this.setValue}
             value={this.state.value}
             valueRenderer={this.renderValue}
-            onInputChange={this.inputChange}
+            onInputChange={this.inputChangeWrapper}
             menuRenderer={this.renderMenu}
             onBlurResetsInput={false}
             onBlur={this.onBlurHandler} />
