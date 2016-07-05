@@ -253,7 +253,7 @@ var Container = React.createClass({
     });
   },
   setValue: function (value) {
-    this.setState({ value });
+    this.setState({ value: value });
     console.log('Suggestion selected:', value.label);
   },
   updateValue: function (value) {
@@ -424,7 +424,6 @@ var Container = React.createClass({
           <Select 
             placeholder='Search...'
             options={this.state.data}
-            onChange={this.setValue}
             value={this.state.value}
             valueRenderer={this.renderValue}
             onInputChange={this.inputChangeWrapper}
