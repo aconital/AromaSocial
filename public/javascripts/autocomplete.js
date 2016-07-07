@@ -349,8 +349,7 @@ var Container = React.createClass({
   },
   onBlurHandler: function(event) {
   },
-  formHandler: function(e) {
-    e.preventDefault();
+  formHandler: function() {
     var builtUrl = '/search?' + 'searchQuery=' + this.state.value;
     window.location.href = builtUrl;
   },
