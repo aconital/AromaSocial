@@ -157,22 +157,10 @@
     width:100%;
     background-color: var(--white-color);
     border-color: var(--background-color);
-    /*border-radius: 4px;*/
     border-width: 1px;
-  /*  padding:10px;*/
     position: relative;
     overflow: hidden;
-   /* box-shadow: 0px 2px 7px #888888;*/
-    -webkit-transition: all 1s ease;
-    -moz-transition: all 1s ease;
-    -o-transition: all 1s ease;
-    -ms-transition: all 1s ease;
-    transition: all 1s ease;
-} /*.item-box + .item-box {
-    margin-top:10px;
-} .item-search-div + .item-box {
-    margin-top:10px;
-}*/ .item-box-left {
+} .item-box-left {
     float:left;
     margin-right:2%;
     width:15%;
