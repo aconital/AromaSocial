@@ -6374,8 +6374,8 @@ textarea {
 
 
 .publication-table { margin-bottom: 10px; width: 100%; }
-.publication-table-info-right { width: 75%; }
-.publication-table-info-left { width: 25%; }
+.publication-table-info-right { width: 80%; }
+.publication-table-info-left { width: 20%; }
 
 .grow {
     display: inline-block;

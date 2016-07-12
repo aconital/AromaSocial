@@ -95,7 +95,7 @@ var SettingsModal = React.createClass({
         return (
             <span>
                 <OverlayTrigger placement="top" overlay={tooltip_settings}>
-                    <span className="glyphicon glyphicon-pencil space settings-btn" onClick={this.open}></span>
+                    <span className="glyphicon glyphicon-cog space settings-btn" onClick={this.open}></span>
                 </OverlayTrigger>
 
                 <Modal show={this.state.showModal} onHide={this.close}>
@@ -180,7 +180,7 @@ var UpdateTab = React.createClass({
                 // this.setState({file: this.state.file});
                 this.setState({ buttonText: "Update",
                                 disabled: false });
-                this.clickClose();
+                location.reload();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/upload", status, err.toString());
