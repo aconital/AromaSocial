@@ -46,6 +46,7 @@ module.exports=function(app,Parse,io) {
             for (var i = 0; i < results.length; i++) {
                 var result=results[i];
                 // Do something with the returned Parse.Object values
+                console.log(result.attributes);
                 var comments = [];
                 if(result.get("comments") != undefined){
                     var commentsList =result.get("comments");
