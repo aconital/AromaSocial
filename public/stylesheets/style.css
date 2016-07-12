@@ -6388,7 +6388,54 @@ textarea {
 .grow:hover {
     /* height: 100%; /* This is the height on hover */
 }
+.categoryHeader {
+  font-weight: bold;
+  display: inline-block;
+  text-align: center;
+  background-color: #333333;
+  color: white;
+  width: 100%;
+}
 
+#submitAutosuggest {
+  /*width:20%;
+  height:40px;*/
+  float:right;
+  background: transparent;
+  /*background: url("../images/searchButton.png")*/
+  /*background-color: #008CBA;*/
+  border-color: transparent;
+  border-radius: 4px;
+  color:white;
+  height: 40px;
+  margin-right: 40px;
+  /*width: 40px;*/
+}
+.search-button
+{
+  cursor: pointer;
+  padding-top: 3px;
+  padding-left: 15px;
+  background-color: transparent;
+  color: white;
+  font-size: 22px;
+}
+.selectAc {
+  width:80%;
+  float:left;
+}
+
+.acButton {
+  width: 27%;
+  float: right;
+  margin: 2%;/*
+  margin-right: 5%;*/
+}
+
+.acImage {
+  float: left;
+  margin: 3%;
+}
 .ui-autocomplete {
     /*max-height: 0;*/
     /*transition: max-height 0.5s ease-out;*/
@@ -6551,16 +6598,16 @@ hr.style15 {
     }
 }
 
-.notification-counter {   
-    position: absolute;
-    top: 7px;
-    left: 14px;
-    
-    background-color: rgba(212, 19, 13, 1);
-    color: #fff;
-    border-radius: 3px;
-    padding: 1px 3px;
-    font: 8px Verdana;
+.request-notification-counter,.general-notification-counter {
+  position: absolute;
+  top: 7px;
+  left: 14px;
+
+  background-color: rgba(212, 19, 13, 1);
+  color: #fff;
+  border-radius: 3px;
+  padding: 1px 3px;
+  font: 8px Verdana;
 }
 
 .contain-image {
@@ -6647,6 +6694,25 @@ hr.style15 {
 }
 .createorg_btn:hover{
   background-color:#65638e   ;
+  -webkit-transition: background-color 3000ms linear;
+  -moz-transition: background-color 3000ms linear;
+  -o-transition: background-color 3000ms linear;
+  -ms-transition: background-color 3000ms linear;
+  transition: background-color 300ms linear;
+}
+
+ .action_btn{
+   -webkit-transition: background-color 3000ms linear;
+   -moz-transition: background-color 3000ms linear;
+   -o-transition: background-color 3000ms linear;
+   -ms-transition: background-color 3000ms linear;
+   transition: background-color 300ms linear;
+   font-size: large;
+   border: none;
+   background-color: #1fa67a   ;
+ }
+.action_btn:hover{
+  background-color:#1fa67a   ;
   -webkit-transition: background-color 3000ms linear;
   -moz-transition: background-color 3000ms linear;
   -o-transition: background-color 3000ms linear;

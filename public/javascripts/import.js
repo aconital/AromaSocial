@@ -19,6 +19,7 @@ var ImportContent = React.createClass({
 		var self = this;
 
 		var nameQuery = this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
+		// var nameQuery = 'sung kyu lim';
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
 

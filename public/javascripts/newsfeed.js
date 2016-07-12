@@ -52,7 +52,7 @@ var NewsFeed = React.createClass({
                   <div className="col-xs-8">
                       {this.state.data.map(function(item, i) {
                           return (
-                              <div>
+                              <div key={i}>
                                   <NewsFeedList key={i}
                                         date={item.date}
                                         feedId={item.feedId}

@@ -22,34 +22,31 @@ var CustomTags = React.createClass({
     getInitialState: function() {
         var resultArr = [];
         var nameToIds = {};
+        var users = [];
                 $.ajax({
                     url: '/allusers',
                     dataType: 'JSON',
                     cache: false,
                     success: function(data) {
-                        console.log("SUCCESS!!!!!!!");
-                        console.log(data);
-                        // var arr = $.grep(data, function(item){
-                        //     return item.fullname.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-                        // });
                         $.map(data, function(item){
                             resultArr.push(item.fullname)
                             nameToIds[item.username] = {
                                 fullname: item.fullname,
                                 used: false
                             };
+                            var val = item.fullname + " (" + item.username + ")";
+                            users.push(val);
                         })
-                        console.log(resultArr)
                     },
                     error: function(xhr) {
-                        console.log(xhr.status);
+                        console.error(xhr.status);
                     }
             });
 
         return {
             tags: [],
             ids: [],
-            suggestions: resultArr,
+            suggestions: users,
             placeholder: "Add new collaborator...",
             idMap: nameToIds
         }
@@ -90,6 +87,7 @@ var CustomTags = React.createClass({
             text: tag
         });
         this.setState({tags: tags});
+
         ids.push(tag);
         this.setState({ids: ids});
         console.log("user not in system. Just adding tag");
@@ -101,35 +99,8 @@ var CustomTags = React.createClass({
     },
     handleAddition: function(tag) {
         var tags = this.state.tags;
-        // if (this.isInTags(tag)) {
-        //     console.log("Duplicate tag found. Not adding.");
-        // } else {
-            this.addTag(tag);
-            this.props.changeFunc(this.props.name, this.state.ids);
-            // tags.push({
-            //     id: tags.length + 1,
-            //     text: tag
-            // });
-            // this.setState({tags: tags});
-
-            // var ids = this.state.ids;
-            // if (this.state.idMap[tag] == undefined) {
-            //     ids.push(tag);
-            // } else {
-            //     ids.push(this.state.idMap[tag]);
-            // }
-            // this.setState({ids: ids});
-
-
-            // console.log("ID MAP ENTRY: ");
-            // console.log(this.state.ids);
-            // if (this.state.idMap[tag] != null) {
-            //     // this.props.changeFunc.bind(this.props.name, tag, this.state.idMap[tag]);
-            //     // this.props.changeFunc(this.props.name, tag, this.state.idMap[tag]);
-            //      this.props.changeFunc(this.props.name, this.state.ids);
-            //     // this.props.changeFunc(this.props.name, this.state.tags);
-            // }
-        //}
+        this.addTag(tag);
+        this.props.changeFunc(this.props.name, this.state.ids);
     },
     handleDrag: function(tag, currPos, newPos) {
         var tags = this.state.tags;
@@ -189,8 +160,6 @@ var Profile = React.createClass ({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.fileChosen.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -284,9 +253,7 @@ var Profile = React.createClass ({
     },
 
     submitChange: function() {
-        var dataForm = { about: this.state.about
-        };
-        console.log(JSON.stringify(dataForm));
+        var dataForm = { about: this.state.about };
         $.ajax({
             url: path + "/updateAbout",
             dataType: 'json',
@@ -422,7 +389,7 @@ var ProfileMenu = React.createClass ({
 
 var Connections = React.createClass({
     getInitialState: function() {
-        return {data: []};
+        return { data: [], noRecordsMessage: <LoadingGif /> };
     },
     componentDidMount : function(){
         var peopleUrl= "/profile/"+objectId+"/connections";
@@ -430,8 +397,10 @@ var Connections = React.createClass({
         $.ajax({
             url: peopleUrl,
             success: function(data) {
-
-                this.setState({data: data});
+                this.setState({data: data, noRecordsMessage: ''});
+                if (data.length < 1 || Object.keys(data).length === 0) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve people");
@@ -443,26 +412,14 @@ var Connections = React.createClass({
         invite(e.nativeEvent);
     },
     render: function() {
-        return (
-            <div className="item-search-div">
-                <table className="item-search-field" width="100%">
-                    <tr>
-                        {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
-                    </tr>
-                </table>
-            </div>
-        )
         var peopleList = $.map(this.state.data,function(objects) {
             var role= objects[0].title;
             var plist=[];
             for(var i in objects)
             {
                 var person = objects[i];
-
                 plist.push(person);
             }
-            console.log(currentUsername);
-            console.log(username);
 
             return (                
                 <div id="item-list">
@@ -484,7 +441,15 @@ var Connections = React.createClass({
         });
         return (
             <div>
+                <div className="item-search-div">
+                    <table className="item-search-field" width="100%">
+                        <tr>
+                            {(currentUsername == username) ? <td className="padding-left-5"><OverlayTrigger placement="right" overlay={tooltip}><input className="item-add-button" onClick={this.inviteTrigger} type="button" value="+"/></OverlayTrigger></td> : ""}
+                        </tr>
+                    </table>
+                </div>
                 {peopleList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -492,7 +457,7 @@ var Connections = React.createClass({
 
 var Organizations = React.createClass({
     getInitialState: function() {
-        return {orgs: [],myOrgs:[],isMe:false};
+        return {orgs: [],myOrgs:[],isMe:false, noRecordsMessage: <LoadingGif /> };
     },
     componentDidMount : function(){
 
@@ -503,7 +468,11 @@ var Organizations = React.createClass({
             success: function(data) {
                 this.setState({orgs: data.orgs,
                                myOrgs:data.myOrgs,
-                               isMe:data.isMe});
+                               isMe:data.isMe,
+                               noRecordsMessage: ''});
+                if (data.orgs.length < 1) {
+                    this.setState({noRecordsMessage: (<div style={{textAlign: 'center'}}>No connections exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("couldnt retrieve orgs");
@@ -567,6 +536,7 @@ var Organizations = React.createClass({
         return (
             <div>
                 {orgList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -595,7 +565,6 @@ var About = React.createClass({
         };
     },
     submitSummary: function() {
-        console.log(this.state.educations);
         var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
         $.ajax({
             url: path + "/updateSummary",
@@ -704,7 +673,6 @@ var About = React.createClass({
     },
     handleArrayChange: function(index) {
         var interestsChange = document.getElementById("interests-" + index).value;
-        console.log(interestsChange);
         var interestsTemp = JSON.parse(this.state.interests);
         interestsTemp[index] = interestsChange;
         var interestsTemp = JSON.stringify(interestsTemp).replace(/\\\"/g,"'")
@@ -735,7 +703,6 @@ var About = React.createClass({
             arrayWE.push(newWE);
         }
         this.setState({workExperience:JSON.stringify(arrayWE), hideWorkExperiences: "show"}, function(){ this.submitExperience() }.bind(this));
-        console.log(workExperience);
     },
     addEducation: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
@@ -743,7 +710,6 @@ var About = React.createClass({
         else { var newWE = {company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"};
                var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
         this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
-        console.log(educations);
     },
     tabChange: function(index) {
         this.props.tab(index);
@@ -757,10 +723,8 @@ var About = React.createClass({
             processData: false,
             success: function(data) {
                 var parseData = JSON.parse(data);
-                console.log(data);
                 educationData = parseData[0];
                 workExperienceData = parseData[1];
-                console.log(educationData);
                 this.setState({educations: JSON.stringify(educationData)});
                 this.setState({workExperience: JSON.stringify(workExperienceData)});
                 if (educationData.length == 0) {this.setState({hideEducations: "hide"});}
@@ -956,7 +920,7 @@ var AboutTabObject = React.createClass({
 
                 </div>
             )
-        }else{ //if field is education, use education placeholders
+        } else{ //if field is education, use education placeholders
             return (
                 <div className={"about-item-hr relative " + this.state.display} >
                     {(currentUsername == username) ? <div className="div-minus">
@@ -1008,7 +972,7 @@ var More = React.createClass({
 
 var Projects = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1025,7 +989,12 @@ var Projects = React.createClass({
             type: 'GET',
             url: projectsURL,
             success: function(data) {
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Projects!");
@@ -1058,6 +1027,7 @@ var Projects = React.createClass({
                 </div>
             );
         });
+
         return (
             <div>
                 <Modal show={this.state.showModal} onHide={this.clickClose}>
@@ -1075,16 +1045,16 @@ var Projects = React.createClass({
                     </table>
                 </div>
                 {itemsList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
 });
 
 
-
 var Publications = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1099,8 +1069,12 @@ var Publications = React.createClass({
             type: 'GET',
             url: publicationsURL,
             success: function(data) {
-                console.log(data);
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Publications!");
@@ -1131,7 +1105,9 @@ var Publications = React.createClass({
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
                                 <tr><td>Authors: </td><td>{item.contributors.map(function(contributor) { 
-                                    return <a href={contributor.replace(/ /g, "_")} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;})}</td></tr>
+                                        return <a href={getLinkFromCollaborator(contributor)} className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(contributor)}</a>;
+                                    // return <a href={contributor.replace(/ /g, "_")} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;
+                                })}</td></tr>
                                 {(item.type == "journal")? <tr><td>Publication Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date}</td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
                             </table>
@@ -1143,10 +1119,12 @@ var Publications = React.createClass({
             </div>
             );
         });
+
         return (
             <div>
                 <ResourceForm publication={true} />
                 {itemsList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -1182,7 +1160,7 @@ var Publication = React.createClass({
 
 var Models = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], noRecordsMessage: <LoadingGif />, showModal: false };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1197,8 +1175,12 @@ var Models = React.createClass({
             type: 'GET',
             url: modelsURL,
             success: function(data) {
-                console.log(data);
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Models!");
@@ -1243,10 +1225,12 @@ var Models = React.createClass({
             </div>
             );
         });
+
         return (
             <div>
                 <ResourceForm fromModelTab={true} />
                 {itemsList}
+                {this.state.noRecordsMessage}
             </div>
         )
     }
@@ -1254,7 +1238,7 @@ var Models = React.createClass({
 
 var Data = React.createClass({
     getInitialState: function() {
-        return { data: [], showModal: false };
+        return { data: [], showModal: false, noRecordsMessage: <LoadingGif /> };
     },
     clickOpen() {
         this.setState({ showModal: true });
@@ -1269,7 +1253,12 @@ var Data = React.createClass({
             type: 'GET',
             url: dataURL,
             success: function(data) {
-                this.setState({data: data});
+                if (data.length > 0 || Object.keys(data).length > 0) {
+                    this.setState({data: data, noRecordsMessage: ''});
+                }
+                else {
+                    this.setState({data: data, noRecordsMessage: (<div style={{textAlign: 'center'}}>No records exist yet!</div>)});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve Data!");
@@ -1288,7 +1277,6 @@ var Data = React.createClass({
             for (var i in items) {
                 var item = items[i];
                 dataPath = '/data/' + item.objectId;
-                console.log(item);
                 item.start_date = (new Date(item.start_date)).toUTCString().slice(8,-12);
                 typeList.push(item);
             }
@@ -1311,9 +1299,7 @@ var Data = React.createClass({
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) {
-                                    // var ret = (this.isUserId(collaborator) ? <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a> : <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>);
-                                    var dLink = "/profile/" + collaborator.replace(/ /g, "_");
-                                    return <a href={dLink} className="tagsinput-tag-link react-tagsinput-tag">{collaborator}</a>;
+                                    return <a href={getLinkFromCollaborator(collaborator)} className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(collaborator)}</a>;
                                 })}
                                 </td></tr>
                                 <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
@@ -1327,10 +1313,18 @@ var Data = React.createClass({
             </div>
             );
         });
+
+        if (this.state.noRecordsMessage == null) {
+            var noRecordsMessage = itemsList.length > 0 ? '' : (<div style={{textAlign: 'center'}}>No records exist yet!</div>);
+        } else {
+            var noRecordsMessage = this.state.noRecordsMessage;
+        }
+
         return (
             <div>
                 <ResourceForm fromModelTab={false} />
                 {itemsList}
+                {noRecordsMessage}
             </div>
         )
     }
@@ -1620,7 +1614,6 @@ var PublicationAddForm = React.createClass({
 			url: 'http://api.crossref.org/works/' + this.state.doi,
 			type: 'GET',
 			success: function(data) {
-				console.log(data);
 				var entry = data.message;
 				this.setState({
 					title: entry.title[0],
@@ -1783,7 +1776,6 @@ var PublicationAddForm = React.createClass({
 			processData: false,
 			success: function(data) {
 				console.log("Publication upload done");
-				console.log(data);
 				this.close();
 			}.bind(this),
 			error: function(xhr, status, err) {
@@ -1803,8 +1795,6 @@ var PublicationAddForm = React.createClass({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.file.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -1865,60 +1855,6 @@ var ResourceAddForm = React.createClass({
             url: '',
         };
     },
-    // componentDidMount: function() {
-    //     var eCode = <script>
-    //                     $(function() {
-    //                         $('.auto').bind("keydown", function(event) {
-    //                             if ( event.keyCode === $.ui.keyCode.TAB &&
-    //                                 $( this ).autocomplete( "instance" ).menu.active ) {
-    //                               event.preventDefault();
-    //                             }
-    //                         })
-    //                         .autocomplete({
-    //                                 source: function(req, res) {
-    //                                     $.ajax({
-    //                                       url: '/allusers',
-    //                                       dataType: 'JSON',
-    //                                       cache: false,
-    //                                       success: function(data) {
-    //                                         console.log("SUCCESS!!!!!!!");
-    //                                         console.log(data);
-    //                                         var arr = $.grep(data, function(item){
-    //                                           return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-    //                                         });
-    //                                         res($.ui.autocomplete.filter($.map(data, function(item){
-    //                                           return {
-    //                                             label: item.fullname,
-    //                                             value: item.username
-    //                                           };
-    //                                         }), extractLast(req.term)));
-    //                                       },
-    //                                       error: function(xhr) {
-    //                                         console.log(xhr.status);
-    //                                       }
-    //                                     });
-    //                                 },
-    //                                 focus: function() {
-    //                                     return false;
-    //                                 },
-    //                                 messages: {
-    //                                   noResults: '',
-    //                                   results: function() {}
-    //                                 },
-    //                                 select: function(event, ui) {
-    //                                     var terms = split(this.value);
-    //                                     terms.pop();
-    //                                     terms.push(ui.item.value);
-    //                                     terms.push("");
-    //                                     this.value = terms.join(" ");
-    //                                     return false;
-    //                                 }
-    //                         })
-    //                     });
-    //                 </script>
-    //     // var eCode = <script type="text/jsx" src="/javascripts/multac.jsx"></script>
-    //     $("#scriptContainer").append(eCode);
-    // },
 	render: function() {
         if (this.state.alertVisible) {
             var alert = <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}> {this.state.formFeedback} </Alert>;
@@ -1968,16 +1904,6 @@ var ResourceAddForm = React.createClass({
         var changedState = {};
         changedState[type] = ids;
         this.setState(changedState);
-        // var newState = [];
-        // for (var i = 0; i < tags.length; i++) {
-        //     var t = tags[i];
-        //     console.log(t.id);
-        //     console.log(t.text);
-        //     newState.push(t.text);
-        // }
-        // var changedState = {};
-        // changedState[type] = newState;
-        // this.setState(changedState);
     },
 	handleChange: function(e) {
 	    var changedState = {};
@@ -1995,7 +1921,6 @@ var ResourceAddForm = React.createClass({
         this.setState(changedState);
     },
 	handleSubmitData: function(e) {
-        console.log(e);
         e.preventDefault();
         this.setState({submitButtonText: "Please Wait. We're uploading",
                         submitButtonDisabled: true,
@@ -2025,7 +1950,6 @@ var ResourceAddForm = React.createClass({
 				success: function(data) {
 					this.setState({data: data});
 					console.log("Data upload done");
-					console.log(data);
 					this.close();
 				}.bind(this),
 				error: function(xhr, status, err) {
@@ -2063,8 +1987,6 @@ var ResourceAddForm = React.createClass({
         input.trigger('fileselect', [numFiles, label]);
 
         this.state.file.on('fileselect', function(event, numFiles, label) {
-            console.log(numFiles);
-            console.log(label);
             return input;
         });
 	},
@@ -2275,7 +2197,6 @@ var ProjectAddForm = React.createClass({
         				collaborators: JSON.stringify(this.state.collaborators), startDate: this.state.startDate, endDate: this.state.endDate,
         				description: this.state.description, client: this.state.client, link_to_resources: this.state.link_to_resources,
         				keywords: JSON.stringify(this.state.keywords), url: this.state.url, title: this.state.title};
-		console.log(dataForm);
 
         var isValidForm = this.validateForm();
 		if (isValidForm.length === 0) {
@@ -2294,7 +2215,7 @@ var ProjectAddForm = React.createClass({
 				data: JSON.stringify(dataForm),
 				processData: false,
 				success: function(data) {
-				    console.log(data);
+				    console.log("Submitted");
 				    this.close();
 				}.bind(this),
 				error: function(xhr, status, err) {
@@ -2371,6 +2292,18 @@ var ProjectAddForm = React.createClass({
 	},
 });
 
+var LoadingGif = React.createClass({
+    render: function() {
+        return (
+            <div>
+                <p style={{textAlign: 'center'}}><img className="loading-bar" src="../images/loadingbar.gif"/>
+                Fetching...
+                </p>
+            </div>
+        )
+    }
+});
+
 var Required = React.createClass({
 	render: function() {
 		var requiredField = {color: 'red', fontWeight: '800'}
@@ -2379,6 +2312,22 @@ var Required = React.createClass({
 		);
 	},
 });
+
+// helpers
+function getLinkFromCollaborator (collab) {
+    var uName = collab.split("(")[1];
+    if (uName === undefined) {
+        return '#';
+    }
+    uName = uName.substring(0, uName.length-1);
+    var dLink = "/profile/" + uName;
+    return dLink;
+}
+
+function getNameFromCollaborator (collab) {
+    var name = collab.split("(")[0];
+    return name.replace(/_/g, " ").replace(/(\.\d*)/g, "")
+}
 
 $( document ).ready(function() {
     ReactDOM.render(<Profile />, document.getElementById('content'));

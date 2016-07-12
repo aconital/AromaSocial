@@ -21,8 +21,7 @@ module.exports=function(app,Parse,io) {
      * NEWS FEED
      *
      ********************************************/
-    app.get('/newsfeeddata', is_auth,function (req, res, next) {
-        console.log("-5");
+    app.get('/newsfeeddata',function (req, res, next) {
         var query = new Parse.Query('NewsFeed');
         query.include("pubBookId");
         query.include("pubReportId");
@@ -46,7 +45,6 @@ module.exports=function(app,Parse,io) {
         query.find(function(results) {
             for (var i = 0; i < results.length; i++) {
                 var result=results[i];
-                console.log(result.toString());
                 // Do something with the returned Parse.Object values
                 var comments = [];
                 if(result.get("comments") != undefined){
@@ -162,7 +160,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type == "pub_conference" ){
-                    var message="added a book";
+                    var message="added a conference proceeding";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/conference/" + result.get("pubConferenceId").id;
                     feed.push({
@@ -180,7 +178,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_journal"){
-                    var message="added a book";
+                    var message="added a journal article";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/journal/" + result.get("pubJournalId").id;
                     feed.push({
@@ -196,9 +194,11 @@ module.exports=function(app,Parse,io) {
                         description:result.get("pubJournalId").get("abstract")!=null ? result.get("pubJournalId").get("abstract"):"",
                         comments:comments
                     });
+
+
                 }
                 else if(type =="pub_patent"){
-                    var message="added a book";
+                    var message="added a patent";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/patent/" + result.get("pubPatentId").id;
                     feed.push({
@@ -216,7 +216,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_thesis"){
-                    var message="added a book";
+                    var message="added a thesis";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/thesis/" + result.get("pubThesisId").id;
                     feed.push({
@@ -233,7 +233,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_unpublished"){
-                    var message="added a book";
+                    var message="added an unpublished article";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/unpublished/" + result.get("pubUnpublishedId").id;
                     feed.push({
@@ -251,7 +251,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_report"){
-                    var message="added a book";
+                    var message="added a report";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/report/" + result.get("pubReportId").id;
                     feed.push({
@@ -269,7 +269,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="org_create"){
-                    var message="created a network";
+                    var message="created";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
@@ -287,7 +287,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="org_join"){
-                    var message="joined a network";
+                    var message="joined";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/organization/" + result.get("orgId").get("name");
                     feed.push({
@@ -323,7 +323,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
             }
-            console.log("it works");
+
             res.json(feed);
         }, function(error) {
             console.log("Error: " + error.toString());
@@ -350,7 +350,6 @@ module.exports=function(app,Parse,io) {
                 orgs.push(org);
             }
         }).then(function(){
-            console.log(JSON.stringify(orgs));
             res.json(orgs);
         })
     });

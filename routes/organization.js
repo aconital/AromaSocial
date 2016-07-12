@@ -19,10 +19,23 @@ module.exports=function(app,Parse,io) {
     app.post('/allorganizations', function(req, res, next) {
         var currentUser = req.user;
         var str = req.body.substr;
-        console.log("string to match in org: ", str);
-        var query = new Parse.Query('Organization');
-        query.limit(1000);
-        query.contains("title", str);
+        var lcStr = str.toLowerCase();
+        var qLimit;
+        if (req.body.limit != undefined) {
+            qLimit = parseInt(req.body.limit);
+        } else {
+            qLimit = 1000;
+        }
+
+        var query0 = new Parse.Query('Organization');
+        query0.contains("displayName", str);
+
+        var query1 = new Parse.Query('Organization');
+        query1.contains("search", lcStr);
+
+        var query = Parse.Query.or(query0, query1);
+        query.limit(qLimit);
+
         query.find({
             success: function(items) {
                 var results = [];
@@ -30,8 +43,8 @@ module.exports=function(app,Parse,io) {
                     var obj = items[i];
                     results.push(obj);
                 }
-                console.log("RESULTS ARE: ");
-                console.log(results);
+                // console.log("RESULTS ARE: ");
+                // console.log(results);
                 res.send(results);
             },
             error: function(error) {
@@ -1377,6 +1390,74 @@ module.exports=function(app,Parse,io) {
             })
         })
     });
+
+    app.post('/organization/:objectId/events',is_auth,function(req,res,next){
+        var Event = Parse.Object.extend("Event");
+        var event = new Event();
+        console.log(req.params.objectId);
+        console.log(req.body);
+
+        event.set("title", req.body.title);
+        event.set("date", new Date(req.body.date));
+        event.set("time", req.body.time);
+        event.set("location", req.body.location);
+        event.set("description", req.body.description);
+        event.set("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+
+        event.save(null, {
+            success: function (obj) {
+                console.log('event success!');
+                res.status(200).json({status:"OK", query: obj});
+            },
+            error: function (error) {
+                console.log('Failed to create new object, with error: ' + JSON.stringify(error));
+                res.status(500).json({error: error});
+            }
+        });
+    });
+
+    app.get("/organization/:objectId/events",function(req,res,next){
+        var events = [],
+            yesterday = moment().startOf('day').subtract(1, 'days').toDate(); // start of current day
+
+        var query = new Parse.Query("Event");
+        query.equalTo("orgId", { __type: "Pointer", className: "Organization", objectId: req.params.objectId});
+        query.ascending('date');
+
+        if (req.query.upcoming === 'true') { // restricted query for homepage sidebar contents
+            query.greaterThanOrEqualTo('date', yesterday); // only want to get upcoming events
+            query.limit(4);
+        }
+
+        query.find().then(function(results) {
+            console.log("retrieved events:", results.length);
+            for (var i = 0; i < results.length; i++) {
+                var object = results[i];
+                var time = object.attributes.time;
+                if (time != null) { // format time to 12 hour format
+                    var timeFragments = time.split(':');
+                    var formattedTime = moment().hour(timeFragments[0]).minute(timeFragments[1]).format("h:mm A");
+                    time = formattedTime;
+                }
+
+                events.push({
+                    title: object.attributes.title,
+                    date: object.attributes.date,
+                    time: time,
+                    location: object.attributes.location,
+                    description: object.attributes.description,
+                });
+            }
+            return events;
+        }).then(function(events) {
+            console.log('sending shit over');
+            res.json(events);
+        }, function(error) {
+            console.log('Failed to retrieve events, with error: ' + error);
+            res.status(500).json({status: "Event retrieval failed. " + error.message});
+        });
+    });
+
 
 
     /*

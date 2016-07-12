@@ -263,12 +263,25 @@ namesToUsernames:function(names, user) {
     var usernames = _.map(names, function(name) {
         console.log(name);
         if (name == user.fullname) {
-            return user.username;
+            return user.fullname + " (" + user.username + ")";
         } else {
             return name.replace(/ /g, "_");
         }
     });
     return usernames;
+},
+
+
+getLinkFromCollaborator: function(collab) {
+    var uName = collab.split("(")[1];
+    uName = uName.substring(0, uName.length-1);
+    var dLink = "/profile/" + uName;
+    return dLink;
+},
+
+getNameFromCollaborator: function(collab) {
+    var name = collab.split("(")[0];
+    return name;
 }
 
 };

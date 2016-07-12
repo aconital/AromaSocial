@@ -236,7 +236,7 @@ var Organization = React.createClass ({
                         </div>
                                 <div className="item-bottom-3">
 
-                                    <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
+                                    <OrganizationMenu joinStatus= {this.state.status} isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@ var Organization = React.createClass ({
                         </div>
                         <div className="item-bottom-3">
 
-                            <OrganizationMenu isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
+                            <OrganizationMenu joinStatus= {this.state.status} isAdmin = {this.state.isAdmin}  tabs={['Home','About','Resources']} />
                         </div>
                     </div>
                 </div>
@@ -294,14 +294,16 @@ var OrganizationMenu = React.createClass ({
 
         var tabMap = {
             0: <Home
+                joinStatus= {this.props.joinStatus}
                 showEquipment={this.showTab.bind(self,3)}
                 showProjects={this.showTab.bind(self,4)}
                 showPublications={this.showTab.bind(self,5)}
                 showData={this.showTab.bind(self,6)}
                 showModels={this.showTab.bind(self,7)}
-                     viewPeople={this.showTab.bind(self,8)}
-                     viewConnections={this.showTab.bind(self,9)}
-                     objectId={objectId} />,
+                viewPeople={this.showTab.bind(self,8)}
+                viewConnections={this.showTab.bind(self,9)}
+                viewEvents={this.showTab.bind(self,10)}
+                objectId={objectId} />,
             1: <About objectId={objectId} />,
             2: <Resources isAdmin ={this.props.isAdmin}
                           showEquipment={this.showTab.bind(self,3)}
@@ -316,7 +318,7 @@ var OrganizationMenu = React.createClass ({
             7: <Models objectId={objectId}/>,
             8: <People isAdmin={this.props.isAdmin} />,
             9: <Connections isAdmin={this.props.isAdmin}  />,
-
+           10: <Events isAdmin={this.props.isAdmin} />,
 
         };
         return (
@@ -344,9 +346,13 @@ var OrganizationMenu = React.createClass ({
 
 var Home = React.createClass({
     getInitialState: function() {
-        return {loading:true,showModal:false,discussions:[],partialMembers:{total:0,people:[]},partialNetworks:{total:0,orgs:[]}}
+        return {loading:true,showModal:false,
+            discussions:[],
+            partialMembers:{total:0,people:[]},
+            partialNetworks:{total:0,orgs:[]},
+            upcomingEvents:[]};
     },
-    componentWillMount : function() {
+    componentDidMount : function() {
         var discussionsUrl= "/organization/"+name+"/discussions";
         $.ajax({
             type: 'GET',
@@ -360,7 +366,7 @@ var Home = React.createClass({
         });
         this.loadPartialMembers();
         this.loadPartialNetwork();
-
+        this.loadUpcomingEvents();
     },
     loadPartialMembers:function()
     {
@@ -368,6 +374,7 @@ var Home = React.createClass({
             type: 'GET',
             url: "/organization/"+objectId+"/partialMembers",
             success: function(data) {
+              if(!data.err)
                 this.setState({ partialMembers: data });
             }.bind(this),
             error: function(xhr, status, err) {
@@ -381,10 +388,25 @@ var Home = React.createClass({
             type: 'GET',
             url: "/organization/"+objectId+"/partialNetworks",
             success: function(data) {
+                if(!data.err)
                 this.setState({ partialNetworks: data });
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error("Couldn't Retrieve discussions!");
+            }.bind(this)
+        });
+    },
+    loadUpcomingEvents: function() {
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/events?upcoming=true",
+            success: function(data) {
+                if(!data.err)
+                    this.setState({ upcomingEvents: data });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve events!", status, err);
+                console.log(xhr);
             }.bind(this)
         });
     },
@@ -393,7 +415,8 @@ var Home = React.createClass({
     },
     closeModal:function(){
         this.setState({showModal:false});
-    },inviteTrigger: function(e) {
+    },
+    inviteTrigger: function(e) {
     e.stopPropagation();
     var source = {
         id: objectId,
@@ -426,7 +449,7 @@ var Home = React.createClass({
         }
         //members
         var members;
-        if(this.state.partialMembers.people.length>0)
+        if( this.state.partialMembers.people.length>0)
          {
              members= this.state.partialMembers.people.map(function(member,index){
                  return (
@@ -466,22 +489,13 @@ var Home = React.createClass({
                     </Modal.Body>
                 </Modal>
                 <div className="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-                    <h4 className="discussion-form-headline">Recent discussions <a onClick={this.openModal}className="create-discussion-list">Create New</a></h4>
+                    <h4 className="discussion-form-headline">Recent discussions {this.props.joinStatus ==="joined"?<a onClick={this.openModal}className="create-discussion-list">Create New</a>:"" }</h4>
                   <div className="items-list">
                       {discussions}
                   </div>
                 </div>
                 <div className="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-                    <div className = "createorg_panel">
-                        <button className="btn btn-panel createorg_btn" value="Create Discussion"><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>
-                    </div>
-                    <div className = "panel search-panel your-groups">
-                        <h4 className="white"><span className="nfButton">Upcoming Events</span></h4>
-                            <div className="list-group">
-                                <a href="#"  className="list-group-item groups-list">&#x25cf; BBQ Party</a>
-                                <a href="#"  className="list-group-item groups-list">&#x25cf; All You can eat sushi</a>
-                            </div>
-                    </div>
+                    <EventsPanel joinStatus={this.props.joinStatus} upcomingEvents={this.state.upcomingEvents} allEvents={this.props.viewEvents} />
                     <div className="row">
                         <div>
                             <h4>Resources</h4>
@@ -543,7 +557,7 @@ var Home = React.createClass({
                          </ul>
                         </div>
                         <div className = "createorg_panel">
-                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button>
+                            {this.props.joinStatus==="joined"? <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button> : ""}
                         </div>
                     </div>
                     <div className="row home-connections-box">
@@ -556,8 +570,8 @@ var Home = React.createClass({
                             </ul>
                         </div>
                         <div className = "createorg_panel">
-                            <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>
-                        </div>
+                            {this.props.joinStatus === "joined"?  <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-connectdevelop" aria-hidden="true"></i> Join More</span></button>:""}
+                           </div>
                     </div>
 
 
@@ -688,9 +702,215 @@ var Discussion = React.createClass ({
             </div>
         );
     }
-
-
 });
+
+
+var EventsPanel = React.createClass({
+    getInitialState: function() {
+        return { showModal: false };
+    },
+    close: function() {
+        this.setState({ showModal: false });
+    },
+    open: function() {
+        this.setState({ showModal: true });
+    },
+    render: function() {
+        if (this.props.upcomingEvents.length > 0) {
+            var events = this.props.upcomingEvents.map(function(ev, i) {
+                return ( <EventInfo event={ev} key={i} /> );
+            });
+        } else {
+            var events = (<div className="events-panel"><p>This network has no upcoming events.</p></div>);
+        }
+
+        return (
+            <div>
+                <div className = "createorg_panel">
+                    {this.props.joinStatus==="joined" ? <button className="btn btn-panel createorg_btn" onClick={this.open}><span className="nfButton"><i className="fa fa-calendar-plus-o" aria-hidden="true"></i> Create Event</span></button>:""}
+                </div>
+                <div className = "panel search-panel your-groups">
+                    <h4 className="white"><span className="nfButton">Upcoming Events <small>(<a onClick={this.props.allEvents} href="#">all</a>)</small></span></h4>
+                        <div className="list-group">
+                            {events}
+                        </div>
+                </div>
+
+                <Modal show={this.state.showModal} onHide={this.close}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create New Event</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <CreateEvent />
+                    </Modal.Body>
+                </Modal>
+            </div>
+        )
+    }
+});
+
+var EventInfo = React.createClass({
+    getInitialState: function() {
+        return { showModal: false };
+    },
+    close: function() {
+        this.setState({ showModal: false });
+    },
+    open: function() {
+        this.setState({ showModal: true });
+    },
+    render: function() {
+        var date = this.props.event.date.toString().slice(0, 10);
+        return (
+            <li onClick={this.open} className="list-group-item groups-list events-panel">
+                <span><i className="fa fa-caret-right" aria-hidden="true"></i> {this.props.event.title} <span className="pull-right">{date}</span></span>
+
+                <Modal show={this.state.showModal} onHide={this.close}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Event Details: <strong>{this.props.event.title}</strong></Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p><strong>Date:</strong> {date}
+                            {(this.props.event.time) ? (' at ' + this.props.event.time) : ''}
+                        </p>
+                        {(this.props.event.location) ? (<p><strong>Location:</strong> {this.props.event.location}</p>) : ''}
+                        <p>{this.props.event.description}</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this.close}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
+            </li>
+        )
+    }
+});
+
+var CreateEvent = React.createClass({
+    getInitialState: function() {
+        return { disabled: false, error: '' };
+    },
+    handleChange: function(e) {
+        this.setState({[e.target.name]:e.target.value});
+    },
+    handleSubmit: function(e) {
+        e.preventDefault();
+        var newEvent = {title: this.state.title, description: this.state.description,
+                        date: this.state.date, time: this.state.time,
+                        location: this.state.location};
+        this.setState({disabled: true, error: ''});
+
+        $.ajax({
+            url: '/organization/'+objectId+'/events/',
+            method:'post',
+            data: newEvent,
+            success: function(data) {
+                location.reload();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/events/', status, err.toString());
+                this.setState({disabled: false, error: 'Error: ' + err.toString() + 'Please submit a bug report.'});
+            }.bind(this)
+        });
+
+    },
+    render: function(){
+        return (
+            <div className="row">
+                <div className="col-xs-12">
+                    <form className="form" onSubmit={this.handleSubmit}>
+                        <Input type="text" label="Event Title" name="title" required onChange={this.handleChange} value={this.state.title} />
+
+                            <div className="datetime-row">
+                                <Input type="date" label="Date" name="date" required onChange={this.handleChange} value={this.state.date} />
+                                <Input type="time" label="Time" name="time" onChange={this.handleChange} value={this.state.time} />
+                            </div>
+                        <Input type="text" label="Location" name="location" onChange={this.handleChange} value={this.state.location} />
+                        <Input type="textarea" label="Description" name="description" onChange={this.handleChange} value={this.state.description} rows="5"/>
+
+                        <Modal.Footer>
+                            <Input className="btn btn-default pull-right submit" type="submit" disabled={this.state.disabled} value="Submit" />
+                            <div className="form-feedback">{this.state.error}</div>
+                        </Modal.Footer>
+                    </form>
+                </div>
+            </div>
+        );
+    }
+});
+
+var Events = React.createClass({
+    getInitialState: function() {
+        return {loading: true, events: [], showModal: false };
+    },
+    componentDidMount : function(){
+        $.ajax({
+            type: 'GET',
+            url: "/organization/"+objectId+"/events",
+            success: function(data) {
+                if(!data.err)
+                    this.setState({ events: data, loading: false });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("Couldn't Retrieve events!", status, err);
+                console.log(xhr);
+            }.bind(this)
+        });
+    },
+    clickOpen() {
+        this.setState({ showModal: true });
+    },
+    clickClose() {
+        this.setState({ showModal: false });
+    },
+    render: function() {
+        var current = new Date();
+        var eventsList;
+
+        if(this.state.loading)
+            eventsList = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Dreaming of catered lunches...</p></div>
+        else
+        {
+            eventsList = $.map(this.state.events,function(event) {
+                var date = event.date.toString().slice(0, 10);
+                var eventClasses = "item-box-right";
+                if (new Date(event.date) < current) {
+                    console.log(new Date(event.date), current);
+                    eventClasses = "item-box-right events-faded"
+                }
+
+                return (
+                    <div className="item-box">
+                        <div className={eventClasses}>
+                            <h3>{event.title}</h3>
+                            <p><strong>Date:</strong> {date}
+                                {(event.time) ? (' at ' + event.time) : ''}
+                            </p>
+                            {(event.location) ? (<p><strong>Location:</strong> {event.location}</p>) : ''}
+                            <p>{event.description}</p>
+                        </div>
+                    </div>
+                );
+            });
+            console.log(eventsList.length);
+            if (eventsList.length == 0) {
+                eventsList = <div className="no-discussion"><h2><i className="fa fa-calendar-times-o" aria-hidden="true"></i></h2><p>This network has been too hard at work to host any events yet!</p></div>;
+            }
+        }
+        return (
+            <div className="row">
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div className="row">
+                    <div>
+                        <h4>Event History</h4>
+                    </div>
+                    <div>{eventsList}</div>
+                </div>
+            </div>
+        </div>)
+    }
+});
+
+
 var About = React.createClass({
     getInitialState: function(){
         return {about: about,
@@ -1382,16 +1602,6 @@ var People = React.createClass({
     }
 });
 
-var NewsAndEvents = React.createClass({
-    render: function() {
-        return (
-            <div>
-                News And Events
-            </div>
-        )
-    }
-});
-
 var Knowledge = React.createClass({
     render: function() {
         return (
@@ -1821,9 +2031,9 @@ var Publications = React.createClass({
                             <table className="item-box-table-info">
                                 <tr>
                                     <td><b>Authors: </b></td>
-                                    <td>{item.contributors ? item.contributors.map(function (contributors) {
-                                        return <a href="#"
-                                                  className="tagsinput-tag-link react-tagsinput-tag">{contributors}</a>;
+                                    <td>{item.contributors ? item.contributors.map(function (contributor) {
+                                        return <a href={getLinkFromCollaborator(contributor)}
+                                                  className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(contributor)}</a>;
                                     }) : ''}</td>
                                 </tr>
                                 <tr>
@@ -2031,6 +2241,22 @@ var Model = React.createClass({
         )
     }
 });
+
+// helpers
+function getLinkFromCollaborator (collab) {
+    var uName = collab.split("(")[1];
+    if (uName === undefined) {
+        return '#';
+    }
+    uName = uName.substring(0, uName.length-1);
+    var dLink = "/profile/" + uName;
+    return dLink;
+}
+
+function getNameFromCollaborator (collab) {
+    var name = collab.split("(")[0];
+    return name.replace(/_/g, " ").replace(/(\.\d*)/g, "")
+}
 
 $( document ).ready(function() {
     ReactDOM.render(<Organization />, document.getElementById('content'));
