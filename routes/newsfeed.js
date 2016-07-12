@@ -36,7 +36,8 @@ module.exports=function(app,Parse,io) {
         query.include("orgId");
         query.include("modId");
         query.include("datId");
-
+        query.include("comments");
+        query.include("comments.from");
         query.include('from');
         query.descending("createdAt");
         query.limit(20);
@@ -45,6 +46,25 @@ module.exports=function(app,Parse,io) {
             for (var i = 0; i < results.length; i++) {
                 var result=results[i];
                 // Do something with the returned Parse.Object values
+                var comments = [];
+                if(result.get("comments") != undefined){
+                    var commentsList =result.get("comments");
+                    var commentId=0;
+                    for(var c in commentsList){
+                        var comment = {
+                            id: commentId,
+                            from :  {
+                                name: commentsList[c].get("from").get("fullname"),
+                                img : commentsList[c].get("from").get("picture").url(),
+                                username: commentsList[c].get("from").get("username")
+                            },
+                            content: commentsList[c].get("content"),
+                            createdAt: commentsList[c].get("createdAt")
+                        };
+                        comments.push(comment);
+                        commentId++;
+                    }
+                }
                 var feedId= result.id;
                 var date=result.createdAt;
                 var type=result.get("type");
@@ -65,6 +85,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("equipmentId").get("title")!=null ? result.get("equipmentId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("orgId").get("description")!=null ? result.get("orgId").get("description"):"",
+                        comments:comments
                     });
                 }
                 else if (type == "project") {
@@ -82,6 +103,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("projectId").get("title")!=null ? result.get("projectId").get("title"):"" ,
                         objectURL:objectURL,
                         description:result.get("projectId").get("description")!=null ? result.get("projectId").get("description"):"",
+                        comments:comments
                     });
                 }
                 else if(type == "mod") {
@@ -99,9 +121,9 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("modId").get("title")!=null ? result.get("modId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("modId").get("description")!=null ? result.get("modId").get("description"):"",
-
+                        comments:comments
                     });
-
+                    console.log("4");
                 }
                 else if(type == "dat"){
                     var message="added a data";
@@ -118,6 +140,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("datId").get("title")!=null ? result.get("datId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("datId").get("description")!=null ? result.get("datId").get("description"):"",
+                        comments:comments
                     });
 
                 }
@@ -136,7 +159,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("pubBookId").get("title")!=null ? result.get("pubBookId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("pubBookId").get("abstract")!=null ? result.get("pubBookId").get("abstract"):"",
-
+                        comments:comments
                     });
                 }
                 else if(type == "pub_conference" ){
@@ -154,7 +177,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("pubConferenceId").get("title")!=null ? result.get("pubConferenceId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("pubConferenceId").get("abstract")!=null ? result.get("pubConferenceId").get("abstract"):"",
-
+                        comments:comments
                     });
                 }
                 else if(type =="pub_journal"){
@@ -175,7 +198,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("pubJournalId").get("title")!=null ? result.get("pubJournalId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("pubJournalId").get("abstract")!=null ? result.get("pubJournalId").get("abstract"):"",
-
+                        comments:comments
                     });
 
 
@@ -195,7 +218,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("pubPatentId").get("title")!=null ? result.get("pubPatentId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("pubPatentId").get("abstract")!=null ? result.get("pubPatentId").get("abstract"):"",
-
+                        comments:comments
                     });
                 }
                 else if(type =="pub_thesis"){
@@ -212,7 +235,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("pubThesisId").get("title")!=null ? result.get("pubThesisId").get("title")!=null:"",
                         objectURL:objectURL,
                         description:result.get("pubThesisId").get("abstract")!=null ? result.get("pubThesisId"):"",
-
+                        comments:comments
                     });
                 }
                 else if(type =="pub_unpublished"){
@@ -230,6 +253,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("pubUnpublishedId").get("title")!=null ? result.get("pubUnpublishedId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("pubUnpublishedId").get("abstract")!=null ? result.get("pubUnpublishedId").get("abstract"):"",
+                        comments:comments
                     });
                 }
                 else if(type =="pub_report"){
@@ -247,7 +271,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("pubReportId").get("title")!=null ? result.get("pubReportId").get("title"):"",
                         objectURL:objectURL,
                         description:result.get("pubReportId").get("abstract")!=null ? result.get("pubReportId").get("abstract"):"",
-
+                        comments:comments
                     });
                 }
                 else if(type =="org_create"){
@@ -265,7 +289,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("orgId").get("displayName"),
                         objectURL:objectURL,
                         description:result.get("orgId").get("description")!=null ? result.get("orgId").get("description"):"",
-
+                        comments:comments
                     });
                 }
                 else if(type =="org_join"){
@@ -283,6 +307,7 @@ module.exports=function(app,Parse,io) {
                         objectTitle:result.get("orgId").get("displayName"),
                         objectURL:objectURL,
                         description:result.get("orgId").get("description")!=null ? result.get("orgId").get("description"):"",
+                        comments:comments
                     });
                 }
             }

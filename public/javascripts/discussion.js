@@ -56,6 +56,8 @@ var Home = React.createClass({
     },
     render:function(){
         var discussion= "";
+        console.log(orgId);
+        console.log(orgName);
        if(this.state.discussion != null) {
 
            discussion = <Discussion discId={this.state.discussion.id} topic={this.state.discussion.topic}

@@ -428,6 +428,7 @@ module.exports=function(app,Parse,io) {
          user.set("interests", []);
          user.set("summary", "");
          user.set("educations", []);
+         user.set("last_seen_notification",new Date());
          user.set("about", "");
          user.set("projects", []);
          user.set("workExperience", []);
@@ -669,6 +670,7 @@ app.get('/auth/linkedin/callback',function(req,res){
                                   user.set("summary", "");
                                   user.set("educations", []);
                                   user.set("projects", []);
+                                  user.set("last_seen_notification",new Date());
                                   user.set("workExperience", []);
                                   user.signUp(null,
                                       {

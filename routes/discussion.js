@@ -60,7 +60,7 @@ module.exports=function(app,Parse,io) {
             success: function (r) {
                 if(r!=null){
                    var orgName=r.get("name");
-                    res.render('discussion',{orgName:orgName,orgId: req.params.objectId,discId:req.params.discId});
+                    res.render('discussion',{orgName:orgName,orgId: r.id,discId:req.params.discId});
                 }
                 else
                     res.render('index', {title: error, path: req.path})
@@ -318,6 +318,7 @@ module.exports=function(app,Parse,io) {
                 if(result!=null){
                     var participants=[];
                     var jsonPosts= result.get("posts");
+                    var notificationList=[];
                     for(var p in jsonPosts)
                     {
                         var participantId= jsonPosts[p].get("from").id;
@@ -344,11 +345,30 @@ module.exports=function(app,Parse,io) {
                                     url: "/organization/"+result.get("orgId").get("name")+"/discussions/"+discId
                                 }
                             };
-                               console.log(participantId);
+
+                            var Notification = Parse.Object.extend("Notification");
+                            var n = new Notification();
+                            n.set('for',{__type: "Pointer", className: "_User", objectId: participantId});
+                            n.set('from',{ "userId":myself.id, "username": myself.username, "name":myself.fullname, "userImgUrl": myself.imgUrl });
+                            n.set('extra',{ "id": discId, "title":result.get("topic"), "content": "", "imgUrl":"" , "url":"/organization/"+result.get("orgId").get("name")+"/discussions/"+discId});
+                            n.set('type',notification.type);
+                            n.set('msg',notification.msg);
+                            notificationList.push(n);
+
                             io.to(participantId).emit('discussionPost',{data:notification});
                         }
 
                     }
+
+                    // save all the newly created objects
+                    Parse.Object.saveAll(notificationList, {
+                        success: function(objs) {
+                           console.log("notifcations saved");
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
 
 
 

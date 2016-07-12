@@ -74,6 +74,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+/*
+* ROUTES
+ */
 require('./routes/routes')(app,Parse,io);
 require('./routes/organization')(app,Parse,io);
 require('./routes/user')(app,Parse,io);
@@ -87,7 +90,11 @@ require('./routes/search')(app,Parse,io);
 require('./routes/group')(app,Parse,io);
 require('./routes/report')(app,Parse,io);
 require('./routes/discussion')(app,Parse,io);
+require('./routes/notification')(app,Parse,io);
 
+/*
+* SOCKET IO
+ */
 io.on('connection', function(socket){
 
     socket.on('registerUser', function (data) {
@@ -173,7 +180,8 @@ passport.deserializeUser(function(username, done) {
                 educations: user.attributes.educations,
                 workExperience: user.attributes.workExperience,
                 projects:user.attributes.projects,
-                linkedin_id:user.attributes.linkedin_id
+                linkedin_id:user.attributes.linkedin_id,
+                last_seen_notification:user.attributes.last_seen_notification
             };
               done(null, jsonUser);
         }
