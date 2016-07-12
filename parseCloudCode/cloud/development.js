@@ -751,3 +751,76 @@ Parse.Cloud.afterDelete("Project", function(request) {
 		}
 	});
 });
+Parse.Cloud.afterDelete("Model", function(request) {
+	Parse.Cloud.useMasterKey();
+	var modId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("modId", modId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Data", function(request) {
+	Parse.Cloud.useMasterKey();
+	var datId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("datId", datId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete("Discussion", function(request) {
+	Parse.Cloud.useMasterKey();
+	var discId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("discId", discId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
+Parse.Cloud.afterDelete(Parse.User, function(request) {
+	Parse.Cloud.useMasterKey();
+	var userId= request.object;
+	var NewsFeed = Parse.Object.extend("NewsFeed");
+	var query = new Parse.Query(NewsFeed);
+	query.equalTo("from", userId);
+	query.first({
+		success: function(object) {
+			object.destroy();
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+	var query2 = new Parse.Query(NewsFeed);
+	query2.equalTo("userId", userId);
+	query2.first({
+		success: function(object) {
+			object.destroy();
+		},
+		error: function(error) {
+			alert("Error: " + error.code + " " + error.message);
+		}
+	});
+});
