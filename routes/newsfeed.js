@@ -163,7 +163,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type == "pub_conference" ){
-                    var message="added a book";
+                    var message="added a conference proceeding";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/conference/" + result.get("pubConferenceId").id;
                     feed.push({
@@ -181,12 +181,9 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_journal"){
-
-                    var message="added a book";
+                    var message="added a journal article";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/journal/" + result.get("pubJournalId").id;
-
-
                     feed.push({
                         date:date,
                         feedId: feedId,
@@ -204,7 +201,7 @@ module.exports=function(app,Parse,io) {
 
                 }
                 else if(type =="pub_patent"){
-                    var message="added a book";
+                    var message="added a patent";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/patent/" + result.get("pubPatentId").id;
                     feed.push({
@@ -222,7 +219,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_thesis"){
-                    var message="added a book";
+                    var message="added a thesis";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/thesis/" + result.get("pubThesisId").id;
                     feed.push({
@@ -239,7 +236,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_unpublished"){
-                    var message="added a book";
+                    var message="added an unpublished article";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/unpublished/" + result.get("pubUnpublishedId").id;
                     feed.push({
@@ -257,7 +254,7 @@ module.exports=function(app,Parse,io) {
                     });
                 }
                 else if(type =="pub_report"){
-                    var message="added a book";
+                    var message="added a report";
                     var adderURL="/profile/" + result.get("from").get("username");
                     var objectURL="/publication/report/" + result.get("pubReportId").id;
                     feed.push({
