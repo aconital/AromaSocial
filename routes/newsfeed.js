@@ -22,7 +22,6 @@ module.exports=function(app,Parse,io) {
      *
      ********************************************/
     app.get('/newsfeeddata',function (req, res, next) {
-
         var query = new Parse.Query('NewsFeed');
         query.include("pubBookId");
         query.include("pubReportId");
@@ -36,6 +35,7 @@ module.exports=function(app,Parse,io) {
         query.include("orgId");
         query.include("modId");
         query.include("datId");
+        query.include("userId");
         query.include("comments");
         query.include("comments.from");
         query.include('from');
@@ -69,7 +69,6 @@ module.exports=function(app,Parse,io) {
                 var feedId= result.id;
                 var date=result.createdAt;
                 var type=result.get("type");
-
                 if (type == "equipment") {
                     var message="added an equipment";
                     var adderName=result.get("orgId").get("name");
@@ -124,7 +123,6 @@ module.exports=function(app,Parse,io) {
                         description:result.get("modId").get("description")!=null ? result.get("modId").get("description"):"",
                         comments:comments
                     });
-                    console.log("4");
                 }
                 else if(type == "dat"){
                     var message="added a data";
@@ -143,7 +141,6 @@ module.exports=function(app,Parse,io) {
                         description:result.get("datId").get("description")!=null ? result.get("datId").get("description"):"",
                         comments:comments
                     });
-
                 }
                 else if(type =="pub_book" ) {
                     var message="added a book";
@@ -308,6 +305,24 @@ module.exports=function(app,Parse,io) {
                         comments:comments
                     });
                 }
+                else if(type =="friend_make"){
+                    var message="connected with";
+                    var adderURL="/profile/" + result.get("from").get("username");
+                    var objectURL="/profile/" + result.get("userId").get("username");
+                    feed.push({
+                        date:date,
+                        feedId: feedId,
+                        adderPicture:result.get("from").get("picture").url(),
+                        adderName:result.get("from").get("fullname"),
+                        adderURL:adderURL,
+                        message:message,
+                        objectPicture:result.get("userId").get("picture").url(),
+                        objectTitle:result.get("userId").get("fullname"),
+                        objectURL:objectURL,
+                        description:result.get("userId").get("about")!=null ? result.get("userId").get("about"):"",
+                        comments:comments
+                    });
+                }
             }
 
             res.json(feed);
@@ -336,7 +351,6 @@ module.exports=function(app,Parse,io) {
                 orgs.push(org);
             }
         }).then(function(){
-
             res.json(orgs);
         })
     });
