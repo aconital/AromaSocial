@@ -101,7 +101,7 @@ ReactDOM.render(<GeneralNotification />, document.getElementById('general-notifi
 
 
 $("#general-notification-button").click(function(e){
-/*    $.ajax({
+    $.ajax({
         method: "POST",
         url: "/seen",
         success: function(data) {
@@ -109,5 +109,5 @@ $("#general-notification-button").click(function(e){
         error: function(xhr, status, err) {
             console.error("couldnt update seen");
         }
-    });*/
+    });
 });
