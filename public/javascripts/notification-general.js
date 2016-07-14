@@ -67,28 +67,25 @@ var GeneralNotification = React.createClass({
             return (
                 <li>
                     {this.state.notication_list.map(notification =>
-
-                            <div onClick={this.action.bind(this,notification.extra.url)} id={notification.from.username} className="friend-request-item" key={notification.id}>
-                                <div className="friend-request-left">
-                                    <div className="friend-request-image-wrap">
-                                        <a href={'/profile/'+notification.from.username}>
-                                            <img  src={notification.from.userImgUrl} className="friend-request-image" />
-                                        </a>
-                                    </div>
-                                </div>
-                                <div className="friend-request-center" id="friend-request-info">
-                                    <a href={'/profile/'+notification.from.username} className="body-link">
-                                        <b><h3 className="no-margin-padding margin-top-5">{notification.from.name}</h3></b>
-                                    </a>
-                                    <div>
-                                        <a href={notification.extra.url} className= "discussion-topic">
-                                            {notification.extra.title}
-                                        </a>
-                                    </div>
-                                    {notification.msg}
-                                </div>
-                                <div className="clear"></div>
+                        <div onClick={this.action.bind(this,notification.extra.url)} className="row notification-item" key={notification.id} >
+                            <div className="col-xs-1">
+                                <img src={notification.from.userImgUrl} className="notification-image" />
                             </div>
+                            <div className="col-xs-10 notification-right">
+                               <div className="notification-title">
+                                   {notification.extra.title}
+                               </div>
+                               <div className="notification-message">
+                                   <span className="notification-username">{notification.from.name} </span>
+                                   <span className="notification-action">{notification.msg}</span>
+                               </div>
+                               <div className="notification-time">
+                                   <span><i className="fa fa-comments-o" aria-hidden="true"></i> {notification.createdAt}</span>
+                               </div>
+                            </div>
+
+                        </div>
+
 
                     )}
 
@@ -104,7 +101,7 @@ ReactDOM.render(<GeneralNotification />, document.getElementById('general-notifi
 
 
 $("#general-notification-button").click(function(e){
-    $.ajax({
+/*    $.ajax({
         method: "POST",
         url: "/seen",
         success: function(data) {
@@ -112,5 +109,5 @@ $("#general-notification-button").click(function(e){
         error: function(xhr, status, err) {
             console.error("couldnt update seen");
         }
-    });
+    });*/
 });

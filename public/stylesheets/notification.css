@@ -1,0 +1,41 @@
+.friend-request-dropdown { width: 500px; }
+.notification-item { min-width: 500px; padding: 10px; cursor: pointer}
+.notification-item + .friend-request-item { min-width: 500px; padding: 10px; border-top: solid 1px; border-color: #cccccc; }
+.notification-image
+{
+    width: 40px;
+    height: 40px;
+    display: block;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+}
+.notification-right
+{
+    margin-left:10px;
+}
+.notification-title
+{
+    color: #337ab7;
+    font-weight: 600;
+
+}
+.notification-message
+{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.notification-username
+{
+    font-weight: bold;
+    color: #333;
+}
+.notification-action
+{
+    color: #333;
+}
+.notification-time
+{
+    color:#90949c;
+    font-size: 11px;
+}

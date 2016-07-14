@@ -27,9 +27,10 @@ module.exports=function(app,Parse,io) {
                         var n = results[i];
                         var notification = {
                             id: n.id,
+                            createdAt:n.get("createdAt"),
                             type:n.get("type"),
                             from: n.get("from"),
-                            msg: n.get("msg"),
+                            msg: n.get("msg").substring(0,90),
                             extra: n.get("extra")
                         };
                         list.push(notification);
