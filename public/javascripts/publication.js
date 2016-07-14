@@ -42,7 +42,8 @@ var Publication = React.createClass ({
     componentWillMount: function() {
         var self = this;
         var fetchPath = "/publication/"+objectId;
-        var staticFields = ['createdAt','updatedAt','user','abstract','file','objectId','updatePath','title','type','other_urls'];
+        // fields that we don't want to display to the user in the information box
+        var staticFields = ['createdAt','updatedAt','user','abstract','file','objectId','updatePath','title','type','other_urls','search'];
 
         $.ajax({
             url: fetchPath,
@@ -268,7 +269,7 @@ var InfoField = React.createClass({
         } else {
             if (this.props.name == 'url') {
                 var otherUrls = this.props.urls.length > 0 ? (<ViewUrlsModal urls={this.props.urls}/>) : ''; // show other links if available
-                element = ( <span><a href={this.props.initVal} target="_blank">{this.props.initVal}</a>{otherUrls}</span> );
+                element = ( <span><a href={this.props.initVal} style={{wordBreak: 'break-word'}} target="_blank">{this.props.initVal}</a> {otherUrls}</span> );
             } else {
                 element = ( this.props.initVal );
             }

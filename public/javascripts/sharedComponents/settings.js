@@ -34,9 +34,9 @@ var settingsModalDeleteEntry = function(callback) {
         url: path, // this is bound to parent's path var
         type: 'DELETE'
     }).done(function(status) {
-        callback('Successfully deleted. Redirecting to newsfeed in a jiffy...', false);
-        setTimeout(function(){ // redirect to homepage
-            window.location = '../..';
+        callback('Successfully deleted. Redirecting in a jiffy...', false);
+        setTimeout(function(){ // redirect to previous page
+            history.go(-1);
         }, 2000); 
     }).fail(function(xhr, status, err) {
         console.log(status + ': ' + err);
@@ -63,7 +63,7 @@ var SettingsModal = React.createClass({
     open() {
         this.setState({ showModal: true });
     },
-    setMsg(status, buttonState) {
+    setMsg(status, buttonState) { //callback function for settingsModalDeleteEntry
         this.setState({ message: status, isDisabled: buttonState });
     },
     delete() {
@@ -95,7 +95,7 @@ var SettingsModal = React.createClass({
         return (
             <span>
                 <OverlayTrigger placement="top" overlay={tooltip_settings}>
-                    <span className="glyphicon glyphicon-pencil space settings-btn" onClick={this.open}></span>
+                    <span className="glyphicon glyphicon-cog space settings-btn" onClick={this.open}></span>
                 </OverlayTrigger>
 
                 <Modal show={this.state.showModal} onHide={this.close}>
@@ -180,7 +180,7 @@ var UpdateTab = React.createClass({
                 // this.setState({file: this.state.file});
                 this.setState({ buttonText: "Update",
                                 disabled: false });
-                this.clickClose();
+                location.reload();
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(path + "/upload", status, err.toString());
