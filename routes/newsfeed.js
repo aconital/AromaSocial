@@ -23,6 +23,7 @@ module.exports=function(app,Parse,io) {
      ********************************************/
     app.get('/newsfeeddata',function (req, res, next) {
         var query = new Parse.Query('NewsFeed');
+        var offset = req.query.oldest;
         query.include("pubBookId");
         query.include("pubReportId");
         query.include("pubConferenceId");
@@ -41,6 +42,10 @@ module.exports=function(app,Parse,io) {
         query.include('from');
         query.descending("createdAt");
         query.limit(20);
+        if (offset !== undefined) {
+            console.log('hi', offset);
+            query.lessThan("createdAt", new Date(offset));
+        }
         var feed=[];
         query.find(function(results) {
             for (var i = 0; i < results.length; i++) {

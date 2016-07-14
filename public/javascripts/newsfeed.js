@@ -45,6 +45,32 @@ var NewsFeed = React.createClass({
                 this.setState({data:  feedItems});
   },
 
+  loadMore: function(callback) {
+    var currentItems = this.state.data,
+        oldestItem = currentItems[currentItems.length-1],
+        newState;
+        this.setState({data: newState});
+
+    $.ajax({
+        url: '/newsfeeddata',
+        data: {oldest: oldestItem.date},
+        dataType: 'json',
+        cache: false,
+        success: function(results) {
+          console.log(results);
+            if (results.length > 0) {
+                newState = currentItems.concat(results);
+                this.setState({data: newState});
+            }
+            callback(results.length);
+        }.bind(this),
+        error: function(error) {
+            console.error(error.toString());
+            callback(error);
+        }.bind(this)
+    });
+  },
+
   render: function() {
       return (
           <div className="container-newsFeed">
@@ -69,6 +95,7 @@ var NewsFeed = React.createClass({
                                     <CommentForm key={"form"+item.feedId} feedNumber={i} feedId ={item.feedId} />
                                 </div>);
                       })}
+                      <LoadMoreButton loadMore={this.loadMore} />
                   </div>
                       <div className="col-xs-4">
                           <div className = "createorg_panel">
@@ -88,6 +115,38 @@ var NewsFeed = React.createClass({
         </div>
       );
     }
+});
+
+var LoadMoreButton = React.createClass({
+  getInitialState: function() {
+    return {disabled: false, label: 'Load More'};
+  },
+
+  setButtonState: function(resultCount) { // callback function for when query completes
+    console.log(resultCount);
+    if (typeof resultCount === 'number') {
+      if (resultCount > 0) {
+        this.setState({disabled: false});
+      } else {
+        this.setState({label: 'Reached end of newsfeed.'});
+      }
+    } else {
+      this.setState({label: 'Error retrieving results.'});
+    }
+  },
+
+  loadMore: function() {
+    this.setState({disabled: true});
+    var result = this.props.loadMore(this.setButtonState);
+  },
+
+  render: function() {
+    return (
+        <button onClick={this.loadMore} className="item-panel-newsFeed contain-panel-newsFeed btn btn-panel createorg_btn" disabled={this.state.disabled} style={{color:'#555555'}}>
+          {this.state.label}
+        </button>
+      );
+  }
 });
 
 // <b>Abstract:</b> {this.props.description.substr(0,250)}... <a href={"/" + typeLink + "/" + this.props.itemId} className="body-link">Show Full Abstract</a><br/>
