@@ -15,8 +15,8 @@ module.exports=function(app,Parse,io) {
 
         var Notification = Parse.Object.extend("Notification");
         var query = new Parse.Query(Notification);
-        query.equalTo("for",{__type: "Pointer", className: "_User", objectId: "WpmgBjH7wa"});
-        query.lessThanOrEqualTo('createdAt',req.user.last_seen_notification);
+        query.equalTo("for",{__type: "Pointer", className: "_User", objectId: req.user.id});
+        query.greaterThanOrEqualTo('createdAt',req.user.last_seen_notification);
         query.descending("createdAt");
         query.find({
             success: function (results) {
@@ -24,7 +24,7 @@ module.exports=function(app,Parse,io) {
                     var list=[];
                     for(var i=0;i<results.length;i++)
                     {
-                        var n = results[0];
+                        var n = results[i];
                         var notification = {
                             id: n.id,
                             type:n.get("type"),
@@ -45,4 +45,28 @@ module.exports=function(app,Parse,io) {
             }
         });
     })
+    app.post('/seen',is_auth,function(req,res,next){
+
+        var query = new Parse.Query(Parse.User);
+        query.equalTo('objectId',req.user.id);
+        query.first({
+            success:function(result)
+            {
+                if(result!=null)
+                {
+                    result.set("last_seen_notification",new Date());
+                    result.save(null, { useMasterKey: true }).then(function ()
+                    {
+                        res.json({});
+                    });
+                }
+            },
+            error:function(err)
+            {
+             console.log(err);
+             res.json({});
+            }
+        });
+
+    });
 }

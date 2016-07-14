@@ -27,12 +27,32 @@ var GeneralNotification = React.createClass({
     componentDidMount : function(){
 
         socket.on('discussionPost', this._updateNotificationList);
+        this.loadNotifications();
+    },
+    loadNotifications:function()
+    {
+        $.ajax({
+            url: "/notifications/general",
+            success: function(data) {
+                console.log(data);
+                var notifications = this.state.notication_list.slice();
+                for (var i=0;i<data.length;i++)
+                    notifications.push(data[i]);
+                this.setState({notication_list: notifications});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error("couldnt retrieve people");
+            }.bind(this)
+        });
     },
     _updateNotificationList(data){
-        console.log(data);
         var notifications = this.state.notication_list.slice();
         notifications.push(data.data);
         this.setState({notication_list:notifications});
+    },
+    action:function(url)
+    {
+        window.location = url;
     },
     render: function() {
         if(this.state.notication_list.length <=0) {
@@ -47,7 +67,8 @@ var GeneralNotification = React.createClass({
             return (
                 <li>
                     {this.state.notication_list.map(notification =>
-                            <div id={notification.from.username} className="friend-request-item" key={notification.id}>
+
+                            <div onClick={this.action.bind(this,notification.extra.url)} id={notification.from.username} className="friend-request-item" key={notification.id}>
                                 <div className="friend-request-left">
                                     <div className="friend-request-image-wrap">
                                         <a href={'/profile/'+notification.from.username}>
@@ -68,6 +89,7 @@ var GeneralNotification = React.createClass({
                                 </div>
                                 <div className="clear"></div>
                             </div>
+
                     )}
 
                 </li>
@@ -79,3 +101,16 @@ var GeneralNotification = React.createClass({
 
 
 ReactDOM.render(<GeneralNotification />, document.getElementById('general-notification'));
+
+
+$("#general-notification-button").click(function(e){
+    $.ajax({
+        method: "POST",
+        url: "/seen",
+        success: function(data) {
+        },
+        error: function(xhr, status, err) {
+            console.error("couldnt update seen");
+        }
+    });
+});
