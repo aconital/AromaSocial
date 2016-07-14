@@ -3,7 +3,7 @@
  */
 var Home = React.createClass({
     getInitialState: function() {
-        return {others:[],discussion:null}
+        return {others:[],discussion:null,loading:true}
     },
     componentWillMount : function() {
         socket.on('DiscussionPostReceived', this._PostAdded);
@@ -15,7 +15,8 @@ var Home = React.createClass({
             type: 'GET',
             url: discussionsUrl,
             success: function(data) {
-                this.setState({ discussion: data.discussion });
+
+                this.setState({ loading:false,discussion: data.discussion });
 
             }.bind(this),
             error: function(xhr, status, err) {
@@ -56,14 +57,24 @@ var Home = React.createClass({
     },
     render:function(){
         var discussion= "";
-        console.log(orgId);
-        console.log(orgName);
-       if(this.state.discussion != null) {
 
-           discussion = <Discussion discId={this.state.discussion.id} topic={this.state.discussion.topic}
-                                    createdAt={this.state.discussion.created} madeBy={this.state.discussion.madeBy}
-                                    posts ={this.state.discussion.posts} key={this.state.discussion.id}>{this.state.discussion.content.msg}</Discussion>;
-       }
+        if(this.state.loading)
+            discussions = <div className="no-discussion"><p><img className="loading-bar" src="../images/loadingbar.gif"/>Almost there...</p></div>
+        else {
+            if (this.state.discussion != null)
+            {
+
+                discussion = <Discussion discId={this.state.discussion.id} topic={this.state.discussion.topic}
+                                         createdAt={this.state.discussion.created} madeBy={this.state.discussion.madeBy}
+                                         posts={this.state.discussion.posts}
+                                         key={this.state.discussion.id}>{this.state.discussion.content.msg}</Discussion>;
+            }
+            else
+            {
+                discussion=<div className="no-discussion">This discussion is either deleted by the author or does not exist!</div>
+            }
+        }
+
         var others ="";
         if(this.state.others != undefined) {
             if(this.state.others.length>1) {
@@ -87,7 +98,7 @@ var Home = React.createClass({
                         {discussion}
                         <div className="row">
                             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                <h4 className="discussion-form-headline">Reply to discussion</h4>
+                                {this.state.discussion!=null? <h4 className="discussion-form-headline">Reply to discussion</h4>:""}
                             </div>
                             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 {this.state.discussion!=null?<CommentForm key={this.state.discussion.id} feedId ={this.state.discussion.id} />:""}
