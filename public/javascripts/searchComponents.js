@@ -305,27 +305,27 @@ var SearchFeed = React.createClass({
       dataDiv = <div className='noResults'><h3>Data</h3><br></br> {noResults}</div>;
     } else {
       dataDiv =  <div>
-                      <div className="headerDiv"><h3> Data </h3></div>
-                        <ul id="rig">
-                          {data.map(function (datum) {
-                            return (
-                                <span >
-                                    <a href={datum.link}>{datum.title}</a>
-                                    <li>
-                                      <a className="rig-cell" href={datum.link}>
-                                        <figure>
-                                          <img className="rig-img" style={{width:"100%", height:"100%"}} src={datum.img}/>
-                                          <figcaption style={{color:"black"}}>{datum.title}</figcaption>
-                                        </figure>
-                                        <span className="rig-overlay"></span>
-                                        <span className="rig-text">{datum.about}</span>
-                                      </a>
-                                    </li>
-                                  </span>
-                            )
-                          })}
-                        </ul>
-                      </div>;
+                  <div className="headerDiv"><h3> Data </h3></div>
+                    <ul id="rig">
+                      {data.map(function (datum) {
+                        return (
+                            <span >
+                                <a href={datum.link}>{datum.title}</a>
+                                <li>
+                                  <a className="rig-cell" href={datum.link}>
+                                    <figure>
+                                      <img className="rig-img" style={{width:"100%", height:"100%"}} src={datum.img}/>
+                                      <figcaption style={{color:"black"}}>{datum.title}</figcaption>
+                                    </figure>
+                                    <span className="rig-overlay"></span>
+                                    <span className="rig-text">{datum.about}</span>
+                                  </a>
+                                </li>
+                              </span>
+                        )
+                      })}
+                    </ul>
+                  </div>;
     }
     if (publications.length <= 0) {
       pubDiv = <div className='noResults'><h3>Publications</h3><br></br> {noResults}</div>;

@@ -1104,9 +1104,13 @@ var Publications = React.createClass({
                         <span className="font-15">
                         <table className="item-box-table-info">
                             <table className="item-box-table-info">
-                                <tr><td>Authors: </td><td>{item.contributors.map(function(contributor) { 
-                                        return <a href={getLinkFromCollaborator(contributor)} className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(contributor)}</a>;
-                                    // return <a href={contributor.replace(/ /g, "_")} className="tagsinput-tag-link react-tagsinput-tag">{contributor.replace(/_/g, " ").replace(/(\.\d*)/g, "")}</a>;
+                                <tr><td>Authors: </td><td>{item.contributors.map(function(contributor) {
+                                        console.log(contributor);
+                                        if (contributor !== null && typeof contributor === 'object') {
+                                            return <a href={contributor.link} className="tagsinput-tag-link react-tagsinput-tag">{contributor.label}</a>;
+                                        } else {
+                                            return <a href={getLinkFromCollaborator(contributor)} className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(contributor)}</a>;
+                                        }
                                 })}</td></tr>
                                 {(item.type == "journal")? <tr><td>Publication Date: </td><td> {item.date} </td></tr> : <tr><td>Published in: </td><td>{item.date}</td></tr> }
                                 {/*<tr><td><b>Keywords: </b></td><td>{item.keywords.map(function(keyword) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{keyword}</a>;})}</td></tr>*/}
@@ -1299,7 +1303,7 @@ var Data = React.createClass({
                             <span className="font-15">
                             <table className="item-box-table-info">
                                 <tr><td><b>Collaborators: </b></td><td>{item.collaborators.map(function(collaborator) {
-                                    return <a href={getLinkFromCollaborator(collaborator)} className="tagsinput-tag-link react-tagsinput-tag">{getNameFromCollaborator(collaborator)}</a>;
+                                    return <a href={collaborator.link} className="tagsinput-tag-link react-tagsinput-tag">{collaborator.label}</a>;
                                 })}
                                 </td></tr>
                                 <tr><td><b>Creation Date: </b></td><td>{item.start_date}</td></tr>
@@ -1875,10 +1879,12 @@ var ResourceAddForm = React.createClass({
                     </div>
                     <Input type="text" placeholder="Title:" name="title" required onChange={this.handleChange} value={this.state.title} />
                     
-                    <div className="rcorners6">
+                    {/*<div className="rcorners6">
                         <CustomTags type="text" changeFunc={this.handleAcTagChange} placeholder="Collaborators:" name="collaborators" value={this.state.collaborators} />
+                    </div>*/}
+                    <div className="rcorners6">
+                        <ReactMultiSelect placeholder='Add Collaborators' changeHandler={this.handleAcTagChange.bind(null, 'collaborators')}/>
                     </div>
-                    
                     
                     {/*<ReactTagsInput type="text" placeholder="Collaborators:" name="collaborators" onChange={this.handleCollabKeyChange} value={this.state.collaborators} />*/}
                     <Input type="date" placeholder="Creation Date:" name="creationDate" required onChange={this.handleChange} defaultValue="" className="form-control" maxlength="524288" value={this.state.creationDate} />
@@ -1900,10 +1906,11 @@ var ResourceAddForm = React.createClass({
             </div>
 		);
 	},
-    handleAcTagChange: function(type, ids) {
+    handleAcTagChange: function(type, vals) {
         var changedState = {};
-        changedState[type] = ids;
+        changedState[type] = vals;
         this.setState(changedState);
+        console.log(type, " changed to ", vals);
     },
 	handleChange: function(e) {
 	    var changedState = {};

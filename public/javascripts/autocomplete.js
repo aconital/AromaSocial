@@ -60,16 +60,17 @@ var ConnectButton = React.createClass({
     },
     render: function() {
       var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
-      if (this.state.status == "connected") {
-           connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
-      }
-      else if (this.state.status == "pending") {
-           connectButton = <button onClick={this.preventDefault} className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
-      }
-      else if (this.state.status == "not-connected") {
+      // if (this.state.status == "connected") {
+      //      connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
+      // }
+      // else if (this.state.status == "pending") {
+      //      connectButton = <button onClick={this.preventDefault} className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
+      // }
+      if (this.state.status == "not-connected") {
             connectButton = <button onClick={this.clickConnect} className="btn btn-panel btn-right-side" value="Connect">Connect</button>;
+      } else {
+            connectButton = null;
       }
-      else { console.log("Nothing"); }
       return(
         <div className="acButton">{connectButton}</div>
       )
@@ -161,12 +162,15 @@ var JoinButton = React.createClass({
     },
     render: function() {
       var joinButton = <button className="btn btn-panel btn-right-side" value=""></button>;
-      if (this.state.status == "joined") {
-          joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
-      } else if (this.state.status == "pending") {
-          joinButton = <button onClick={this.preventDefault} className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
-      } else if (this.state.status == "not-joined") {
+      // if (this.state.status == "joined") {
+      //     joinButton = <button onClick={this.clickLeave} className="btn btn-panel btn-right-side" value="Leave">Leave</button>;
+      // } else if (this.state.status == "pending") {
+      //     joinButton = <button onClick={this.preventDefault} className="btn btn-panel btn-right-side pending_btn" value="Pending">Pending</button>;
+      // } else 
+      if (this.state.status == "not-joined") {
           joinButton = <button onClick={this.clickJoin} className="btn btn-panel btn-right-side" value="Join">Join</button>;
+      } else {
+        joinButton = null;
       }
       return(
         <div className="acButton">{joinButton}</div>
@@ -174,7 +178,7 @@ var JoinButton = React.createClass({
     }
 });
 
-var Container = React.createClass({
+var ReactSelect = React.createClass({
   getInitialState: function() {
     return { 
       value: '',
@@ -430,16 +434,85 @@ var Container = React.createClass({
             onBlurResetsInput={false}
             onBlur={this.onBlurHandler} />
         </div>
-      <div className="search-button">
-          <i onClick={this.formHandler.bind(this,this.state.value)} className="fa fa-search search-button" aria-hidden="true"></i>
+        <div className="search-button">
+            <i onClick={this.formHandler.bind(this,this.state.value)} className="fa fa-search search-button" aria-hidden="true"></i>
+        </div>
       </div>
+    )
+  }
+});
 
+var ReactMultiSelect = React.createClass({
+  getInitialState: function() {
+    return {
+      data: [],
+      value: []
+    }
+  },
+  componentDidMount: function() {
+    var r = [];
+    var that = this;
+    $.when(
+        $.ajax({
+          url: '/allusers',
+          dataType: 'json',
+          type: 'GET',
+          cache: false,
+          success: function(data) {
+            $.map(data, function(item){
+              var dlink = "/profile/" + item.username;
+              r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink, username: item.username, objectId: item.objectId});
+            });
+          },
+          error: function(xhr) {
+            console.log(xhr.status);
+          }
+    })).then(function() {
+      that.setState({data: r});
+    })
+  },
+  handleSelectChange: function(val) {
+    this.setState({ value: val });
+    this.props.changeHandler(val);
+  },
+  renderMenu: function(menu) {
+    var users = menu.options;
+    console.log("USERZZ: ", users);
+    var that = this;
+    {(users.length > 0) ? <span className="categoryHeader">Users</span>:null}
+      {users.map(function(usr) {
+        return (
+          <div>
+            <div className="acImage">
+              <a style={{ cursor: 'pointer' }}>
+                <img className='search-img' src={usr.imgsrc}/>
+              </a>
+            </div>
+            <div>
+              <a className='acText'>
+                {usr.label}
+              </a>
+            </div>
+          </div>
+        )
+      })}
+  },
+  render: function() {
+    return (
+      <div className="section">
+          <Select 
+            placeholder={this.props.placeholder}
+            options={this.state.data}
+            multi={true} 
+            allowCreate={true}
+            onChange={this.handleSelectChange}
+            value={this.state.value} />
       </div>
     )
   }
 });
 
 ReactDOM.render(
-  <Container />,
+  <ReactSelect multiSelect={false} />,
   document.getElementById('autosuggest')
 );

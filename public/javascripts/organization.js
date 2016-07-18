@@ -22,7 +22,8 @@ const tooltipPeople = (
 );
 var Organization = React.createClass ({
     getInitialState: function() {
-        return {    isAdmin: [],
+        return {    
+            isAdmin: [],
             status: '',
             organization_imgURL: [organization_imgURL],
             showModal: false,

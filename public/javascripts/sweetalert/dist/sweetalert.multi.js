@@ -21,6 +21,15 @@
 			fieldset.appendChild(incls);
 			
 			if (i == 0) {
+				var incls = document.createElement("div");
+				//incls.className="hackpanel hackinput";
+				//var type = (types===undefined)?"string":(types[i]===undefined)?"string":types[i];
+				//incls.dataset.type=type;
+				//incls.value=defaultsArray[i];
+				incls.onkeyup = SweetAlertMultiInputAmalgamate;
+				fieldset.appendChild(incls);
+				ReactDOM.render(React.createElement(ReactMultiSelect, {changeHandler: SweetAlertMultiInputAmalgamate}), incls);
+			} else if (i == 1) {
 				var incls=document.createElement("input");
 				incls.className="hackpanel hackinput";
 				var type = (types===undefined)?"string":(types[i]===undefined)?"string":types[i];

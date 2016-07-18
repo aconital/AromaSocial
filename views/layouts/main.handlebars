@@ -54,6 +54,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trianglify/0.2.1/trianglify.min.js"></script>
     <script src="/javascripts/react-tagsinput/react-tagsinput.js"></script>
     <script src="/javascripts/socket.io.min.js"> </script>
+    
     <script type="text/javascript">
         function decodeEntities(encodedString) {
             var textArea = document.createElement('textarea');
@@ -126,9 +127,9 @@
                     )
                             
             //set up the fields: labels
-            var tooltipsArray = ["Email","Message"];
+            var tooltipsArray = ["User","Email","Message"];
             //set up the fields: defaults
-            var defaultsArray = ["",""];
+            var defaultsArray = ["","",""];
             SweetAlertMultiInput(tooltipsArray,defaultsArray);
         }
     </script>
@@ -156,11 +157,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span> Menu <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/create/organization">Create Organizational Homepage</a></li>
-                            <li><a href="/report">Report Problem | Share Idea</a></li>
-                            <li><a onclick="invite(event)" value="invite">Invite a Friend</a></li>
-                        </ul>
+                        <div id="mainDropdown"></div>
                     </li>
                 </ul>
 
@@ -285,6 +282,8 @@
 
 <script type="text/jsx" src="/javascripts/notification-general.js"></script>
 <script type="text/jsx" src="/javascripts/notification-request.js"></script>
+
+<script type="text/jsx" src="/javascripts/invitation.js"></script>
 
 <script src="https://npmcdn.com/classnames/index.js"></script>
 <script src="https://npmcdn.com/react-input-autosize/dist/react-input-autosize.js"></script>
