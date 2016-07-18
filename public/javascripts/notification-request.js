@@ -75,6 +75,7 @@ var RequestNotification = React.createClass({
         socket.on('friendrequest', this._updateNotificationList);
         socket.on('orgrequest', this._updateNotificationList);
         socket.on('org2orgrequest', this._updateNotificationList);
+        socket.on("org2pplrequest",this._updateNotificationList);
     },
     _updateNotificationList(data){
         var notifications = this.state.notication_list.slice();
@@ -124,6 +125,22 @@ var RequestNotification = React.createClass({
                 data: {organizationId: notification.from.userId, mode: action},
                 success: function (data) {
 
+                }.bind(this),
+                error: function (xhr, status, err) {
+                    console.error("couldnt retrieve people");
+                }.bind(this)
+            });
+
+            this.deleteNotification(notification.id);
+        }
+        else if(notification.type == "org2pplrequest")
+        {
+
+            $.ajax({
+                url: "/organization/" + notification.extra.id + "/invite",
+                method: "POST",
+                data: {mode: action},
+                success: function (data) {
                 }.bind(this),
                 error: function (xhr, status, err) {
                     console.error("couldnt retrieve people");

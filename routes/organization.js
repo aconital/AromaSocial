@@ -965,11 +965,116 @@ module.exports=function(app,Parse,io) {
         }
     });
 
+    //invite other users to an org
+    app.get('/organization/:objectId/invite/:userId',function(req,res,next){
+        var orgId= req.params.objectId;
+
+        var orgquery = new Parse.Query("Organization");
+        orgquery.equalTo("objectId",orgId);
+        orgquery.first(function(org) {
+            if(org!=undefined)
+            {
+                var userquery = new Parse.Query(Parse.User);
+                userquery.equalTo("objectId",req.params.userId);
+                userquery.first(function(user) {
+                    if(user!=undefined)
+                    {
+                        var Relationship = Parse.Object.extend("Relationship");
+                        var relation = new Relationship();
+                        relation.set('orgId', { __type: "Pointer", className: "Organization", objectId: orgId });
+                        relation.set('userId', { __type: "Pointer", className: "_User", objectId: req.params.userId });
+                        relation.set('isAdmin', false);
+                        relation.set('verified', false);
+                        relation.set('orgRequest', true);
+                        relation.set('title', 'Members');
+                        relation.save(null,{
+                            success:function(result){
+                                var invite_notification = {
+                                    id: "org_"+orgId+"_"+req.params.userId+"_inv",
+                                    type:"org2pplrequest",
+                                    from: {
+                                        userId:req.user.id,
+                                        username: req.user.username,
+                                        name:req.user.fullname,
+                                        userImgUrl: req.user.imgUrl,
+                                    },
+                                    msg: "has invited you to join",
+                                    extra: {
+                                        id:org.get("name"),
+                                        name: org.get("displayName"),
+                                        imgUrl: org.get("profile_imgURL")
+                                    }
+                                };
+                                io.to(user.id).emit('org2pplrequest',{data:invite_notification});
+
+                                res.json({success: "invited successfully"});
+                            },
+                            error:function(error){
+                                res.json({error:error});
+                            }
+                        });
+                    }
+                    else
+                        res.json({error:"invalid user"})
+
+                });
+            }
+            else
+                res.json({error:"invalid org"})
+
+        });
+
+
+
+    });
+    //accept or deny the invite to join an org
+    app.post('/organization/:objectId/invite',is_auth,function(req,res,next){
+
+        var orgId = req.params.objectId;
+        var mode = req.body.mode;
+
+        var innerQuery = new Parse.Query("Organization");
+        innerQuery.equalTo("name",orgId);
+        var innerQuery2 = new Parse.Query(Parse.User);
+        innerQuery2.equalTo("objectId",req.user.id);
+        var query = new Parse.Query('Relationship');
+        query.matchesQuery("orgId",innerQuery);
+        query.matchesQuery("userId",innerQuery2);
+        query.first({
+            success: function(result) {
+             if(mode=="accept") {
+                    result.set("verified",true);
+                    result.save(null, {
+                        success:function(){
+                            res.json("Accepted!");
+                        },
+                        error:function(error){
+                            res.json({error:error});
+                        }
+                    });
+                }
+                else if(mode=="reject") {
+                    result.destroy({
+                        success: function(model, response){
+                            res.json("Rejected!");
+                        },
+                        error: function(model, response){
+                            res.json({error:error});
+                        }
+                    });
+                }
+            },
+            error: function(error) {
+                console.log(error);
+                res.render('index', {title: error, path: req.path});
+            }
+        });
+
+    });
     app.get('/organization/:objectId/join', is_auth, function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = req.user;
-        if(currentUser)
-        {
+
             var Relationship = Parse.Object.extend("Relationship");
             var relation = new Relationship();
 
@@ -977,6 +1082,7 @@ module.exports=function(app,Parse,io) {
             relation.set('userId', { __type: "Pointer", className: "_User", objectId: currentUser.id });
             relation.set('isAdmin', false);
             relation.set('verified', false);
+            relation.set('orgRequest', false);
             relation.set('title', 'Members');
             relation.save(null,{
                 success:function(){
@@ -988,11 +1094,6 @@ module.exports=function(app,Parse,io) {
                     res.json({error:error});
                 }
             });
-        }
-        else
-        {
-            res.json({error: "Please sign in!"})
-        }
 
     });
     app.get('/organization/:objectId/delete', is_auth, function (req, res, next) {
@@ -1033,14 +1134,13 @@ module.exports=function(app,Parse,io) {
     app.get('/organization/:objectId/leave', is_auth, function (req, res, next) {
         var orgId= req.params.objectId;
         var currentUser = req.user;
-        if(currentUser) {
             var query = new Parse.Query('Relationship');
             query.equalTo("userId",{__type: "Pointer", className: "_User", objectId: currentUser.id} );
             query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: orgId});
             query.equalTo('verified',true);
             query.first(function(result) {
-                if(!(result==undefined)){
-                    console.log("result found");
+                if(result!=undefined)
+                {
                     result.destroy();
                 };
             }).then(function(){
@@ -1049,7 +1149,7 @@ module.exports=function(app,Parse,io) {
                 console.log(error);
                 res.render('index', {title: error, path: req.path});
             });
-        }
+
     });
     app.post('/organization/:objectId/kick', is_auth, function (req, res, next) {
         var orgId= req.params.objectId;
@@ -1060,10 +1160,9 @@ module.exports=function(app,Parse,io) {
             query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: orgId});
             query.equalTo('verified',true);
             query.first(function(result) {
-                if(!(result==undefined)){
-                    console.log("result found");
+                if(result!=undefined)
                     result.destroy();
-                };
+
             }).then(function(){
                 res.status(200).json({status: "Successfully left organization!"});
             }, function(error) {
@@ -1183,6 +1282,7 @@ module.exports=function(app,Parse,io) {
             promise = promise.then(function() {
             var query = new Parse.Query('Relationship');
             query.equalTo("verified",false)
+            query.equalTo("orgRequest",false)
             query.include('userId')
             query.equalTo("orgId",{__type: "Pointer", className: "Organization", objectId: result.get("orgId").id});
             return query.each(function(r) {
@@ -1296,7 +1396,7 @@ module.exports=function(app,Parse,io) {
         })
     });
 
-
+    //this is for the side bar that shows only 5 users of the org
     app.get("/organization/:objectId/partialMembers",function(req,res,next){
         var people =[];
         var counter=0;
@@ -1332,7 +1432,7 @@ module.exports=function(app,Parse,io) {
            res.json({err:err});
         });
     });
-
+    // showing maximum 5 other networks
     app.get("/organization/:objectId/partialNetworks",function(req,res,next){
         var orgId = req.params.objectId;
         var orgs =[];
