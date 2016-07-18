@@ -43,7 +43,6 @@ module.exports=function(app,Parse,io) {
         query.descending("createdAt");
         query.limit(20);
         if (offset !== undefined) {
-            console.log('hi', offset);
             query.lessThan("createdAt", new Date(offset));
         }
         var feed=[];

@@ -45,11 +45,10 @@ var NewsFeed = React.createClass({
                 this.setState({data:  feedItems});
   },
 
-  loadMore: function(callback) {
+  loadMore: function(callback) { // callback function == LoadMoreButton.setButtonState
     var currentItems = this.state.data,
         oldestItem = currentItems[currentItems.length-1],
         newState;
-        this.setState({data: newState});
 
     $.ajax({
         url: '/newsfeeddata',
@@ -57,7 +56,6 @@ var NewsFeed = React.createClass({
         dataType: 'json',
         cache: false,
         success: function(results) {
-          console.log(results);
             if (results.length > 0) {
                 newState = currentItems.concat(results);
                 this.setState({data: newState});
@@ -72,6 +70,7 @@ var NewsFeed = React.createClass({
   },
 
   render: function() {
+      console.log(this.state.data);
       return (
           <div className="container-newsFeed">
               <div className="row">
@@ -123,7 +122,6 @@ var LoadMoreButton = React.createClass({
   },
 
   setButtonState: function(resultCount) { // callback function for when query completes
-    console.log(resultCount);
     if (typeof resultCount === 'number') {
       if (resultCount > 0) {
         this.setState({disabled: false});
@@ -142,7 +140,7 @@ var LoadMoreButton = React.createClass({
 
   render: function() {
     return (
-        <button onClick={this.loadMore} className="item-panel-newsFeed contain-panel-newsFeed btn btn-panel createorg_btn" disabled={this.state.disabled} style={{color:'#555555'}}>
+        <button onClick={this.loadMore} disabled={this.state.disabled} className="contain-panel-newsFeed btn btn-panel createorg_btn" >
           {this.state.label}
         </button>
       );
