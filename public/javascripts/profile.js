@@ -797,36 +797,7 @@ var About = React.createClass({
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWork} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     <div className={"resume-item div-relative " + this.state.hideWorkExperiences}>{workExperience_data}</div>
                 </div>
-                <div id="resume-projects" className="div-relative"><hr/>
-                    <div>
-                        <h3 className="no-margin-top">Projects</h3>
-                    </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,3)} className="body-link">See More</a></h3></div>
-                    {projects_data}
-                </div>
-                <div id="resume-publications" className="div-relative"><hr/>
-                    <div>
-                        <h3 className="no-margin-top">Publications</h3>
-                    </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,4)} className="body-link">See More</a></h3></div>
-                    {publications_data}
-                </div>
-                <div className="clear"></div>
-                <div id="resume-datas" className="div-relative"><hr/>
-                    <div>
-                        <h3 className="no-margin-top">Data</h3>
-                    </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,5)} className="body-link">See More</a></h3></div>
-                    {datas_data}
-                </div>
-                <div className="clear"></div>
-                <div id="resume-models" className="div-relative"><hr/>
-                    <div>
-                        <h3 className="no-margin-top">Models</h3>
-                    </div>
-                    <div className="div-absolute"><h3><a onClick={this.tabChange.bind(this,6)} className="body-link">See More</a></h3></div>
-                    {models_data}
-                </div>
+                
             </div>
         )
     }
