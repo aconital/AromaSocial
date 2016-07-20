@@ -493,6 +493,7 @@ module.exports=function(app,Parse,io) {
               return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
           }
           return req.logIn(user, function(err) {
+            console.log(user);
               if(err) {
                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
               } else {
@@ -510,7 +511,11 @@ module.exports=function(app,Parse,io) {
                                   result.save(null, { useMasterKey: true });
                                   var cookie_age=  30*24*60*1000; //30 days
                                   res.cookie('syncholar_cookie', cookie_token, { maxAge: cookie_age });
-                                  return res.redirect('/');
+
+                                  if (result.get("signup_steps") != -1) {
+                                    return res.redirect('/gettingstarted');
+                                  } else
+                                    return res.redirect('/');
                               }
                           },
                           error: function ( error) {
@@ -519,7 +524,9 @@ module.exports=function(app,Parse,io) {
                       });
 
                   }
-                  else
+                  else if (user["signup_steps"] != -1) {
+                      return res.redirect('/gettingstarted');
+                  } else
                       return res.redirect('/');
 
               }
@@ -776,6 +783,15 @@ app.get('/auth/linkedin/callback',function(req,res){
         });
 
     });
+
+/*******************************************
+ *
+ * SIGN UP STEPS
+ *
+ ********************************************/
+app.get("/gettingstarted",is_auth, function (req,res,next) {
+  res.render("gettingstarted");
+});
 
 /*******************************************
  *
