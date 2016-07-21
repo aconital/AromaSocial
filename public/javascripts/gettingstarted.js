@@ -7,29 +7,51 @@ var Panel = ReactBootstrap.Panel;
 var SignUpSteps = React.createClass({
 	getInitialState() {
 		return {
-			step: 1
+			step: 1, maxStep: 1
 		}
 	},
 
 	getStep() {
 		switch(this.state.step) {
 			case 1:
-				return <Introduction />
+				return <Introduction setStep={this.setStep} />
 			case 2:
-				return <Profile />
+				return <Profile setStep={this.setStep} />
 			case 3:
-				return <Import />
+				return <Import setStep={this.setStep} />
 			case 4:
-				return <Networks />
+				return <Networks setStep={this.setStep} />
 			case 5:
-				return <Confirmation />
+				return <Confirmation setStep={this.setStep} />
 		}
 	},
 
 	setStep(step) {
-		console.log(step);
 		this.setState({ step: step });
+		if (step > this.state.maxStep) { // only want to POST furthest step reached
+			console.log('update max step');
+			this.sendStep();
+		}
 	},
+
+	sendStep: function() {
+        var dataForm = {signup_steps: this.state.step};
+        $.ajax({
+            url: path,
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            success: function(status) {
+                console.log("Updated");
+                this.setState({ maxStep: this.state.step });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/post step", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
 
 	render() {
 		var stepPanel = this.getStep();
@@ -82,12 +104,16 @@ var Introduction = React.createClass({
 		window.location = '../';
 	},
 
+	next() {
+		this.props.setStep(this.state.activePage+1);
+	},
+
 	render() {
 		return (
 			<div>
 				<h3>Let's start by filling in some basic details in your profile page.</h3>
-					
-				<Button bsStyle="danger" onClick={this.skip} >Skip and continue to Syncholar</Button><Button bsStyle="success">Next Step</Button>
+				<p>All fields are optional and can be accessed later in your profile.</p>
+				<Button bsStyle="danger" onClick={this.skip}>Skip and continue to Syncholar</Button> <Button bsStyle="success" onClick={this.next} >Next Step</Button>
 			</div>
 		);
 	}
@@ -96,15 +122,50 @@ var Introduction = React.createClass({
 var Profile = React.createClass({
 	getInitialState() {
 		return {
-	  		activePage: 1
+	  		activePage: 2
 		};
 	},
 
 	render() {
+		var educations_data = "hi";
+
 		return (
 			<div>
 				<h3>Profile</h3>
-				Form here - Bio/Summary, Skills/Interests, Education, Work
+				Add some basic information about yourself. Give us a brief summary of your yourself, some of your research interests, and your most recent education and work experiences.
+				<div id="resume-education" className="div-relative"><hr/>
+                    <h3 className="no-margin-top">Education</h3>
+                	<div className="h4-resume-item display-inline-block ">
+                        <input type="text" className="r-editable r-editable-full" name="company" placeholder="Institution" onChange={this.handleChange} value={this.state.company}/>
+                        <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+                            <input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
+                        </span>
+                        <span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
+                             <input type="date" name="end" onChange={this.handleChange} value={this.state.end} className="r-editable r-editable-date"/>
+                        </span>
+                		<span><input type="text" className="r-editable r-editable-full" name="title" placeholder="Degree" onChange={this.handleChange} value={this.state.title}/></span>
+                		<span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Major" onChange={this.handleChange} value={this.state.major}/></span>
+                		<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange}>{this.state.description}</textarea>
+                    </div>   	
+                </div>
+
+                <div className="div-relative"><hr/>
+                    <h3 className="no-margin-top">Work Experience</h3>
+                    <div className="h4-resume-item display-inline-block">
+                        <input type="text" className="r-editable r-editable-full" name="company" placeholder="Company" onChange={this.handleChange} value={this.state.workCompany}/>
+                        <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+                            <input type="date" name="start" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
+                        </span>
+                        <span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
+                             <input type="date" name="end" onChange={this.handleChange} value={this.state.workEnd} className="r-editable r-editable-date"/>
+						</span>
+						<span><input type="text" className="r-editable r-editable-full" name="title" placeholder="Position" onChange={this.handleChange} value={this.state.workTitle}/></span>
+						<span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Department / Group" onChange={this.handleChange} value={this.state.workmajor}/></span>
+						<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange}>{this.state.workDescription}</textarea>
+                    </div>
+                </div>
+
+                <Button bsStyle="success" space>Save & Next</Button>
 			</div>
 		);
 	}
@@ -113,7 +174,7 @@ var Profile = React.createClass({
 var Import = React.createClass({
 	getInitialState() {
 		return {
-	  		activePage: 1
+	  		activePage: 3
 		};
 	},
 
@@ -121,7 +182,7 @@ var Import = React.createClass({
 		return (
 			<div>
 				<h3>Import Publications</h3>
-				Form here
+				<ImportContent />
 			</div>
 		);
 	}
@@ -130,7 +191,7 @@ var Import = React.createClass({
 var Networks = React.createClass({
 	getInitialState() {
 		return {
-	  		activePage: 1
+	  		activePage: 4
 		};
 	},
 
@@ -147,7 +208,7 @@ var Networks = React.createClass({
 var Confirmation = React.createClass({
 	getInitialState() {
 		return {
-	  		activePage: 1
+	  		activePage: 5
 		};
 	},
 

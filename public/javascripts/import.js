@@ -323,6 +323,9 @@ var DuplicatesList = React.createClass({
 });
 
 
-$( document ).ready(function() {
-	ReactDOM.render(<ImportContent />, document.getElementById('content'));
-});
+if (standalone) {
+	$( document ).ready(function() {
+			ReactDOM.render(<ImportContent />, document.getElementById('import-content'));
+
+	});
+}

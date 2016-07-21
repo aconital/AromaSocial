@@ -790,7 +790,24 @@ app.get('/auth/linkedin/callback',function(req,res){
  *
  ********************************************/
 app.get("/gettingstarted",is_auth, function (req,res,next) {
-  res.render("gettingstarted");
+  res.render("gettingstarted", {path: req.path});
+});
+
+app.post("/gettingstarted",is_auth, function(req,res,next) {
+  var currentUser = req.user;
+  var query = new Parse.Query(Parse.User);
+
+  query.get(currentUser.id).then(function(result) {
+    result.set("signup_steps", req.body.signup_steps);
+    return result.save(null, { useMasterKey: true });
+  }).then(function(result) {
+    console.log('updated step');
+    res.status(200).json({status: "OK"});
+  }, function(error) {
+    console.log('Failed to retrieve events, with error: ' + error);
+    res.status(500).json({status: "Event retrieval failed. " + error.message});
+  });
+
 });
 
 /*******************************************
@@ -799,7 +816,7 @@ app.get("/gettingstarted",is_auth, function (req,res,next) {
  *
  ********************************************/
 app.get("/import",is_auth, function (req,res,next) {
-  res.render("import");
+  res.render("import", {standalone: true});
 });
 
 app.get("/fetchworks", function(req, res, next) {

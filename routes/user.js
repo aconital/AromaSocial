@@ -529,6 +529,46 @@ module.exports=function(app,Parse,io) {
         }
     });
 
+    app.post('/education', is_auth, function(req,res,next){
+        var currentUser = req.user;
+        var linkUser = req.params.username;
+        if(currentUser.username == linkUser) {
+            var query = new Parse.Query(Parse.User);
+            query.get(currentUser.id).then(
+                function (result) {
+                    if (result != undefined) {
+                        var Education = Parse.Object.extend("Education");
+                        var education = new Education();
+                        console.log(req.params.objectId);
+                        console.log(req.body);
+
+                        education.set("start_date", new Date(req.body.start_date));
+                        education.set("end_date", new Date(req.body.end_date));
+                        education.set("faculty", req.body.faculty);
+                        education.set("department", req.body.department);
+                        education.set("degree", req.body.degree);
+                        education.set("description", req.body.description);
+                        education.set("orgId", { __type: "Pointer", className: "Organization", objectId: "VgBbEwgAcC"}); // TODO query org for this
+
+                        event.save(null, {
+                            success: function (obj) {
+                                console.log('education success!');
+
+                                result.add("educations", { __type: "Pointer", className: "Organization", objectId: "VgBbEwgAcC"}); // TODO replace with org query res
+                                result.save(null, { useMasterKey: true });
+                                res.status(200).json({status: "Info Uploaded Successfully!"});
+                            },
+                            error: function (error) {
+                                console.log('Failed to create new object, with error: ' + JSON.stringify(error));
+                                res.status(500).json({error: error});
+                            }
+                        });
+                    }
+                }
+            );
+        }
+    });
+
     app.post('/profile/:username/submitExperience', is_auth, function(req,res,next){
         var currentUser = req.user;
         var linkUser = req.params.username;
