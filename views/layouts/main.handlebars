@@ -173,6 +173,8 @@
 
                 <ul class="nav navbar-nav navbar-right">
 
+
+                    <li class="navbar-hover"><a href="/profile/{{user.username}}" rel="tooltip" title="Profile" ><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
                     <li class="dropdown connection-button">
                         <a href="#" id="general-notification-button" class="dropdown-toggle" rel="tooltip" title="Notifications" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <div class="notification-container">
@@ -183,8 +185,6 @@
                         <ul id="general-notification" class="dropdown-menu friend-request-dropdown" aria-labelledby="dropdownMenuDivider">
                         </ul>
                     </li>
-                    <li class="navbar-hover"><a href="/profile/{{user.username}}" rel="tooltip" title="Profile" ><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
-
                     <li class="dropdown connection-button">
                         <a href="#" class="dropdown-toggle" rel="tooltip" title="Connection Requests" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             <div class="notification-container">
