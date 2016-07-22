@@ -9,7 +9,7 @@ var ImportContent = React.createClass({
     getInitialState() {
      return {
      	status: 'askForAction',
-     	name: name,
+     	name: fullname,
      	results: {},
      	duplicates: {}
         };
@@ -17,7 +17,6 @@ var ImportContent = React.createClass({
 	querySciDir(e) {
 		e.preventDefault();
 		var self = this;
-
 		var nameQuery = this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
 		// var nameQuery = 'sung kyu lim';
 		this.setState({ createStatus: 'Please wait...',
@@ -49,24 +48,51 @@ var ImportContent = React.createClass({
 
 	render() {
 		var content;
-		if (this.state.status == 'askForAction') {
-			content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
-		} else if (this.state.status == 'searching') {
-			content = <div>Searching...</div>
-		} else if (this.state.status == 'showTable') {
-			if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
-				content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />
+		if (this.props.signup) {
+			switch (this.state.status) {
+				case 'askForAction':
+					content = <div><Button bsStyle="success" onClick={this.querySciDir}>Yes, import my publications</Button> <Button onClick={this.props.next}>Skip & Next</Button></div>;
+					break;
+				case 'searching:':
+					content = <div>Searching...</div>;
+					break;
+				case 'showTable':
+					if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
+						content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />;
+					} else {
+						content = (<div>
+							<p>No results found!</p>
+							<Button onClick={this.redirect}>Next</Button>
+							</div>);
+					}
+					break;
+				default:
+					content = (<div>
+						<p>{this.state.status}</p>
+						<Button onClick={this.redirect}>Next</Button>
+						</div>)
+			}
+		}
+		else {
+			if (this.state.status == 'askForAction') {
+				content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
+			} else if (this.state.status == 'searching') {
+				content = <div>Searching...</div>
+			} else if (this.state.status == 'showTable') {
+				if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
+					content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />
+				} else {
+					content = (<div>
+						<p>No results found!</p>
+						<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
+						</div>)
+				}
 			} else {
 				content = (<div>
-					<p>No results found!</p>
+					<p>{this.state.status}</p>
 					<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
 					</div>)
 			}
-		} else {
-			content = (<div>
-				<p>{this.state.status}</p>
-				<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
-				</div>)
 		}
 
 		return (
@@ -206,7 +232,7 @@ var WorksList = React.createClass({
 		}
 		publication['title'] = work.hasOwnProperty('Ti') ? toTitleCase(work.Ti) : '';
 		publication['publication_date'] = work.hasOwnProperty('D') ? work.D : Date.parse(work.Y);
-		publication['contributors'] = work.hasOwnProperty('AA') ? work.AA.map( (a) => toTitleCase(a.AuN) ): [name];
+		publication['contributors'] = work.hasOwnProperty('AA') ? work.AA.map( (a) => toTitleCase(a.AuN) ): [fullname];
 		publication['keywords'] = work.hasOwnProperty('F') ? work.F.map( (k) => toTitleCase(k.FN) ) : [];
 
 		if (work.hasOwnProperty('E')) {
@@ -323,9 +349,9 @@ var DuplicatesList = React.createClass({
 });
 
 
-if (standalone) {
-	$( document ).ready(function() {
-			ReactDOM.render(<ImportContent />, document.getElementById('import-content'));
+// if (standalone) {
+// 	$( document ).ready(function() {
+// 			ReactDOM.render(<ImportContent />, document.getElementById('import-content'));
 
-	});
-}
+// 	});
+// }

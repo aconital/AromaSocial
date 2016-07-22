@@ -1,5 +1,5 @@
 <script>
-	var name = "{{user.fullname}}",
+	var fullname = "{{user.fullname}}",
 		standalone = {{standalone}};
 </script>
 
@@ -12,3 +12,8 @@
 	</div>
 </div>
 <script type="text/jsx" src="/javascripts/import.js"></script>
+<script type="text/jsx">
+	$( document ).ready(function() {
+		ReactDOM.render(<ImportContent signup={false} />, document.getElementById('import-content'));
+	});
+</script>

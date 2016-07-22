@@ -62,7 +62,7 @@ var SignUpSteps = React.createClass({
 				<Panel>
 					{stepPanel}
 				</Panel>
-				<PageNav prev next step={this.state.step} setStep={this.setStep} />
+				<PageNav step={this.state.step} setStep={this.setStep} />
 			</div>
 		);
 	}
@@ -236,12 +236,17 @@ var Import = React.createClass({
 		};
 	},
 
+	next() {
+		console.log('nav to networks recommended');
+		this.props.setStep(this.state.activePage+1);
+	},
+
 	render() {
 		return (
 			<div>
 				<h3>Import Publications</h3>
 				<p>Would you like to import your publications into your profile? We will search for your name as entered on signup. You can access this import tool anytime from the <strong>Publications</strong> tab in your profile.</p>
-				<ImportContent />
+				<ImportContent signup={true} next={this.next} />
 			</div>
 		);
 	}
@@ -252,6 +257,11 @@ var Networks = React.createClass({
 		return {
 	  		activePage: 4
 		};
+	},
+	
+	next() {
+		console.log('nav to networks recommended');
+		this.props.setStep(this.state.activePage+1);
 	},
 
 	render() {

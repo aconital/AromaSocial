@@ -790,7 +790,7 @@ app.get('/auth/linkedin/callback',function(req,res){
  *
  ********************************************/
 app.get("/gettingstarted",is_auth, function (req,res,next) {
-  res.render("gettingstarted", {path: req.path});
+  res.render("gettingstarted", {path: req.path, fullname: req.user.fullname});
 });
 
 app.post("/gettingstarted",is_auth, function(req,res,next) {
