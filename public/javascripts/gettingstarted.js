@@ -57,7 +57,7 @@ var SignUpSteps = React.createClass({
 		var stepPanel = this.getStep();
 		return (
 			<div style={{textAlign: 'center'}}>
-				<PageHeader>Getting Started <small>Tell other Sycholars a little about yourself</small></PageHeader>
+				<PageHeader>Getting Started <small>Tell other Syncholars a little about yourself</small></PageHeader>
 				
 				<Panel>
 					{stepPanel}
@@ -86,7 +86,7 @@ var PageNav = React.createClass({
 	render() {
 		return (
 			<div>
-				<Pagination bsSize="large" items={5} activePage={this.state.activePage} onSelect={this.handleSelect} />
+				<Pagination bsSize="large" items={5} activePage={this.props.step} onSelect={this.handleSelect} />
 			</div>
 		);
 	}
@@ -100,7 +100,21 @@ var Introduction = React.createClass({
 	},
 
 	skip() {
-		//TODO POST to user, set signup_steps to -1
+		var dataForm = {signup_steps: -1};
+        $.ajax({
+            url: path,
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            success: function(status) {
+                console.log("Updated");
+                this.setState({ maxStep: this.state.step });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/post step", status, err.toString());
+            }.bind(this)
+        });
 		window.location = '../';
 	},
 
@@ -122,28 +136,73 @@ var Introduction = React.createClass({
 var Profile = React.createClass({
 	getInitialState() {
 		return {
-	  		activePage: 2
+	  		activePage: 2,
+	  		institution: '', start: null, end: null, degree: '', major: '', department: '', description: '',
+	  		workCompany: '', workStart: null, workEnd: null, workTitle: '', workDescription: '', isCurrent: false
 		};
 	},
 
+	handleChange(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
+
+	next() {
+		var education = {institution: this.state.institution, start_date: this.state.start, end_date: this.state.end,
+			faculty: this.state.major, description: this.state.description, department: this.state.department};
+        $.ajax({
+            url: '/education',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(education),
+            success: function(status) {
+                console.log("Updated education");
+
+                var workDescription = {company: this.state.workCompany, start_date: this.state.workStart, end_date: this.state.workEnd,
+					position: this.state.position, description: this.state.workDescription};
+		        $.ajax({
+		            url: '/workExperience',
+		            dataType: 'json',
+		            contentType: "application/json; charset=utf-8",
+		            type: 'POST',
+		            data: JSON.stringify(workDescription),
+		            success: function(status) {
+		                console.log("Updated workDescription");
+		                // this.setState({ maxStep: this.state.step });
+
+		                this.props.setStep(this.state.activePage+1);
+		            }.bind(this),
+		            error: function(xhr, status, err) {
+		                console.error(path + "/post work", status, err.toString());
+		            }.bind(this)
+		        });
+
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/post education", status, err.toString(), xhr);
+            }.bind(this)
+        });
+	},
+
 	render() {
-		var educations_data = "hi";
 
 		return (
 			<div>
 				<h3>Profile</h3>
-				Add some basic information about yourself. Give us a brief summary of your yourself, some of your research interests, and your most recent education and work experiences.
+				<p>Add some basic information about yourself. Give us a brief summary of your yourself, some of your research interests, and your most recent education and work experiences.</p>
 				<div id="resume-education" className="div-relative"><hr/>
                     <h3 className="no-margin-top">Education</h3>
                 	<div className="h4-resume-item display-inline-block ">
-                        <input type="text" className="r-editable r-editable-full" name="company" placeholder="Institution" onChange={this.handleChange} value={this.state.company}/>
+                        <input type="text" className="r-editable r-editable-full" name="institution" placeholder="Institution" onChange={this.handleChange} value={this.state.institution}/>
                         <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
                             <input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
                         </span>
                         <span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
                              <input type="date" name="end" onChange={this.handleChange} value={this.state.end} className="r-editable r-editable-date"/>
                         </span>
-                		<span><input type="text" className="r-editable r-editable-full" name="title" placeholder="Degree" onChange={this.handleChange} value={this.state.title}/></span>
+                		<span><input type="text" className="r-editable r-editable-full" name="degree" placeholder="Degree" onChange={this.handleChange} value={this.state.degree}/></span>
                 		<span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Major" onChange={this.handleChange} value={this.state.major}/></span>
                 		<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange}>{this.state.description}</textarea>
                     </div>   	
@@ -152,20 +211,19 @@ var Profile = React.createClass({
                 <div className="div-relative"><hr/>
                     <h3 className="no-margin-top">Work Experience</h3>
                     <div className="h4-resume-item display-inline-block">
-                        <input type="text" className="r-editable r-editable-full" name="company" placeholder="Company" onChange={this.handleChange} value={this.state.workCompany}/>
+                        <input type="text" className="r-editable r-editable-full" name="company" placeholder="Company" onChange={this.handleChange} value={this.state.company}/>
                         <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
-                            <input type="date" name="start" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
+                            <input type="date" name="workStart" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
                         </span>
                         <span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
-                             <input type="date" name="end" onChange={this.handleChange} value={this.state.workEnd} className="r-editable r-editable-date"/>
+                             <input type="date" name="workEnd" onChange={this.handleChange} value={this.state.workEnd} className="r-editable r-editable-date"/>
 						</span>
-						<span><input type="text" className="r-editable r-editable-full" name="title" placeholder="Position" onChange={this.handleChange} value={this.state.workTitle}/></span>
-						<span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Department / Group" onChange={this.handleChange} value={this.state.workmajor}/></span>
-						<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange}>{this.state.workDescription}</textarea>
+						<span><input type="text" className="r-editable r-editable-full" name="position" placeholder="Position" onChange={this.handleChange} value={this.state.position}/></span>
+						<textarea type="text" className="r-editable r-editable-full" name="workDescription" placeholder="Description" onChange={this.handleChange}>{this.state.workDescription}</textarea>
                     </div>
                 </div>
 
-                <Button bsStyle="success" space>Save & Next</Button>
+                <Button>Previous</Button> <Button bsStyle="success" onClick={this.next}>Save & Next</Button>
 			</div>
 		);
 	}
@@ -182,6 +240,7 @@ var Import = React.createClass({
 		return (
 			<div>
 				<h3>Import Publications</h3>
+				<p>Would you like to import your publications into your profile? We will search for your name as entered on signup. You can access this import tool anytime from the <strong>Publications</strong> tab in your profile.</p>
 				<ImportContent />
 			</div>
 		);
