@@ -6,7 +6,6 @@ var Panel = ReactBootstrap.Panel;
 
 var SignUpSteps = React.createClass({
 	getInitialState() {
-		console.log(currStep, typeof currStep);
 		return {
 			step: parseInt(currStep) || 1, 
 			maxStep: parseInt(currStep) || 1
@@ -79,7 +78,6 @@ var PageNav = React.createClass({
 	},
 
 	handleSelect(eventKey) {
-		console.log(eventKey, this.props);
 		this.setState({
 	  		activePage: eventKey
 		});
@@ -111,7 +109,6 @@ var Introduction = React.createClass({
             type: 'POST',
             data: JSON.stringify(dataForm),
             success: function(status) {
-                console.log("Updated and skipping");
                 this.setState({ maxStep: this.state.step });
             }.bind(this),
             error: function(xhr, status, err) {
@@ -173,7 +170,6 @@ var Profile = React.createClass({
 		            data: JSON.stringify(workDescription),
 		            success: function(status) {
 		                console.log("Updated workDescription");
-		                // this.setState({ maxStep: this.state.step });
 
 		                this.props.setStep(this.state.activePage+1);
 		            }.bind(this),
