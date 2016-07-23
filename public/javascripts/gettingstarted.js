@@ -6,8 +6,10 @@ var Panel = ReactBootstrap.Panel;
 
 var SignUpSteps = React.createClass({
 	getInitialState() {
+		console.log(currStep, typeof currStep);
 		return {
-			step: 1, maxStep: 1
+			step: parseInt(currStep) || 1, 
+			maxStep: parseInt(currStep) || 1
 		}
 	},
 
@@ -21,6 +23,7 @@ var SignUpSteps = React.createClass({
 				return <Import setStep={this.setStep} />
 			case 4:
 				return <Networks setStep={this.setStep} />
+			case -1:
 			case 5:
 				return <Confirmation setStep={this.setStep} />
 		}
@@ -30,12 +33,12 @@ var SignUpSteps = React.createClass({
 		this.setState({ step: step });
 		if (step > this.state.maxStep) { // only want to POST furthest step reached
 			console.log('update max step');
-			this.sendStep();
+			this.sendStep(step);
 		}
 	},
 
-	sendStep: function() {
-        var dataForm = {signup_steps: this.state.step};
+	sendStep: function(step) {
+        var dataForm = {signup_steps: step};
         $.ajax({
             url: path,
             dataType: 'json',
@@ -108,7 +111,7 @@ var Introduction = React.createClass({
             type: 'POST',
             data: JSON.stringify(dataForm),
             success: function(status) {
-                console.log("Updated");
+                console.log("Updated and skipping");
                 this.setState({ maxStep: this.state.step });
             }.bind(this),
             error: function(xhr, status, err) {

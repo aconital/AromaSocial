@@ -432,6 +432,7 @@ module.exports=function(app,Parse,io) {
          user.set("about", "");
          user.set("projects", []);
          user.set("workExperience", []);
+         user.set("signup_steps", 1);
          user.set("emailVerified", false);
          user.set("email_token",email_code)
 
@@ -790,7 +791,8 @@ app.get('/auth/linkedin/callback',function(req,res){
  *
  ********************************************/
 app.get("/gettingstarted",is_auth, function (req,res,next) {
-  res.render("gettingstarted", {path: req.path, fullname: req.user.fullname});
+  console.log("STEPS", req.user['signup_steps'] || 1, JSON.stringify(req.user, null, 2));
+  res.render("gettingstarted", {path: req.path, fullname: req.user.fullname, currStep: req.user.signup_steps || 1});
 });
 
 app.post("/gettingstarted",is_auth, function(req,res,next) {

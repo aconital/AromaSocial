@@ -49,16 +49,18 @@ var ImportContent = React.createClass({
 	render() {
 		var content;
 		if (this.props.signup) {
+			console.log(this.state.status);
 			switch (this.state.status) {
 				case 'askForAction':
 					content = <div><Button bsStyle="success" onClick={this.querySciDir}>Yes, import my publications</Button> <Button onClick={this.props.next}>Skip & Next</Button></div>;
 					break;
-				case 'searching:':
-					content = <div>Searching...</div>;
+				case 'searching':
+					console.log('hi');
+					content = <div><img className="loading-bar" src="../images/loadingbar.gif"/>Searching...</div>;
 					break;
 				case 'showTable':
 					if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
-						content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />;
+						content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.props.next} signup={this.props.signup} />;
 					} else {
 						content = (<div>
 							<p>No results found!</p>
@@ -69,15 +71,15 @@ var ImportContent = React.createClass({
 				default:
 					content = (<div>
 						<p>{this.state.status}</p>
-						<Button onClick={this.redirect}>Next</Button>
+						<Button onClick={this.props.next}>Next</Button>
 						</div>)
 			}
 		}
-		else {
+		else { // TODO make switch statement
 			if (this.state.status == 'askForAction') {
 				content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
 			} else if (this.state.status == 'searching') {
-				content = <div>Searching...</div>
+				content = <div><img className="loading-bar" src="../images/loadingbar.gif"/>Searching...</div>
 			} else if (this.state.status == 'showTable') {
 				if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
 					content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />
@@ -101,7 +103,7 @@ var ImportContent = React.createClass({
 			</div>
 		);
 	}
-});
+}); // end ImportContent
 
 var ImportButtons = React.createClass({
     querySciDir(e) {
@@ -127,7 +129,7 @@ var WorkItem = React.createClass({
     },
 
     // controls highlighting of items to import and fires related events
-	toggleCheck(e) { // TODO toggle on tr click, not span click
+	toggleCheck(e) {
 		if (this.state.isImported) {
 			this.setState({
 				isImported: false,
@@ -270,7 +272,7 @@ var WorksList = React.createClass({
 
 	render() {
 		var self = this;
-		var showNew, continueLabel;
+		var showNew, continueLabel, buttons;
 		var transFormedResults = [];
 		if (this.props.results.length > 0) {
 			showNew = {};
@@ -278,6 +280,13 @@ var WorksList = React.createClass({
 		} else {
 			showNew = {display: 'none'};
 			continueLabel = 'Continue';
+		}
+		if (this.props.signup) {
+			buttons = (<div><Button className="btn-secondary space" onClick={this.props.redirect}>Cancel</Button>
+				<Button className="btn-success" onClick={this.importWorks}>{continueLabel}</Button></div>);
+		} else {
+			buttons = (<div><Button className="btn-success btn-lg" onClick={this.importWorks}>{continueLabel}</Button>
+				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button></div>);
 		}
 
 		return (
@@ -297,12 +306,11 @@ var WorksList = React.createClass({
 					</tbody>
 				</Table></div>
 				{this.props.dupes.length > 0 ? <DuplicatesList dupes={this.state.duplicates} /> : <span></span>}
-				<Button className="btn-success btn-lg" onClick={this.importWorks}>{continueLabel}</Button>
-				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button>
+				{buttons}
 			</div>
 		);
 	}
-});
+}); // end WorksList
 
 var DuplicateItem = React.createClass({
 	getInitialState() {
