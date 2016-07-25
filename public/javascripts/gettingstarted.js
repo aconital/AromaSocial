@@ -101,21 +101,22 @@ var Introduction = React.createClass({
 	},
 
 	skip() {
-		var dataForm = {signup_steps: -1};
+		var self = this,
+			dataForm = {signup_steps: -1};
         $.ajax({
             url: path,
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             type: 'POST',
-            data: JSON.stringify(dataForm),
-            success: function(status) {
-                this.setState({ maxStep: this.state.step });
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/post step", status, err.toString());
-            }.bind(this)
-        });
-		window.location = '../';
+            data: JSON.stringify(dataForm)
+        })
+        .done(function(data) {
+			self.setState({ maxStep: self.state.step });
+			window.location = '../';
+		})
+		.fail(function(xhr, status, err) {
+			console.error(path + "/post step", status, err.toString());
+		});
 	},
 
 	next() {
@@ -127,7 +128,7 @@ var Introduction = React.createClass({
 			<div>
 				<h3>Let's start by filling in some basic details in your profile page.</h3>
 				<p>All fields are optional and can be accessed later in your profile.</p>
-				<Button bsStyle="danger" onClick={this.skip}>Skip and continue to Syncholar</Button> <Button bsStyle="success" onClick={this.next} >Next Step</Button>
+				<Button bsStyle="danger" onClick={this.skip}>No, skip and proceed to homepage</Button> <Button bsStyle="success" onClick={this.next} >Begin</Button>
 			</div>
 		);
 	}

@@ -52,7 +52,7 @@ var ImportContent = React.createClass({
 			console.log(this.state.status);
 			switch (this.state.status) {
 				case 'askForAction':
-					content = <div><Button bsStyle="success" onClick={this.querySciDir}>Yes, import my publications</Button> <Button onClick={this.props.next}>Skip & Next</Button></div>;
+					content = <div><Button bsStyle="success" onClick={this.querySciDir}>Yes, import my publications</Button> <Button onClick={this.props.next}>No, skip to next step</Button></div>;
 					break;
 				case 'searching':
 					console.log('hi');
