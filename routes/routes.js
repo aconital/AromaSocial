@@ -224,6 +224,9 @@ module.exports=function(app,Parse,io) {
       {
           res.redirect('/verify-email');
       }
+      else if (req.user.signup_steps != -1) { // user has not completed/skipped signup steps
+        res.redirect('/gettingstarted');
+      }
       else {
           res.render('newsfeed', { user: req.user});
           // res.render('import', { user: req.user});
@@ -513,10 +516,7 @@ module.exports=function(app,Parse,io) {
                                   var cookie_age=  30*24*60*1000; //30 days
                                   res.cookie('syncholar_cookie', cookie_token, { maxAge: cookie_age });
 
-                                  if (result.get("signup_steps") != -1) {
-                                    return res.redirect('/gettingstarted');
-                                  } else
-                                    return res.redirect('/');
+                                  return res.redirect('/');
                               }
                           },
                           error: function ( error) {
@@ -525,10 +525,7 @@ module.exports=function(app,Parse,io) {
                       });
 
                   }
-                  else if (user["signup_steps"] != -1) {
-                      return res.redirect('/gettingstarted');
-                  } else
-                      return res.redirect('/');
+                  return res.redirect('/');
 
               }
           });
