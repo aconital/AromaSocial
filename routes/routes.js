@@ -432,6 +432,7 @@ module.exports=function(app,Parse,io) {
          user.set("about", "");
          user.set("projects", []);
          user.set("workExperience", []);
+         user.set("signup_steps", 1);
          user.set("emailVerified", false);
          user.set("email_token",email_code)
 
@@ -493,6 +494,7 @@ module.exports=function(app,Parse,io) {
               return res.render('signin', {page:'login',title: 'Sign In', Error: info.message});
           }
           return req.logIn(user, function(err) {
+            console.log(user);
               if(err) {
                   return res.render('signin', {page:'login',title: 'Sign In', Error: err.message});
               } else {
@@ -510,7 +512,11 @@ module.exports=function(app,Parse,io) {
                                   result.save(null, { useMasterKey: true });
                                   var cookie_age=  30*24*60*1000; //30 days
                                   res.cookie('syncholar_cookie', cookie_token, { maxAge: cookie_age });
-                                  return res.redirect('/');
+
+                                  if (result.get("signup_steps") != -1) {
+                                    return res.redirect('/gettingstarted');
+                                  } else
+                                    return res.redirect('/');
                               }
                           },
                           error: function ( error) {
@@ -519,7 +525,9 @@ module.exports=function(app,Parse,io) {
                       });
 
                   }
-                  else
+                  else if (user["signup_steps"] != -1) {
+                      return res.redirect('/gettingstarted');
+                  } else
                       return res.redirect('/');
 
               }
@@ -779,11 +787,41 @@ app.get('/auth/linkedin/callback',function(req,res){
 
 /*******************************************
  *
+ * SIGN UP STEPS
+ *
+ ********************************************/
+app.get("/gettingstarted",is_auth, function (req,res,next) {
+  if (req.user['signup_steps'] == -1) {
+    res.redirect('/');
+  } else {
+    res.render("gettingstarted", {path: req.path, fullname: req.user.fullname, currStep: req.user.signup_steps || 1});
+  }
+});
+
+app.post("/gettingstarted",is_auth, function(req,res,next) {
+  var currentUser = req.user;
+  var query = new Parse.Query(Parse.User);
+
+  query.get(currentUser.id).then(function(result) {
+    result.set("signup_steps", req.body.signup_steps);
+    return result.save(null, { useMasterKey: true });
+  }).then(function(result) {
+    console.log('updated step');
+    res.status(200).json({status: "OK"});
+  }, function(error) {
+    console.log('Failed to retrieve events, with error: ' + error);
+    res.status(500).json({status: "Event retrieval failed. " + error.message});
+  });
+
+});
+
+/*******************************************
+ *
  * IMPORT WORKS
  *
  ********************************************/
 app.get("/import",is_auth, function (req,res,next) {
-  res.render("import");
+  res.render("import", {standalone: true});
 });
 
 app.get("/fetchworks", function(req, res, next) {

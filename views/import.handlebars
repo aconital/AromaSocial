@@ -1,5 +1,6 @@
 <script>
-	var name = "{{user.fullname}}";
+	var fullname = "{{user.fullname}}",
+		standalone = {{standalone}};
 </script>
 
 <div style="text-align: center; display: block; margin-left: auto; margin-right: auto; margin-bottom: 150px; margin-top: 30px;">
@@ -7,7 +8,12 @@
     
     <p style=" margin-top:30px;color: #50788F; font-size: 18px; font-weight: 600;">Would you like to import your publications into your profile? We will search for your name: "{{user.fullname}}"</p>
 	
-	<div id="content">
+	<div id="import-content">
 	</div>
 </div>
 <script type="text/jsx" src="/javascripts/import.js"></script>
+<script type="text/jsx">
+	$( document ).ready(function() {
+		ReactDOM.render(<ImportContent signup={false} />, document.getElementById('import-content'));
+	});
+</script>
