@@ -64,22 +64,6 @@ var ModalButton = React.createClass({
 	}
 });
 
-
-var DropDown = React.createClass({
-	render: function() {
-		return (
-            <li className="dropdown">
-                <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <span className="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span> Menu <span className="caret"></span>
-                </a>
-                <ul className="dropdown-menu">
-                    <li><a href="/create/organization">Create Organizational Homepage</a></li>
-                    <li><a href="/report">Report Problem | Share Idea</a></li>
-                </ul>
-            </li>
-		)
-	}
-});
 ReactDOM.render(
   <ModalButton />,
   document.getElementById('testDiv')
