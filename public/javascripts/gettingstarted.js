@@ -144,6 +144,7 @@ var Profile = React.createClass({
 	},
 
 	handleChange(e) {
+		console.log(e);
         var changedState = {};
         changedState[e.target.name] = e.target.value;
         this.setState( changedState );
@@ -197,6 +198,7 @@ var Profile = React.createClass({
 						<div id="resume-education" className="div-relative"><hr/>
 							<h3 className="no-margin-top">Education</h3>
 							<div className="h4-resume-item display-inline-block ">
+								<SearchInput name="institution" placeholder="School" onChange={this.handleChange} />
 								<input type="text" className="r-editable r-editable-full" name="institution" placeholder="Institution" onChange={this.handleChange} value={this.state.institution}/>
 								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
 									<input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
@@ -216,7 +218,7 @@ var Profile = React.createClass({
 						<div className="div-relative"><hr/>
 							<h3 className="no-margin-top">Work Experience</h3>
 							<div className="h4-resume-item display-inline-block">
-								<SearchInput/>
+								<SearchInput name="company" placeholder="Company"/>
 								<input type="text" className="r-editable r-editable-full" name="company" placeholder="Company" onChange={this.handleChange} value={this.state.company}/>
 								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
 									<input type="date" name="workStart" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
@@ -319,45 +321,12 @@ var SearchInput = React.createClass({
 	inputChange: function(inputValue) {
 		this.state.data = [];
 		if (inputValue.length <= 0) return;
-		this.setState({value: inputValue});
-
+		this.setState({value: {label: inputValue, value: inputValue, category: "Organizations", imgsrc: null, link: null, objectId: null, buttonText: null}});
 		var that = this;
 		var str = inputValue;
 		var r = [];
 		$.when(
-			$.ajax({
-				url: '/allusers',
-				dataType: 'json',
-				type: 'POST',
-				data: {substr: str, limit: 5},
-				cache: false,
-				success: function(data) {
-					$.map(data, function(item){
-						var dlink = "/profile/" + item.username;
-						r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink, buttonText: 'Connect', username: item.username, objectId: item.objectId});
-					});
-				},
-				error: function(xhr) {
-					console.log(xhr.status);
-				}
-			}),
-			$.ajax({
-				url: '/allpublications',
-				dataType: 'json',
-				type: 'POST',
-				data: {substr: str, limit: 5},
-				cache: false,
-				success: function(data) {
-					$.map(data, function(item){
-						var type = item.type;
-						var dlink = "/publication/" + type + "/" + item.objectId;
-						r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink, buttonText: 'See More'});
-					});
-				},
-				error: function(xhr) {
-					console.log(xhr.status);
-				}
-			}),
+
 			$.ajax({
 				url: '/allorganizations',
 				dataType: 'json',
@@ -378,21 +347,12 @@ var SearchInput = React.createClass({
 				that.setState({data: r});
 			});
 	},
-	setValue: function (value) {
-		this.setState({ value: value });
-		console.log('Suggestion selected:', value.label);
+	updateValue (newValue) {
+		this.setState({
+			value: newValue
+		});
 	},
-	updateValue: function (value) {
-		this.setState({ value: value });
-	},
-	renderLink: function() {
-		return <a style={{ marginLeft: 5 }} href="/upgrade" target="_blank">Upgrade here!</a>;
-	},
-	renderValue: function(option) {
-		console.log(option);
-		//window.location.href = option.link;
-		//return <strong style={{ color: option.color }}>{option.label}</strong>;
-	},
+
 	preventDefault: function(link, event) {
 		event.preventDefault();
 		event.stopPropagation();
@@ -405,33 +365,7 @@ var SearchInput = React.createClass({
 			return str;
 		}
 	},
-	renderMenu: function(menu) {
-
-		var that = this;
-		var options = menu.options;
-		var orgs = options.filter(function(opt) {return opt.category === 'Organizations'});
-		return (
-			<div>
-				{orgs.map(function(org) {
-					return (
-						<div>
-							<div>
-								<a href={org.link} onClick={that.preventDefault} className='acText'>
-									{that.truncate(org.label)}
-								</a>
-							</div>
-						</div>
-					)
-				})}
-
-			</div>
-		)
-	},
 	onBlurHandler: function(event) {
-	},
-	formHandler: function() {
-		var builtUrl = '/search?' + 'searchQuery=' + this.state.value;
-		window.location.href = builtUrl;
 	},
 	getOptions: function(input, callback) {
 		var that = this;
@@ -468,12 +402,11 @@ var SearchInput = React.createClass({
 			<div>
 				<div >
 					<Select
-						placeholder='Search...'
+						placeholder={this.props.placeholder}
 						options={this.state.data}
 						value={this.state.value}
-						valueRenderer={this.renderValue}
 						onInputChange={this.inputChangeWrapper}
-						menuRenderer={this.renderMenu}
+						onChange={this.updateValue}
 						onBlurResetsInput={false}
 						onBlur={this.onBlurHandler} />
 				</div>
