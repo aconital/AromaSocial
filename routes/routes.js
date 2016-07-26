@@ -791,7 +791,7 @@ app.get("/gettingstarted",is_auth, function (req,res,next) {
   if (req.user['signup_steps'] == -1) {
     res.redirect('/');
   } else {
-    res.render("gettingstarted", {path: req.path, fullname: req.user.fullname, currStep: req.user.signup_steps || 1});
+    res.render("gettingstarted", {path: req.path, username: req.user.username, fullname: req.user.fullname, currStep: req.user.signup_steps || 1});
   }
 });
 

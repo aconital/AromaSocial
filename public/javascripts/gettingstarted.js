@@ -138,6 +138,7 @@ var Profile = React.createClass({
 	getInitialState() {
 		return {
 	  		activePage: 2,
+	  		summary: '',
 	  		institution: '', start: null, end: null, degree: '', major: '', department: '', description: '',
 	  		workCompany: '', workStart: null, workEnd: null, workTitle: '', workDescription: '', isCurrent: false
 		};
@@ -151,6 +152,7 @@ var Profile = React.createClass({
     },
 
 	next() {
+		// Send education to server
 		var education = {institution: this.state.institution, start_date: this.state.start, end_date: this.state.end,
 			faculty: this.state.major, description: this.state.description, department: this.state.department};
         $.ajax({
@@ -162,6 +164,7 @@ var Profile = React.createClass({
             success: function(status) {
                 console.log("Updated education");
 
+                // Send work experience to server
                 var workDescription = {company: this.state.workCompany, start_date: this.state.workStart, end_date: this.state.workEnd,
 					position: this.state.position, description: this.state.workDescription};
 		        $.ajax({
@@ -172,8 +175,26 @@ var Profile = React.createClass({
 		            data: JSON.stringify(workDescription),
 		            success: function(status) {
 		                console.log("Updated workDescription");
+		                console.log(this.state.summary, this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n'));
+		                // Send summary to server
+		                $.ajax({
+				            url: '/profile/' + username + '/updateSummary',
+				            dataType: 'json',
+				            contentType: "application/json; charset=utf-8",
+				            type: 'POST',
+				            data: JSON.stringify({summary: this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n')}),
+				            processData: false,
+				            success: function(status) {
+				                console.log("Updated summary");
 
-		                this.props.setStep(this.state.activePage+1);
+				                // Proceed to next page
+				                this.props.setStep(this.state.activePage+1);
+				            }.bind(this),
+				            error: function(xhr, status, err) {
+				                console.error(path + "/post summary", status, err.toString());
+				            }.bind(this)
+				        });
+
 		            }.bind(this),
 		            error: function(xhr, status, err) {
 		                console.error(path + "/post work", status, err.toString());
@@ -188,11 +209,20 @@ var Profile = React.createClass({
 	},
 
 	render() {
-
 		return (
 			<div>
 				<h3>Profile</h3>
 				<p>Add some basic information about yourself. Give us a brief summary of your yourself, some of your research interests, and your most recent education and work experiences.</p>
+				<div className="row">
+					<div className="col-xs-7">
+						<div id="resume-education" className="div-relative"><hr/>
+							<h3 className="no-margin-top">Summary</h3>
+							<div className="h4-resume-item display-inline-block ">
+								<textarea type="text" className="r-editable r-editable-full" name="summary" placeholder="Summary or Biography" onChange={this.handleChange} rows="5" value={this.state.summary} ></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
 				<div className="row">
 					<div className="col-xs-7">
 						<div id="resume-education" className="div-relative"><hr/>
@@ -208,7 +238,7 @@ var Profile = React.createClass({
 								</span>
 								<span><input type="text" className="r-editable r-editable-full" name="degree" placeholder="Degree" onChange={this.handleChange} value={this.state.degree}/></span>
 								<span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Major" onChange={this.handleChange} value={this.state.major}/></span>
-								<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange}>{this.state.description}</textarea>
+								<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange} value={this.state.description}></textarea>
 							</div>
 						</div>
 					</div>
@@ -227,7 +257,7 @@ var Profile = React.createClass({
 									 <input type="date" name="workEnd" onChange={this.handleChange} value={this.state.workEnd} className="r-editable r-editable-date"/>
 								</span>
 								<span><input type="text" className="r-editable r-editable-full" name="position" placeholder="Position" onChange={this.handleChange} value={this.state.position}/></span>
-								<textarea type="text" className="r-editable r-editable-full" name="workDescription" placeholder="Description" onChange={this.handleChange}>{this.state.workDescription}</textarea>
+								<textarea type="text" className="r-editable r-editable-full" name="workDescription" placeholder="Description" onChange={this.handleChange} value={this.state.workDescription} ></textarea>
 							</div>
 						</div>
 					</div>
@@ -250,7 +280,7 @@ var Import = React.createClass({
 		this.props.setStep(this.state.activePage+1);
 	},
 
-	render() {
+	render() { // ImportContent is declared in public/javascripts/import.js
 		return (
 			<div>
 				<h3>Import Publications</h3>

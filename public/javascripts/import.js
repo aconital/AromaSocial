@@ -49,7 +49,6 @@ var ImportContent = React.createClass({
 	render() {
 		var content;
 		if (this.props.signup) {
-			console.log(this.state.status);
 			switch (this.state.status) {
 				case 'askForAction':
 					content = <div><Button bsStyle="success" onClick={this.querySciDir}>Yes, import my publications</Button> <Button onClick={this.props.next}>No, skip to next step</Button></div>;

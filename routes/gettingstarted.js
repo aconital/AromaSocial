@@ -34,7 +34,7 @@ module.exports=function(app,Parse,io) {
                     education.set("faculty", req.body.faculty);
                     education.set("department", req.body.department);
                     education.set("degree", req.body.degree);
-                    // education.set("description", req.body.description);
+                    education.set("description", req.body.description);
                     education.set("userId", { __type: "Pointer", className: "_User", objectId: currentUser.id});
                     education.set("orgId", { __type: "Pointer", className: "Organization", objectId: "VgBbEwgAcC"}); // TODO query org for this
 
@@ -75,7 +75,7 @@ module.exports=function(app,Parse,io) {
                     workExperience.set("end_date", new Date(req.body.end_date));
                     workExperience.set("is_current", (req.body.start_date && !req.body.end_date) ? true : false);
                     workExperience.set("position", req.body.position);
-                    // workExperience.set("description", req.body.description);
+                    workExperience.set("description", req.body.description);
                     workExperience.set("userId", { __type: "Pointer", className: "_User", objectId: currentUser.id});
                     workExperience.set("orgId", { __type: "Pointer", className: "Organization", objectId: "VgBbEwgAcC"}); // TODO query org for this
 

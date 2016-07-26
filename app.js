@@ -80,6 +80,7 @@ app.use(passport.session());
 require('./routes/routes')(app,Parse,io);
 require('./routes/organization')(app,Parse,io);
 require('./routes/user')(app,Parse,io);
+require('./routes/gettingstarted')(app,Parse,io);
 require('./routes/equipment')(app,Parse,io);
 require('./routes/project')(app,Parse,io);
 require('./routes/publication')(app,Parse,io);
