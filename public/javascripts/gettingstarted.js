@@ -58,7 +58,7 @@ var SignUpSteps = React.createClass({
 	render() {
 		var stepPanel = this.getStep();
 		return (
-			<div style={{textAlign: 'center'}}>
+			<div>
 				<PageHeader>Getting Started <small>Tell other Syncholars a little about yourself</small></PageHeader>
 				
 				<Panel>
@@ -192,37 +192,44 @@ var Profile = React.createClass({
 			<div>
 				<h3>Profile</h3>
 				<p>Add some basic information about yourself. Give us a brief summary of your yourself, some of your research interests, and your most recent education and work experiences.</p>
-				<div id="resume-education" className="div-relative"><hr/>
-                    <h3 className="no-margin-top">Education</h3>
-                	<div className="h4-resume-item display-inline-block ">
-                        <input type="text" className="r-editable r-editable-full" name="institution" placeholder="Institution" onChange={this.handleChange} value={this.state.institution}/>
-                        <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
-                            <input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
-                        </span>
-                        <span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
-                             <input type="date" name="end" onChange={this.handleChange} value={this.state.end} className="r-editable r-editable-date"/>
-                        </span>
-                		<span><input type="text" className="r-editable r-editable-full" name="degree" placeholder="Degree" onChange={this.handleChange} value={this.state.degree}/></span>
-                		<span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Major" onChange={this.handleChange} value={this.state.major}/></span>
-                		<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange}>{this.state.description}</textarea>
-                    </div>   	
-                </div>
-
-                <div className="div-relative"><hr/>
-                    <h3 className="no-margin-top">Work Experience</h3>
-                    <div className="h4-resume-item display-inline-block">
-                        <input type="text" className="r-editable r-editable-full" name="company" placeholder="Company" onChange={this.handleChange} value={this.state.company}/>
-                        <span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
-                            <input type="date" name="workStart" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
-                        </span>
-                        <span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
-                             <input type="date" name="workEnd" onChange={this.handleChange} value={this.state.workEnd} className="r-editable r-editable-date"/>
-						</span>
-						<span><input type="text" className="r-editable r-editable-full" name="position" placeholder="Position" onChange={this.handleChange} value={this.state.position}/></span>
-						<textarea type="text" className="r-editable r-editable-full" name="workDescription" placeholder="Description" onChange={this.handleChange}>{this.state.workDescription}</textarea>
-                    </div>
-                </div>
-
+				<div className="row">
+					<div className="col-xs-7">
+						<div id="resume-education" className="div-relative"><hr/>
+							<h3 className="no-margin-top">Education</h3>
+							<div className="h4-resume-item display-inline-block ">
+								<input type="text" className="r-editable r-editable-full" name="institution" placeholder="Institution" onChange={this.handleChange} value={this.state.institution}/>
+								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+									<input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
+								</span>
+								<span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
+									 <input type="date" name="end" onChange={this.handleChange} value={this.state.end} className="r-editable r-editable-date"/>
+								</span>
+								<span><input type="text" className="r-editable r-editable-full" name="degree" placeholder="Degree" onChange={this.handleChange} value={this.state.degree}/></span>
+								<span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Major" onChange={this.handleChange} value={this.state.major}/></span>
+								<textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange}>{this.state.description}</textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+                <div className="row">
+					<div className="col-xs-7">
+						<div className="div-relative"><hr/>
+							<h3 className="no-margin-top">Work Experience</h3>
+							<div className="h4-resume-item display-inline-block">
+								<SearchInput/>
+								<input type="text" className="r-editable r-editable-full" name="company" placeholder="Company" onChange={this.handleChange} value={this.state.company}/>
+								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+									<input type="date" name="workStart" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
+								</span>
+								<span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
+									 <input type="date" name="workEnd" onChange={this.handleChange} value={this.state.workEnd} className="r-editable r-editable-date"/>
+								</span>
+								<span><input type="text" className="r-editable r-editable-full" name="position" placeholder="Position" onChange={this.handleChange} value={this.state.position}/></span>
+								<textarea type="text" className="r-editable r-editable-full" name="workDescription" placeholder="Description" onChange={this.handleChange}>{this.state.workDescription}</textarea>
+							</div>
+						</div>
+					</div>
+				</div>
                 <Button>Previous</Button> <Button bsStyle="success" onClick={this.next}>Save & Next</Button>
 			</div>
 		);
@@ -289,6 +296,189 @@ var Confirmation = React.createClass({
 				<Button bsStyle="success">Finish and continue to Syncholar</Button>
 			</div>
 		);
+	}
+});
+
+
+var SearchInput = React.createClass({
+	getInitialState: function() {
+		return {
+			value: '',
+			data: [],
+			ajaxTimer: null
+		};
+	},
+	componentWillMount: function() {
+		this.state.ajaxTimer = setTimeout(this.inputChange, 60000);
+		clearTimeout(this.state.ajaxTimer);
+	},
+	inputChangeWrapper: function(inputValue) {
+		clearTimeout(this.state.ajaxTimer);
+		this.state.ajaxTimer = setTimeout(this.inputChange.bind(null, inputValue), 200);
+	},
+	inputChange: function(inputValue) {
+		this.state.data = [];
+		if (inputValue.length <= 0) return;
+		this.setState({value: inputValue});
+
+		var that = this;
+		var str = inputValue;
+		var r = [];
+		$.when(
+			$.ajax({
+				url: '/allusers',
+				dataType: 'json',
+				type: 'POST',
+				data: {substr: str, limit: 5},
+				cache: false,
+				success: function(data) {
+					$.map(data, function(item){
+						var dlink = "/profile/" + item.username;
+						r.push({label: item.fullname, value: item.fullname, category: "Users", imgsrc: item.picture.url, link: dlink, buttonText: 'Connect', username: item.username, objectId: item.objectId});
+					});
+				},
+				error: function(xhr) {
+					console.log(xhr.status);
+				}
+			}),
+			$.ajax({
+				url: '/allpublications',
+				dataType: 'json',
+				type: 'POST',
+				data: {substr: str, limit: 5},
+				cache: false,
+				success: function(data) {
+					$.map(data, function(item){
+						var type = item.type;
+						var dlink = "/publication/" + type + "/" + item.objectId;
+						r.push({label: item.title, value: item.title, category: "Publications", imgsrc: "/images/paper.png", link: dlink, buttonText: 'See More'});
+					});
+				},
+				error: function(xhr) {
+					console.log(xhr.status);
+				}
+			}),
+			$.ajax({
+				url: '/allorganizations',
+				dataType: 'json',
+				type: 'POST',
+				data: {substr: str, limit: 5},
+				cache: false,
+				success: function(data) {
+					$.map(data, function(item){
+						var dlink = "/organization/" + item.name;
+						r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink, buttonText: 'Join', objectId: item.objectId});
+					});
+				},
+				error: function(xhr) {
+					console.log(xhr.status);
+				}
+			})
+		).then(function() {
+				that.setState({data: r});
+			});
+	},
+	setValue: function (value) {
+		this.setState({ value: value });
+		console.log('Suggestion selected:', value.label);
+	},
+	updateValue: function (value) {
+		this.setState({ value: value });
+	},
+	renderLink: function() {
+		return <a style={{ marginLeft: 5 }} href="/upgrade" target="_blank">Upgrade here!</a>;
+	},
+	renderValue: function(option) {
+		console.log(option);
+		//window.location.href = option.link;
+		//return <strong style={{ color: option.color }}>{option.label}</strong>;
+	},
+	preventDefault: function(link, event) {
+		event.preventDefault();
+		event.stopPropagation();
+		// window.location.href = link;
+	},
+	truncate: function(str) {
+		if (str.length >= 45) {
+			return str.substring(0, 45) + "...";
+		} else {
+			return str;
+		}
+	},
+	renderMenu: function(menu) {
+
+		var that = this;
+		var options = menu.options;
+		var orgs = options.filter(function(opt) {return opt.category === 'Organizations'});
+		return (
+			<div>
+				{orgs.map(function(org) {
+					return (
+						<div>
+							<div>
+								<a href={org.link} onClick={that.preventDefault} className='acText'>
+									{that.truncate(org.label)}
+								</a>
+							</div>
+						</div>
+					)
+				})}
+
+			</div>
+		)
+	},
+	onBlurHandler: function(event) {
+	},
+	formHandler: function() {
+		var builtUrl = '/search?' + 'searchQuery=' + this.state.value;
+		window.location.href = builtUrl;
+	},
+	getOptions: function(input, callback) {
+		var that = this;
+		var str = input;
+		var r = [];
+		$.when(
+			$.ajax({
+				url: '/allorganizations',
+				dataType: 'json',
+				type: 'POST',
+				data: {substr: str},
+				cache: false,
+				success: function(data) {
+					$.map(data, function(item){
+						var dlink = "/organization/" + item.name;
+						r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink, buttonText: 'Join', objectId: item.objectId});
+					});
+				},
+				error: function(xhr) {
+					console.log(xhr.status);
+				}
+			})
+		).then(function() {
+				callback(
+					null, {
+						options: r
+					}
+				);
+				that.setState({data: r});
+			});
+	},
+	render: function () {
+		return (
+			<div>
+				<div >
+					<Select
+						placeholder='Search...'
+						options={this.state.data}
+						value={this.state.value}
+						valueRenderer={this.renderValue}
+						onInputChange={this.inputChangeWrapper}
+						menuRenderer={this.renderMenu}
+						onBlurResetsInput={false}
+						onBlur={this.onBlurHandler} />
+				</div>
+			</div>
+		)
 	}
 });
 
