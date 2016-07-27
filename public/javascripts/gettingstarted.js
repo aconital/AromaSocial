@@ -139,18 +139,30 @@ var Profile = React.createClass({
 		return {
 	  		activePage: 2,
 	  		summary: '',
+			education:[],
+			work_experience:[],
 	  		institution: '', start: null, end: null, degree: '', major: '', department: '', description: '',
 	  		workCompany: '', workStart: null, workEnd: null, workTitle: '', workDescription: '', isCurrent: false
 		};
 	},
 
 	handleChange(e) {
-		console.log(e);
         var changedState = {};
         changedState[e.target.name] = e.target.value;
         this.setState( changedState );
     },
+    updateState(type,obj)
+	{
+		if(type ==="institution")
+		{
+			console.log("a");
+		}
+		else if(type==="company")
+		{
+			console.log("b");
+		}
 
+	},
 	next() {
 		// Send education to server
 		var education = {institution: this.state.institution, start_date: this.state.start, end_date: this.state.end,
@@ -228,8 +240,7 @@ var Profile = React.createClass({
 						<div id="resume-education" className="div-relative"><hr/>
 							<h3 className="no-margin-top">Education</h3>
 							<div className="h4-resume-item display-inline-block ">
-								<SearchInput name="institution" placeholder="School" onChange={this.handleChange} />
-								<input type="text" className="r-editable r-editable-full" name="institution" placeholder="Institution" onChange={this.handleChange} value={this.state.institution}/>
+								<SearchInput name="institution" placeholder="School" updateState={this.updateState}  />
 								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
 									<input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
 								</span>
@@ -248,8 +259,7 @@ var Profile = React.createClass({
 						<div className="div-relative"><hr/>
 							<h3 className="no-margin-top">Work Experience</h3>
 							<div className="h4-resume-item display-inline-block">
-								<SearchInput name="company" placeholder="Company"/>
-								<input type="text" className="r-editable r-editable-full" name="company" placeholder="Company" onChange={this.handleChange} value={this.state.company}/>
+								<SearchInput name="company" placeholder="Company" updateState={this.updateState}/>
 								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
 									<input type="date" name="workStart" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
 								</span>
@@ -351,7 +361,10 @@ var SearchInput = React.createClass({
 	inputChange: function(inputValue) {
 		this.state.data = [];
 		if (inputValue.length <= 0) return;
-		this.setState({value: {label: inputValue, value: inputValue, category: "Organizations", imgsrc: null, link: null, objectId: null, buttonText: null}});
+		var newValue= {label: inputValue, value: inputValue, category: "Organizations", imgsrc: null, link: null, objectId: null, buttonText: null};
+		this.setState({value: newValue});
+		this.props.updateState(this.props.name,newValue);
+
 		var that = this;
 		var str = inputValue;
 		var r = [];
@@ -381,6 +394,8 @@ var SearchInput = React.createClass({
 		this.setState({
 			value: newValue
 		});
+		//pass it to the parent
+		this.props.updateState(this.props.name,newValue);
 	},
 
 	preventDefault: function(link, event) {
