@@ -15,7 +15,7 @@ var SignUpSteps = React.createClass({
 	getStep() {
 		switch(this.state.step) {
 			case 1:
-				return <Introduction setStep={this.setStep} />
+				return <Introduction setStep={this.setStep} finish={this.finish} />
 			case 2:
 				return <Profile setStep={this.setStep} />
 			case 3:
@@ -24,7 +24,8 @@ var SignUpSteps = React.createClass({
 				return <Networks setStep={this.setStep} />
 			case -1:
 			case 5:
-				return <Confirmation setStep={this.setStep} />
+			default:
+				return <Confirmation setStep={this.setStep} finish={this.finish} />
 		}
 	},
 
@@ -54,6 +55,25 @@ var SignUpSteps = React.createClass({
         });
         return;
     },
+
+    finish() {
+		var self = this,
+			dataForm = {signup_steps: -1};
+        $.ajax({
+            url: path,
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm)
+        })
+        .done(function(data) {
+			self.setState({ maxStep: self.state.step });
+			window.location = '../';
+		})
+		.fail(function(xhr, status, err) {
+			console.error(path + "/post step", status, err.toString());
+		});
+	},
 
 	render() {
 		var stepPanel = this.getStep();
@@ -100,25 +120,6 @@ var Introduction = React.createClass({
 		};
 	},
 
-	skip() {
-		var self = this,
-			dataForm = {signup_steps: -1};
-        $.ajax({
-            url: path,
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm)
-        })
-        .done(function(data) {
-			self.setState({ maxStep: self.state.step });
-			window.location = '../';
-		})
-		.fail(function(xhr, status, err) {
-			console.error(path + "/post step", status, err.toString());
-		});
-	},
-
 	next() {
 		this.props.setStep(this.state.activePage+1);
 	},
@@ -128,7 +129,7 @@ var Introduction = React.createClass({
 			<div>
 				<h3>Let's start by filling in some basic details in your profile page.</h3>
 				<p>All fields are optional and can be accessed later in your profile.</p>
-				<Button bsStyle="danger" onClick={this.skip}>No, skip and proceed to homepage</Button> <Button bsStyle="success" onClick={this.next} >Begin</Button>
+				<Button bsStyle="danger" onClick={this.props.finish}>No, skip and proceed to homepage</Button> <Button bsStyle="success" onClick={this.next} >Begin</Button>
 			</div>
 		);
 	}
@@ -187,7 +188,7 @@ var Profile = React.createClass({
 		            data: JSON.stringify(workDescription),
 		            success: function(status) {
 		                console.log("Updated workDescription");
-		                console.log(this.state.summary, this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n'));
+
 		                // Send summary to server
 		                $.ajax({
 				            url: '/profile/' + username + '/updateSummary',
@@ -240,7 +241,7 @@ var Profile = React.createClass({
 						<div id="resume-education" className="div-relative"><hr/>
 							<h3 className="no-margin-top">Education</h3>
 							<div className="h4-resume-item display-inline-block ">
-								<SearchInput name="institution" placeholder="School" updateState={this.updateState}  />
+								<SearchInput name="institution" placeholder="Latest School" updateState={this.updateState}  />
 								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
 									<input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
 								</span>
@@ -259,7 +260,7 @@ var Profile = React.createClass({
 						<div className="div-relative"><hr/>
 							<h3 className="no-margin-top">Work Experience</h3>
 							<div className="h4-resume-item display-inline-block">
-								<SearchInput name="company" placeholder="Company" updateState={this.updateState}/>
+								<SearchInput name="company" placeholder="Latest Company" updateState={this.updateState}/>
 								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
 									<input type="date" name="workStart" onChange={this.handleChange} value={this.state.workStart} className="r-editable r-editable-date"/>
 								</span>
@@ -335,7 +336,7 @@ var Confirmation = React.createClass({
 			<div>
 				<h3>Almost there!</h3>
 				<div>Are you done with sign up steps? You can edit all of these fields from your profile.</div><br />
-				<Button bsStyle="success">Finish and continue to Syncholar</Button>
+				<Button bsStyle="success" onClick={this.props.finish}>Finish and continue to Syncholar</Button>
 			</div>
 		);
 	}
