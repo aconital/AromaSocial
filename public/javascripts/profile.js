@@ -797,7 +797,7 @@ var About = React.createClass({
                     {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addWork} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
                     <div className={"resume-item div-relative " + this.state.hideWorkExperiences}>{workExperience_data}</div>
                 </div>
-                
+
             </div>
         )
     }
