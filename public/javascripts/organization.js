@@ -418,15 +418,18 @@ var Home = React.createClass({
         this.setState({showModal:false});
     },
     inviteTrigger: function(e) {
-    e.stopPropagation();
-    var source = {
-        id: objectId,
-        name: name,
-        displayName: displayName,
-        imgUrl: picture
-    };
-    invite(e.nativeEvent, "org2people", source);
-},
+        e.stopPropagation();
+        var source = {
+            id: objectId,
+            name: name,
+            displayName: displayName,
+            imgUrl: picture
+        };
+        invite(e.nativeEvent, "org2people", source);
+    },
+    existingUsersInviteTrigger: function(e) {
+        
+    },
     render:function(){
         //discussions
         var discussions;
@@ -558,7 +561,12 @@ var Home = React.createClass({
                          </ul>
                         </div>
                         <div className = "createorg_panel">
-                            {this.props.joinStatus==="joined"? <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members</span></button> : ""}
+                            {/*this.props.joinStatus==="joined"? <button className="btn btn-panel createorg_btn" onClick={this.existingUsersInviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite Members Part of Syncholar</span></button> : "" */}
+                            {this.props.joinStatus === "joined" ? <ModalButton buttonText="Invite Users"/>:null}
+                        </div>
+                        <div className = "createorg_panel">
+                            {/*this.props.joinStatus==="joined"? <button className="btn btn-panel createorg_btn" onClick={this.inviteTrigger}><span className="nfButton"><i className="fa fa-user-plus" aria-hidden="true"></i> Invite People Not Part of Syncholar</span></button> : ""*/}
+                            {this.props.joinStatus === "joined" ? <ModalButton buttonText="Invite Potential Users"/>:null}
                         </div>
                     </div>
                     <div className="row home-connections-box">

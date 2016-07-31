@@ -471,9 +471,9 @@ var ReactMultiSelect = React.createClass({
       that.setState({data: r});
     })
   },
-  handleSelectChange: function(val) {
-    this.setState({ value: val });
-    this.props.changeHandler(val);
+  handleSelectChange: function (value) { 
+    this.setState({ value: value });
+    this.props.changeHandler(value);
   },
   renderMenu: function(menu) {
     var users = menu.options;
@@ -503,8 +503,7 @@ var ReactMultiSelect = React.createClass({
           <Select 
             placeholder={this.props.placeholder}
             options={this.state.data}
-            multi={true} 
-            allowCreate={true}
+            multi={this.props.multi}
             onChange={this.handleSelectChange}
             value={this.state.value} />
       </div>

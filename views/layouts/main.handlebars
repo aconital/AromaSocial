@@ -128,9 +128,12 @@
                     )
                             
             //set up the fields: labels
-            var tooltipsArray = ["User","Email","Message"];
+            var tooltipsArray = ["Email","Message"];
+            if (invType === "org2users") {
+                tooltipsArray = ["Users", "Message"];
+            }
             //set up the fields: defaults
-            var defaultsArray = ["","",""];
+            var defaultsArray = ["",""];
             SweetAlertMultiInput(tooltipsArray,defaultsArray);
         }
     </script>
@@ -165,7 +168,6 @@
                         </ul>
                     </li>
                 </ul>
-                <span style="float:left" id="testDiv"></span>
                 <ul class="nav navbar-nav navbar-nav-search">
                     <li class="nav navbar-search">
                         <div id="autosuggest" class="navbar-left search-bar-form"></div>
