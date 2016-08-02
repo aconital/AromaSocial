@@ -55,6 +55,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/trianglify/0.2.1/trianglify.min.js"></script>
     <script src="/javascripts/react-tagsinput/react-tagsinput.js"></script>
     <script src="/javascripts/socket.io.min.js"> </script>
+    
+
     <script type="text/javascript">
         function decodeEntities(encodedString) {
             var textArea = document.createElement('textarea');
@@ -128,6 +130,9 @@
                             
             //set up the fields: labels
             var tooltipsArray = ["Email","Message"];
+            if (invType === "org2users") {
+                tooltipsArray = ["Users", "Message"];
+            }
             //set up the fields: defaults
             var defaultsArray = ["",""];
             SweetAlertMultiInput(tooltipsArray,defaultsArray);
@@ -164,7 +169,6 @@
                         </ul>
                     </li>
                 </ul>
-
                 <ul class="nav navbar-nav navbar-nav-search">
                     <li class="nav navbar-search">
                         <div id="autosuggest" class="navbar-left search-bar-form"></div>
@@ -172,7 +176,6 @@
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
-
 
                     <li class="navbar-hover"><a href="/profile/{{user.username}}" rel="tooltip" title="Profile" ><img src="{{user.imgUrl}}" alt="" width="34px" class="img-circle"></a></li>
                     <li class="dropdown connection-button">
@@ -343,6 +346,7 @@
 <script src="/javascripts/react-tag-input/dist/reactTags.min.js"></script>
 <script src="/javascripts/tag-it.js"></script>
 <script type="text/jsx" src="/javascripts/autocomplete.js"></script>
+<script type="text/jsx" src="/javascripts/invitation.js"></script>
 
 </body>
 </html>

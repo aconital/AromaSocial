@@ -20,7 +20,7 @@
 			incls.innerHTML=tooltipsArray[i];
 			fieldset.appendChild(incls);
 			
-			if (i == 0) {
+			if (tooltipsArray[i] === "Email") {
 				var incls=document.createElement("input");
 				incls.className="hackpanel hackinput";
 				var type = (types===undefined)?"string":(types[i]===undefined)?"string":types[i];
@@ -28,6 +28,14 @@
 				incls.value=defaultsArray[i];
 				incls.onkeyup = SweetAlertMultiInputAmalgamate;
 				fieldset.appendChild(incls);
+			} else if (tooltipsArray[i] === "Users") {
+				// var incls = document.createElement("div");
+				// incls.className = "hackpanel hackinput";
+				// var type = (types === undefined) ? "json":(types[i]===undefined)?"json":types[i];
+				// incls.dataset.type = type;
+				// incls.value = defaultsArray[i];
+				// incls.onkeyup = SweetAlertMultiInputAmalgamate;
+				// fieldset.appendChild(incls);
 			} else {
 				var incls=document.createElement("textarea");
 				incls.className="hackpanel hackinput";
