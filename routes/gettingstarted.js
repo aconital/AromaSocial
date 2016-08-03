@@ -36,14 +36,14 @@ module.exports=function(app,Parse,io) {
                     education.set("degree", req.body.degree);
                     education.set("description", req.body.description);
                     education.set("userId", { __type: "Pointer", className: "_User", objectId: currentUser.id});
-                    education.set("orgId", { __type: "Pointer", className: "Organization", objectId: "VgBbEwgAcC"}); // TODO query org for this
+                    education.set("orgId", { __type: "Pointer", className: "Organization", objectId: "ny1UEBo6zn"}); // TODO query org for this
 
                     education.save(null, {
                         success: function (obj) {
                             console.log(obj);
                             console.log('education success!');
 
-                            result.add("educations", { __type: "Pointer", className: "Education", objectId: "VgBbEwgAcC"}); // TODO replace with org query res
+                            result.add("educations", { __type: "Pointer", className: "Education", objectId: obj.id}); // TODO replace with org query res
                             result.save(null, { useMasterKey: true });
                             res.status(200).json({status: "Info Uploaded Successfully!"});
                         },
@@ -77,13 +77,13 @@ module.exports=function(app,Parse,io) {
                     workExperience.set("position", req.body.position);
                     workExperience.set("description", req.body.description);
                     workExperience.set("userId", { __type: "Pointer", className: "_User", objectId: currentUser.id});
-                    workExperience.set("orgId", { __type: "Pointer", className: "Organization", objectId: "VgBbEwgAcC"}); // TODO query org for this
+                    workExperience.set("orgId", { __type: "Pointer", className: "Organization", objectId: "ny1UEBo6zn"}); // TODO query org for this
 
                     workExperience.save(null, {
                         success: function (obj) {
                             console.log('workExperience success!');
 
-                            result.add("educations", { __type: "Pointer", className: "Organization", objectId: "VgBbEwgAcC"}); // TODO replace with org query res
+                            result.add("educations", { __type: "Pointer", className: "Work_experience", objectId: obj.id}); // TODO replace with org query res
                             result.save(null, { useMasterKey: true });
                             res.status(200).json({status: "Info Uploaded Successfully!"});
                         },

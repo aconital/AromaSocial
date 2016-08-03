@@ -746,14 +746,14 @@ var About = React.createClass({
         var models_data = [];
         if (this.state.workExperience != "") {
             var WEItems = JSON.parse(this.state.workExperience);
-            WEItems.forEach(function(item) {
-                workExperience_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
+            WEItems.forEach(function(item, i) {
+                workExperience_data.push(<AboutTabObject identifier={i} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
             });
         }
         if (this.state.educations != "") {
             var EItems = JSON.parse(this.state.educations);
-            EItems.forEach(function(item) {
-                educations_data.push(<AboutTabObject identifier={item.key} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
+            EItems.forEach(function(item, i) {
+                educations_data.push(<AboutTabObject identifier={i} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
         if (this.state.interests != "") {
