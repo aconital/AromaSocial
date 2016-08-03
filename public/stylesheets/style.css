@@ -6871,6 +6871,11 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
 
 }
 
+.col-center{
+    float: none;
+    margin: 0 auto;
+}
+
 .front-banner{
 
   color: white;
