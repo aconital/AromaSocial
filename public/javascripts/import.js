@@ -51,7 +51,7 @@ var ImportContent = React.createClass({
 		if (this.props.signup) {
 			switch (this.state.status) {
 				case 'askForAction':
-					content = <div><Button bsStyle="success" onClick={this.querySciDir}>Yes, import my publications</Button> <Button onClick={this.props.next}>No, skip to next step</Button></div>;
+					content = <div><Button className="active-button" onClick={this.querySciDir}>Yes, import my publications</Button> <Button className="passive-button" onClick={this.props.next}>No, skip to next step</Button></div>;
 					break;
 				case 'searching':
 					console.log('hi');

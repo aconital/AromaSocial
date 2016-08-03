@@ -130,7 +130,7 @@ var Introduction = React.createClass({
 				<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
 					<h3>Let's start by filling in some basic details in your profile page.</h3>
 					<p>All fields are optional and can be accessed later in your profile.</p><br />
-					<Button bsStyle="danger" onClick={this.props.finish}>No, skip and proceed to homepage</Button> <Button bsStyle="success" onClick={this.next} >Begin</Button>
+					<Button className="passive-button" onClick={this.props.finish}>I'll do it later</Button> <Button className="active-button" onClick={this.next} >Begin</Button>
 				</div>
 			</div>
 		);
@@ -277,7 +277,7 @@ var Profile = React.createClass({
 						</div>
 					</div>
 				</div>
-                <Button>Previous</Button> <Button bsStyle="success" onClick={this.next}>Save & Next</Button>
+                <Button className="passive-button">Previous</Button> <Button className="active-button" onClick={this.next}>Save & Next</Button>
 			</div>
 		);
 	}
@@ -345,7 +345,7 @@ var Confirmation = React.createClass({
 				<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
 					<h3>Almost there!</h3>
 					<div>Are you done with sign up steps? You can edit all of these fields from your profile.</div><br />
-					<Button bsStyle="success" onClick={this.props.finish}>Finish and continue to Syncholar</Button>
+					<Button className="active-button" onClick={this.props.finish}>Finish and continue to Syncholar</Button>
 				</div>
 			</div>
 		);
