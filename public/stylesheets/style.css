@@ -6917,3 +6917,8 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
   background-color: #4f4d78;
   color: white;
 }
+.getstarted-panel
+{
+  margin-right: 10%;
+  margin-left: 10%;
+}

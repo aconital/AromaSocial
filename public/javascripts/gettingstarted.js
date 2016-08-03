@@ -78,7 +78,7 @@ var SignUpSteps = React.createClass({
 	render() {
 		var stepPanel = this.getStep();
 		return (
-			<div>
+			<div className="getstarted-panel">
 				<PageHeader>Getting Started <small>Tell other Syncholars a little about yourself</small></PageHeader>
 				
 				<Panel style={{textAlign: 'center'}}>
