@@ -77,7 +77,8 @@ var InviteNonUserModal = React.createClass({
 var ModalButton = React.createClass({
 	getInitialState: function() {
 		return {
-			showModal: false
+			showModal: false,
+			disabled: false
 		}
 	},
 	closeModal: function() {
@@ -85,6 +86,9 @@ var ModalButton = React.createClass({
 	},
 	openModal: function() {
 		this.setState({showModal: true});
+	},
+	setDisabled: function() {
+		this.setState({disabled: true});
 	},
 	handleUserSubmit: function(userId) {
 		var url = "/organization/" + this.props.orgId + "/invite/" + userId;
@@ -101,6 +105,8 @@ var ModalButton = React.createClass({
             console.log("Ajax for user notification failed with err: ", err);
           }.bind(this)
         });
+        this.closeModal();
+        this.setDisabled();
 	},
 	handleNonUserSubmit: function(email, message) {
 		console.log(email);
@@ -128,11 +134,12 @@ var ModalButton = React.createClass({
           }.bind(this)
         });
         this.closeModal();
+        this.setDisabled();
 	},
 	render: function() {
 		return (
 			<div>
-				<Button className="btn btn-panel createorg_btn" onClick={this.openModal}>
+				<Button className="btn btn-panel createorg_btn" onClick={this.openModal} disabled={this.state.disabled}>
 		          {this.props.buttonText}
 		        </Button>
 

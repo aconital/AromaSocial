@@ -449,7 +449,7 @@ var ReactMultiSelect = React.createClass({
       value: {}
     }
   },
-  componentDidMount: function() {
+  componentWillMount: function() {
     var r = [];
     var that = this;
     $.when(
@@ -479,23 +479,22 @@ var ReactMultiSelect = React.createClass({
     var users = menu.options;
     console.log("USERZZ: ", users);
     var that = this;
-    {(users.length > 0) ? <span className="categoryHeader">Users</span>:null}
+    return (
+      <div>
       {users.map(function(usr) {
         return (
           <div>
-            <div className="acImage">
-              <a style={{ cursor: 'pointer' }}>
+            <div>
                 <img className='search-img' src={usr.imgsrc}/>
-              </a>
             </div>
             <div>
-              <a className='acText'>
                 {usr.label}
-              </a>
             </div>
           </div>
         )
       })}
+      </div>
+    )
   },
   render: function() {
     return (

@@ -19,12 +19,12 @@ module.exports=function(app,Parse,io) {
         var q = new Parse.Query("User");
         q.find({
             success: function(items) {
-                console.log("ALL USERS: ")
-                console.log(items)
                 var results = [];
                 for (var i = 0; i < items.length; i++) {
                     var obj = items[i];
-                    results.push(obj);
+                    if (obj.id !== req.user.id) {
+                        results.push(obj);
+                    }
                 }
                 res.send(results);
             },
@@ -37,7 +37,6 @@ module.exports=function(app,Parse,io) {
     app.post('/allusers', function(req, res, next) {
         var str = req.body.substr;
         var lcStr = str.toLowerCase();
-        console.log("LIMITTTTTTTTTT =>", req.body.limit);
         var qLimit;
         if (req.body.limit != undefined) {
             qLimit = parseInt(req.body.limit);
