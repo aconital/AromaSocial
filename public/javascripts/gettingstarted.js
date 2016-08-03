@@ -81,7 +81,7 @@ var SignUpSteps = React.createClass({
 			<div>
 				<PageHeader>Getting Started <small>Tell other Syncholars a little about yourself</small></PageHeader>
 				
-				<Panel>
+				<Panel style={{textAlign: 'center'}}>
 					{stepPanel}
 				</Panel>
 				<PageNav step={this.state.step} setStep={this.setStep} />
@@ -106,7 +106,7 @@ var PageNav = React.createClass({
 
 	render() {
 		return (
-			<div>
+			<div style={{textAlign: 'center'}}>
 				<Pagination bsSize="large" items={5} activePage={this.props.step} onSelect={this.handleSelect} />
 			</div>
 		);
@@ -126,10 +126,12 @@ var Introduction = React.createClass({
 
 	render() {
 		return (
-			<div>
-				<h3>Let's start by filling in some basic details in your profile page.</h3>
-				<p>All fields are optional and can be accessed later in your profile.</p>
-				<Button bsStyle="danger" onClick={this.props.finish}>No, skip and proceed to homepage</Button> <Button bsStyle="success" onClick={this.next} >Begin</Button>
+			<div className="row">
+				<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
+					<h3>Let's start by filling in some basic details in your profile page.</h3>
+					<p>All fields are optional and can be accessed later in your profile.</p><br />
+					<Button bsStyle="danger" onClick={this.props.finish}>No, skip and proceed to homepage</Button> <Button bsStyle="success" onClick={this.next} >Begin</Button>
+				</div>
 			</div>
 		);
 	}
@@ -224,9 +226,10 @@ var Profile = React.createClass({
 		return (
 			<div>
 				<h3>Profile</h3>
-				<p>Add some basic information about yourself. Give us a brief summary of your yourself, some of your research interests, and your most recent education and work experiences.</p>
 				<div className="row">
-					<div className="col-xs-7">
+					<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
+						<p>Add some basic information about yourself. Give us a brief summary of your yourself, some of your research interests, and your most recent education and work experiences.</p>
+
 						<div id="resume-education" className="div-relative"><hr/>
 							<h3 className="no-margin-top">Summary</h3>
 							<div className="h4-resume-item display-inline-block ">
@@ -235,8 +238,9 @@ var Profile = React.createClass({
 						</div>
 					</div>
 				</div>
+
 				<div className="row">
-					<div className="col-xs-7">
+					<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
 						<div id="resume-education" className="div-relative"><hr/>
 							<h3 className="no-margin-top">Education</h3>
 							<div className="h4-resume-item display-inline-block ">
@@ -254,8 +258,9 @@ var Profile = React.createClass({
 						</div>
 					</div>
 				</div>
+
                 <div className="row">
-					<div className="col-xs-7">
+					<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
 						<div className="div-relative"><hr/>
 							<h3 className="no-margin-top">Work Experience</h3>
 							<div className="h4-resume-item display-inline-block">
@@ -292,10 +297,12 @@ var Import = React.createClass({
 
 	render() { // ImportContent is declared in public/javascripts/import.js
 		return (
-			<div>
-				<h3>Import Publications</h3>
-				<p>Would you like to import your publications into your profile? We will search for your name as entered on signup. You can access this import tool anytime from the <strong>Publications</strong> tab in your profile.</p>
-				<ImportContent signup={true} next={this.next} />
+			<div className="row">
+				<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
+					<h3>Import Publications</h3>
+					<p>Would you like to import your publications into your profile? We will search for your name as entered on signup. You can access this import tool anytime from the <strong>Publications</strong> tab in your profile.</p>
+					<ImportContent signup={true} next={this.next} />
+				</div>
 			</div>
 		);
 	}
@@ -315,9 +322,11 @@ var Networks = React.createClass({
 
 	render() {
 		return (
-			<div>
-				<h3>Connect</h3>
-				Form here - Invite others, join recommended networks
+			<div className="row">
+				<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
+					<h3>Connect</h3>
+					Form here - Invite others, join recommended networks
+				</div>
 			</div>
 		);
 	}
@@ -332,10 +341,12 @@ var Confirmation = React.createClass({
 
 	render() {
 		return (
-			<div>
-				<h3>Almost there!</h3>
-				<div>Are you done with sign up steps? You can edit all of these fields from your profile.</div><br />
-				<Button bsStyle="success" onClick={this.props.finish}>Finish and continue to Syncholar</Button>
+			<div className="row">
+				<div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 col-center" >
+					<h3>Almost there!</h3>
+					<div>Are you done with sign up steps? You can edit all of these fields from your profile.</div><br />
+					<Button bsStyle="success" onClick={this.props.finish}>Finish and continue to Syncholar</Button>
+				</div>
 			</div>
 		);
 	}

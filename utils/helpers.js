@@ -308,33 +308,7 @@ convertEducationWorkHistory: function(history, parseClass, currentUser) {
                         var object, orgName;
                         var innerQuery = new Parse.Query('Organization');
                         innerQuery.equalTo("objectId", result.get('orgId').id);
-                        // innerQuery.first({
-                        //     success: function(org) {
-                        //         if (org==undefined) {
-                        //             return Parse.Promise.error('No associated organization');
-                        //         }
-                        //         else {
-                        //             console.log('ffffuck', org);
-                        //             orgName = org.get('name');
 
-                        //             if (parseClass == 'Education') {
-                        //                 object = {field: 'education', title: '', major: result.get('faculty'), 
-                        //                     company: orgName, description: result.get('description'), 
-                        //                     start: result.get('start_date'), end: result.get('end_date')};
-                        //             } else {
-                        //                 object = {field: 'work', title: result.get('position'), major: '', 
-                        //                     company: orgName, description: result.get('description'), 
-                        //                     start: result.get('start_date'), end: result.get('end_date')};
-                        //             }
-                        //             historyList.push(object);
-                        //             console.log('\nLIST again', historyList);
-                        //             return Parse.Promise.as();
-                        //         }
-                        //     },
-                        //     error: function(error) {
-                        //         console.log(error);
-                        //     }
-                        // });
                         return innerQuery.first().then(function (org) {
                             if (org==undefined) {
                                 return Parse.Promise.error('No associated organization');
