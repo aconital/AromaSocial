@@ -140,9 +140,7 @@ var Profile = React.createClass({
 		return {
 	  		activePage: 2,
 	  		summary: '',
-			education:[],
-			work_experience:[],
-	  		institution: '', start: null, end: null, degree: '', major: '', department: '', description: '',
+	  		institution: '', start: null, end: null, degree: '', major: '', description: '',
 	  		workCompany: '', workStart: null, workEnd: null, workTitle: '', workDescription: '', isCurrent: false
 		};
 	},
@@ -156,18 +154,19 @@ var Profile = React.createClass({
 	{
 		if(type ==="institution")
 		{
-			console.log("a");
+			console.log(obj);
+			this.setState( {institution:obj} );
 		}
 		else if(type==="company")
 		{
-			console.log("b");
+			this.setState( {workCompany:obj} );
 		}
 
 	},
 	next() {
 		// Send education to server
 		var education = {institution: this.state.institution, start_date: this.state.start, end_date: this.state.end,
-			faculty: this.state.major, description: this.state.description, department: this.state.department};
+			faculty: this.state.major, description: this.state.description, degree: this.state.degree};
         $.ajax({
             url: '/education',
             dataType: 'json',
