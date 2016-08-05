@@ -54,7 +54,6 @@ var ImportContent = React.createClass({
 					content = <div><Button className="active-button" onClick={this.querySciDir}>Yes, import my publications</Button> <Button className="passive-button" onClick={this.props.next}>No, skip to next step</Button></div>;
 					break;
 				case 'searching':
-					console.log('hi');
 					content = <div><img className="loading-bar" src="../images/loadingbar.gif"/>Searching...</div>;
 					break;
 				case 'showTable':
@@ -63,7 +62,7 @@ var ImportContent = React.createClass({
 					} else {
 						content = (<div>
 							<p>No results found!</p>
-							<Button onClick={this.redirect}>Next</Button>
+							<Button onClick={this.props.next}>Next</Button>
 							</div>);
 					}
 					break;
