@@ -6895,3 +6895,30 @@ text-align: left; display: block; margin-left: 20%; margin-right: 10%; margin-bo
 {
   margin-top: 20px;
 }
+
+.passive-button
+{
+  font-size: 16px;
+  background-color: #b9b9b9;
+  color: white;
+}
+.passive-button:hover {
+  color: white;
+  background-color: #c8c8c8;
+}
+.active-button
+{
+  background-color: #65638e;
+  font-size: 16px;
+  color: white;
+}
+.active-button:hover
+{
+  background-color: #4f4d78;
+  color: white;
+}
+.getstarted-panel
+{
+  margin-right: 10%;
+  margin-left: 10%;
+}

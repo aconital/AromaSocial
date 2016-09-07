@@ -80,6 +80,7 @@ app.use(passport.session());
 require('./routes/routes')(app,Parse,io);
 require('./routes/organization')(app,Parse,io);
 require('./routes/user')(app,Parse,io);
+require('./routes/gettingstarted')(app,Parse,io);
 require('./routes/equipment')(app,Parse,io);
 require('./routes/project')(app,Parse,io);
 require('./routes/publication')(app,Parse,io);
@@ -154,7 +155,6 @@ passport.use(new LocalStrategy({
 
 
 passport.serializeUser(function(user, done) {
-
     done(null, user);
 });
 
@@ -181,6 +181,7 @@ passport.deserializeUser(function(username, done) {
                 workExperience: user.attributes.workExperience,
                 projects:user.attributes.projects,
                 linkedin_id:user.attributes.linkedin_id,
+                signup_steps:user.attributes.signup_steps,
                 last_seen_notification:user.attributes.last_seen_notification
             };
               done(null, jsonUser);

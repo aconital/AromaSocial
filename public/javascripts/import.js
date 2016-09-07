@@ -9,7 +9,7 @@ var ImportContent = React.createClass({
     getInitialState() {
      return {
      	status: 'askForAction',
-     	name: name,
+     	name: fullname,
      	results: {},
      	duplicates: {}
         };
@@ -17,8 +17,12 @@ var ImportContent = React.createClass({
 	querySciDir(e) {
 		e.preventDefault();
 		var self = this;
+<<<<<<< HEAD
 
 		var nameQuery = this.props.fullname.toLowerCase(); // TODO split etc//'sung kyu lim';
+=======
+		var nameQuery = this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
+>>>>>>> signup-steps
 		// var nameQuery = 'sung kyu lim';
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
@@ -49,24 +53,51 @@ var ImportContent = React.createClass({
 
 	render() {
 		var content;
-		if (this.state.status == 'askForAction') {
-			content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
-		} else if (this.state.status == 'searching') {
-			content = <div>Searching...</div>
-		} else if (this.state.status == 'showTable') {
-			if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
-				content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />
+		if (this.props.signup) {
+			switch (this.state.status) {
+				case 'askForAction':
+					content = <div><Button className="active-button" onClick={this.querySciDir}>Yes, import my publications</Button> <Button className="passive-button" onClick={this.props.next}>No, skip to next step</Button></div>;
+					break;
+				case 'searching':
+					content = <div><img className="loading-bar" src="../images/loadingbar.gif"/>Searching...</div>;
+					break;
+				case 'showTable':
+					if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
+						content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.props.next} signup={this.props.signup} />;
+					} else {
+						content = (<div>
+							<p>No results found!</p>
+							<Button onClick={this.props.next}>Next</Button>
+							</div>);
+					}
+					break;
+				default:
+					content = (<div>
+						<p>{this.state.status}</p>
+						<Button onClick={this.props.next}>Next</Button>
+						</div>)
+			}
+		}
+		else { // TODO make switch statement
+			if (this.state.status == 'askForAction') {
+				content = <div><ImportButtons querySciDir={this.querySciDir} redirect={this.redirect} /></div>
+			} else if (this.state.status == 'searching') {
+				content = <div><img className="loading-bar" src="../images/loadingbar.gif"/>Searching...</div>
+			} else if (this.state.status == 'showTable') {
+				if (this.state.results.length > 0 || this.state.duplicates.length > 0 ) {
+					content = <WorksList results={this.state.results} dupes={this.state.duplicates} setStatus={this.setStatus} redirect={this.redirect} />
+				} else {
+					content = (<div>
+						<p>No results found!</p>
+						<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
+						</div>)
+				}
 			} else {
 				content = (<div>
-					<p>No results found!</p>
+					<p>{this.state.status}</p>
 					<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
 					</div>)
 			}
-		} else {
-			content = (<div>
-				<p>{this.state.status}</p>
-				<Button className="btn-secondary btn-lg space" onClick={this.redirect}>Proceed to Syncholar</Button>
-				</div>)
 		}
 
 		return (
@@ -75,7 +106,7 @@ var ImportContent = React.createClass({
 			</div>
 		);
 	}
-});
+}); // end ImportContent
 
 var ImportButtons = React.createClass({
     querySciDir(e) {
@@ -101,7 +132,7 @@ var WorkItem = React.createClass({
     },
 
     // controls highlighting of items to import and fires related events
-	toggleCheck(e) { // TODO toggle on tr click, not span click
+	toggleCheck(e) {
 		if (this.state.isImported) {
 			this.setState({
 				isImported: false,
@@ -206,7 +237,7 @@ var WorksList = React.createClass({
 		}
 		publication['title'] = work.hasOwnProperty('Ti') ? toTitleCase(work.Ti) : '';
 		publication['publication_date'] = work.hasOwnProperty('D') ? work.D : Date.parse(work.Y);
-		publication['contributors'] = work.hasOwnProperty('AA') ? work.AA.map( (a) => toTitleCase(a.AuN) ): [name];
+		publication['contributors'] = work.hasOwnProperty('AA') ? work.AA.map( (a) => toTitleCase(a.AuN) ): [fullname];
 		publication['keywords'] = work.hasOwnProperty('F') ? work.F.map( (k) => toTitleCase(k.FN) ) : [];
 
 		if (work.hasOwnProperty('E')) {
@@ -244,7 +275,7 @@ var WorksList = React.createClass({
 
 	render() {
 		var self = this;
-		var showNew, continueLabel;
+		var showNew, continueLabel, buttons;
 		var transFormedResults = [];
 		if (this.props.results.length > 0) {
 			showNew = {};
@@ -252,6 +283,13 @@ var WorksList = React.createClass({
 		} else {
 			showNew = {display: 'none'};
 			continueLabel = 'Continue';
+		}
+		if (this.props.signup) {
+			buttons = (<div><Button className="btn-secondary space" onClick={this.props.redirect}>Cancel</Button>
+				<Button className="btn-success" onClick={this.importWorks}>{continueLabel}</Button></div>);
+		} else {
+			buttons = (<div><Button className="btn-success btn-lg" onClick={this.importWorks}>{continueLabel}</Button>
+				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button></div>);
 		}
 
 		return (
@@ -271,12 +309,11 @@ var WorksList = React.createClass({
 					</tbody>
 				</Table></div>
 				{this.props.dupes.length > 0 ? <DuplicatesList dupes={this.state.duplicates} /> : <span></span>}
-				<Button className="btn-success btn-lg" onClick={this.importWorks}>{continueLabel}</Button>
-				<Button className="btn-secondary btn-lg space" onClick={this.props.redirect}>Cancel</Button>
+				{buttons}
 			</div>
 		);
 	}
-});
+}); // end WorksList
 
 var DuplicateItem = React.createClass({
 	getInitialState() {
@@ -323,6 +360,15 @@ var DuplicatesList = React.createClass({
 });
 
 
+<<<<<<< HEAD
 // $( document ).ready(function() {
 // 	ReactDOM.render(<ImportContent />, document.getElementById('content'));
 // });
+=======
+// if (standalone) {
+// 	$( document ).ready(function() {
+// 			ReactDOM.render(<ImportContent />, document.getElementById('import-content'));
+
+// 	});
+// }
+>>>>>>> signup-steps

@@ -282,6 +282,72 @@ getLinkFromCollaborator: function(collab) {
 getNameFromCollaborator: function(collab) {
     var name = collab.split("(")[0];
     return name;
-}
+},
+
+// workaround for unbreaking profile due to Education/Work_experience parse class additions
+// history: 'educations' or 'workExperience' array contents from _User row.
+// parseClass: 'Education' or 'Work_experience'
+convertEducationWorkHistory: function(history, parseClass, currentUser) {
+    var self = this, historyList = [];
+
+    return Parse.Promise.as().then(function() {
+        var promise = Parse.Promise.as();
+
+        _.each(history, function(item) {
+            if (!item.hasOwnProperty('className')) return item; // backwards compatibility because it's so fucking broken ;_;
+
+            promise = promise.then(function() {
+                var HistoryType = Parse.Object.extend(parseClass);
+                var historyType = new HistoryType();
+                historyType.id = item.id;
+                var query = new Parse.Query(parseClass);
+                query.equalTo("objectId", item.id);
+
+                return query.first().then(function(result) {
+                    if (result) { // format record to look like old education/work exp objects returned
+                        var object, orgName;
+                        var innerQuery = new Parse.Query('Organization');
+                        innerQuery.equalTo("objectId", result.get('orgId').id);
+
+                        return innerQuery.first().then(function (org) {
+                            if (org==undefined) {
+                                return Parse.Promise.error('No associated organization');
+                            }
+                            else {
+                                orgName = org.get('displayName');
+
+                                if (parseClass == 'Education') {
+                                    object = {field: 'education', title: '', major: result.get('faculty'), 
+                                        company: orgName, description: result.get('description'), 
+                                        start: result.get('start_date').toISOString().slice(0,10), 
+                                        end: result.get('end_date').toISOString().slice(0,10)};
+                                } else {
+                                    object = {field: 'work', title: result.get('position'), major: '', 
+                                        company: orgName, description: result.get('description'), 
+                                        start: result.get('start_date').toISOString().slice(0,10), 
+                                        end: result.get('end_date').toISOString().slice(0,10)};
+                                }
+                                historyList.push(object);
+                            }
+                        });
+                    } else {
+                        console.log('nothing should happen here');
+                    }
+                    return Parse.Promise.as();
+
+                }, function (error) {
+                  console.error("convertEducationWorkHistory failed with error.code: " + error.code + " error.message: " + error.message);
+                });
+            });
+        });
+        return promise;
+
+    }).then(function() {
+        return historyList;
+    }, function (error) {
+        console.error("convertEducationWorkHistory failed with error.code: " + error.code + " error.message: " + error.message);
+        return historyList;
+    });
+},
 
 };

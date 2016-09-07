@@ -13,6 +13,7 @@ var s3 = new aws.S3();
 var awsUtils = require('../utils/awsUtils');
 var awsLink = "https://s3-us-west-2.amazonaws.com/syncholar/";
 var is_auth = require('../utils/helpers').is_auth;
+var convertEducationWorkHistory = require('../utils/helpers').convertEducationWorkHistory;
 
 module.exports=function(app,Parse,io) {
     app.get('/allusers', function(req, res, next) {
@@ -81,77 +82,88 @@ module.exports=function(app,Parse,io) {
         //if (!linkUser) return;
         console.log("LINK USER IS ====>>")
         console.log(req.params)
-        if(currentUser.username == linkUser) {
-            console.log(req.path);
-            var obj={
-                title: 'Profile',
-                path: req.path,
-                currentUsername: currentUser.username,
-                objectId: currentUser.id,
-                username: currentUser.username,
-                email: currentUser.email,
-                fullname: currentUser.fullname,
-                about: currentUser.about,
-                summary: currentUser.summary,
-                interestsTag: JSON.stringify(currentUser.interestsTag),
-                interests: JSON.stringify(currentUser.interests),
-                workExperience: JSON.stringify(currentUser.workExperience),
-                educations: JSON.stringify(currentUser.educations),
-                projects: JSON.stringify(currentUser.projects),
-                profile_imgURL: currentUser.imgUrl,
-                isMe: true
-            };
-            res.render('profile', {
-                title: 'Profile',
-                path: req.path,
-                currentUsername: currentUser.username,
-                objectId: currentUser.id,
-                currentUserImg: currentUser.imgUrl,
-                username: currentUser.username,
-                email: currentUser.email,
-                about: currentUser.about,
-                fullname: currentUser.fullname,
-                summary: currentUser.summary,
-                interestsTag: JSON.stringify(currentUser.interestsTag),
-                interests: JSON.stringify(currentUser.interests),
-                workExperience: JSON.stringify(currentUser.workExperience),
-                educations: JSON.stringify(currentUser.educations),
-                projects: JSON.stringify(currentUser.projects),
-                profile_imgURL: currentUser.imgUrl,
-                isMe: true
-            });
-        }
-        else {
-            var query = new Parse.Query("User");
-            query.equalTo("username",linkUser);
-            query.first({
-                success: function(result) {
-                    if(result)
-                    res.render('profile', { title: "Profile", path: req.path,
-                        currentUsername: currentUser.username,
-                        currentUserImg: currentUser.imgUrl,
-                        username: result.get('username'),
-                        objectId: result.id,
-                        email: result.get('email'),
-                        about: result.get("about"),
-                        fullname: result.get('fullname'),
-                        summary: result.get('summary'),
-                        interestsTag: JSON.stringify(result.get('interestsTag')),
-                        interests: JSON.stringify(result.get('interests')),
-                        workExperience: JSON.stringify(result.get('workExperience')),
-                        educations: JSON.stringify(result.get('educations')),
-                        projects: JSON.stringify(result.get('projects')),
-                        profile_imgURL: result.get('picture').url(),
-                        isMe: false
-                    });
-                    else
-                    res.render('notfound',{isOrg:false,isUser:true});
-                },
-                error: function(error) {
-                    res.redirect('/');
-                }
-            });
-        }
+        console.log(req.path);
+
+        var education, workExp;
+        // temorary fix for broken profile. grab education and work experience from respective tables if pointer
+        var promise = convertEducationWorkHistory(currentUser.educations, 'Education', currentUser)
+        .then(function(result) { 
+            education = result;
+            return convertEducationWorkHistory(currentUser.workExperience, 'Work_experience', currentUser);
+        }).then(function(result) {
+            workExp = result;
+
+            if(currentUser.username == linkUser) {
+                var obj={ // what is this object for?
+                    title: 'Profile',
+                    path: req.path,
+                    currentUsername: currentUser.username,
+                    objectId: currentUser.id,
+                    username: currentUser.username,
+                    email: currentUser.email,
+                    fullname: currentUser.fullname,
+                    about: currentUser.about,
+                    summary: currentUser.summary,
+                    interestsTag: JSON.stringify(currentUser.interestsTag),
+                    interests: JSON.stringify(currentUser.interests),
+                    workExperience: JSON.stringify(currentUser.workExperience),
+                    educations: JSON.stringify(currentUser.educations),
+                    projects: JSON.stringify(currentUser.projects),
+                    profile_imgURL: currentUser.imgUrl,
+                    isMe: true
+                };
+                res.render('profile', {
+                    title: 'Profile',
+                    path: req.path,
+                    currentUsername: currentUser.username,
+                    objectId: currentUser.id,
+                    currentUserImg: currentUser.imgUrl,
+                    username: currentUser.username,
+                    email: currentUser.email,
+                    about: currentUser.about,
+                    fullname: currentUser.fullname,
+                    summary: currentUser.summary,
+                    interestsTag: JSON.stringify(currentUser.interestsTag),
+                    interests: JSON.stringify(currentUser.interests),
+                    workExperience: JSON.stringify(workExp),//JSON.stringify(currentUser.workExperience),
+                    educations: JSON.stringify(education), //JSON.stringify(currentUser.educations),
+                    projects: JSON.stringify(currentUser.projects),
+                    profile_imgURL: currentUser.imgUrl,
+                    isMe: true
+                });
+            }
+            else {
+                var query = new Parse.Query("User");
+                query.equalTo("username",linkUser);
+                query.first({
+                    success: function(result) {
+                        if(result)
+                        res.render('profile', { title: "Profile", path: req.path,
+                            currentUsername: currentUser.username,
+                            currentUserImg: currentUser.imgUrl,
+                            username: result.get('username'),
+                            objectId: result.id,
+                            email: result.get('email'),
+                            about: result.get("about"),
+                            fullname: result.get('fullname'),
+                            summary: result.get('summary'),
+                            interestsTag: JSON.stringify(result.get('interestsTag')),
+                            interests: JSON.stringify(result.get('interests')),
+                            workExperience: JSON.stringify(workExp),//JSON.stringify(currentUser.workExperience),
+                            educations: JSON.stringify(education), //JSON.stringify(currentUser.educations),
+                            projects: JSON.stringify(result.get('projects')),
+                            profile_imgURL: result.get('picture').url(),
+                            isMe: false
+                        });
+                        else
+                        res.render('notfound',{isOrg:false,isUser:true});
+                    },
+                    error: function(error) {
+                        res.redirect('/');
+                    }
+                });
+            }
+       });
     });
 
     app.post('/profile/:objectId/connection-status', is_auth, function (req, res, next) {
@@ -511,6 +523,8 @@ module.exports=function(app,Parse,io) {
         }
     });
 
+
+
     app.post('/profile/:username/submitEducation', is_auth, function(req,res,next){
         var currentUser = req.user;
         var linkUser = req.params.username;
@@ -527,6 +541,7 @@ module.exports=function(app,Parse,io) {
             );
         }
     });
+
 
     app.post('/profile/:username/submitExperience', is_auth, function(req,res,next){
         var currentUser = req.user;
