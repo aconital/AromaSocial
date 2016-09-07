@@ -20,9 +20,10 @@ var SignUpSteps = React.createClass({
 				return <Profile setStep={this.setStep} />
 			case 3:
 				return <Import setStep={this.setStep} />
-			case 4:
-				return <Networks setStep={this.setStep} />
+/*			case 4:
+				return <Networks setStep={this.setStep} />*/
 			case -1:
+			case 4:
 			case 5:
 			default:
 				return <Confirmation setStep={this.setStep} finish={this.finish} />
@@ -107,7 +108,7 @@ var PageNav = React.createClass({
 	render() {
 		return (
 			<div style={{textAlign: 'center'}}>
-				<Pagination bsSize="large" items={5} activePage={this.props.step} onSelect={this.handleSelect} />
+				<Pagination bsSize="large" items={4} activePage={this.props.step} onSelect={this.handleSelect} />
 			</div>
 		);
 	}

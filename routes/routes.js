@@ -369,7 +369,7 @@ module.exports=function(app,Parse,io) {
    * SIGN UP
    *
    ********************************************/
-  app.get('/signup',hasBetaCode, function (req, res, next) {
+  app.get('/signup', function (req, res, next) {
       if (!req.isAuthenticated()) {
           res.render('signup', {title: 'Sign Up', path: req.path, Error: ""});
       }
@@ -478,7 +478,7 @@ module.exports=function(app,Parse,io) {
    * SIGN IN
    *
    ********************************************/
-  app.get('/signin',hasBetaCode, function (req, res, next) {
+  app.get('/signin', function (req, res, next) {
   	if (!req.isAuthenticated()) {
       	res.render('signin', {title: 'Login', path: req.path});
   	} else {
