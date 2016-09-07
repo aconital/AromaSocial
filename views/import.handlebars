@@ -7,26 +7,21 @@
     <img  src="/images/Discover Knowledge.png" width="160px">
     
     <p style=" margin-top:30px;color: #50788F; font-size: 18px; font-weight: 600;">Would you like to import your publications into your profile? We will search for your name: "{{user.fullname}}"</p>
-	
-<<<<<<< HEAD
+
+
 	<div class="row">
 		<div class="col-xs-11 col-sm-11 col-md-10 col-lg-10 col-center" id="import-content" >
 		</div>
-=======
-	<div id="import-content">
->>>>>>> signup-steps
+
 	</div>
 </div>
 <script type="text/jsx" src="/javascripts/import.js"></script>
 <script type="text/jsx">
-<<<<<<< HEAD
+
 	var fullname = "{{user.fullname}}";
 
 	$( document ).ready(function() {
 		ReactDOM.render(<ImportContent signup={false} fullname={fullname} />, document.getElementById('import-content'));
-=======
-	$( document ).ready(function() {
-		ReactDOM.render(<ImportContent signup={false} />, document.getElementById('import-content'));
->>>>>>> signup-steps
+
 	});
 </script>

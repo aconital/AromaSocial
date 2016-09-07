@@ -17,12 +17,9 @@ var ImportContent = React.createClass({
 	querySciDir(e) {
 		e.preventDefault();
 		var self = this;
-<<<<<<< HEAD
 
-		var nameQuery = this.props.fullname.toLowerCase(); // TODO split etc//'sung kyu lim';
-=======
 		var nameQuery = this.state.name.toLowerCase(); // TODO split etc//'sung kyu lim';
->>>>>>> signup-steps
+
 		// var nameQuery = 'sung kyu lim';
 		this.setState({ createStatus: 'Please wait...',
 						status: 'searching'});
@@ -360,15 +357,3 @@ var DuplicatesList = React.createClass({
 });
 
 
-<<<<<<< HEAD
-// $( document ).ready(function() {
-// 	ReactDOM.render(<ImportContent />, document.getElementById('content'));
-// });
-=======
-// if (standalone) {
-// 	$( document ).ready(function() {
-// 			ReactDOM.render(<ImportContent />, document.getElementById('import-content'));
-
-// 	});
-// }
->>>>>>> signup-steps
