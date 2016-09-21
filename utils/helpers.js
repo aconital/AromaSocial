@@ -294,6 +294,7 @@ convertEducationWorkHistory: function(history, parseClass, currentUser) {
         var promise = Parse.Promise.as();
 
         _.each(history, function(item) {
+
             if (!item.hasOwnProperty('className')) return item; // backwards compatibility because it's so fucking broken ;_;
 
             promise = promise.then(function() {
@@ -305,6 +306,7 @@ convertEducationWorkHistory: function(history, parseClass, currentUser) {
 
                 return query.first().then(function(result) {
                     if (result) { // format record to look like old education/work exp objects returned
+                        console.log(result);
                         var object, orgName;
                         var innerQuery = new Parse.Query('Organization');
                         innerQuery.equalTo("objectId", result.get('orgId').id);
@@ -317,7 +319,7 @@ convertEducationWorkHistory: function(history, parseClass, currentUser) {
                                 orgName = org.get('displayName');
 
                                 if (parseClass == 'Education') {
-                                    object = {field: 'education', title: '', major: result.get('faculty'), 
+                                    object = {field: 'education', title:  result.get('degree'), major: result.get('faculty'),
                                         company: orgName, description: result.get('description'), 
                                         start: result.get('start_date').toISOString().slice(0,10), 
                                         end: result.get('end_date').toISOString().slice(0,10)};

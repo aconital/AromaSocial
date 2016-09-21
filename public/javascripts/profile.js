@@ -883,7 +883,6 @@ var AboutTabObject = React.createClass({
 
                     <p className="no-margin">
                     {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="title" placeholder="Position" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.title}/></span>: <span>{this.state.title}</span>}
-                    {(currentUsername == username) ? <span><input type="text" className="r-editable r-editable-full" contentEditable="true" name="major" placeholder="Department / Group" onChange={this.handleObjectChange} onBlur={this.submitObjectChange} value={this.state.major}/></span> : (this.state.title=="") ? <span>{this.state.major}</span>:(this.state.major=="")?"":<span>, &nbsp;{this.state.major}</span>}
                     </p>
                         {(currentUsername == username) ? <div className="r-editable-50">
                             <textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleObjectChange} onBlur={this.submitObjectChange}>{this.state.description}</textarea>
