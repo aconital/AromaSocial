@@ -857,9 +857,7 @@ module.exports=function(app,Parse,io) {
         var query = new Parse.Query(Organization);
         query.startsWith("displayName", req.body.name.toLowerCase());
         query.each(function(result) {
-            console.log("DEBUG: Result => ", result);
             var str = result.get("name");
-            console.log("NAME is ==>> ", str);
             var strArr = str.split(".");
             if (strArr.length == 0 || strArr[1] == undefined) {
                 if (str == orgName) {
@@ -868,12 +866,10 @@ module.exports=function(app,Parse,io) {
                 return;
             }
             var index = parseInt(strArr[1]);
-            console.log("INDEX: ", index);
             if (maxIndexSoFar < index) {
                 maxIndexSoFar = index;
             }
         }).then(function() {
-            console.log("Max index in db: ", maxIndexSoFar);
             if (maxIndexSoFar == -1) {
                 // no match in db, all good - keeping this just in case we need to hand such a case (e.g if we dont want to include a seq num for the very first organization)
             } else {

@@ -182,6 +182,7 @@ var Profile = React.createClass({
                 // Send work experience to server
                 var workDescription = {company: this.state.workCompany, start_date: this.state.workStart, end_date: this.state.workEnd,
 					position: this.state.position, description: this.state.workDescription};
+
 		        $.ajax({
 		            url: '/workExperience',
 		            dataType: 'json',
@@ -336,7 +337,7 @@ var Networks = React.createClass({
 var Confirmation = React.createClass({
 	getInitialState() {
 		return {
-	  		activePage: 5
+	  		activePage: 4
 		};
 	},
 
