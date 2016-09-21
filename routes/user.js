@@ -80,9 +80,6 @@ module.exports=function(app,Parse,io) {
         var currentUser = req.user;
         var linkUser = req.params.username;
         //if (!linkUser) return;
-        console.log("LINK USER IS ====>>")
-        console.log(req.params)
-        console.log(req.path);
 
         var education, workExp;
         // temorary fix for broken profile. grab education and work experience from respective tables if pointer
