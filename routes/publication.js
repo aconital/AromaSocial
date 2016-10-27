@@ -499,7 +499,6 @@ module.exports=function(app,Parse,io) {
 
     app.get('/profile/:username/publications',function(req,res,next){
         // get publications of profile visited.
-        var profile = req.user.id;
         profileQuery = new Parse.Query("User");
         profileQuery.equalTo("username",req.params.username);
         profileQuery.first().then(function(user) {

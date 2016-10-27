@@ -22,7 +22,7 @@ var is_auth = require('../utils/helpers').is_auth;
 module.exports=function(app,Parse,io) {
     app.post('/education', is_auth, function(req,res,next){
         var currentUser = req.user;
-     
+
         if(req.body.institution != '')
         {
             var query = new Parse.Query(Parse.User);

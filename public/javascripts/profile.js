@@ -141,7 +141,6 @@ var Profile = React.createClass ({
             about: [about],
             fromModelTab: false,
             pictureChosen: null,
-
             picture: null, pictureType: '', status: ''
       };
     },
@@ -2309,3 +2308,4 @@ function getNameFromCollaborator (collab) {
 $( document ).ready(function() {
     ReactDOM.render(<Profile />, document.getElementById('content'));
 });
+

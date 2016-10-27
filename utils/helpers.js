@@ -342,9 +342,11 @@ convertEducationWorkHistory: function(history, parseClass, currentUser) {
                 });
             });
         });
+
         return promise;
 
     }).then(function() {
+
         return historyList;
     }, function (error) {
         console.error("convertEducationWorkHistory failed with error.code: " + error.code + " error.message: " + error.message);

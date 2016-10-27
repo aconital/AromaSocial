@@ -34,7 +34,7 @@ var app = express();
 var io           = socket_io();
 app.io           = io;
 
-app.use(helmet());
+
 
 
 
@@ -92,7 +92,7 @@ require('./routes/group')(app,Parse,io);
 require('./routes/report')(app,Parse,io);
 require('./routes/discussion')(app,Parse,io);
 require('./routes/notification')(app,Parse,io);
-
+require('./routes/widget')(app,Parse,io);
 /*
 * SOCKET IO
  */
@@ -193,11 +193,13 @@ passport.deserializeUser(function(username, done) {
     });
 });
 
-
+app.use(helmet.frameguard({
+    action: 'allow-from',
+    domain: '*'
+}))
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next){
-    res.setHeader('Access-Control-Allow-Origin', '*');
 
     var err = req.session.error,
         msg = req.session.notice,

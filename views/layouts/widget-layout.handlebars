@@ -1,0 +1,122 @@
+<!-- views/layouts/home.handlebars -->
+<!DOCTYPE html>
+<html lang="en" prefix="og: https://ogp.me/ns#">
+<head>
+    <title>Syncholar Synchronizes Scholars</title>
+    <meta name="description" content="Syncholar is a research labs and networks management platform. Create a homepage for your research group, lab, or network on Syncholar. Your page instantnously becomes the hub for your members to
+     share knowledge and keep up-to-date with your group's activities. Your page will literally update itself to keep your online presence up-to-date for your visitors.
+     Use your personal page as your research dashboard to organize your work and research activities.
+    Store, organize, share, and discover knowledge!">
+    <meta name="keywords" content="education,socialnetwork,labs,homepage,research network, website, research, information sharing, platform, knowledge, data, model, software, code, equipment, project, paper, journal,
+    publication, open access, repository, dashboard, resume, about" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta name="distribution" content="web">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta property="og:title" content="Syncholar Synchronizes Scholars" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://syncholar.com" />
+    <meta property="og:image" content="https://syncholar.com/images/syncholar.png" />
+    <meta property="og:image:width" content="500" />
+    <meta property="og:image:height" content="300" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/javascripts/react-tagsinput/react-tagsinput.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+
+    <link rel="stylesheet" href="/stylesheets/form.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/newsfeed.css">
+
+    <link rel="stylesheet" href="/stylesheets/profile-organization.css">
+    <link rel="stylesheet" href="/stylesheets/profile-organization-item.css">
+    <link rel="stylesheet" href="/stylesheets/style-extra.css">
+    <link rel="stylesheet" href="/stylesheets/tag-it.css">
+    <link rel="stylesheet" href="/javascripts/react-tag-input/example/reactTags.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.29.1/react-bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/trianglify/0.2.1/trianglify.min.js"></script>
+    <script src="/javascripts/react-tagsinput/react-tagsinput.js"></script>
+
+
+    <script type="text/javascript">
+        function decodeEntities(encodedString) {
+            var textArea = document.createElement('textarea');
+            textArea.innerHTML = encodedString;
+            return textArea.value;
+        }
+    </script>
+
+</head>
+<body>
+
+    {{{body}}}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+<script src="/javascripts/bootstrap-sass-official/assets/javascripts/bootstrap.js"> </script>
+
+<script src="https://npmcdn.com/classnames/index.js"></script>
+<script src="https://npmcdn.com/react-input-autosize/dist/react-input-autosize.js"></script>
+<script src="https://npmcdn.com/react-select/dist/react-select.js"></script>
+
+<link rel="stylesheet" href="https://npmcdn.com/react-select/dist/react-select.css">
+
+
+<script>
+    $(document).ready(function(){
+        $('.dropdown-toggle').dropdown()
+    });
+
+    $.widget( "custom.catcomplete", $.ui.autocomplete, {
+        _create: function() {
+            this._super();
+            this.widget().menu( "option", "items", "> :not(.ui-autocomplete-category)" );
+        },
+        _renderMenu: function( ul, items ) {
+            var that = this,
+                    currentCategory = "";
+            $.each( items, function( index, item ) {
+                var li;
+                if ( item.category != currentCategory ) {
+                    ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+                    currentCategory = item.category;
+                }
+                li = that._renderItemData( ul, item );
+                if ( item.category ) {
+                    li.attr( "aria-label", item.category + " : " + item.label );
+                }
+            });
+        }
+    });
+</script>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-77500891-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+<script type="text/javascript" src="/javascripts/react-tag-input/example/vendor/ReactDND.min.js"></script>
+<script src="/javascripts/react-tag-input/dist/reactTags.min.js"></script>
+<script src="/javascripts/tag-it.js"></script>
+<script type="text/jsx" src="/javascripts/autocomplete.js"></script>
+
+
+</body>
+</html>

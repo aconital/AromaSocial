@@ -220,7 +220,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get('/profile/:objectId/connections', is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/connections', function (req, res, next) {
         var currentUser = req.user;
         var people = [];
         console.log("OBJ ID: ");
@@ -832,7 +832,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get('/profile/:objectId/equipments_list', is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/equipments_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -866,7 +866,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get('/profile/:objectId/projects_list', is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/projects_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -913,7 +913,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get('/profile/:objectId/publications_list', is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/publications_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -954,7 +954,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get('/profile/:objectId/data_list', is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/data_list', function (req, res, next) {
         var innerQuery = new Parse.Query(Parse.User);
         innerQuery.equalTo("objectId",req.params.objectId);
 
@@ -1002,7 +1002,7 @@ module.exports=function(app,Parse,io) {
         });
     });
 
-    app.get('/profile/:objectId/models_list', is_auth, function (req, res, next) {
+    app.get('/profile/:objectId/models_list', function (req, res, next) {
         var innerQuery = new Parse.Query('User');
         innerQuery.equalTo("objectId",req.params.objectId);
 
