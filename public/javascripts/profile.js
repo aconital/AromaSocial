@@ -134,6 +134,7 @@ var CustomTags = React.createClass({
 var Profile = React.createClass ({
     getInitialState: function() {
       return { showModal: false,
+          showEmbedModal:false,
             username: [username],
             profile_imgURL: [profile_imgURL],
             imgSubmitText:'Upload',
@@ -245,6 +246,13 @@ var Profile = React.createClass ({
         }.bind(this)
       });
     },
+    openEmbed: function() {
+        this.setState({ showEmbedModal: true });
+    },
+    closeEmbed:function()
+    {
+        this.setState({ showEmbedModal: false });
+    },
     handleChange: function(e) {
         var changedState = {};
         changedState[e.target.name] = e.target.value;
@@ -270,6 +278,7 @@ var Profile = React.createClass ({
         return;
     },
     render: function() {
+        var shareButton= <button  onClick={this.openEmbed} className="btn btn-panel btn-right-side" value="">Embed</button>;
         var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "connected") {
              connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
@@ -283,11 +292,26 @@ var Profile = React.createClass ({
         else { console.log("Nothing"); }
         return (
         <div>
+            <Modal show={this.state.showEmbedModal} onHide={this.closeEmbed}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Publish Your Profile</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="row">
+                        <h4>Place the following code where you'd like your Syncholar profile to load:</h4>
+                    </div>
+                    <div id="field1-container">
+                        <input className="p-editable" type="text" value={"<iframe frameborder='0'  style='width:100%; height: 600px; padding:0; border:0; hegiht:100px;' src='http://syncholar.com/share/profile/"+ currentUsername+"'"+"></iframe>"} class="field left" readonly/>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
             <Modal show={this.state.showModal} onHide={this.clickClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Update Profile Picture</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+
                     <div id="field1-container">
                         <input className="form-control" type="file" name="publication-upload" id="field4" required="required" placeholder="File" onChange={this.handlePicture} />
                     </div>
@@ -310,7 +334,7 @@ var Profile = React.createClass ({
                             */}
                         </div>
                         <div id="item-bottom-2-profile" className="item-bottom-2">
-                            {(currentUsername == username) ? "" : <div className="interact-buttons-wrap">{connectButton}</div> }
+                            {(currentUsername == username) ? <div className="interact-buttons-wrap">{shareButton}</div> : <div className="interact-buttons-wrap">{connectButton}</div> }
                             <h3 className="no-margin-padding align-left h1-title">{fullname}</h3>
                             {(currentUsername == username) ? <input id="userTitleInp" type="text" className="p-editable transparent" name="about" placeholder="Your Title"  onChange={this.handleChange} onBlur={this.submitChange} value={this.state.about} />
                                 : <h4 className="no-margin-padding align-left h3-title">{about}</h4>}
