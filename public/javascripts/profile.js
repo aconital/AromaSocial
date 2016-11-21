@@ -567,8 +567,7 @@ var Organizations = React.createClass({
 
 var About = React.createClass({
     getInitialState: function() {
-        var hideInterests;
-        if(JSON.parse(interests).length > 0) { hideInterests = "show"; } else { hideInterests = "hide"; }
+
         if(JSON.parse(workExperience).length > 0) { hideWorkExperiences = "show"; } else { hideWorkExperiences = "hide"; }
         if(JSON.parse(educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }
         return {
@@ -582,68 +581,9 @@ var About = React.createClass({
             datas: "",
             models: "",
 
-            hideInterests: hideInterests,
             hideEducations: hideEducations,
             hideWorkExperiences: hideWorkExperiences
         };
-    },
-    submitSummary: function() {
-        var dataForm = {summary: this.state.summary.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
-        $.ajax({
-            url: path + "/updateSummary",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-
-        return;
-    },
-    submitInterests: function() {
-        var dataForm = {interests: this.state.interests};
-        $.ajax({
-            url: path + "/updateInterest",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-        return;
-    },
-    submitTags: function() {
-        var dataForm = {interestsTag: this.state.interestsTag};
-        $.ajax({
-            url: path + "/updateTags",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-        return;
     },
     submitExperience: function() {
         var dataForm = {workExperience: this.state.workExperience};
@@ -684,36 +624,8 @@ var About = React.createClass({
         });
         return;
     },
-    deleteArrayChange: function(index) {
-        var interestsTemp = JSON.parse(this.state.interests);
-        delete interestsTemp[index];
-        var interestsTemp = JSON.stringify(interestsTemp).replace(',null','').replace('null,','').replace('null','');
-        this.setState({interests: interestsTemp}, function(){ this.submitInterests() }.bind(this));
-        if (JSON.parse(interestsTemp).length == 0) {this.setState({hideInterests: "hide"});}
-    },
     handleChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
-    },
-    handleArrayChange: function(index) {
-        var interestsChange = document.getElementById("interests-" + index).value;
-        var interestsTemp = JSON.parse(this.state.interests);
-        interestsTemp[index] = interestsChange;
-        var interestsTemp = JSON.stringify(interestsTemp).replace(/\\\"/g,"'")
-        this.setState({interests: interestsTemp});
-    },
-    handleTagsInputChange: function(e) {
-        var changedState = {};
-        changedState['interestsTag'] = JSON.stringify(e).replace(/\\\"/g,"'");
-        this.setState(changedState, function(){ this.submitTags() }.bind(this));
-    },
-    addInterest: function() {
-        if (JSON.parse(this.state.interests).length > 0) {
-            var result = this.state.interests.substring(0,this.state.interests.length-1) + ',""]';
-        }
-        else {
-            var result = '[""]';
-        }
-        this.setState({interests:result, hideInterests: "show"}, function(){this.submitInterests()}.bind(this));
     },
     addWork: function() {
         var randomNumber = Math.floor(Math.random() * 100000000);
@@ -763,7 +675,6 @@ var About = React.createClass({
         var workExperience_data = [];
         var educations_data = [];
         var projects_data = [];
-        var interests_data = [];
         var publications_data = [];
         var datas_data = [];
         var models_data = [];
@@ -779,26 +690,13 @@ var About = React.createClass({
                 educations_data.push(<AboutTabObject identifier={i} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
             });
         }
-        if (this.state.interests != "") {
-            JSON.parse(this.state.interests).map(function(item, i) {
-                interests_data.push (<div className="about-item-hr">
-                        {(currentUsername == username) ? <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} placeholder="Add interest" contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} onBlur={this.submitInterests} value={item}/></p> : <p className="r-noneditable no-margin">{item}</p>}
-                        {(currentUsername == username) ? <div className="div-minus-interests"><h4 className="no-margin"><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div> : "" }
-                     </div>);
-            }, this);
-        }
+
         return (
             <div id="resume">
                <AboutTab_Summary summary={this.state.summary} />
+               <AboutTab_Interests tags = {this.state.interestsTag} interests= {this.state.interests}/>
 
-                <div id="resume-expertise-and-interests" className="div-relative"><hr/>
-                    <div>
-                        <h3 className="no-margin-top" >Interests</h3>
-                    </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addInterest} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
-                    <div className={"div-relative resume-item " + this.state.hideInterests}>{interests_data}</div>
-                    {(currentUsername == username) ? <ReactTagsInput type="text" placeholder="Keywords" name="interests" onChange={this.handleTagsInputChange} onBlur={this.submitTags} value={JSON.parse(this.state.interestsTag)}/> : <div className="margin-top-20">{JSON.parse(this.state.interestsTag).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
-                </div>
+
 
                 <div className="clear"></div>
 
@@ -840,7 +738,7 @@ var AboutTab_Summary = React.createClass({
         });
         this.toggleHover();
     },
-    cancelSummary:function(){
+    cancelEdit:function(){
         this.setState({
             edit:false
         });
@@ -873,7 +771,6 @@ var AboutTab_Summary = React.createClass({
     },
     render: function() {
         var view="";
-        console.log();
 
     if(currentUsername == username)
     {
@@ -884,7 +781,7 @@ var AboutTab_Summary = React.createClass({
                        <div className="row">
                            <div className="col-xs-12  col-lg-2 col-lg-offset-10 col-md-2 col-md-offset-10">
                                  <button  onClick={this.saveSummary} className="btn btn-general" value="">Save</button>
-                                 <button  onClick={this.cancelSummary} className="btn btn-general" value="">Cancel</button>
+                                 <button  onClick={this.cancelEdit} className="btn btn-general" value="">Cancel</button>
                            </div>
 
                        </div>
@@ -893,7 +790,7 @@ var AboutTab_Summary = React.createClass({
         else
         {
             view=
-            <div key="2" className="row" onClick = {this.editClicked} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover}>
+            <div  key="2" className="row" onClick = {this.editClicked} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover}>
                 <div className="col-xs-11">
                     <p className="p-noneditable">{this.state.text}</p>
                 </div>
@@ -918,6 +815,194 @@ var AboutTab_Summary = React.createClass({
                     </div>
                 </div>
             </div>
+        )
+    }
+
+});
+var AboutTab_Interests = React.createClass({
+    getInitialState: function() {
+        var hideInterests;
+        if(JSON.parse(this.props.interests).length > 0) { hideInterests = "show"; } else { hideInterests = "hide"; }
+        return {
+            edit: false,
+            interests: this.props.interests,
+            hideInterests: hideInterests,
+            tags:this.props.tags
+        };
+    },
+    componentDidMount : function() {
+    },
+    addInterest: function() {
+        if (JSON.parse(this.state.interests).length > 0) {
+            var result = this.state.interests.substring(0,this.state.interests.length-1) + ',""]';
+        }
+        else {
+            var result = '[""]';
+        }
+        this.setState({interests:result, hideInterests: "show"}, function(){this.submitInterests()}.bind(this));
+    },
+    handleArrayChange: function(index) {
+        var interestsChange = document.getElementById("interests-" + index).value;
+        var interestsTemp = JSON.parse(this.state.interests);
+        interestsTemp[index] = interestsChange;
+        var interestsTemp = JSON.stringify(interestsTemp).replace(/\\\"/g,"'")
+        this.setState({interests: interestsTemp});
+    },
+    deleteArrayChange: function(index) {
+        var interestsTemp = JSON.parse(this.state.interests);
+        delete interestsTemp[index];
+        var interestsTemp = JSON.stringify(interestsTemp).replace(',null','').replace('null,','').replace('null','');
+        this.setState({interests: interestsTemp}, function(){ this.submitInterests() }.bind(this));
+        if (JSON.parse(interestsTemp).length == 0) {this.setState({hideInterests: "hide"});}
+    },
+    handleTagsInputChange: function(e) {
+        var changedState = {};
+        changedState['interestsTag'] = JSON.stringify(e).replace(/\\\"/g,"'");
+        this.setState(changedState, function(){ this.submitTags() }.bind(this));
+    },
+    submitInterests: function() {
+        var dataForm = {interests: this.state.interests};
+        $.ajax({
+            url: path + "/updateInterest",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    submitTags: function() {
+        var dataForm = {interestsTag: this.state.interestsTag};
+        $.ajax({
+            url: path + "/updateTags",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    editClicked:function(){
+        this.setState({
+            edit:true
+        });
+        this.toggleHover();
+    },
+    cancelEdit:function(){
+        this.setState({
+            edit:false
+        });
+    },
+
+    toggleHover: function(){
+        this.setState({hover: !this.state.hover})
+    },
+    render: function() {
+        var view="";
+
+
+        if(currentUsername == username)
+        {
+            if(this.state.edit)
+            {
+                var interests_data=[];
+                if (this.state.interests != "")
+                {
+                    JSON.parse(this.state.interests).map(function(item, i) {
+                        interests_data.push (
+                            <div className="about-item-hr">
+                                <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} placeholder="Add interest" contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} value={item}/></p>
+                                <div className="div-minus-interests"><h4 className="no-margin"><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div>
+                            </div>);
+                    }, this);
+
+                }
+               view=<div>
+                       <div className="div-absolute"><h3><a onClick={this.addInterest} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div>
+                       <div className={"div-relative resume-item " + this.state.hideInterests}>{interests_data}</div>
+                       <ReactTagsInput type="text" placeholder="Keywords" name="interests" onChange={this.handleTagsInputChange} onBlur={this.submitTags} value={JSON.parse(this.state.tags)}/>
+                   <div className="row">
+                       <div className="col-xs-12  col-lg-2 col-lg-offset-10 col-md-2 col-md-offset-10">
+                           <button  onClick={this.saveSummary} className="btn btn-general" value="">Save</button>
+                           <button  onClick={this.cancelEdit} className="btn btn-general" value="">Cancel</button>
+                       </div>
+
+                   </div>
+               </div>
+            }
+            else
+            {
+                var interests_data=[];
+                if (this.state.interests != "")
+                {
+                    JSON.parse(this.state.interests).map(function(item, i) {
+                        interests_data.push (
+                            <div className="about-item-hr">
+                                <p className="r-noneditable no-margin">{item}</p>
+                            </div>);
+                    }, this);
+
+                }
+               view= <div className="row"><div className="col-xs-11" onClick = {this.editClicked} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover}>
+                        <div className={"div-relative resume-item " + this.state.hideInterests}>{interests_data}</div>
+                        <div className="margin-top-20">{JSON.parse(this.state.tags).map(function(item)
+                        {
+                            return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })
+                        }
+                        </div>
+                    </div>
+                {(this.state.hover)?
+                    <div className="col-xs-1">
+                        <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    </div>: ""
+                }
+                   </div>
+            }
+        }
+        else {
+            var interests_data=[];
+            if (this.state.interests != "")
+            {
+                JSON.parse(this.state.interests).map(function(item, i) {
+                    interests_data.push (
+                        <div className="about-item-hr">
+                            <p className="r-noneditable no-margin">{item}</p>
+                        </div>);
+                }, this);
+
+            }
+            view = <div>
+                <div className={"div-relative resume-item " + this.state.hideInterests}>{interests_data}</div>
+                <div className="margin-top-20">{JSON.parse(this.state.tags).map(function (item) {
+                    return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>;
+                })
+                }
+                </div>
+            </div>
+        }
+        return (
+        <div id="resume-expertise-and-interests" className="div-relative"><hr/>
+            <div>
+                <h3 className="no-margin-top" >Interests</h3>
+            </div>
+            {view}
+        </div>
         )
     }
 
