@@ -6079,6 +6079,19 @@ color: var(--white-color);
 .none{display:none;}
 .form-color{color:FFF;}
 
+.btn-general {
+  background-color: var(--blue-color);
+  border-color: var(--white-color);
+  border-radius:0px;
+  color:var(--white-color);
+  margin-left: 5px;
+}
+.btn-general:hover {
+  background-color: var(--foreground-hover-color);
+  border-color: var(--foreground-hover-color);
+  border-radius:0px;
+  color:var(--white-color);
+}
 .btn-panel {
     background-color: var(--blue-color);
     border-color: var(--white-color);

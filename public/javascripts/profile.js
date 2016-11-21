@@ -278,7 +278,7 @@ var Profile = React.createClass ({
         return;
     },
     render: function() {
-        var shareButton= <button  onClick={this.openEmbed} className="btn btn-panel btn-right-side" value="">Embed</button>;
+        var shareButton= <button  onClick={this.openEmbed} className="btn btn-panel btn-right-side" value="">Embed <i className="fa fa-code" aria-hidden="true"></i></button>;
         var connectButton = <button className="btn btn-panel btn-right-side" value=""></button>;
         if (this.state.status == "connected") {
              connectButton = <button onClick={this.clickDisconnect} className="btn btn-panel btn-right-side" value="Disconnect">Disconnect</button>;
@@ -789,14 +789,8 @@ var About = React.createClass({
         }
         return (
             <div id="resume">
-                <div id="resume-summary">
+               <AboutTab_Summary summary={this.state.summary} />
 
-                <div id="resume-summary-item">
-                    <div className="resume-item">
-                        {(currentUsername == username) ? <p className="no-margin"><textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleChange} onBlur={this.submitSummary} value={this.state.summary}></textarea></p> : <pre className="p-noneditable">{this.state.summary}</pre>}
-                    </div>
-                </div>
-                </div>
                 <div id="resume-expertise-and-interests" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top" >Interests</h3>
@@ -805,7 +799,9 @@ var About = React.createClass({
                     <div className={"div-relative resume-item " + this.state.hideInterests}>{interests_data}</div>
                     {(currentUsername == username) ? <ReactTagsInput type="text" placeholder="Keywords" name="interests" onChange={this.handleTagsInputChange} onBlur={this.submitTags} value={JSON.parse(this.state.interestsTag)}/> : <div className="margin-top-20">{JSON.parse(this.state.interestsTag).map(function(item) { return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })}</div> }
                 </div>
+
                 <div className="clear"></div>
+
                 <div id="resume-education" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top" >Education</h3>
@@ -824,6 +820,107 @@ var About = React.createClass({
             </div>
         )
     }
+});
+var AboutTab_Summary = React.createClass({
+    getInitialState: function() {
+        return {
+            edit: false,
+            text: ''
+        };
+    },
+    componentDidMount : function() {
+    this.setState({text: this.props.summary});
+    },
+    handleTextChange: function(e) {
+        this.setState({text: e.target.value});
+    },
+    editClicked:function(){
+        this.setState({
+            edit:true
+        });
+        this.toggleHover();
+    },
+    cancelSummary:function(){
+        this.setState({
+            edit:false
+        });
+    },
+    saveSummary:function(){
+
+        var dataForm = {summary: this.state.text.replace(/(\r\n|\n|\r|\\)/gm,'\\n')};
+        $.ajax({
+            url: path + "/updateSummary",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({
+                    text: this.state.text,
+                    edit:false
+                });
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+
+    },
+    toggleHover: function(){
+        this.setState({hover: !this.state.hover})
+    },
+    render: function() {
+        var view="";
+        console.log();
+
+    if(currentUsername == username)
+    {
+        if(this.state.edit)
+        {
+            view= <div key="1">
+                    <textarea rows="7" cols="10" className="p-editable profile-about-summary" placeholder="Bio or Summary" name="summary" onChange={this.handleTextChange}  value={this.state.text}></textarea>
+                       <div className="row">
+                           <div className="col-xs-12  col-lg-2 col-lg-offset-10 col-md-2 col-md-offset-10">
+                                 <button  onClick={this.saveSummary} className="btn btn-general" value="">Save</button>
+                                 <button  onClick={this.cancelSummary} className="btn btn-general" value="">Cancel</button>
+                           </div>
+
+                       </div>
+                 </div>
+        }
+        else
+        {
+            view=
+            <div key="2" className="row" onClick = {this.editClicked} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover}>
+                <div className="col-xs-11">
+                    <p className="p-noneditable">{this.state.text}</p>
+                </div>
+                {(this.state.hover)?
+                    <div className="col-xs-1">
+                        <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    </div>: ""
+                }
+
+           </div>;
+        }
+    }
+    else
+        view= <pre className="p-noneditable">{this.props.summary}</pre>;
+
+        return (
+            <div id="resume-summary">
+
+                <div id="resume-summary-item">
+                    <div className="resume-item">
+                        {view}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
 });
 var AboutTabObject = React.createClass({
     getInitialState: function() {
@@ -2076,58 +2173,7 @@ var ProjectAddForm = React.createClass({
         };
     },
     componentDidMount: function() {
-        // var eCode = <script>
-        //                 $(function() {
-        //                     $('.auto').bind("keydown", function(event) {
-        //                         if ( event.keyCode === $.ui.keyCode.TAB &&
-        //                             $( this ).autocomplete( "instance" ).menu.active ) {
-        //                           event.preventDefault();
-        //                         }
-        //                     })
-        //                     .autocomplete({
-        //                             source: function(req, res) {
-        //                                 $.ajax({
-        //                                   url: '/allusers',
-        //                                   dataType: 'JSON',
-        //                                   cache: false,
-        //                                   success: function(data) {
-        //                                     console.log("SUCCESS!!!!!!!");
-        //                                     console.log(data);
-        //                                     var arr = $.grep(data, function(item){
-        //                                       return item.username.substring(0, req.term.length).toLowerCase() === req.term.toLowerCase();
-        //                                     });
-        //                                     res($.ui.autocomplete.filter($.map(data, function(item){
-        //                                       return {
-        //                                         label: item.fullname,
-        //                                         value: item.username
-        //                                       };
-        //                                     }), extractLast(req.term)));
-        //                                   },
-        //                                   error: function(xhr) {
-        //                                     console.log(xhr.status);
-        //                                   }
-        //                                 });
-        //                             },
-        //                             focus: function() {
-        //                                 return false;
-        //                             },
-        //                             messages: {
-        //                               noResults: '',
-        //                               results: function() {}
-        //                             },
-        //                             select: function(event, ui) {
-        //                                 var terms = split(this.value);
-        //                                 terms.pop();
-        //                                 terms.push(ui.item.value);
-        //                                 terms.push("");
-        //                                 this.value = terms.join(", ");
-        //                                 return false;
-        //                             }
-        //                     })
-        //                 });
-        //             </script>
-        // // var eCode = <script type="text/jsx" src="/javascripts/multac.jsx"></script>
-        // $("#scriptContainer").append(eCode);
+
     },
 	render: function() {
 	    if (this.state.alertVisible) {
@@ -2312,6 +2358,126 @@ var Required = React.createClass({
 		);
 	},
 });
+
+
+var SearchInput = React.createClass({
+    getInitialState: function() {
+        return {
+            value: '',
+            data: [],
+            ajaxTimer: null
+        };
+    },
+    componentWillMount: function() {
+        this.state.ajaxTimer = setTimeout(this.inputChange, 60000);
+        clearTimeout(this.state.ajaxTimer);
+    },
+    inputChangeWrapper: function(inputValue) {
+        clearTimeout(this.state.ajaxTimer);
+        this.state.ajaxTimer = setTimeout(this.inputChange.bind(null, inputValue), 200);
+    },
+    inputChange: function(inputValue) {
+        this.state.data = [];
+        if (inputValue.length <= 0) return;
+        var newValue= {label: inputValue, value: inputValue, category: "Organizations", imgsrc: null, link: null, objectId: null, buttonText: null};
+        this.setState({value: newValue});
+        this.props.updateState(this.props.name,newValue);
+
+        var that = this;
+        var str = inputValue;
+        var r = [];
+        $.when(
+
+            $.ajax({
+                url: '/allorganizations',
+                dataType: 'json',
+                type: 'POST',
+                data: {substr: str, limit: 5},
+                cache: false,
+                success: function(data) {
+                    $.map(data, function(item){
+                        var dlink = "/organization/" + item.name;
+                        r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink, buttonText: 'Join', objectId: item.objectId});
+                    });
+                },
+                error: function(xhr) {
+                    console.log(xhr.status);
+                }
+            })
+        ).then(function() {
+                that.setState({data: r});
+            });
+    },
+    updateValue (newValue) {
+        this.setState({
+            value: newValue
+        });
+        //pass it to the parent
+        this.props.updateState(this.props.name,newValue);
+    },
+
+    preventDefault: function(link, event) {
+        event.preventDefault();
+        event.stopPropagation();
+        // window.location.href = link;
+    },
+    truncate: function(str) {
+        if (str.length >= 45) {
+            return str.substring(0, 45) + "...";
+        } else {
+            return str;
+        }
+    },
+    onBlurHandler: function(event) {
+    },
+    getOptions: function(input, callback) {
+        var that = this;
+        var str = input;
+        var r = [];
+        $.when(
+            $.ajax({
+                url: '/allorganizations',
+                dataType: 'json',
+                type: 'POST',
+                data: {substr: str},
+                cache: false,
+                success: function(data) {
+                    $.map(data, function(item){
+                        var dlink = "/organization/" + item.name;
+                        r.push({label: item.displayName, value: item.displayName, category: "Organizations", imgsrc: item.picture.url, link: dlink, buttonText: 'Join', objectId: item.objectId});
+                    });
+                },
+                error: function(xhr) {
+                    console.log(xhr.status);
+                }
+            })
+        ).then(function() {
+                callback(
+                    null, {
+                        options: r
+                    }
+                );
+                that.setState({data: r});
+            });
+    },
+    render: function () {
+        return (
+            <div>
+                <div >
+                    <Select
+                        placeholder={this.props.placeholder}
+                        options={this.state.data}
+                        value={this.state.value}
+                        onInputChange={this.inputChangeWrapper}
+                        onChange={this.updateValue}
+                        onBlurResetsInput={false}
+                        onBlur={this.onBlurHandler} />
+                </div>
+            </div>
+        )
+    }
+});
+
 
 // helpers
 function getLinkFromCollaborator (collab) {
