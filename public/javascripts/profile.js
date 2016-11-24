@@ -825,8 +825,10 @@ var AboutTab_Interests = React.createClass({
         if(JSON.parse(this.props.interests).length > 0) { hideInterests = "show"; } else { hideInterests = "hide"; }
         return {
             edit: false,
+            beforeChange_interests:this.props.interests,
             interests: this.props.interests,
             hideInterests: hideInterests,
+            beforeChangeTags:this.props.tags,
             tags:this.props.tags
         };
     },
@@ -855,7 +857,7 @@ var AboutTab_Interests = React.createClass({
     },
     handleTagsInputChange: function(e) {
         var changedState = {};
- 
+
         this.setState({interestsTag:JSON.stringify(e).replace(/\\\"/g,"'"),tags:JSON.stringify(e).replace(/\\\"/g,"'")});
     },
     submitInterests: function() {
@@ -887,7 +889,6 @@ var AboutTab_Interests = React.createClass({
             data: JSON.stringify(dataForm),
             processData: false,
             success: function(data) {
-                this.setState({tags: data});
                 console.log("Submitted!");
             }.bind(this),
             error: function(xhr, status, err) {
@@ -904,6 +905,8 @@ var AboutTab_Interests = React.createClass({
     },
     cancelEdit:function(){
         this.setState({
+            interests:this.state.beforeChange_interests,
+            tags: this.state.beforeChangeTags,
             edit:false
         });
     },
@@ -911,8 +914,8 @@ var AboutTab_Interests = React.createClass({
         this.submitInterests();
         this.submitTags();
         this.setState({
-            interests: this.state.interests,
-            tags:this.state.tags,
+            beforeChange_interests:this.state.interests,
+            beforeChangeTags: this.state.tags,
             edit:false
         });
 
