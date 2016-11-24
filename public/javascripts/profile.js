@@ -342,7 +342,7 @@ var Profile = React.createClass ({
                     </div>
                 </div>
                 <div className="item-bottom-3">
-                        <ProfileMenu tabs={['About','Colleagues','Affiliations', 'Projects', 'Publications', 'Figures & Data', 'Software & Code']} />
+                        <ProfileMenu tabs={['About','People','Affiliations', 'Publications', 'Projects', 'Figures & Data', 'Software & Code']} />
 
 
                         {/*<input className="btn btn-panel" value="Message" />
