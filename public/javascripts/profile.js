@@ -830,8 +830,6 @@ var AboutTab_Interests = React.createClass({
             tags:this.props.tags
         };
     },
-    componentDidMount : function() {
-    },
     addInterest: function() {
         if (JSON.parse(this.state.interests).length > 0) {
             var result = this.state.interests.substring(0,this.state.interests.length-1) + ',""]';
@@ -839,7 +837,7 @@ var AboutTab_Interests = React.createClass({
         else {
             var result = '[""]';
         }
-        this.setState({interests:result, hideInterests: "show"}, function(){this.submitInterests()}.bind(this));
+        this.setState({interests:result, hideInterests: "show"});
     },
     handleArrayChange: function(index) {
         var interestsChange = document.getElementById("interests-" + index).value;
@@ -852,13 +850,13 @@ var AboutTab_Interests = React.createClass({
         var interestsTemp = JSON.parse(this.state.interests);
         delete interestsTemp[index];
         var interestsTemp = JSON.stringify(interestsTemp).replace(',null','').replace('null,','').replace('null','');
-        this.setState({interests: interestsTemp}, function(){ this.submitInterests() }.bind(this));
+        this.setState({interests: interestsTemp});
         if (JSON.parse(interestsTemp).length == 0) {this.setState({hideInterests: "hide"});}
     },
     handleTagsInputChange: function(e) {
         var changedState = {};
-        changedState['interestsTag'] = JSON.stringify(e).replace(/\\\"/g,"'");
-        this.setState(changedState, function(){ this.submitTags() }.bind(this));
+ 
+        this.setState({interestsTag:JSON.stringify(e).replace(/\\\"/g,"'"),tags:JSON.stringify(e).replace(/\\\"/g,"'")});
     },
     submitInterests: function() {
         var dataForm = {interests: this.state.interests};
@@ -889,7 +887,7 @@ var AboutTab_Interests = React.createClass({
             data: JSON.stringify(dataForm),
             processData: false,
             success: function(data) {
-                this.setState({data: data});
+                this.setState({tags: data});
                 console.log("Submitted!");
             }.bind(this),
             error: function(xhr, status, err) {
@@ -909,7 +907,16 @@ var AboutTab_Interests = React.createClass({
             edit:false
         });
     },
+    save:function(){
+        this.submitInterests();
+        this.submitTags();
+        this.setState({
+            interests: this.state.interests,
+            tags:this.state.tags,
+            edit:false
+        });
 
+    },
     toggleHover: function(){
         this.setState({hover: !this.state.hover})
     },
@@ -927,8 +934,16 @@ var AboutTab_Interests = React.createClass({
                     JSON.parse(this.state.interests).map(function(item, i) {
                         interests_data.push (
                             <div className="about-item-hr">
-                                <p className="no-margin display-inline-block"><input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} placeholder="Add interest" contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} value={item}/></p>
-                                <div className="div-minus-interests"><h4 className="no-margin"><a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-minus"></span></a></h4></div>
+                                <p className="no-margin display-inline-block">
+                                    <input rows="1" type="text" className="r-editable r-editable-full" id={"interests-" + i} name={"interests-" + i} placeholder="Add interest" contentEditable="true" onChange={this.handleArrayChange.bind(this, i)} value={item}/>
+                                </p>
+                                <div className="div-minus-interests">
+                                    <h4 className="no-margin">
+                                    <a onClick={this.deleteArrayChange.bind(this, i)} key={i} className="image-link">
+                                        <span aria-hidden="true" className="glyphicon glyphicon-minus"></span>
+                                    </a>
+                                    </h4>
+                                </div>
                             </div>);
                     }, this);
 
@@ -936,10 +951,10 @@ var AboutTab_Interests = React.createClass({
                view=<div>
                        <div className="div-absolute"><h3><a onClick={this.addInterest} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div>
                        <div className={"div-relative resume-item " + this.state.hideInterests}>{interests_data}</div>
-                       <ReactTagsInput type="text" placeholder="Keywords" name="interests" onChange={this.handleTagsInputChange} onBlur={this.submitTags} value={JSON.parse(this.state.tags)}/>
+                       <ReactTagsInput type="text" placeholder="Keywords" name="interests" onChange={this.handleTagsInputChange}  value={JSON.parse(this.state.tags)}/>
                    <div className="row">
                        <div className="col-xs-12  col-lg-2 col-lg-offset-10 col-md-2 col-md-offset-10">
-                           <button  onClick={this.saveSummary} className="btn btn-general" value="">Save</button>
+                           <button  onClick={this.save} className="btn btn-general" value="">Save</button>
                            <button  onClick={this.cancelEdit} className="btn btn-general" value="">Cancel</button>
                        </div>
 
@@ -959,19 +974,20 @@ var AboutTab_Interests = React.createClass({
                     }, this);
 
                 }
-               view= <div className="row"><div className="col-xs-11" onClick = {this.editClicked} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover}>
+               view= <div className="row">
+                   <div className="col-xs-11" onClick = {this.editClicked} onMouseEnter={this.toggleHover} onMouseLeave={this.toggleHover}>
                         <div className={"div-relative resume-item " + this.state.hideInterests}>{interests_data}</div>
-                        <div className="margin-top-20">{JSON.parse(this.state.tags).map(function(item)
-                        {
-                            return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })
-                        }
-                        </div>
                     </div>
                 {(this.state.hover)?
                     <div className="col-xs-1">
                         <i className="fa fa-pencil-square-o" aria-hidden="true"></i>
                     </div>: ""
                 }
+                   <div className="col-xs-12 margin-top-20">{JSON.parse(this.state.tags).map(function(item)
+                   {
+                       return <a href="#" className="tagsinput-tag-link react-tagsinput-tag">{item}</a>; })
+                   }
+                   </div>
                    </div>
             }
         }
@@ -1000,7 +1016,7 @@ var AboutTab_Interests = React.createClass({
         return (
         <div id="resume-expertise-and-interests" className="div-relative"><hr/>
             <div>
-                <h3 className="no-margin-top" >Interests</h3>
+                <h3 className="no-margin-top" >Research Interests</h3>
             </div>
             {view}
         </div>
