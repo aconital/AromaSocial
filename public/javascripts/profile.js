@@ -996,6 +996,7 @@ var AboutTab_Interests = React.createClass({
                 </div>
             </div>
         }
+        //TODO INJA BUDI (SAVE bayad kar kone,add va remove ro check kon)
         return (
         <div id="resume-expertise-and-interests" className="div-relative"><hr/>
             <div>
