@@ -7,6 +7,7 @@ var Carousel = ReactBootstrap.Carousel;
 var OverlayTrigger = ReactBootstrap.OverlayTrigger;
 var TabPane = ReactBootstrap.TabPane;
 
+
 // require('autocomplete.js').UserAutocomplete();
 String.prototype.capitalize = function() {
     return (this.charAt(0).toUpperCase() + this.slice(1)).replace("_"," ");
@@ -569,7 +570,7 @@ var About = React.createClass({
     getInitialState: function() {
 
         if(JSON.parse(workExperience).length > 0) { hideWorkExperiences = "show"; } else { hideWorkExperiences = "hide"; }
-        if(JSON.parse(educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }
+
         return {
             summary: summary,
             workExperience: workExperience,
@@ -580,8 +581,6 @@ var About = React.createClass({
             publications: "",
             datas: "",
             models: "",
-
-            hideEducations: hideEducations,
             hideWorkExperiences: hideWorkExperiences
         };
     },
@@ -605,25 +604,7 @@ var About = React.createClass({
         return;
 
     },
-    submitEducation: function() {
-        var dataForm = {educations: this.state.educations};
-        $.ajax({
-            url: path + "/submitEducation",
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            type: 'POST',
-            data: JSON.stringify(dataForm),
-            processData: false,
-            success: function(data) {
-                this.setState({data: data});
-                console.log("Submitted!");
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(path + "/update", status, err.toString());
-            }.bind(this)
-        });
-        return;
-    },
+
     handleChange: function(e) {
         this.setState({[e.target.name]:e.target.value});
     },
@@ -639,13 +620,7 @@ var About = React.createClass({
         }
         this.setState({workExperience:JSON.stringify(arrayWE), hideWorkExperiences: "show"}, function(){ this.submitExperience() }.bind(this));
     },
-    addEducation: function() {
-        var randomNumber = Math.floor(Math.random() * 100000000);
-        if (this.state.educations == "") { var arrayWE = [{company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"}]; }
-        else { var newWE = {company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"};
-               var arrayWE = JSON.parse(this.state.educations); arrayWE.push(newWE); }
-        this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"}, function(){ this.submitEducation() }.bind(this));
-    },
+
     tabChange: function(index) {
         this.props.tab(index);
     },
@@ -673,7 +648,6 @@ var About = React.createClass({
     render: function() {
         self = this;
         var workExperience_data = [];
-        var educations_data = [];
         var projects_data = [];
         var publications_data = [];
         var datas_data = [];
@@ -684,29 +658,16 @@ var About = React.createClass({
                 workExperience_data.push(<AboutTabObject identifier={i} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="workExperience" />);
             });
         }
-        if (this.state.educations != "") {
-            var EItems = JSON.parse(this.state.educations);
-            EItems.forEach(function(item, i) {
-                educations_data.push(<AboutTabObject identifier={i} updateChanges={self.updateChildChanges} field={item.field} title={item.title} major={item.major} company={item.company} description={item.description} start={item.start} end={item.end} type="education" />);
-            });
-        }
 
         return (
             <div id="resume">
                <AboutTab_Summary summary={this.state.summary} />
                <AboutTab_Interests tags = {this.state.interestsTag} interests= {this.state.interests}/>
+                <div className="clear"/>
+               <AboutTab_Education educations={this.state.educations} />
 
 
 
-                <div className="clear"></div>
-
-                <div id="resume-education" className="div-relative"><hr/>
-                    <div>
-                        <h3 className="no-margin-top" >Education</h3>
-                    </div>
-                    {(currentUsername == username) ? <div className="div-absolute"><h3><a onClick={this.addEducation} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div> : ""}
-                    <div className={"resume-item div-relative " + this.state.hideEducations}>{educations_data}</div>
-                </div>
                 <div id="resume-experience" className="div-relative"><hr/>
                     <div>
                         <h3 className="no-margin-top" >Work Experience</h3>
@@ -718,6 +679,77 @@ var About = React.createClass({
             </div>
         )
     }
+});
+var AboutTab_Education = React.createClass({
+    getInitialState: function() {
+
+        var hideEducations;
+        if(JSON.parse(this.props.educations).length > 0) { hideEducations = "show"; } else { hideEducations = "hide"; }
+        return {
+            edit: false,
+            hideEducations: hideEducations,
+            educations: this.props.educations,
+        };
+    },
+    submitEducation: function() {
+        var dataForm = {educations: this.state.educations};
+        $.ajax({
+            url: path + "/submitEducation",
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(dataForm),
+            processData: false,
+            success: function(data) {
+                this.setState({data: data});
+                console.log("Submitted!");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/update", status, err.toString());
+            }.bind(this)
+        });
+        return;
+    },
+    addEducation: function() {
+        var randomNumber = Math.floor(Math.random() * 100000000);
+        if (this.state.educations == "")
+        {
+            var arrayWE = [{company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"}];
+        }
+        else
+        {
+            var newWE = {company:"",description:"",end:"",key:randomNumber,start:"",title:"",major:"",field:"education"};
+            var arrayWE = JSON.parse(this.state.educations);
+            arrayWE.push(newWE);
+        }
+        this.setState({educations:JSON.stringify(arrayWE), hideEducations: "show"});
+    },
+    render: function()
+    {
+console.log(this.state.educations);
+        var education_list=""
+             education_list = JSON.parse(this.state.educations).map(function (education) {
+                return (
+                    <Education_Object education={education}/>
+
+                );
+            });
+
+
+
+       return (
+           <div id="resume-education" className="div-relative"><hr/>
+               <div>
+                   <h3 className="no-margin-top" >Education</h3>
+               </div>
+               {(currentUsername == username) ?
+                   <div className="div-absolute"><h3><a onClick={this.addEducation} className="image-link"><span aria-hidden="true" className="glyphicon glyphicon-plus"></span></a></h3></div>
+                   : ""}
+               <div className={"resume-item div-relative " + this.state.hideEducations}>{education_list}</div>
+           </div>
+       );
+    }
+
 });
 var AboutTab_Summary = React.createClass({
     getInitialState: function() {
@@ -1015,7 +1047,7 @@ var AboutTab_Interests = React.createClass({
                 </div>
             </div>
         }
-        //TODO INJA BUDI (SAVE bayad kar kone,add va remove ro check kon)
+
         return (
         <div id="resume-expertise-and-interests" className="div-relative"><hr/>
             <div>
@@ -2464,6 +2496,78 @@ var Required = React.createClass({
 	},
 });
 
+
+var Education_Object = React.createClass({
+    getInitialState() {
+        return {
+            id:'',
+            institution: '',
+            start: null,
+            end: null,
+            degree: '',
+            major: '',
+            description: ''
+        };
+    },
+
+    handleChange(e) {
+        var changedState = {};
+        changedState[e.target.name] = e.target.value;
+        this.setState( changedState );
+    },
+    updateState(type,obj)
+    {
+        console.log(obj);
+       //TODO: INJA budi dashti check mikardi chi tu obj has. Vaghti az server educationa miad bayad be forme obj bashe ke beshe populate kard.
+       //TODO: Ehtemalan bayad servero taghir bedi ke be in format befreste. kole etelaate company bayad biad
+       //TODO: add/remove bayad neveshte beshe, edit/view mode ham bayad neveshte beshe
+        this.setState( {institution:obj} );
+
+    },
+    next() {
+        // Send education to server
+        var education = {institution: this.state.institution, start_date: this.state.start, end_date: this.state.end,
+            faculty: this.state.major, description: this.state.description, degree: this.state.degree};
+        $.ajax({
+            url: '/education',
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            type: 'POST',
+            data: JSON.stringify(education),
+            success: function(status) {
+                console.log("Updated education");
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(path + "/post education", status, err.toString(), xhr);
+            }.bind(this)
+        });
+    },
+
+    render() {
+        return (
+            <div>
+                <div className="row">
+                    <div className="col-xs-10 col-sm-10 col-md-8 col-lg-8 " >
+                        <div id="resume-education" className="div-relative">
+                            <div className="h4-resume-item display-inline-block ">
+                                <SearchInput name="institution" placeholder="Latest School" updateState={this.updateState}  />
+								<span className="r-editable profile_date_editable">From: &nbsp;&nbsp;
+                                    <input type="date" name="start" onChange={this.handleChange} value={this.state.start} className="r-editable r-editable-date"/>
+								</span>
+								<span className="r-editable profile_date_editable">To: &nbsp;&nbsp;
+                                    <input type="date" name="end" onChange={this.handleChange} value={this.state.end} className="r-editable r-editable-date"/>
+								</span>
+                                <span><input type="text" className="r-editable r-editable-full" name="degree" placeholder="Degree" onChange={this.handleChange} value={this.state.degree}/></span>
+                                <span><input type="text" className="r-editable r-editable-full" name="major" placeholder="Major" onChange={this.handleChange} value={this.state.major}/></span>
+                                <textarea type="text" className="r-editable r-editable-full" name="description" placeholder="Description" onChange={this.handleChange} value={this.state.description}></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
 
 var SearchInput = React.createClass({
     getInitialState: function() {
