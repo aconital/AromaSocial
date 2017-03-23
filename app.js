@@ -42,8 +42,8 @@ Parse.initialize(dbconfig.db_name, dbconfig.username, dbconfig.password);
 Parse.serverURL = dbconfig.url;
 
 aws.config.update({
-    accessKeyId: "AKIAJAKJNWQBINWXOD7Q",
-    secretAccessKey: "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"
+    accessKeyId: "XXXXX",
+    secretAccessKey: "XXXXXX"
 });
 
 // view engine setup
